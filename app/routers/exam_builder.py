@@ -80,7 +80,7 @@ async def get_pdf_sample_exam():
 
 @router.post("/sample/add-to-system")
 async def add_sample_exam_to_system():
-    """Thêm đề thi mẫu chuẩn GDPT 2025 (Toán 12 - Mã 101) vào danh sách đề thi hệ thống."""
+    """Thêm đề thi mẫu chuẩn GDPT 2026 (Toán 12 - Mã 101) vào danh sách đề thi hệ thống."""
     src = DATA_DIR / "exam_toan_12_101.json"
     if not src.exists():
         raise HTTPException(404, "Không tìm thấy file mẫu đề thi Toán 12!")
@@ -88,7 +88,7 @@ async def add_sample_exam_to_system():
     src.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return {
         "success": True,
-        "message": "Đã thêm Đề thi mẫu chuẩn GDPT 2025 (Môn Toán 12 - Mã 101) vào hệ thống thành công!",
+        "message": "Đã thêm Đề thi mẫu chuẩn GDPT 2026 (Môn Toán 12 - Mã 101) vào hệ thống thành công!",
         "exam_id": data.get("id", "exam_toan_12_101"),
         "exam": data
     }
@@ -995,7 +995,7 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         return Response(
             content=content.encode("utf-8"),
             media_type="application/json",
-            headers={"Content-Disposition": 'attachment; filename="mau_de_thi_gdpt2025.json"'}
+            headers={"Content-Disposition": 'attachment; filename="mau_de_thi_gdpt2026.json"'}
         )
 
     elif format == "docx":
@@ -1012,7 +1012,7 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         run_h1 = p_head.add_run("SỞ GD&ĐT ... - TRƯỜNG THPT ...\n")
         run_h1.bold = True
         run_h1.font.size = Pt(13)
-        run_h2 = p_head.add_run("ĐỀ KIỂM TRA ĐỊNH KỲ CHUẨN BỘ GD&ĐT 2025\n")
+        run_h2 = p_head.add_run("ĐỀ KIỂM TRA ĐỊNH KỲ CHUẨN BỘ GD&ĐT 2026\n")
         run_h2.bold = True
         run_h2.font.size = Pt(15)
         run_h3 = p_head.add_run("Môn: TOÁN HỌC - Lớp: 12 (Thời gian làm bài: 50 phút)\n")
@@ -1144,13 +1144,13 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         return StreamingResponse(
             buf,
             media_type="application/vnd.openxmlformats-officedoc.wordprocessingml.document",
-            headers={"Content-Disposition": 'attachment; filename="mau_de_thi_gdpt2025.docx"'}
+            headers={"Content-Disposition": 'attachment; filename="mau_de_thi_gdpt2026.docx"'}
         )
 
     else:
         # Mẫu TXT
         txt_content = """SỞ GD&ĐT ... - TRƯỜNG THPT ...
-ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 12 (CHUẨN BỘ GD&ĐT 2025)
+ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 12 (CHUẨN BỘ GD&ĐT 2026)
 Môn: TOÁN HỌC - Lớp: 12 - Thời gian: 50 phút
 
 📌 QUY ƯỚC SOẠN ĐỀ:

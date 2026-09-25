@@ -192,7 +192,7 @@ def export_result_html(submission: dict, exam_data: dict) -> str:
   <div class="p-6 text-center border-b bg-gradient-to-r from-blue-900 to-indigo-900 text-white">
     <p class="text-xs uppercase tracking-widest text-blue-200 font-bold mb-1">SỞ GIÁO DỤC VÀ ĐÀO TẠO • TRƯỜNG THPT</p>
     <h1 class="text-xl sm:text-2xl font-black">{exam_data.get('title','PHIẾU BÁO ĐIỂM KIỂM TRA')}</h1>
-    <p class="mt-1 text-xs text-blue-200">Môn: {exam_data.get('subject','Toán học')} | Khối: {exam_data.get('grade','12')} | Chuẩn GDPT 2025</p>
+    <p class="mt-1 text-xs text-blue-200">Môn: {exam_data.get('subject','Toán học')} | Khối: {exam_data.get('grade','12')} | Chuẩn GDPT 2026</p>
   </div>
   
   <!-- Thông tin thí sinh -->
@@ -953,7 +953,7 @@ def export_exam_answers_print_html(exam_data: dict) -> str:
     <p class="text-xs uppercase font-bold tracking-widest text-gray-600">SỞ GIÁO DỤC VÀ ĐÀO TẠO • TRƯỜNG THPT</p>
     <h1 class="text-lg sm:text-2xl font-black uppercase text-red-700 mt-1">ĐÁP ÁN GỐC & HƯỚNG DẪN CHẤM BÀI</h1>
     <p class="text-sm font-semibold text-gray-800">{title} — Môn: {subject} — Khối: {grade}</p>
-    <p class="text-xs text-gray-500 mt-0.5">Mã đề: <b>{exam_id[:6].upper()}</b> • Chuẩn Bộ Giáo Dục và Đào Tạo 2025</p>
+    <p class="text-xs text-gray-500 mt-0.5">Mã đề: <b>{exam_id[:6].upper()}</b> • Chuẩn Bộ Giáo Dục và Đào Tạo 2026</p>
   </div>
 
   <!-- MA TRẬN ĐÁP ÁN PHẦN I -->

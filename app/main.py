@@ -67,7 +67,7 @@ def read_html(filename: str) -> str:
 # Tạo ứng dụng
 app = FastAPI(
     title="Hệ thống Kiểm tra Trực tuyến",
-    description="Kiểm tra online với API Key xoay vòng - Chuẩn GDPT 2025",
+    description="Kiểm tra online với API Key xoay vòng - Chuẩn GDPT 2026",
     version="1.0.0",
     lifespan=lifespan
 )
