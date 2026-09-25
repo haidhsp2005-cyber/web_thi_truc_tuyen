@@ -201,7 +201,13 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     math_latex = re.sub(r"\{([a-zA-Z])\}\^\{′\}", r"\1'", math_latex)
 
     # 1. Sửa lỗi Word OMML gộp hệ phương trình: ${...$
-    math_latex = re.sub(r"\$\{([^$]+?)\$", r"$\\begin{cases} \1 \\end{cases}$", math_latex)
+    def fix_omml_brace(m):
+        body = m.group(1).strip()
+        if r"\\" in body or "\n" in body or "&" in body:
+            return f"$\\begin{{cases}} {body} \\end{{cases}}$"
+        return f"${body}$"
+
+    math_latex = re.sub(r"\$\{([^$]+?)\$", fix_omml_brace, math_latex)
 
     # 2. Chuẩn hóa hệ phương trình dạng \left\{ \begin{matrix} hoặc \begin{array} sang \begin{cases}
     math_latex = re.sub(r"\\left\\\{\s*\\begin\{(?:matrix|array)\}(?:\{[a-zA-Z]*\})?", r"\\begin{cases}", math_latex)
@@ -217,17 +223,30 @@ def _sanitize_math_symbols(math_latex: str) -> str:
         else:
             math_latex = math_latex + (" \\end{cases}" * missing)
 
-    # 4. Tự động đóng \left\{ nếu thiếu \right
+    # 4. Nếu \begin{cases} bên trong KHÔNG có dấu \\ hoặc &, nó không phải hệ phương trình, mở ngoặc trả về biểu thức gốc
+    math_latex = re.sub(r"\\begin\{cases\}\s*([^&\\\n]+?)\s*\\end\{cases\}", r"\1", math_latex)
+
+    # 5. Dọn dẹp lỗi ngoặc nhọn thừa do tách Word OMML: x}_{0} -> x_{0}, {x}_{0} -> x_{0}
+    math_latex = re.sub(r"\{?([a-zA-Z0-9]+)\}_", r"\1_", math_latex)
+
+    # 6. Làm sạch ký hiệu toạ độ Word OMML: ((x)_{0};(y)_{0}) -> (x_0; y_0)
+    math_latex = re.sub(r"\(\(([a-zA-Z])\)_\{?(\d+)\}?;\s*\(([a-zA-Z])\)_\{?(\d+)\}?\)", r"(\1_\2; \3_\4)", math_latex)
+    math_latex = re.sub(r"\(([a-zA-Z])\)_\{?(\d+)\}?", r"\1_\2", math_latex)
+
+    # 7. Tự động đóng \left\{ nếu thiếu \right
     if "\\left\\{" in math_latex and "\\right" not in math_latex:
         if math_latex.endswith("$"):
             math_latex = math_latex[:-1] + " \\right.$"
         else:
             math_latex = math_latex + " \\right."
 
-    # 5. Tự động đóng dấu $ nếu lẻ dấu $
+    # 7. Tự động đóng dấu $ nếu lẻ dấu $
     dollar_count = math_latex.count("$")
     if dollar_count % 2 != 0:
         math_latex = math_latex + "$"
+
+    # 8. Bỏ bao bọc $ $ không cần thiết cho số nguyên / số thập phân đơn giản (VD: $1$ -> 1, $-1$ -> -1)
+    math_latex = re.sub(r"^\s*\$([+-]?\d+(?:[\.,]\d+)?)\$\s*$", r"\1", math_latex)
 
     return math_latex.strip()
 

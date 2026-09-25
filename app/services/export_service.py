@@ -536,7 +536,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {{
+  function triggerMath() {{
     if (window.renderMathInElement) {{
       renderMathInElement(document.body, {{
         delimiters: [
@@ -547,8 +547,16 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
         ],
         throwOnError: false
       }});
+    }} else {{
+      setTimeout(triggerMath, 100);
     }}
-  }});
+  }}
+  if (document.readyState === 'loading') {{
+    document.addEventListener("DOMContentLoaded", triggerMath);
+  }} else {{
+    triggerMath();
+  }}
+  window.addEventListener("load", triggerMath);
 </script>
 <style>
   @media print {{
@@ -735,7 +743,7 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {{
+  function triggerMath() {{
     if (window.renderMathInElement) {{
       renderMathInElement(document.body, {{
         delimiters: [
@@ -746,8 +754,16 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
         ],
         throwOnError: false
       }});
+    }} else {{
+      setTimeout(triggerMath, 100);
     }}
-  }});
+  }}
+  if (document.readyState === 'loading') {{
+    document.addEventListener("DOMContentLoaded", triggerMath);
+  }} else {{
+    triggerMath();
+  }}
+  window.addEventListener("load", triggerMath);
 </script>
 <style>
   @media print {{
@@ -900,7 +916,7 @@ def export_exam_answers_print_html(exam_data: dict) -> str:
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {{
+  function triggerMath() {{
     if (window.renderMathInElement) {{
       renderMathInElement(document.body, {{
         delimiters: [
@@ -911,8 +927,16 @@ def export_exam_answers_print_html(exam_data: dict) -> str:
         ],
         throwOnError: false
       }});
+    }} else {{
+      setTimeout(triggerMath, 100);
     }}
-  }});
+  }}
+  if (document.readyState === 'loading') {{
+    document.addEventListener("DOMContentLoaded", triggerMath);
+  }} else {{
+    triggerMath();
+  }}
+  window.addEventListener("load", triggerMath);
 </script>
 <style>
   @media print {{
