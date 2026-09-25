@@ -1,0 +1,294 @@
+{
+  "id": "exam_001",
+  "title": "ĐỀ KIỂM TRA HỌC KỲ I - MÔN TOÁN LỚP 10",
+  "subject": "Toán học",
+  "grade": "10",
+  "duration_minutes": 45,
+  "total_points": 10.0,
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.25,
+    "part2_total": 2.0,
+    "part2_rubric": {"1_correct": 0.1, "2_correct": 0.25, "3_correct": 0.5, "4_correct": 0.5},
+    "part3_total": 2.0,
+    "part3_per_question": 0.333,
+    "part4_total": 1.0
+  },
+  "parts": {
+    "part1": {
+      "name": "Phần I: Trắc nghiệm nhiều lựa chọn",
+      "instruction": "Chọn đáp án đúng duy nhất (A, B, C hoặc D) cho mỗi câu sau.",
+      "questions": [
+        {
+          "id": "p1_q1",
+          "text": "Tập hợp nào sau đây là tập con của tập hợp $\\{1, 2, 3, 4, 5\\}$?",
+          "options": {"A": "$\\{1, 2, 6\\}$", "B": "$\\{3, 4, 5\\}$", "C": "$\\{0, 1, 2\\}$", "D": "$\\{2, 4, 6\\}$"},
+          "answer": "B",
+          "explanation": "Tập $\\{3, 4, 5\\}$ gồm các phần tử 3, 4, 5 đều thuộc tập $\\{1, 2, 3, 4, 5\\}$, nên đây là tập con."
+        },
+        {
+          "id": "p1_q2",
+          "text": "Cho hàm số $f(x) = x^2 - 2x + 1$. Giá trị $f(3)$ bằng:",
+          "options": {"A": "$4$", "B": "$6$", "C": "$8$", "D": "$10$"},
+          "answer": "A",
+          "explanation": "$f(3) = 3^2 - 2 \\cdot 3 + 1 = 9 - 6 + 1 = 4$"
+        },
+        {
+          "id": "p1_q3",
+          "text": "Tập nghiệm của bất phương trình $2x - 3 > 7$ là:",
+          "options": {"A": "$(-\\infty; 5)$", "B": "$[5; +\\infty)$", "C": "$(5; +\\infty)$", "D": "$(-\\infty; 5]$"},
+          "answer": "C",
+          "explanation": "$2x - 3 > 7 \\Leftrightarrow 2x > 10 \\Leftrightarrow x > 5$. Vậy tập nghiệm là $(5; +\\infty)$."
+        },
+        {
+          "id": "p1_q4",
+          "text": "Phương trình $x^2 - 5x + 6 = 0$ có hai nghiệm là:",
+          "options": {"A": "$x = 2$ và $x = 3$", "B": "$x = 1$ và $x = 6$", "C": "$x = -2$ và $x = -3$", "D": "$x = 2$ và $x = -3$"},
+          "answer": "A",
+          "explanation": "$\\Delta = 25 - 24 = 1 > 0$. $x_1 = \\frac{5+1}{2} = 3$; $x_2 = \\frac{5-1}{2} = 2$."
+        },
+        {
+          "id": "p1_q5",
+          "text": "Điều kiện để tam thức bậc hai $f(x) = ax^2 + bx + c$ ($a \\neq 0$) luôn dương là:",
+          "options": {"A": "$a > 0$ và $\\Delta > 0$", "B": "$a > 0$ và $\\Delta < 0$", "C": "$a < 0$ và $\\Delta < 0$", "D": "$a < 0$ và $\\Delta > 0$"},
+          "answer": "B",
+          "explanation": "Tam thức bậc hai luôn dương khi $a > 0$ và $\\Delta < 0$ (đồ thị nằm hoàn toàn phía trên trục $Ox$)."
+        },
+        {
+          "id": "p1_q6",
+          "text": "Vectơ $\\overrightarrow{AB}$ có tọa độ bằng:",
+          "options": {"A": "$A - B$", "B": "$B - A$", "C": "$A + B$", "D": "$(A_x \\cdot B_x; A_y \\cdot B_y)$"},
+          "answer": "B",
+          "explanation": "$\\overrightarrow{AB} = B - A = (B_x - A_x; B_y - A_y)$."
+        },
+        {
+          "id": "p1_q7",
+          "text": "Giá trị tuyệt đối $|{-7}|$ bằng:",
+          "options": {"A": "$-7$", "B": "$0$", "C": "$7$", "D": "$49$"},
+          "answer": "C",
+          "explanation": "$|-7| = 7$ vì giá trị tuyệt đối luôn không âm."
+        },
+        {
+          "id": "p1_q8",
+          "text": "Đường thẳng $y = 2x + 3$ đi qua điểm nào sau đây?",
+          "options": {"A": "$(1; 4)$", "B": "$(0; 2)$", "C": "$(1; 5)$", "D": "$(-1; 1)$"},
+          "answer": "C",
+          "explanation": "Thay $x=1$: $y = 2(1) + 3 = 5$. Vậy điểm $(1; 5)$ thuộc đường thẳng."
+        },
+        {
+          "id": "p1_q9",
+          "text": "Nếu $A = \\{1, 2, 3\\}$ và $B = \\{2, 3, 4, 5\\}$ thì $A \\cup B$ bằng:",
+          "options": {"A": "$\\{2, 3\\}$", "B": "$\\{1, 4, 5\\}$", "C": "$\\{1, 2, 3, 4, 5\\}$", "D": "$\\{1, 2, 3, 4, 5, 6\\}$"},
+          "answer": "C",
+          "explanation": "$A \\cup B = \\{1, 2, 3, 4, 5\\}$ (tập hợp tất cả các phần tử thuộc A hoặc B)."
+        },
+        {
+          "id": "p1_q10",
+          "text": "Phương trình đường tròn tâm $I(2; -3)$, bán kính $r = 5$ là:",
+          "options": {"A": "$(x-2)^2 + (y+3)^2 = 5$", "B": "$(x+2)^2 + (y-3)^2 = 25$", "C": "$(x-2)^2 + (y+3)^2 = 25$", "D": "$(x+2)^2 + (y-3)^2 = 5$"},
+          "answer": "C",
+          "explanation": "Đường tròn tâm $I(a;b)$ bán kính $r$: $(x-a)^2 + (y-b)^2 = r^2$. Thế vào: $(x-2)^2 + (y+3)^2 = 25$."
+        },
+        {
+          "id": "p1_q11",
+          "text": "Nghiệm của phương trình $\\log_2(x) = 3$ là:",
+          "options": {"A": "$x = 6$", "B": "$x = 8$", "C": "$x = 9$", "D": "$x = 4$"},
+          "answer": "B",
+          "explanation": "$\\log_2(x) = 3 \\Leftrightarrow x = 2^3 = 8$."
+        },
+        {
+          "id": "p1_q12",
+          "text": "Biểu thức $\\sin^2 x + \\cos^2 x$ bằng:",
+          "options": {"A": "$0$", "B": "$2$", "C": "$1$", "D": "$\\sin(2x)$"},
+          "answer": "C",
+          "explanation": "Đây là hệ thức lượng giác cơ bản: $\\sin^2 x + \\cos^2 x = 1$ với mọi $x$."
+        },
+        {
+          "id": "p1_q13",
+          "text": "Nếu $\\vec{a} = (3; 4)$ thì $|\\vec{a}|$ bằng:",
+          "options": {"A": "$7$", "B": "$1$", "C": "$5$", "D": "$12$"},
+          "answer": "C",
+          "explanation": "$|\\vec{a}| = \\sqrt{3^2 + 4^2} = \\sqrt{9 + 16} = \\sqrt{25} = 5$."
+        },
+        {
+          "id": "p1_q14",
+          "text": "Tổng của cấp số cộng có $n$ số hạng đầu là $S_n = \\frac{n(u_1 + u_n)}{2}$. Nếu $u_1 = 2$, $u_n = 20$, $n = 10$ thì $S_{10}$ bằng:",
+          "options": {"A": "$100$", "B": "$110$", "C": "$120$", "D": "$90$"},
+          "answer": "B",
+          "explanation": "$S_{10} = \\frac{10(2+20)}{2} = \\frac{10 \\cdot 22}{2} = 110$."
+        },
+        {
+          "id": "p1_q15",
+          "text": "Phương trình $2x^2 - 7x + 3 = 0$ có tổng hai nghiệm bằng:",
+          "options": {"A": "$3.5$", "B": "$1.5$", "C": "$7$", "D": "$-3.5$"},
+          "answer": "A",
+          "explanation": "Theo định lý Viète: $x_1 + x_2 = \\frac{-b}{a} = \\frac{7}{2} = 3.5$."
+        },
+        {
+          "id": "p1_q16",
+          "text": "Hàm số $y = f(x)$ là hàm số lẻ khi:",
+          "options": {"A": "$f(-x) = f(x)$", "B": "$f(-x) = -f(x)$", "C": "$f(0) = 0$", "D": "$f(x) > 0$ với mọi $x$"},
+          "answer": "B",
+          "explanation": "Hàm lẻ thỏa điều kiện $f(-x) = -f(x)$ với mọi $x$ thuộc tập xác định."
+        },
+        {
+          "id": "p1_q17",
+          "text": "Trong tam giác ABC vuông tại A, nếu $BC = 10$ và $AB = 6$ thì $AC$ bằng:",
+          "options": {"A": "$4$", "B": "$8$", "C": "$16$", "D": "$6$"},
+          "answer": "B",
+          "explanation": "$AC = \\sqrt{BC^2 - AB^2} = \\sqrt{100 - 36} = \\sqrt{64} = 8$ (Định lý Pythagore)."
+        },
+        {
+          "id": "p1_q18",
+          "text": "Tập xác định của hàm số $f(x) = \\sqrt{x - 2}$ là:",
+          "options": {"A": "$(-\\infty; 2)$", "B": "$(2; +\\infty)$", "C": "$[2; +\\infty)$", "D": "$\\mathbb{R}$"},
+          "answer": "C",
+          "explanation": "Điều kiện xác định: $x - 2 \\geq 0 \\Leftrightarrow x \\geq 2$. Vậy $D = [2; +\\infty)$."
+        },
+        {
+          "id": "p1_q19",
+          "text": "Giới hạn $\\lim_{x \\to 2} (x^2 + 3x - 1)$ bằng:",
+          "options": {"A": "$8$", "B": "$9$", "C": "$10$", "D": "$11$"},
+          "answer": "B",
+          "explanation": "Hàm đa thức liên tục nên $\\lim_{x \\to 2} (x^2 + 3x - 1) = 4 + 6 - 1 = 9$."
+        },
+        {
+          "id": "p1_q20",
+          "text": "Nếu $\\cos A = \\frac{\\sqrt{3}}{2}$ và $0° < A < 180°$ thì $A$ bằng:",
+          "options": {"A": "$30°$", "B": "$45°$", "C": "$60°$", "D": "$90°$"},
+          "answer": "A",
+          "explanation": "$\\cos 30° = \\frac{\\sqrt{3}}{2}$, và $30°$ nằm trong khoảng $(0°; 180°)$."
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II: Trắc nghiệm Đúng / Sai",
+      "instruction": "Trong mỗi câu, xét tính Đúng (Đ) hoặc Sai (S) của mỗi ý (a), (b), (c), (d).",
+      "questions": [
+        {
+          "id": "p2_q1",
+          "text": "Cho hai tập hợp $A = \\{1, 2, 3, 4\\}$ và $B = \\{3, 4, 5, 6\\}$.",
+          "items": {
+            "a": {"text": "$A \\cap B = \\{3, 4\\}$", "answer": true},
+            "b": {"text": "$A \\cup B = \\{1, 2, 3, 4, 5, 6\\}$", "answer": true},
+            "c": {"text": "$A \\setminus B = \\{1, 2, 5, 6\\}$", "answer": false, "explanation": "$A \\setminus B = \\{1, 2\\}$ (các phần tử thuộc A nhưng không thuộc B)."},
+            "d": {"text": "$B \\setminus A = \\{5, 6\\}$", "answer": true}
+          }
+        },
+        {
+          "id": "p2_q2",
+          "text": "Xét hàm số $f(x) = x^2 - 4x + 3$.",
+          "items": {
+            "a": {"text": "Tập xác định của $f(x)$ là $\\mathbb{R}$", "answer": true},
+            "b": {"text": "Hàm số có giá trị nhỏ nhất bằng $-1$", "answer": true, "explanation": "$f(x) = (x-2)^2 - 1 \\geq -1$, đạt $-1$ khi $x=2$."},
+            "c": {"text": "Hàm số đồng biến trên $(-\\infty; 2)$", "answer": false, "explanation": "Hàm đồng biến trên $(2; +\\infty)$, nghịch biến trên $(-\\infty; 2)$."},
+            "d": {"text": "Phương trình $f(x) = 0$ có hai nghiệm $x = 1$ và $x = 3$", "answer": true}
+          }
+        },
+        {
+          "id": "p2_q3",
+          "text": "Trong mặt phẳng tọa độ, cho hai điểm $A(1; 2)$ và $B(4; 6)$.",
+          "items": {
+            "a": {"text": "$\\overrightarrow{AB} = (3; 4)$", "answer": true},
+            "b": {"text": "$|\\overrightarrow{AB}| = 7$", "answer": false, "explanation": "$|\\overrightarrow{AB}| = \\sqrt{9+16} = 5$."},
+            "c": {"text": "Trung điểm $M$ của $AB$ có tọa độ $M(2.5; 4)$", "answer": true},
+            "d": {"text": "Độ dài $AB = 5$", "answer": true}
+          }
+        },
+        {
+          "id": "p2_q4",
+          "text": "Xét phương trình bậc hai $2x^2 - 8x + 8 = 0$.",
+          "items": {
+            "a": {"text": "Biệt thức $\\Delta = 0$", "answer": true, "explanation": "$\\Delta = 64 - 64 = 0$."},
+            "b": {"text": "Phương trình có hai nghiệm phân biệt", "answer": false, "explanation": "Vì $\\Delta = 0$, phương trình có nghiệm kép."},
+            "c": {"text": "Nghiệm kép là $x = 2$", "answer": true},
+            "d": {"text": "Tích hai nghiệm bằng $4$", "answer": true, "explanation": "Theo Viète: $x_1 \\cdot x_2 = \\frac{c}{a} = \\frac{8}{2} = 4$."}
+          }
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III: Trả lời ngắn",
+      "instruction": "Điền đáp án vào ô trống. Chỉ ghi kết quả (số hoặc biểu thức đơn giản nhất).",
+      "questions": [
+        {
+          "id": "p3_q1",
+          "text": "Tính: $\\sqrt{144} + \\sqrt{25}$ = ?",
+          "answer": "17",
+          "accepted_answers": ["17"],
+          "explanation": "$\\sqrt{144} = 12$; $\\sqrt{25} = 5$; Tổng $= 17$."
+        },
+        {
+          "id": "p3_q2",
+          "text": "Cho cấp số nhân với số hạng đầu $u_1 = 2$, công bội $q = 3$. Tính $u_4$.",
+          "answer": "54",
+          "accepted_answers": ["54"],
+          "explanation": "$u_4 = u_1 \\cdot q^3 = 2 \\cdot 27 = 54$."
+        },
+        {
+          "id": "p3_q3",
+          "text": "Giải bất phương trình $3x + 6 \\leq 0$. Nghiệm là $x \\leq$ ?",
+          "answer": "-2",
+          "accepted_answers": ["-2"],
+          "explanation": "$3x + 6 \\leq 0 \\Leftrightarrow x \\leq -2$."
+        },
+        {
+          "id": "p3_q4",
+          "text": "Tính diện tích hình tròn có bán kính $r = 5$ (lấy $\\pi \\approx 3.14$). Kết quả (làm tròn đến 2 chữ số thập phân):",
+          "answer": "78.5",
+          "accepted_answers": ["78.5", "78.50"],
+          "tolerance": 0.5,
+          "explanation": "$S = \\pi r^2 = 3.14 \\times 25 = 78.5$."
+        },
+        {
+          "id": "p3_q5",
+          "text": "Trong tam giác ABC có $a = 7$, $b = 8$, $c = 9$. Tính nửa chu vi $p$ = ?",
+          "answer": "12",
+          "accepted_answers": ["12"],
+          "explanation": "$p = \\frac{a+b+c}{2} = \\frac{7+8+9}{2} = 12$."
+        },
+        {
+          "id": "p3_q6",
+          "text": "Một hàm số $y = ax + b$ đi qua $A(0; 3)$ và $B(2; 7)$. Hệ số góc $a$ bằng:",
+          "answer": "2",
+          "accepted_answers": ["2"],
+          "explanation": "$a = \\frac{7-3}{2-0} = \\frac{4}{2} = 2$."
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV: Tự luận tự chọn",
+      "instruction": "Chọn MỘT trong các câu dưới đây để làm. Trình bày đầy đủ các bước giải.",
+      "questions": [
+        {
+          "id": "p4_q1",
+          "title": "Câu 1 (Cơ bản): Giải phương trình và biện luận",
+          "text": "Cho phương trình $x^2 - (m+3)x + 2m + 2 = 0$ (ẩn $x$, tham số $m$).\n\na) Giải phương trình khi $m = 1$.\n\nb) Tìm $m$ để phương trình có hai nghiệm phân biệt $x_1, x_2$ thỏa mãn $x_1^2 + x_2^2 = 10$.",
+          "rubric": {
+            "max_score": 1.0,
+            "criteria": [
+              {"name": "Câu a: Thay m=1 và giải đúng", "points": 0.4},
+              {"name": "Câu b: Lập điều kiện Δ > 0", "points": 0.2},
+              {"name": "Câu b: Áp dụng Viète đúng", "points": 0.2},
+              {"name": "Câu b: Tìm và kiểm tra m", "points": 0.2}
+            ],
+            "sample_answer": "a) m=1: PT $x^2 - 4x + 4 = 0 \\Rightarrow (x-2)^2 = 0 \\Rightarrow x = 2$ (nghiệm kép).\nb) $\\Delta = (m+3)^2 - 4(2m+2) = m^2+6m+9-8m-8 = m^2-2m+1 = (m-1)^2$.\n$\\Delta > 0 \\Leftrightarrow m \\neq 1$.\nTheo Viète: $x_1+x_2=m+3$; $x_1 x_2 = 2m+2$.\n$x_1^2+x_2^2 = (x_1+x_2)^2 - 2x_1x_2 = (m+3)^2 - 2(2m+2) = m^2+6m+9-4m-4 = m^2+2m+5 = 10$.\n$m^2+2m-5=0 \\Rightarrow m = \\frac{-2 \\pm \\sqrt{24}}{2} = -1 \\pm \\sqrt{6}$.\nCả hai giá trị đều $\\neq 1$ (thỏa mãn)."
+          }
+        },
+        {
+          "id": "p4_q2",
+          "title": "Câu 2 (Nâng cao): Tập hợp và hàm số",
+          "text": "Cho $A = (-\\infty; 2)$ và $B = [m-1; m+3]$ (với $m$ là tham số).\n\na) Tìm $m$ để $B \\subset A$.\n\nb) Tìm $m$ để $A \\cap B \\neq \\emptyset$.",
+          "rubric": {
+            "max_score": 1.0,
+            "criteria": [
+              {"name": "Câu a: Điều kiện B ⊂ A đúng", "points": 0.5},
+              {"name": "Câu b: Điều kiện A ∩ B ≠ ∅ đúng", "points": 0.5}
+            ],
+            "sample_answer": "a) $B \\subset A \\Leftrightarrow B \\subset (-\\infty; 2) \\Leftrightarrow m+3 < 2 \\Leftrightarrow m < -1$.\nb) $A \\cap B \\neq \\emptyset \\Leftrightarrow m-1 < 2 \\Leftrightarrow m < 3$."
+          }
+        }
+      ]
+    }
+  }
+}

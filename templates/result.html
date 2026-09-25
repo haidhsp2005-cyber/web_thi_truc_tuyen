@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kết quả bài thi - Hệ thống Kiểm tra Trực tuyến</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  [x-cloak] { display: none !important; }
+</style>
+</head>
+<body class="bg-gray-100 min-h-screen" x-data="resultApp()" x-init="init()">
+
+<!-- Header -->
+<div class="bg-blue-900 text-white py-4 px-6 sticky top-0 z-40 shadow-lg">
+  <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">🏆</span>
+      <div>
+        <h1 class="font-bold text-lg">Kết Quả Bài Kiểm Tra</h1>
+        <p class="text-blue-200 text-xs" x-text="studentInfo"></p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="/" class="bg-white/20 hover:bg-white/30 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1">
+        <span>🏠</span><span class="hidden sm:inline">Trang chủ</span>
+      </a>
+      <button @click="printStudentResult()" class="bg-green-600 hover:bg-green-500 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-1 cursor-pointer">
+        <span>🖨️</span><span>In kết quả</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
+
+  <!-- Trạng thái tải dữ liệu -->
+  <div x-show="loading" class="text-center py-20 bg-white rounded-3xl shadow-sm border">
+    <div class="text-5xl mb-4 animate-bounce">⏳</div>
+    <p class="text-gray-700 font-bold text-base">Đang tải bảng điểm và kết quả chấm...</p>
+    <p class="text-gray-400 text-xs mt-1">Vui lòng chờ trong giây lát</p>
+  </div>
+
+  <template x-if="!loading && result">
+  <div class="space-y-6">
+
+    <!-- Card 1: BẢNG TỔNG ĐIỂM & XẾP LOẠI -->
+    <div class="bg-white rounded-3xl shadow-md border overflow-hidden">
+      <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-950 text-white p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-blue-200 text-xs font-semibold mb-2">
+              <span>🎯</span><span>KẾT QUẢ ĐẠT ĐƯỢC</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-6xl sm:text-7xl font-black tracking-tight" x-text="result.scores?.total_score ?? 0"></span>
+              <span class="text-2xl sm:text-3xl text-blue-300 font-bold">/ 10 điểm</span>
+            </div>
+            <p class="text-blue-200 mt-2 text-sm flex items-center gap-2">
+              <span>⏱️</span>
+              <span x-text="'Thời gian hoàn thành: ' + formatDuration(result.duration_seconds)"></span>
+            </p>
+          </div>
+
+          <div class="sm:text-right flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-4 sm:pt-0 border-white/20">
+            <div class="text-4xl mb-1">
+              <span x-show="result.scores?.rank === 'Giỏi'">🌟</span>
+              <span x-show="result.scores?.rank === 'Khá'">👍</span>
+              <span x-show="result.scores?.rank === 'Trung bình'">📚</span>
+              <span x-show="result.scores?.rank === 'Yếu'">💪</span>
+            </div>
+            <div>
+              <div 
+                :class="{
+                  'text-green-300': result.scores?.rank === 'Giỏi',
+                  'text-blue-300': result.scores?.rank === 'Khá',
+                  'text-yellow-300': result.scores?.rank === 'Trung bình',
+                  'text-red-300': result.scores?.rank === 'Yếu'
+                }"
+                class="text-3xl sm:text-4xl font-black" 
+                x-text="result.scores?.rank"
+              ></div>
+              <p class="text-blue-200 text-xs sm:text-sm mt-0.5" x-text="`Đạt ${result.scores?.percentage ?? 0}% tổng điểm`"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Điểm số từng phần -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 bg-gray-50 border-t">
+        <div class="p-4 text-center">
+          <p class="text-xs font-bold text-gray-500 uppercase">Phần I: TNKQ</p>
+          <div class="text-2xl font-black text-indigo-700 mt-1" x-text="result.scores?.part1_score ?? 0"></div>
+          <span class="text-[11px] text-gray-400">Thang điểm 5.0</span>
+        </div>
+        <div class="p-4 text-center">
+          <p class="text-xs font-bold text-gray-500 uppercase">Phần II: Đúng / Sai</p>
+          <div class="text-2xl font-black text-purple-700 mt-1" x-text="result.scores?.part2_score ?? 0"></div>
+          <span class="text-[11px] text-gray-400">Thang điểm 4.0</span>
+        </div>
+        <div class="p-4 text-center">
+          <p class="text-xs font-bold text-gray-500 uppercase">Phần III: TL Ngắn</p>
+          <div class="text-2xl font-black text-teal-700 mt-1" x-text="result.scores?.part3_score ?? 0"></div>
+          <span class="text-[11px] text-gray-400">Thang điểm 1.0</span>
+        </div>
+        <div class="p-4 text-center">
+          <p class="text-xs font-bold text-gray-500 uppercase">Phần IV: Tự luận</p>
+          <div class="text-2xl font-black text-orange-600 mt-1" x-text="result.scores?.part4_score ?? (result.part4_result?.skipped ? '0' : '—')"></div>
+          <span x-show="result.part4_result?.status === 'pending' && !result.part4_result?.skipped" class="text-[11px] text-orange-500 font-semibold animate-pulse">⏳ Đang chấm AI</span>
+          <span x-show="result.part4_result?.status !== 'pending' || result.part4_result?.skipped" class="text-[11px] text-gray-400">Thang điểm 1.0</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Card 2: THỐNG KÊ SỐ LƯỢNG CÂU ĐÚNG & CÂU SAI (TỔNG THỂ) -->
+    <div class="bg-white rounded-3xl p-6 shadow-sm border space-y-5">
+      <div class="flex items-center justify-between border-b pb-4">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <span>📊</span>
+            <span>Thống Kê Số Lượng Câu Đúng & Câu Sai</span>
+          </h2>
+          <p class="text-xs text-gray-500 mt-0.5">Tổng hợp kết quả làm bài của thí sinh theo từng phần thi</p>
+        </div>
+        <div class="text-right">
+          <span class="text-xs font-bold text-gray-500">Tỷ lệ chính xác</span>
+          <p class="text-xl font-black text-blue-900" x-text="accuracyRate + '%'"></p>
+        </div>
+      </div>
+
+      <!-- Khối đếm số lượng câu -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Số câu đúng -->
+        <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-green-600 text-white flex items-center justify-center text-2xl font-bold shadow-md">
+            ✓
+          </div>
+          <div>
+            <p class="text-xs font-bold text-green-800 uppercase tracking-wide">Số câu / ý Đúng</p>
+            <div class="flex items-baseline gap-1 mt-0.5">
+              <span class="text-3xl font-black text-green-700" x-text="totalCorrect"></span>
+              <span class="text-xs text-green-600 font-medium" x-text="`/ ${totalItems} câu & ý`"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Số câu sai -->
+        <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center text-2xl font-bold shadow-md">
+            ✗
+          </div>
+          <div>
+            <p class="text-xs font-bold text-red-800 uppercase tracking-wide">Số câu / ý Sai</p>
+            <div class="flex items-baseline gap-1 mt-0.5">
+              <span class="text-3xl font-black text-red-700" x-text="totalWrong"></span>
+              <span class="text-xs text-red-600 font-medium" x-text="`/ ${totalItems} câu & ý`"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tỷ lệ thanh trực quan -->
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 flex flex-col justify-center">
+          <div class="flex justify-between text-xs font-bold text-gray-700 mb-1.5">
+            <span class="text-green-700 font-semibold" x-text="`Đúng: ${totalCorrect}`"></span>
+            <span class="text-red-600 font-semibold" x-text="`Sai: ${totalWrong}`"></span>
+          </div>
+          <div class="w-full h-3.5 bg-red-200 rounded-full overflow-hidden flex shadow-inner">
+            <div class="h-full bg-green-500 transition-all duration-500" :style="`width: ${accuracyRate}%`"></div>
+          </div>
+          <p class="text-[11px] text-gray-500 text-center mt-2" x-text="`Đạt độ chính xác ${accuracyRate}% trên toàn bài`"></p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Card 3: CHI TIẾT SỐ LƯỢNG ĐÚNG/SAI TỪNG PHẦN THI (KHÔNG HIỆN ĐÁP ÁN ĐỀ) -->
+    <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
+      <div class="bg-gray-50 px-6 py-4 border-b flex items-center justify-between">
+        <h3 class="font-bold text-gray-900 text-base flex items-center gap-2">
+          <span>📋</span>
+          <span>Chi Tiết Số Lượng Đúng / Sai Từng Phần Thi</span>
+        </h3>
+        <span class="text-xs text-gray-500 font-medium">Bảo mật đáp án đề thi</span>
+      </div>
+
+      <div class="p-6 space-y-4">
+        
+        <!-- Mục 1: Phần I - Trắc nghiệm 4 lựa chọn -->
+        <div class="p-4 rounded-2xl border border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <span class="bg-indigo-100 text-indigo-700 text-xs font-black px-3 py-1.5 rounded-full flex-shrink-0 mt-0.5">
+              PHẦN I
+            </span>
+            <div>
+              <h4 class="font-bold text-gray-900 text-sm">Trắc nghiệm nhiều lựa chọn</h4>
+              <p class="text-xs text-gray-500 mt-0.5">Mỗi câu chọn 1 đáp án đúng duy nhất (A, B, C hoặc D)</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 self-end sm:self-center">
+            <div class="text-right">
+              <span class="text-xs text-gray-500 block">Số câu đúng</span>
+              <span class="inline-flex items-center gap-1 font-bold text-green-700 text-sm bg-green-100 px-2.5 py-0.5 rounded-lg border border-green-200">
+                <span>✓</span>
+                <span x-text="`${p1Stats.correct} / ${p1Stats.total} câu`"></span>
+              </span>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-gray-500 block">Số câu sai</span>
+              <span class="inline-flex items-center gap-1 font-bold text-red-600 text-sm bg-red-100 px-2.5 py-0.5 rounded-lg border border-red-200">
+                <span>✗</span>
+                <span x-text="`${p1Stats.wrong} câu`"></span>
+              </span>
+            </div>
+            <div class="text-right pl-3 border-l border-gray-300">
+              <span class="text-xs text-gray-500 block">Điểm đạt</span>
+              <span class="font-black text-indigo-800 text-base" x-text="`${result.scores?.part1_score ?? 0} đ`"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mục 2: Phần II - Trắc nghiệm Đúng / Sai -->
+        <div class="p-4 rounded-2xl border border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <span class="bg-purple-100 text-purple-700 text-xs font-black px-3 py-1.5 rounded-full flex-shrink-0 mt-0.5">
+              PHẦN II
+            </span>
+            <div>
+              <h4 class="font-bold text-gray-900 text-sm">Trắc nghiệm Đúng / Sai</h4>
+              <p class="text-xs text-gray-500 mt-0.5">Xét tính Đúng / Sai của từng mệnh đề a, b, c, d</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 self-end sm:self-center">
+            <div class="text-right">
+              <span class="text-xs text-gray-500 block">Số ý đúng</span>
+              <span class="inline-flex items-center gap-1 font-bold text-green-700 text-sm bg-green-100 px-2.5 py-0.5 rounded-lg border border-green-200">
+                <span>✓</span>
+                <span x-text="`${p2Stats.correct} / ${p2Stats.total} ý`"></span>
+              </span>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-gray-500 block">Số ý sai</span>
+              <span class="inline-flex items-center gap-1 font-bold text-red-600 text-sm bg-red-100 px-2.5 py-0.5 rounded-lg border border-red-200">
+                <span>✗</span>
+                <span x-text="`${p2Stats.wrong} ý`"></span>
+              </span>
+            </div>
+            <div class="text-right pl-3 border-l border-gray-300">
+              <span class="text-xs text-gray-500 block">Điểm đạt</span>
+              <span class="font-black text-purple-800 text-base" x-text="`${result.scores?.part2_score ?? 0} đ`"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mục 3: Phần III - Trả lời ngắn -->
+        <div class="p-4 rounded-2xl border border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <span class="bg-teal-100 text-teal-700 text-xs font-black px-3 py-1.5 rounded-full flex-shrink-0 mt-0.5">
+              PHẦN III
+            </span>
+            <div>
+              <h4 class="font-bold text-gray-900 text-sm">Câu hỏi Trả lời ngắn</h4>
+              <p class="text-xs text-gray-500 mt-0.5">Điền kết quả dạng số hoặc phân số rút gọn</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 self-end sm:self-center">
+            <div class="text-right">
+              <span class="text-xs text-gray-500 block">Số câu đúng</span>
+              <span class="inline-flex items-center gap-1 font-bold text-green-700 text-sm bg-green-100 px-2.5 py-0.5 rounded-lg border border-green-200">
+                <span>✓</span>
+                <span x-text="`${p3Stats.correct} / ${p3Stats.total} câu`"></span>
+              </span>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-gray-500 block">Số câu sai</span>
+              <span class="inline-flex items-center gap-1 font-bold text-red-600 text-sm bg-red-100 px-2.5 py-0.5 rounded-lg border border-red-200">
+                <span>✗</span>
+                <span x-text="`${p3Stats.wrong} câu`"></span>
+              </span>
+            </div>
+            <div class="text-right pl-3 border-l border-gray-300">
+              <span class="text-xs text-gray-500 block">Điểm đạt</span>
+              <span class="font-black text-teal-800 text-base" x-text="`${result.scores?.part3_score ?? 0} đ`"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mục 4: Phần IV - Tự luận nếu có -->
+        <template x-if="result.part4_result && !result.part4_result.skipped">
+          <div class="p-4 rounded-2xl border border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-3">
+              <span class="bg-orange-100 text-orange-700 text-xs font-black px-3 py-1.5 rounded-full flex-shrink-0 mt-0.5">
+                PHẦN IV
+              </span>
+              <div>
+                <h4 class="font-bold text-gray-900 text-sm">Tự luận tự chọn</h4>
+                <p class="text-xs text-gray-500 mt-0.5">Chấm tự động theo barem tiêu chí</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-gray-500 block">Điểm tự luận</span>
+              <span class="font-black text-orange-700 text-base" x-text="`${result.scores?.part4_score ?? 0} / 1.0 đ`"></span>
+            </div>
+          </div>
+        </template>
+
+      </div>
+    </div>
+
+
+    <!-- Card 4: THÔNG BÁO BẢO MẬT ĐỀ THI -->
+    <div class="bg-amber-50/90 border border-amber-200 rounded-3xl p-5 flex items-start gap-3 text-amber-900 text-xs sm:text-sm">
+      <span class="text-2xl flex-shrink-0">🔒</span>
+      <div class="space-y-1">
+        <p class="font-bold text-amber-950">Quy định bảo mật đề thi và phòng thi:</p>
+        <p class="text-amber-800 leading-relaxed">
+          Nhằm bảo đảm tính công bằng, nghiêm túc và bảo mật đề kiểm tra, hệ thống <strong>chỉ công bố điểm số cùng số lượng câu đúng/sai</strong> và <strong>không công khai đáp án đề thi</strong> cho thí sinh. Kết quả chi tiết đã được tự động lưu vào hệ thống của Thầy/Cô bộ môn.
+        </p>
+      </div>
+    </div>
+
+
+    <!-- Card 5: NÚT THAO TÁC -->
+    <div class="flex flex-wrap gap-3 justify-center pb-8 pt-2">
+      <button @click="printStudentResult()" class="flex items-center gap-2 px-6 py-3.5 bg-blue-900 hover:bg-blue-800 text-white rounded-2xl font-bold shadow-lg shadow-blue-900/20 transition-all cursor-pointer text-sm">
+        <span>🖨️</span>
+        <span>In phiếu kết quả / Xuất PDF</span>
+      </button>
+      <a href="/" class="flex items-center gap-2 px-6 py-3.5 bg-white hover:bg-gray-100 text-gray-700 rounded-2xl font-bold border border-gray-200 transition-all shadow-xs text-sm">
+        <span>🏠</span>
+        <span>Quay về trang chủ thi</span>
+      </a>
+    </div>
+
+  </div>
+  </template>
+
+  <!-- Lỗi không tìm thấy bài nộp -->
+  <div x-show="!loading && !result" class="text-center py-20 bg-white rounded-3xl shadow-sm border p-6">
+    <p class="text-5xl mb-4">🔍</p>
+    <h3 class="text-gray-800 font-bold text-lg">Không tìm thấy bài thi!</h3>
+    <p class="text-gray-500 text-xs sm:text-sm mt-1">Mã bài nộp không tồn tại hoặc đã bị xóa khỏi hệ thống.</p>
+    <a href="/" class="mt-5 inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-900 text-white text-sm font-bold rounded-xl shadow-md">
+      <span>🏠</span> <span>Quay về trang chủ</span>
+    </a>
+  </div>
+
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+let submissionId = '';
+
+function resultApp() {
+  return {
+    loading: true,
+    result: null,
+
+    get studentInfo() {
+      if (!this.result) return '';
+      const dt = this.result.submitted_at ? new Date(this.result.submitted_at).toLocaleString('vi-VN') : '';
+      return `Thí sinh: ${this.result.student_name} - Lớp: ${this.result.student_class} | Nộp bài: ${dt}`;
+    },
+
+    get p1Stats() {
+      const p1 = this.result?.part1_result || {};
+      const total = p1.total_count || p1.details?.length || 0;
+      const correct = p1.correct_count || 0;
+      return { total, correct, wrong: Math.max(0, total - correct) };
+    },
+
+    get p2Stats() {
+      const p2 = this.result?.part2_result || {};
+      let total = 0;
+      let correct = 0;
+      if (Array.isArray(p2.details)) {
+        p2.details.forEach(q => {
+          if (Array.isArray(q.items)) {
+            total += q.items.length;
+            correct += q.items.filter(it => it.is_correct).length;
+          } else if (q.items && typeof q.items === 'object') {
+            const keys = Object.keys(q.items);
+            total += keys.length;
+            correct += keys.filter(k => q.items[k].is_correct).length;
+          } else {
+            total += 4;
+            correct += q.correct_count || 0;
+          }
+        });
+      }
+      return { total, correct, wrong: Math.max(0, total - correct) };
+    },
+
+    get p3Stats() {
+      const p3 = this.result?.part3_result || {};
+      const total = p3.total_count || p3.details?.length || 0;
+      const correct = p3.correct_count || 0;
+      return { total, correct, wrong: Math.max(0, total - correct) };
+    },
+
+    get totalItems() {
+      return this.p1Stats.total + this.p2Stats.total + this.p3Stats.total;
+    },
+
+    get totalCorrect() {
+      return this.p1Stats.correct + this.p2Stats.correct + this.p3Stats.correct;
+    },
+
+    get totalWrong() {
+      return this.p1Stats.wrong + this.p2Stats.wrong + this.p3Stats.wrong;
+    },
+
+    get accuracyRate() {
+      if (!this.totalItems) return 0;
+      return Math.round((this.totalCorrect / this.totalItems) * 100);
+    },
+
+    async init() {
+      const params = new URLSearchParams(window.location.search);
+      submissionId = params.get('id') || sessionStorage.getItem('submission_id') || '';
+      
+      if (!submissionId) {
+        this.loading = false;
+        return;
+      }
+      
+      await this.loadResult();
+      this.loading = false;
+      this.scheduleRefresh();
+    },
+
+    async loadResult() {
+      try {
+        const resp = await fetch(`/api/exam/result/${submissionId}`);
+        if (resp.ok) {
+          this.result = await resp.json();
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    },
+
+    scheduleRefresh() {
+      if (this.result?.part4_result?.status === 'pending' && !this.result?.part4_result?.skipped) {
+        setTimeout(async () => {
+          await this.loadResult();
+          this.scheduleRefresh();
+        }, 3000);
+      }
+    },
+
+    formatDuration(secs) {
+      if (!secs) return '0 giây';
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      if (m > 0) {
+        return `${m} phút ${s} giây`;
+      }
+      return `${s} giây`;
+    },
+
+    printStudentResult() {
+      if (!submissionId) return;
+      window.open(`/api/exam/result/${submissionId}/print`, '_blank');
+    }
+  };
+}
+</script>
+</body>
+</html>

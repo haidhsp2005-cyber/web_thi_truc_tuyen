@@ -1,0 +1,278 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 9",
+  "subject": "Toán học",
+  "grade": "9",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Trong các hệ phương trình sau, hệ nào có nghiệm là  $(2;−1)$ ?",
+          "options": {
+            "A": "${x+y=1x−y=−1$",
+            "B": "${2x+y=5x+2y=4$",
+            "C": "${3x+y=5x−y=3$",
+            "D": "${x+2y=02x−y=3$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Đâu là hệ phương trình bậc nhất hai ẩn?",
+          "options": {
+            "A": "${2x−3y=5−x+4y=1$",
+            "B": "${\\frac{1}{x}+y=3x+2y=4$",
+            "C": "${xy=6x+y=5$",
+            "D": "${{x}^{2}+y=1x−y=2$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Cặp số  $(−2;3)$  là nghiệm của hệ phương trình nào sau đây?",
+          "options": {
+            "A": "${x+y=12x−y=−7$",
+            "B": "${x−y=1x+2y=4$",
+            "C": "${2x+y=1x−y=1$",
+            "D": "${3x+y=−3x−3y=5$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Cho hệ  ${ax+by=c{a}^{′}x+{b}^{′}y={c}^{′}$  với  $a,b,c,{a}^{′},{b}^{′},{c}^{′}≠0$ . Điều kiện để hệ có nghiệm duy nhất là:",
+          "options": {
+            "A": "$\\frac{a}{{a}^{′}}≠\\frac{c}{{c}^{′}}$",
+            "B": "$\\frac{a}{{a}^{′}}=\\frac{b}{{b}^{′}}≠\\frac{c}{{c}^{′}}$",
+            "C": "$\\frac{a}{{a}^{′}}≠\\frac{b}{{b}^{′}}$",
+            "D": "$\\frac{a}{{a}^{′}}=\\frac{b}{{b}^{′}}=\\frac{c}{{c}^{′}}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Hệ phương trình nào sau đây vô nghiệm?",
+          "options": {
+            "A": "${3x−y=2x+y=2$",
+            "B": "${x+2y=32x+y=3$",
+            "C": "${x−y=12x−2y=3$",
+            "D": "${x+y=22x+2y=4$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Cặp số  $(x;y)=(2;1)$  là nghiệm của hệ phương trình nào sau đây?",
+          "options": {
+            "A": "${x+2y=42x−y=3$",
+            "B": "${3x−y=5x+y=1$",
+            "C": "${x−y=0x+y=2$",
+            "D": "${2x+y=3x−y=2$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Nghiệm tổng quát của phương trình  $2x−y=4$  là:",
+          "options": {
+            "A": "${x∈ℝy=\\frac{1}{2}x−2$",
+            "B": "${x∈ℝy=2x−4$",
+            "C": "${x=2y−4y∈ℝ$",
+            "D": "${x∈ℝy=2x+4$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q7"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Xét tính đúng sai của các khẳng định về số nghiệm của hệ phương trình bậc nhất hai ẩn.",
+          "items": {
+            "a": {
+              "text": "Hệ phương trình  ${x+2y=5x+2y=1$  có nghiệm duy nhất.",
+              "answer": false
+            },
+            "b": {
+              "text": "Hệ phương trình  ${2x−y=34x−2y=6$  có vô số nghiệm.",
+              "answer": true
+            },
+            "c": {
+              "text": "Hệ phương trình  ${3x=62y=−4$  có nghiệm duy nhất là  $(2;−2)$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Mọi hệ phương trình bậc nhất hai ẩn luôn có ít nhất một nghiệm.",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Cho hai số thực biết tổng của chúng bằng  $25$  và nếu lấy số lớn chia cho số bé thì được thương là  $4$  và dư  $0$ .",
+          "items": {
+            "a": {
+              "text": "Hiệu giữa số lớn và số bé bằng  $15$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Phương trình biểu diễn mối quan hệ thương số là  $x−4y=0$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Số lớn có giá trị bằng  $15$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "Gọi số lớn là  $x$ , số bé là  $y$  ( $x>y>0$ ). Phương trình tổng hai số là  $x+y=25$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Một cửa hàng bán áo và quần. Tổng số lượng áo và quần bán được trong ngày là  $50$  bộ. Giá tiền một cái áo là  $100$  nghìn đồng, giá một cái quần là  $150$  nghìn đồng và tổng số tiền thu về là  $6500$  nghìn đồng.",
+          "items": {
+            "a": {
+              "text": "Nếu gọi số áo bán được là  $x$ , số quần bán được là  $y$  thì ta có phương trình tổng số lượng là  $x+y=50$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Số lượng áo bán được là  $20$  chiếc.",
+              "answer": true
+            },
+            "c": {
+              "text": "Số tiền thu được từ việc bán quần ít hơn số tiền bán áo.",
+              "answer": false
+            },
+            "d": {
+              "text": "Phương trình biểu diễn tổng số tiền thu về là  $150x+100y=6500$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Cho hệ phương trình  ${3x−2y=4x+2y=4$",
+          "items": {
+            "a": {
+              "text": "Cộng hai phương trình của hệ vế theo vế ta được phương trình  $4x=8$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Hệ phương trình đã cho có nghiệm duy nhất là  $(x;y)=(2;1)$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Hệ phương trình đã cho là hệ vô số nghiệm.",
+              "answer": false
+            },
+            "d": {
+              "text": "Cặp số  $(1;2)$  cũng là nghiệm của hệ phương trình này.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho hệ phương trình  ${5x−4y=3x−2y=−3$  có nghiệm  $({x}_{0};{y}_{0})$ . Tính giá trị của  ${x}_{0}−{y}_{0}$ .",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Một người mua  $3$ kg cam và  $2$ kg quýt hết  $140$  nghìn đồng. Biết rằng giá tiền  $1$ kg cam đắt hơn  $1$ kg quýt là  $10$  nghìn đồng. Tính giá tiền  $1$ kg cam (đơn vị: nghìn đồng).",
+          "answer": "32",
+          "accepted_answers": [
+            "32"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Một hình chữ nhật có chu vi bằng  $70$ m. Nếu chiều dài giảm đi  $5$ m và chiều rộng tăng lên ứng với  $5$ m thì diện tích không thay đổi. Tính chiều dài của hình chữ nhật ban đầu.",
+          "answer": "20",
+          "accepted_answers": [
+            "20"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Tìm giá trị của tham số  $m$  (biết  $m$  là số nguyên) để hệ phương trình  ${mx+y=3x+my=3$  có nghiệm duy nhất. Hỏi với  $m=2$ , tổng  $x+y$  bằng bao nhiêu?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tìm hoành độ giao điểm  $x$  của hai đường thẳng  $y=2x−1$  và  $y=−x+5$ .",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Cho hệ phương trình  ${2x+y=5x−y=1$  có nghiệm  $({x}_{0};{y}_{0})$ . Tính giá trị của biểu thức  $P={x}_{0}+2{y}_{0}$ .",
+          "answer": "4",
+          "accepted_answers": [
+            "4"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_b315743f",
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.7143,
+    "part2_total": 4.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 1.0,
+    "part3_per_question": 0.1667,
+    "part4_total": 0.0
+  }
+}

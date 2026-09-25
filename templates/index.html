@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hệ thống Kiểm tra Trực tuyến</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center p-4" x-data="loginApp()" x-init="init()">
+
+<div class="w-full max-w-lg">
+  <!-- Logo -->
+  <div class="text-center mb-6">
+    <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-xl mb-4">
+      <span class="text-4xl">📝</span>
+    </div>
+    <h1 class="text-3xl font-bold text-white">Phòng Thi Trực Tuyến</h1>
+    <p class="text-blue-200 mt-1">Hệ thống Kiểm tra chuẩn GDPT 2025</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div class="bg-blue-900 px-6 py-4">
+      <h2 class="text-white font-semibold text-lg">🎓 Thông tin thí sinh</h2>
+      <p class="text-blue-300 text-sm">Điền đầy đủ thông tin trước khi vào phòng thi</p>
+    </div>
+
+    <div class="p-6 space-y-4">
+      <!-- Thông báo lỗi -->
+      <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm"></div>
+
+      <!-- Họ tên -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">👤 Họ và tên <span class="text-red-500">*</span></label>
+        <input id="student_name" type="text" placeholder="Nhập họ và tên đầy đủ..."
+          class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-lg" autocomplete="name">
+      </div>
+
+      <!-- Lớp -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">🏫 Lớp <span class="text-red-500">*</span></label>
+        <input id="student_class" type="text" placeholder="Ví dụ: 10A1, 11B2..."
+          class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-lg">
+      </div>
+
+      <!-- Chọn đề thi -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">📋 Chọn đề thi <span class="text-red-500">*</span></label>
+        <div x-show="loadingExams" class="text-center py-3 text-gray-400 text-sm">⏳ Đang tải danh sách đề...</div>
+        <select x-show="!loadingExams" id="exam_id" x-model="selectedExamId" @change="updateExamInfo()"
+          class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-base bg-white">
+          <option value="">-- Chọn đề thi --</option>
+          <template x-for="e in examList" :key="e.id">
+            <option :value="e.id" x-text="`${e.title} (${e.subject}, Lớp ${e.grade})`"></option>
+          </template>
+        </select>
+      </div>
+
+      <!-- Thông tin đề được chọn -->
+      <div x-show="selectedExam" x-cloak class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+        <h3 class="font-semibold text-blue-900 mb-2">📌 Thông tin bài kiểm tra</h3>
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <div class="flex items-center gap-2 text-gray-600"><span>📝</span><span x-text="`${selectedExam?.part1_count ?? 0} câu TNKQ`"></span></div>
+          <div class="flex items-center gap-2 text-gray-600"><span>✅</span><span x-text="`${selectedExam?.part2_count ?? 0} câu Đúng/Sai`"></span></div>
+          <div class="flex items-center gap-2 text-gray-600"><span>✏️</span><span x-text="`${selectedExam?.part3_count ?? 0} câu Trả lời ngắn`"></span></div>
+          <div class="flex items-center gap-2 text-gray-600"><span>📄</span><span x-text="`${selectedExam?.part4_count ?? 0} câu Tự luận`"></span></div>
+        </div>
+        <div class="mt-2 pt-2 border-t border-blue-200 flex items-center gap-2 text-blue-800 font-semibold text-sm">
+          <span>⏱️</span>
+          <span x-text="`Thời gian: ${selectedExam?.duration_minutes ?? 45} phút`"></span>
+        </div>
+      </div>
+
+      <!-- Lưu ý -->
+      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-xs text-yellow-800">
+        <p class="font-semibold mb-1">⚠️ Lưu ý:</p>
+        <ul class="space-y-0.5">
+          <li>• Không đóng trình duyệt hoặc tắt máy khi đang làm bài</li>
+          <li>• Bài sẽ tự động nộp khi hết giờ</li>
+        </ul>
+      </div>
+
+      <!-- Nút vào thi -->
+      <button onclick="startExam()"
+        class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold text-lg py-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+        <span>🚀</span><span>Vào phòng thi</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+function loginApp() {
+  return {
+    examList: [],
+    loadingExams: true,
+    selectedExamId: '',
+    selectedExam: null,
+
+    async init() {
+      try {
+        const r = await fetch('/api/exam-builder/list');
+        if (r.ok) {
+          const data = await r.json();
+          this.examList = data.exams || [];
+          if (this.examList.length === 1) {
+            this.selectedExamId = this.examList[0].id;
+            this.selectedExam = this.examList[0];
+          }
+        }
+      } catch(e) {}
+      this.loadingExams = false;
+    },
+
+    updateExamInfo() {
+      this.selectedExam = this.examList.find(e => e.id === this.selectedExamId) || null;
+    }
+  };
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = msg;
+  box.classList.remove('hidden');
+  setTimeout(() => box.classList.add('hidden'), 4000);
+}
+
+function startExam() {
+  const name = document.getElementById('student_name').value.trim();
+  const cls = document.getElementById('student_class').value.trim();
+  const examId = document.getElementById('exam_id').value;
+
+  if (!name) { showError('Vui lòng nhập họ và tên!'); document.getElementById('student_name').focus(); return; }
+  if (!cls) { showError('Vui lòng nhập lớp!'); document.getElementById('student_class').focus(); return; }
+  if (!examId) { showError('Vui lòng chọn đề thi!'); return; }
+
+  sessionStorage.removeItem('exam_answers');
+  sessionStorage.removeItem('exam_shuffled_' + examId);
+  sessionStorage.setItem('student_name', name);
+  sessionStorage.setItem('student_class', cls);
+  sessionStorage.setItem('exam_id', examId);
+  sessionStorage.setItem('started_at', new Date().toISOString());
+  window.location.href = '/exam';
+}
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Enter') startExam(); });
+</script>
+</body>
+</html>

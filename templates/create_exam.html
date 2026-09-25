@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soạn & Tạo Đề Thi - Giáo Viên</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+<style type="text/tailwindcss">
+  [x-cloak] { display: none !important; }
+  .tab-btn { @apply px-5 py-3 rounded-2xl text-sm font-bold transition-all cursor-pointer; }
+  .tab-btn.active { @apply bg-blue-900 text-white shadow-md; }
+  .tab-btn:not(.active) { @apply bg-white border text-gray-700 hover:bg-gray-100; }
+  .q-card { @apply bg-white border-2 border-gray-200 rounded-3xl p-6 mb-5 relative transition-all shadow-sm w-full; }
+  .q-card:hover { @apply border-blue-400 shadow-md; }
+  .input-base { @apply w-full block border-2 border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-colors bg-white; }
+  .btn-add { @apply flex items-center gap-2 px-6 py-3.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border-2 border-blue-300 border-dashed rounded-2xl font-bold text-sm transition-all cursor-pointer shadow-sm; }
+  .btn-del { @apply absolute top-4 right-4 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl p-2 transition-colors cursor-pointer; }
+</style>
+<style>
+  /* CSS Fallback đảm bảo câu hỏi luôn kéo dãn 100% toàn bộ chiều ngang trang */
+  textarea.input-base, input.input-base, .input-base {
+    width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
+  .q-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+</style>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800" x-data="examBuilder()" x-init="init()">
+
+<!-- Top Bar -->
+<div class="bg-blue-900 text-white py-4 px-4 sm:px-8 shadow-lg sticky top-0 z-40">
+  <div class="w-full max-w-[96%] xl:max-w-[1600px] 2xl:max-w-[1800px] mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">✏️</span>
+      <div>
+        <h1 class="font-bold text-lg leading-tight">Soạn & Quản Lý Đề Thi</h1>
+        <p class="text-blue-300 text-xs">Chuẩn cấu trúc định dạng Bộ GD&ĐT 2025</p>
+      </div>
+    </div>
+    
+    <div class="flex gap-2 items-center">
+      <span class="text-blue-300 text-xs hidden md:block" x-text="autoSaveMsg"></span>
+      <a href="/admin" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">← Bảng quản trị</a>
+      <button @click="openPreview()" type="button"
+        class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md text-sm">
+        <span>👁️</span><span class="hidden sm:inline">Xem trước đề</span>
+      </button>
+      <button @click="saveExam()" :disabled="saving"
+        class="bg-green-500 hover:bg-green-400 disabled:opacity-50 text-white font-bold px-5 py-2 rounded-xl flex items-center gap-2 transition-all shadow-md">
+        <span x-show="saving" class="animate-spin">⏳</span>
+        <span x-show="!saving">💾</span>
+        <span x-text="saving ? 'Đang lưu...' : 'Lưu đề thi'"></span>
+      </button>
+      <a href="/admin/logout" class="bg-red-500/80 hover:bg-red-500 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1" title="Đăng xuất">
+        <span>🚪</span><span class="hidden sm:inline">Đăng xuất</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="w-full max-w-[96%] xl:max-w-[1600px] 2xl:max-w-[1800px] mx-auto p-4 sm:p-6 space-y-6">
+
+  <!-- Thông báo trạng thái -->
+  <div x-show="message" x-cloak :class="messageOk ? 'bg-green-50 border-green-300 text-green-800' : 'bg-red-50 border-red-300 text-red-800'"
+    class="border-2 rounded-2xl p-4 flex items-center gap-3 text-sm font-semibold shadow-sm">
+    <span class="text-xl" x-text="messageOk ? '✅' : '❌'"></span>
+    <span class="flex-1" x-text="message"></span>
+    <button @click="message = ''" class="text-gray-400 hover:text-gray-600">✕</button>
+  </div>
+
+  <!-- ======= THANH CÔNG CỤ NHANH ======= -->
+  <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-5 text-white shadow-md flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h2 class="font-bold text-base flex items-center gap-2">
+        <span>⚡</span>
+        <span>Công cụ nạp & nhập đề nhanh</span>
+      </h2>
+      <p class="text-blue-200 text-xs mt-0.5">Nhập đề có sẵn, nạp mẫu PDF hoặc tải file mẫu để soạn</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- Nạp mẫu PDF Toán 12 -->
+      <button @click="loadPdfSample()" 
+        class="bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow">
+        <span>📄</span>
+        <span>Nạp mẫu đề Toán 12 (PDF)</span>
+      </button>
+
+      <!-- Nhập từ text/file -->
+      <button @click="showImportModal = true" 
+        class="bg-white hover:bg-gray-100 text-blue-900 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow">
+        <span>📥</span>
+        <span>Nhập nhanh đề có sẵn</span>
+      </button>
+
+      <!-- Tải mẫu đề -->
+      <div class="relative" x-data="{ open: false }">
+        <button @click="open = !open" 
+          class="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-3.5 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 transition-all border border-blue-600">
+          <span>⬇️</span>
+          <span>Tải file mẫu</span>
+          <span>▾</span>
+        </button>
+        <div x-show="open" @click.outside="open = false" x-cloak
+          class="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-2xl py-2 z-50 text-gray-800 border text-xs font-semibold divide-y">
+          <a href="/api/exam-builder/template/download?format=docx" class="flex items-center gap-2 px-4 py-2.5 hover:bg-blue-50 text-blue-900">
+            <span>📘</span> Mẫu Microsoft Word (.docx)
+          </a>
+          <a href="/api/exam-builder/template/download?format=txt" class="flex items-center gap-2 px-4 py-2.5 hover:bg-blue-50 text-gray-800">
+            <span>📄</span> Mẫu Văn bản thô (.txt)
+          </a>
+          <a href="/api/exam-builder/template/download?format=json" class="flex items-center gap-2 px-4 py-2.5 hover:bg-blue-50 text-gray-800">
+            <span>⚙️</span> Mẫu Cấu trúc (.json)
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= THÔNG TIN ĐỀ THI ======= -->
+  <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
+    <div class="bg-gray-50 border-b px-6 py-4 flex items-center justify-between">
+      <h2 class="font-bold text-gray-800 flex items-center gap-2">
+        <span>📋</span>
+        <span>Thông tin chung của bài kiểm tra</span>
+      </h2>
+      <span class="text-xs text-gray-500 font-medium">Hỗ trợ tất cả các môn học</span>
+    </div>
+
+    <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+      <!-- Tiêu đề đề thi -->
+      <div class="md:col-span-3">
+        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+          Tiêu đề bài kiểm tra <span class="text-red-500">*</span>
+        </label>
+        <input x-model="exam.title" type="text" placeholder="VD: ĐỀ KIỂM TRA ĐỊNH KỲ HỌC KỲ I..."
+          class="input-base text-base font-bold text-gray-900">
+      </div>
+
+      <!-- Môn học -->
+      <div>
+        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+          📚 Môn học
+        </label>
+        <div class="space-y-2">
+          <select x-model="subjectSelect" @change="onSubjectChange()" class="input-base bg-white">
+            <option value="Toán học">Toán học</option>
+            <option value="Vật lí">Vật lí</option>
+            <option value="Hóa học">Hóa học</option>
+            <option value="Sinh học">Sinh học</option>
+            <option value="Ngữ văn">Ngữ văn</option>
+            <option value="Lịch sử">Lịch sử</option>
+            <option value="Địa lí">Địa lí</option>
+            <option value="Tiếng Anh">Tiếng Anh</option>
+            <option value="Giáo dục kinh tế và pháp luật">GDKT & Pháp luật</option>
+            <option value="Tin học">Tin học</option>
+            <option value="Công nghệ">Công nghệ</option>
+            <option value="Khoa học tự nhiên">Khoa học tự nhiên (THCS)</option>
+            <option value="Lịch sử và Địa lí">Lịch sử và Địa lí (THCS)</option>
+            <option value="custom">-- Môn khác (tự nhập) --</option>
+          </select>
+          <input x-show="subjectSelect === 'custom'" x-cloak x-model="exam.subject" type="text" 
+            placeholder="Nhập tên môn học..." class="input-base text-sm">
+        </div>
+      </div>
+
+      <!-- Khối / Lớp -->
+      <div>
+        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+          🏫 Khối / Lớp
+        </label>
+        <div class="space-y-2">
+          <select x-model="gradeSelect" @change="onGradeChange()" class="input-base bg-white">
+            <option value="12">Lớp 12</option>
+            <option value="11">Lớp 11</option>
+            <option value="10">Lớp 10</option>
+            <option value="9">Lớp 9</option>
+            <option value="8">Lớp 8</option>
+            <option value="7">Lớp 7</option>
+            <option value="6">Lớp 6</option>
+            <option value="custom">-- Khác (tự nhập) --</option>
+          </select>
+          <input x-show="gradeSelect === 'custom'" x-cloak x-model="exam.grade" type="text" 
+            placeholder="Nhập khối lớp..." class="input-base text-sm">
+        </div>
+      </div>
+
+      <!-- Thời gian làm bài -->
+      <div>
+        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+          ⏱️ Thời gian thi (phút)
+        </label>
+        <input x-model.number="exam.duration_minutes" type="number" min="5" max="180" class="input-base font-semibold">
+      </div>
+
+      <!-- Khung cấu trúc thang điểm -->
+      <div class="md:col-span-3 bg-blue-50/70 rounded-2xl p-4 border border-blue-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+        <div>
+          <span class="font-bold text-blue-900 text-sm">📊 Cấu trúc tính điểm chuẩn:</span>
+          <p class="text-blue-700 mt-0.5">
+            <span x-show="exam.parts.part4.questions.length === 0">
+              <strong>Chuẩn 100% Trắc nghiệm (như đề PDF):</strong> Phần I: 5.0đ (0.25đ/câu) · Phần II: 4.0đ (1.0đ/câu theo barem) · Phần III: 1.0đ (0.17đ/câu) = <strong>10.0đ</strong>
+            </span>
+            <span x-show="exam.parts.part4.questions.length > 0">
+              <strong>Kết hợp Tự luận:</strong> Phần I: 5.0đ · Phần II: 2.0đ · Phần III: 2.0đ · Phần IV: 1.0đ (AI chấm) = <strong>10.0đ</strong>
+            </span>
+          </p>
+        </div>
+        <div class="text-blue-800 font-bold bg-white px-3 py-1.5 rounded-xl border border-blue-200">
+          Tổng cộng: <span x-text="totalQuestionsCount"></span> câu
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= TABS CHUYỂN PHẦN ======= -->
+  <div class="flex gap-2 overflow-x-auto pb-1">
+    <button @click="activeTab='p1'" :class="activeTab==='p1' ? 'active':''" class="tab-btn whitespace-nowrap">
+      📝 Phần I - TNKQ (<span x-text="exam.parts.part1.questions.length"></span>)
+    </button>
+    <button @click="activeTab='p2'" :class="activeTab==='p2' ? 'active':''" class="tab-btn whitespace-nowrap">
+      ✅ Phần II - Đúng/Sai (<span x-text="exam.parts.part2.questions.length"></span>)
+    </button>
+    <button @click="activeTab='p3'" :class="activeTab==='p3' ? 'active':''" class="tab-btn whitespace-nowrap">
+      ✏️ Phần III - TL Ngắn (<span x-text="exam.parts.part3.questions.length"></span>)
+    </button>
+    <button @click="activeTab='p4'" :class="activeTab==='p4' ? 'active':''" class="tab-btn whitespace-nowrap">
+      📄 Phần IV - Tự luận (<span x-text="exam.parts.part4.questions.length"></span>)
+    </button>
+  </div>
+
+  <!-- ======= PHẦN I: TNKQ ======= -->
+  <div x-show="activeTab==='p1'" x-cloak>
+    <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-4 text-sm text-indigo-900 flex items-center justify-between">
+      <div>
+        <strong>Phần I (5.0 điểm):</strong> Trắc nghiệm 4 lựa chọn. Nhập nội dung câu hỏi, 4 phương án A/B/C/D và click vào chữ cái để chọn đáp án đúng.
+      </div>
+      <span class="bg-indigo-200 text-indigo-900 font-bold px-3 py-1 rounded-xl text-xs whitespace-nowrap ml-2">
+        <span x-text="exam.parts.part1.questions.length"></span> câu
+      </span>
+    </div>
+
+    <template x-for="(q, i) in exam.parts.part1.questions" :key="q._id">
+      <div class="q-card">
+        <button @click="removeQ('part1', i)" class="btn-del" title="Xóa câu này">✕</button>
+
+        <div class="flex items-center gap-2 mb-3">
+          <span class="bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
+          <span class="text-gray-400 text-xs font-medium">Trắc nghiệm đơn</span>
+        </div>
+
+        <!-- Nội dung câu hỏi -->
+        <div class="mb-3">
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Nội dung câu hỏi <span class="text-red-500">*</span></label>
+          <textarea x-model="q.text" rows="3" placeholder="Nhập câu hỏi... (dùng $...$ cho công thức Toán, Lý, Hóa)"
+            class="input-base w-full block border-2 border-gray-200 rounded-2xl p-4 text-base focus:outline-none focus:border-indigo-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+          <!-- KaTeX Live preview for Question -->
+          <div x-show="hasMath(q.text)" class="mt-2.5 p-3.5 bg-blue-50/80 border border-blue-200 rounded-2xl text-base text-gray-900 shadow-sm">
+            <span class="text-xs font-bold text-blue-700 uppercase tracking-wider block mb-1">📐 Hiển thị công thức KaTeX:</span>
+            <div x-html="renderMathHtml(q.text)"></div>
+          </div>
+        </div>
+
+        <!-- 4 lựa chọn -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3">
+          <template x-for="opt in ['A','B','C','D']" :key="opt">
+            <div :class="q.answer === opt ? 'border-green-500 bg-green-50/80 shadow-sm' : 'border-gray-200'" class="border-2 rounded-2xl p-2.5 transition-all">
+              <div class="flex items-center gap-2">
+                <button type="button" @click="q.answer = opt"
+                  :class="q.answer === opt ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" 
+                  class="w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0 transition-colors" 
+                  x-text="opt"></button>
+                <input :x-model="`q.options.${opt}`" @input="q.options[opt] = $event.target.value"
+                  :value="q.options[opt]" type="text" :placeholder="`Phương án ${opt}...`"
+                  class="flex-1 bg-transparent text-sm focus:outline-none font-medium">
+              </div>
+              <!-- KaTeX Live preview for option -->
+              <div x-show="hasMath(q.options[opt])" class="mt-1.5 pt-1.5 border-t border-gray-200 text-xs text-blue-900 font-semibold px-1">
+                <span class="text-[10px] text-gray-400 font-normal uppercase mr-1">KaTeX:</span>
+                <span x-html="renderMathHtml(q.options[opt])"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Chọn đáp án đúng & Lời giải -->
+        <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-gray-100">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-gray-600">Đáp án đúng:</span>
+            <div class="flex gap-1">
+              <template x-for="opt in ['A','B','C','D']" :key="opt">
+                <button type="button" @click="q.answer = opt"
+                  :class="q.answer === opt ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-300 hover:border-green-400'"
+                  class="w-8 h-8 rounded-xl border-2 font-bold text-xs transition-all"
+                  x-text="opt"></button>
+              </template>
+            </div>
+            <span x-show="!q.answer" class="text-red-500 text-xs font-semibold ml-1">⚠️ Chưa chọn đáp án</span>
+          </div>
+
+          <div class="flex-1 min-w-[200px]">
+            <input x-model="q.explanation" type="text" placeholder="💡 Lời giải / giải thích (không bắt buộc)..."
+              class="w-full border rounded-xl px-3 py-1.5 text-xs text-gray-600 bg-gray-50 focus:bg-white focus:outline-none">
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <button @click="addQ('part1')" class="btn-add w-full justify-center">
+      <span>➕</span> <span>Thêm câu Trắc nghiệm (Phần I)</span>
+    </button>
+  </div>
+
+  <!-- ======= PHẦN II: ĐÚNG/SAI ======= -->
+  <div x-show="activeTab==='p2'" x-cloak>
+    <div class="bg-purple-50 border border-purple-200 rounded-2xl p-4 mb-4 text-sm text-purple-900 flex items-center justify-between">
+      <div>
+        <strong>Phần II:</strong> Trắc nghiệm Đúng / Sai. Mỗi câu gồm mô tả và 4 ý a), b), c), d). Click chọn <strong>Đúng</strong> hoặc <strong>Sai</strong> cho từng ý.
+      </div>
+      <span class="bg-purple-200 text-purple-900 font-bold px-3 py-1 rounded-xl text-xs whitespace-nowrap ml-2">
+        <span x-text="exam.parts.part2.questions.length"></span> câu
+      </span>
+    </div>
+
+    <template x-for="(q, i) in exam.parts.part2.questions" :key="q._id">
+      <div class="q-card">
+        <button @click="removeQ('part2', i)" class="btn-del">✕</button>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
+          <span class="text-gray-400 text-xs font-medium">ĐÚNG / SAI</span>
+        </div>
+
+        <div class="mb-5">
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Mô tả / Ngữ cảnh bài toán <span class="text-red-500">*</span></label>
+          <textarea x-model="q.text" rows="3" placeholder="VD: Cho hàm số y = f(x)... Xét tính đúng sai của các khẳng định sau:"
+            class="input-base w-full block border-2 border-gray-200 rounded-2xl p-4 text-base focus:outline-none focus:border-purple-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+          <!-- KaTeX Live preview for Part 2 Context -->
+          <div x-show="hasMath(q.text)" class="mt-2.5 p-3.5 bg-purple-50/80 border border-purple-200 rounded-2xl text-base text-gray-900 shadow-sm">
+            <span class="text-xs font-bold text-purple-700 uppercase tracking-wider block mb-1">📐 Hiển thị công thức KaTeX:</span>
+            <div x-html="renderMathHtml(q.text)"></div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
+            <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200 w-full">
+              <div class="flex items-center gap-3 w-full">
+                <span class="font-black text-gray-700 w-8 text-base flex-shrink-0">(<span x-text="itemKey"></span>)</span>
+                <input :x-model="`q.items.${itemKey}.text`" @input="q.items[itemKey].text = $event.target.value"
+                  :value="q.items[itemKey]?.text || ''" type="text"
+                  :placeholder="`Nội dung mệnh đề ${itemKey}...`"
+                  class="flex-1 w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm sm:text-base focus:outline-none focus:border-purple-500 bg-white transition-colors">
+                <div class="flex gap-2 flex-shrink-0">
+                  <button type="button" @click="q.items[itemKey].answer = true"
+                    :class="q.items[itemKey]?.answer === true ? 'bg-green-600 text-white border-green-600 shadow-md ring-2 ring-green-300' : 'bg-white border-gray-300 text-gray-700 hover:border-green-400'"
+                    class="px-4 py-2.5 rounded-xl border-2 text-xs sm:text-sm font-black transition-all cursor-pointer">Đúng</button>
+                  <button type="button" @click="q.items[itemKey].answer = false"
+                    :class="q.items[itemKey]?.answer === false ? 'bg-red-600 text-white border-red-600 shadow-md ring-2 ring-red-300' : 'bg-white border-gray-300 text-gray-700 hover:border-red-400'"
+                    class="px-4 py-2.5 rounded-xl border-2 text-xs sm:text-sm font-black transition-all cursor-pointer">Sai</button>
+                </div>
+              </div>
+              <!-- KaTeX Live preview for item -->
+              <div x-show="hasMath(q.items[itemKey]?.text)" class="mt-2.5 pt-2 border-t border-gray-200 text-sm text-purple-950 font-semibold pl-11">
+                <span class="text-[11px] text-gray-400 font-normal uppercase mr-1">KaTeX:</span>
+                <span x-html="renderMathHtml(q.items[itemKey]?.text)"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <button @click="addQ('part2')" class="btn-add w-full justify-center">
+      <span>➕</span> <span>Thêm câu Đúng/Sai (Phần II)</span>
+    </button>
+  </div>
+
+  <!-- ======= PHẦN III: TRẢ LỜI NGẮN ======= -->
+  <div x-show="activeTab==='p3'" x-cloak>
+    <div class="bg-teal-50 border border-teal-200 rounded-2xl p-4 mb-4 text-sm text-teal-900 flex items-center justify-between">
+      <div>
+        <strong>Phần III:</strong> Trả lời ngắn. Thí sinh tự điền số hoặc kết quả vào ô trống. Nhập đáp án chính và các đáp án tương đương (nếu có).
+      </div>
+      <span class="bg-teal-200 text-teal-900 font-bold px-3 py-1 rounded-xl text-xs whitespace-nowrap ml-2">
+        <span x-text="exam.parts.part3.questions.length"></span> câu
+      </span>
+    </div>
+
+    <template x-for="(q, i) in exam.parts.part3.questions" :key="q._id">
+      <div class="q-card">
+        <button @click="removeQ('part3', i)" class="btn-del">✕</button>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
+          <span class="text-gray-400 text-xs font-medium">TRẢ LỜI NGẮN</span>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Nội dung câu hỏi <span class="text-red-500">*</span></label>
+          <textarea x-model="q.text" rows="3" placeholder="VD: Tính diện tích toàn phần của hình nón..."
+            class="input-base w-full block border-2 border-gray-200 rounded-2xl p-4 text-base focus:outline-none focus:border-teal-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+          <!-- KaTeX Live preview for Part 3 Question -->
+          <div x-show="hasMath(q.text)" class="mt-2.5 p-3.5 bg-teal-50/80 border border-teal-200 rounded-2xl text-base text-gray-900 shadow-sm">
+            <span class="text-xs font-bold text-teal-700 uppercase tracking-wider block mb-1">📐 Hiển thị công thức KaTeX:</span>
+            <div x-html="renderMathHtml(q.text)"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Đáp án đúng <span class="text-red-500">*</span></label>
+            <input x-model="q.answer" type="text" placeholder="VD: 9 hoặc 0.38"
+              class="input-base font-bold text-teal-800 rounded-xl px-4 py-2.5">
+            <div x-show="hasMath(q.answer)" class="mt-1 text-xs text-teal-800 px-1">
+              <span class="text-[10px] text-gray-400 uppercase mr-1">KaTeX:</span>
+              <span x-html="renderMathHtml(q.answer)"></span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Đáp án phụ (ngăn cách bằng dấu |)</label>
+            <input x-model="q.accepted_other" type="text" placeholder="VD: 9.0 | 9,0"
+              class="input-base text-xs font-mono rounded-xl px-4 py-2.5">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">💡 Lời giải ngắn</label>
+            <input x-model="q.explanation" type="text" placeholder="Giải thích ngắn gọn..."
+              class="input-base text-xs rounded-xl px-4 py-2.5">
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <button @click="addQ('part3')" class="btn-add w-full justify-center">
+      <span>➕</span> <span>Thêm câu Trả lời ngắn (Phần III)</span>
+    </button>
+  </div>
+
+  <!-- ======= PHẦN IV: TỰ LUẬN ======= -->
+  <div x-show="activeTab==='p4'" x-cloak>
+    <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-4 text-sm text-orange-900 flex items-center justify-between">
+      <div>
+        <strong>Phần IV (Tùy chọn):</strong> Tự luận. Nếu đề thi không có tự luận (như đề thi THPT 100% trắc nghiệm), để trống phần này. Nếu có, AI sẽ chấm theo rubric.
+      </div>
+      <span class="bg-orange-200 text-orange-900 font-bold px-3 py-1 rounded-xl text-xs whitespace-nowrap ml-2">
+        <span x-text="exam.parts.part4.questions.length"></span> câu
+      </span>
+    </div>
+
+    <template x-for="(q, i) in exam.parts.part4.questions" :key="q._id">
+      <div class="q-card border-orange-200">
+        <button @click="removeQ('part4', i)" class="btn-del">✕</button>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
+          <span class="text-gray-400 text-xs font-medium">TỰ LUẬN TỰ CHỌN</span>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Tiêu đề bài tự luận</label>
+            <input x-model="q.title" type="text" placeholder="VD: Câu 1: Khảo sát và ứng dụng tích phân"
+              class="input-base font-semibold rounded-xl px-4 py-2.5">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Đề bài đầy đủ <span class="text-red-500">*</span></label>
+            <textarea x-model="q.text" rows="4" placeholder="Nhập đề bài tự luận chi tiết..."
+              class="input-base w-full block border-2 border-gray-200 rounded-2xl p-4 text-base focus:outline-none focus:border-orange-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+            <!-- KaTeX Live preview for Part 4 Question -->
+            <div x-show="hasMath(q.text)" class="mt-2.5 p-3.5 bg-orange-50/80 border border-orange-200 rounded-2xl text-base text-gray-900 shadow-sm">
+              <span class="text-xs font-bold text-orange-700 uppercase tracking-wider block mb-1">📐 Hiển thị công thức KaTeX:</span>
+              <div x-html="renderMathHtml(q.text)"></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Đáp án mẫu / Hướng dẫn giải</label>
+            <textarea x-model="q.rubric.sample_answer" rows="4" placeholder="Lời giải mẫu để AI đối chiếu chấm điểm..."
+              class="input-base w-full block border-2 border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+            <!-- KaTeX Live preview for Part 4 Sample Answer -->
+            <div x-show="hasMath(q.rubric?.sample_answer)" class="mt-2.5 p-3.5 bg-orange-50/80 border border-orange-200 rounded-2xl text-sm text-gray-900 shadow-sm">
+              <span class="text-xs font-bold text-orange-700 uppercase tracking-wider block mb-1">📐 KaTeX lời giải mẫu:</span>
+              <div x-html="renderMathHtml(q.rubric?.sample_answer)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <button @click="addQ('part4')" class="btn-add w-full justify-center">
+      <span>➕</span> <span>Thêm câu Tự luận (Phần IV)</span>
+    </button>
+  </div>
+
+  <!-- Nút Lưu Đề Cuối Trang -->
+  <div class="pb-10 pt-4 flex gap-4">
+    <button @click="saveExam()" :disabled="saving"
+      class="flex-1 py-4 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-bold text-lg rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-green-900/20">
+      <span x-show="saving" class="animate-spin">⏳</span>
+      <span x-show="!saving">💾</span>
+      <span x-text="saving ? 'Đang lưu đề thi...' : 'Lưu Đề Thi Hoàn Tất'"></span>
+    </button>
+    <a href="/admin" class="px-6 py-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold rounded-2xl flex items-center gap-2 transition-colors">
+      <span>📋</span> <span>Xem danh sách đề</span>
+    </a>
+  </div>
+
+</div>
+
+<!-- ===================== MODAL NHẬP NHANH ĐỀ THI ===================== -->
+<div x-show="showImportModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden border">
+    
+    <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">📥</span>
+        <h3 class="font-bold text-base sm:text-lg">Nhập nhanh đề thi có sẵn</h3>
+      </div>
+      <button @click="showImportModal = false" class="text-blue-200 hover:text-white text-xl">✕</button>
+    </div>
+
+    <div class="p-6 overflow-y-auto space-y-4 flex-1">
+      <p class="text-xs text-gray-600 leading-relaxed bg-blue-50 p-3 rounded-xl border border-blue-100">
+        💡 <strong>Mẹo:</strong> Tải trực tiếp file Word (<code>.docx</code>), PDF (<code>.pdf</code>), Text (<code>.txt</code>) hoặc dán nội dung văn bản đề thi vào bên dưới. Hệ thống sẽ tự động nhận diện câu hỏi theo định dạng GDPT 2025.
+      </p>
+
+      <!-- Tải file từ máy tính -->
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-bold text-gray-700">Tải file từ máy tính (.docx, .pdf, .txt, .json):</label>
+        <input type="file" accept=".docx,.pdf,.txt,.json" @change="handleFileUpload($event)"
+          class="text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer">
+      </div>
+
+      <!-- Textarea dán văn bản -->
+      <div>
+        <label class="block text-xs font-bold text-gray-700 mb-1">Hoặc dán nội dung đề thi vào đây:</label>
+        <textarea x-model="importText" rows="12" placeholder="Dán nội dung đề thi...&#10;&#10;Ví dụ:&#10;PHẦN I.&#10;Câu 1: Trong không gian Oxyz...&#10;A. u = (1; -1; 0)&#10;B. u = (2; -3; 1) *&#10;C. u = (2; 3; 1)&#10;D. u = (-1; 1; 0)&#10;&#10;PHẦN II.&#10;Câu 1: Một chất điểm...&#10;a) Vận tốc tức thời nhỏ nhất bằng 1 m/s (Đúng)&#10;b) Gia tốc a(t) = 6t - 6 (Đúng)&#10;..."
+          class="w-full border-2 border-gray-200 rounded-2xl p-4 text-xs sm:text-sm font-mono focus:outline-none focus:border-blue-500 transition-colors resize-y"></textarea>
+      </div>
+
+      <!-- Kết quả nhận diện sơ bộ -->
+      <div x-show="importSummary" x-cloak class="bg-green-50 border border-green-200 rounded-2xl p-4 text-xs font-semibold text-green-800">
+        <p class="mb-1">🎉 <strong>Kết quả phân tích:</strong></p>
+        <p x-text="importSummary"></p>
+      </div>
+    </div>
+
+    <div class="bg-gray-50 border-t px-6 py-4 flex items-center justify-between gap-3">
+      <button @click="analyzeImportText()" :disabled="!importText.trim() || parsing"
+        class="bg-blue-900 hover:bg-blue-800 disabled:opacity-50 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors flex items-center gap-2">
+        <span x-show="parsing" class="animate-spin">⏳</span>
+        <span>🔍</span>
+        <span>Phân tích văn bản</span>
+      </button>
+
+      <div class="flex gap-2">
+        <button @click="showImportModal = false" class="px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">Hủy</button>
+        <button @click="applyParsedData()" :disabled="!parsedData"
+          class="bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow">
+          ✅ Đưa vào đề thi
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== MODAL XEM TRƯỚC TOÀN BỘ ĐỀ THI ===================== -->
+<div x-show="showPreviewModal" x-cloak class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden border">
+    
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 text-white px-6 py-4 flex items-center justify-between flex-shrink-0 shadow">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">👁️</span>
+        <div>
+          <h3 class="font-bold text-base sm:text-lg" x-text="exam.title || 'Xem trước đề thi'"></h3>
+          <p class="text-blue-200 text-xs">
+            Môn: <span class="font-semibold text-white" x-text="exam.subject"></span> · 
+            Khối: <span class="font-semibold text-white" x-text="exam.grade"></span> · 
+            Thời gian: <span class="font-semibold text-white" x-text="exam.duration_minutes"></span> phút · 
+            Tổng số: <span class="font-semibold text-white" x-text="totalQuestionsCount"></span> câu
+          </p>
+        </div>
+      </div>
+      <button @click="showPreviewModal = false" class="text-blue-200 hover:text-white text-2xl font-bold p-1 rounded-xl hover:bg-white/10 transition-colors">✕</button>
+    </div>
+
+    <!-- Modal Content (Paper view) -->
+    <div id="preview-content" class="p-6 sm:p-8 overflow-y-auto space-y-8 flex-1 bg-gray-50/50 text-gray-800">
+      
+      <!-- PHẦN I: TNKQ -->
+      <div x-show="exam.parts.part1.questions.length > 0">
+        <div class="border-b-2 border-indigo-600 pb-2 mb-4 flex items-center justify-between">
+          <h4 class="font-bold text-base sm:text-lg text-indigo-900">PHẦN I. Câu trắc nghiệm nhiều phương án lựa chọn</h4>
+          <span class="text-xs bg-indigo-100 text-indigo-800 font-semibold px-2.5 py-1 rounded-full" x-text="`${exam.parts.part1.questions.length} câu`"></span>
+        </div>
+        <p class="text-xs text-gray-500 italic mb-4" x-text="exam.parts.part1.instruction"></p>
+
+        <div class="space-y-4">
+          <template x-for="(q, idx) in exam.parts.part1.questions" :key="q._id || idx">
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+              <div class="font-semibold text-gray-900 mb-3 flex items-start gap-2">
+                <span class="font-bold text-indigo-700 flex-shrink-0" x-text="`Câu ${idx + 1}:`"></span>
+                <span class="flex-1 leading-relaxed" x-html="renderMathHtml(q.text)"></span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pl-4 sm:pl-6 text-sm">
+                <template x-for="optKey in ['A','B','C','D']" :key="optKey">
+                  <div :class="q.answer === optKey ? 'bg-green-50 border-green-300 text-green-900 font-medium' : 'border-gray-200 text-gray-700'"
+                    class="p-2.5 rounded-xl border flex items-start gap-2">
+                    <span :class="q.answer === optKey ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600'"
+                      class="w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0" x-text="optKey"></span>
+                    <span class="flex-1" x-html="renderMathHtml(q.options[optKey])"></span>
+                    <span x-show="q.answer === optKey" class="text-green-600 text-xs font-bold flex-shrink-0">✓ Đáp án</span>
+                  </div>
+                </template>
+              </div>
+              <div x-show="q.explanation" class="mt-3 pt-2 border-t border-gray-100 text-xs text-gray-500 italic pl-6">
+                💡 <span x-html="renderMathHtml(q.explanation)"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- PHẦN II: ĐÚNG / SAI -->
+      <div x-show="exam.parts.part2.questions.length > 0">
+        <div class="border-b-2 border-purple-600 pb-2 mb-4 flex items-center justify-between">
+          <h4 class="font-bold text-base sm:text-lg text-purple-900">PHẦN II. Câu trắc nghiệm đúng sai</h4>
+          <span class="text-xs bg-purple-100 text-purple-800 font-semibold px-2.5 py-1 rounded-full" x-text="`${exam.parts.part2.questions.length} câu`"></span>
+        </div>
+        <p class="text-xs text-gray-500 italic mb-4" x-text="exam.parts.part2.instruction"></p>
+
+        <div class="space-y-4">
+          <template x-for="(q, idx) in exam.parts.part2.questions" :key="q._id || idx">
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+              <div class="font-semibold text-gray-900 mb-3 flex items-start gap-2">
+                <span class="font-bold text-purple-700 flex-shrink-0" x-text="`Câu ${idx + 1}:`"></span>
+                <span class="flex-1 leading-relaxed" x-html="renderMathHtml(q.text)"></span>
+              </div>
+              <div class="space-y-2 pl-4 sm:pl-6 text-sm">
+                <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
+                  <div class="p-2.5 rounded-xl border border-gray-200 flex items-center justify-between gap-3 bg-gray-50/60">
+                    <div class="flex items-start gap-2 flex-1">
+                      <span class="font-bold text-gray-600 w-5 flex-shrink-0" x-text="`${itemKey})`"></span>
+                      <span class="text-gray-800" x-html="renderMathHtml(q.items[itemKey]?.text)"></span>
+                    </div>
+                    <span :class="q.items[itemKey]?.answer ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'"
+                      class="px-2.5 py-1 rounded-lg text-xs font-bold border flex-shrink-0"
+                      x-text="q.items[itemKey]?.answer ? 'ĐÚNG' : 'SAI'"></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- PHẦN III: TRẢ LỜI NGẮN -->
+      <div x-show="exam.parts.part3.questions.length > 0">
+        <div class="border-b-2 border-teal-600 pb-2 mb-4 flex items-center justify-between">
+          <h4 class="font-bold text-base sm:text-lg text-teal-900">PHẦN III. Câu trắc nghiệm trả lời ngắn</h4>
+          <span class="text-xs bg-teal-100 text-teal-800 font-semibold px-2.5 py-1 rounded-full" x-text="`${exam.parts.part3.questions.length} câu`"></span>
+        </div>
+        <p class="text-xs text-gray-500 italic mb-4" x-text="exam.parts.part3.instruction"></p>
+
+        <div class="space-y-4">
+          <template x-for="(q, idx) in exam.parts.part3.questions" :key="q._id || idx">
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+              <div class="font-semibold text-gray-900 mb-3 flex items-start gap-2">
+                <span class="font-bold text-teal-700 flex-shrink-0" x-text="`Câu ${idx + 1}:`"></span>
+                <span class="flex-1 leading-relaxed" x-html="renderMathHtml(q.text)"></span>
+              </div>
+              <div class="pl-4 sm:pl-6 text-sm flex items-center gap-3">
+                <span class="text-xs font-bold text-gray-500">Đáp án chuẩn:</span>
+                <span class="px-3 py-1 bg-teal-50 border border-teal-200 text-teal-900 font-bold rounded-xl" x-html="renderMathHtml(q.answer)"></span>
+                <span x-show="q.accepted_other" class="text-xs text-gray-400" x-text="`(chấp nhận: ${q.accepted_other})`"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- PHẦN IV: TỰ LUẬN -->
+      <div x-show="exam.parts.part4.questions.length > 0">
+        <div class="border-b-2 border-orange-600 pb-2 mb-4 flex items-center justify-between">
+          <h4 class="font-bold text-base sm:text-lg text-orange-900">PHẦN IV. Tự luận</h4>
+          <span class="text-xs bg-orange-100 text-orange-800 font-semibold px-2.5 py-1 rounded-full" x-text="`${exam.parts.part4.questions.length} câu`"></span>
+        </div>
+        <div class="space-y-4">
+          <template x-for="(q, idx) in exam.parts.part4.questions" :key="q._id || idx">
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+              <div class="font-semibold text-gray-900 mb-2 flex items-start gap-2">
+                <span class="font-bold text-orange-700 flex-shrink-0" x-text="`Câu ${idx + 1}:`"></span>
+                <span class="flex-1 font-bold" x-text="q.title"></span>
+              </div>
+              <div class="pl-4 sm:pl-6 text-sm text-gray-700 leading-relaxed" x-html="renderMathHtml(q.text)"></div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="bg-gray-50 border-t px-6 py-4 flex items-center justify-between gap-3 flex-shrink-0">
+      <span class="text-xs text-gray-500">Đề thi hiển thị chính xác công thức toán KaTeX theo giao diện thí sinh.</span>
+      <div class="flex gap-2">
+        <button @click="showPreviewModal = false" class="px-5 py-2.5 border border-gray-300 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">Đóng</button>
+        <button @click="showPreviewModal = false; saveExam()" class="bg-green-600 hover:bg-green-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow">
+          💾 Lưu đề thi ngay
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+let _uid = 0;
+const uid = () => ++_uid;
+
+function examBuilder() {
+  return {
+    activeTab: 'p1',
+    saving: false,
+    message: '',
+    messageOk: true,
+    savedExamId: '',
+    autoSaveMsg: '',
+    subjectSelect: 'Toán học',
+    gradeSelect: '12',
+    katexReady: false,
+    showPreviewModal: false,
+    
+    // Import modal state
+    showImportModal: false,
+    importText: '',
+    parsing: false,
+    parsedData: null,
+    importSummary: '',
+
+    exam: {
+      id: '',
+      title: '',
+      subject: 'Toán học',
+      grade: '12',
+      duration_minutes: 50,
+      scoring: {},
+      parts: {
+        part1: {
+          name: 'Phần I: Trắc nghiệm nhiều lựa chọn',
+          instruction: 'Chọn đáp án đúng duy nhất (A, B, C hoặc D) cho mỗi câu sau.',
+          questions: []
+        },
+        part2: {
+          name: 'Phần II: Trắc nghiệm Đúng / Sai',
+          instruction: 'Trong mỗi câu, xét tính Đúng (Đ) hoặc Sai (S) của mỗi ý (a), (b), (c), (d).',
+          questions: []
+        },
+        part3: {
+          name: 'Phần III: Trả lời ngắn',
+          instruction: 'Điền đáp án vào ô trống. Chỉ ghi kết quả.',
+          questions: []
+        },
+        part4: {
+          name: 'Phần IV: Tự luận tự chọn',
+          instruction: 'Chọn một câu dưới đây để làm.',
+          questions: []
+        }
+      }
+    },
+
+    get totalQuestionsCount() {
+      return (this.exam.parts.part1.questions.length || 0) +
+             (this.exam.parts.part2.questions.length || 0) +
+             (this.exam.parts.part3.questions.length || 0) +
+             (this.exam.parts.part4.questions.length || 0);
+    },
+
+    init() {
+      const editId = new URLSearchParams(window.location.search).get('edit');
+      if (editId) {
+        this.loadExam(editId);
+      }
+      setInterval(() => this.autoDraft(), 30000);
+
+      const checkKaTeX = () => {
+        if (window.katex) {
+          this.katexReady = true;
+        } else {
+          setTimeout(checkKaTeX, 100);
+        }
+      };
+      checkKaTeX();
+    },
+
+    openPreview() {
+      if (this.totalQuestionsCount === 0) {
+        alert('Đề thi chưa có câu hỏi nào để xem trước!');
+        return;
+      }
+      this.showPreviewModal = true;
+      this.$nextTick(() => {
+        if (window.renderMathInElement) {
+          const el = document.getElementById('preview-content');
+          if (el) {
+            renderMathInElement(el, {
+              delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '\\[', right: '\\]', display: true}
+              ],
+              throwOnError: false
+            });
+          }
+        }
+      });
+    },
+
+    onSubjectChange() {
+      if (this.subjectSelect !== 'custom') {
+        this.exam.subject = this.subjectSelect;
+      }
+    },
+
+    onGradeChange() {
+      if (this.gradeSelect !== 'custom') {
+        this.exam.grade = this.gradeSelect;
+      }
+    },
+
+    async loadExam(examId) {
+      try {
+        const r = await fetch(`/api/exam-builder/get/${examId}`);
+        if (r.ok) {
+          const data = await r.json();
+          this.populateExamData(data);
+          this.showMsg(`Đã tải đề thi: ${data.title}`, true);
+        }
+      } catch(e) {}
+    },
+
+    async loadPdfSample() {
+      if (this.exam.parts.part1.questions.length > 0) {
+        if (!confirm('Bạn có muốn nạp đề thi mẫu Toán 12 (Mã 101 - 30 câu chuẩn PDF)? Dữ liệu đang soạn sẽ được thay thế.')) {
+          return;
+        }
+      }
+      try {
+        const r = await fetch('/api/exam-builder/sample/pdf-exam');
+        if (r.ok) {
+          const data = await r.json();
+          this.populateExamData(data);
+          this.showMsg('Đã nạp thành công toàn bộ 30 câu đề thi chuẩn Toán 12 (Mã 101 từ PDF)!', true);
+        } else {
+          this.showMsg('Không tìm thấy file mẫu PDF!', false);
+        }
+      } catch(e) {
+        this.showMsg('Lỗi kết nối khi tải mẫu PDF!', false);
+      }
+    },
+
+    populateExamData(data) {
+      ['part1','part2','part3','part4'].forEach(p => {
+        (data.parts?.[p]?.questions || []).forEach(q => { 
+          q._id = uid(); 
+          if (p === 'part2' && q.items) {
+            ['a','b','c','d'].forEach(k => {
+              if (!q.items[k]) q.items[k] = { text: '', answer: true };
+            });
+          }
+        });
+      });
+      this.exam = data;
+      this.exam.id = ''; // Xoá id để khi bấm Lưu sẽ tạo thành đề mới độc lập
+      this.exam.title = (data.title || '').replace(' (Bản sao)', '') + ' (Bản sao)';
+      
+      if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Tin học','Công nghệ'].includes(data.subject)) {
+        this.subjectSelect = data.subject;
+      } else {
+        this.subjectSelect = 'custom';
+      }
+
+      if (['12','11','10','9','8','7','6'].includes(String(data.grade))) {
+        this.gradeSelect = String(data.grade);
+      } else {
+        this.gradeSelect = 'custom';
+      }
+    },
+
+    async handleFileUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (['docx', 'pdf'].includes(ext)) {
+        this.parsing = true;
+        this.importSummary = 'Đang trích xuất văn bản từ file ' + file.name + '...';
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+          const r = await fetch('/api/exam-builder/upload-file', {
+            method: 'POST',
+            body: formData
+          });
+          const res = await r.json();
+          if (r.ok && res.success) {
+            this.populateExamData(res.parsed || res.exam);
+            this.showImportModal = false;
+            this.showMsg(`Đã trích xuất và nạp thành công đề thi từ file ${file.name}!`, true);
+          } else {
+            alert(res.detail || 'Lỗi khi đọc file Word/PDF!');
+          }
+        } catch(e) {
+          alert('Lỗi kết nối máy chủ!');
+        }
+        this.parsing = false;
+        event.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target.result;
+        if (file.name.endsWith('.json')) {
+          try {
+            const data = JSON.parse(content);
+            this.populateExamData(data);
+            this.showImportModal = false;
+            this.showMsg(`Đã nhập thành công đề thi từ file ${file.name}!`, true);
+          } catch(err) {
+            alert('File JSON không hợp lệ!');
+          }
+        } else {
+          this.importText = content;
+          this.analyzeImportText();
+        }
+      };
+      reader.readAsText(file, 'utf-8');
+      event.target.value = '';
+    },
+
+    hasMath(str) {
+      if (!str) return false;
+      return /[\$\\_{}\^]|\\frac|\\sqrt|\\vec|\\int|\\lim|\\alpha|\\beta|\\gamma|\\pi|\\le|\\ge|\\neq|\\pm|\\times|\\cdot|\\mathbf|\\mathbb|\\mathcal|\\left|\\right|\\\(|\\\[/.test(String(str));
+    },
+
+    renderMathHtml(rawText) {
+      if (!rawText) return '';
+      // Bind reactivity to katexReady
+      const _ready = this.katexReady;
+      if (!window.katex) {
+        const d = document.createElement('div');
+        d.textContent = String(rawText);
+        return d.innerHTML.replace(/\n/g, '<br>');
+      }
+
+      let str = String(rawText);
+
+      // 1. $$...$$ or \[...\] -> displayMode
+      str = str.replace(/(?:\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\])/g, (match, p1, p2) => {
+        const expr = (p1 !== undefined ? p1 : p2).trim();
+        try {
+          return katex.renderToString(expr, { displayMode: true, throwOnError: false });
+        } catch(e) {
+          return match;
+        }
+      });
+
+      // 2. $...$ or \(...\) -> inlineMode
+      str = str.replace(/(?:\$([^\$\n]+?)\$|\\\(([\s\S]*?)\\\))/g, (match, p1, p2) => {
+        const expr = (p1 !== undefined ? p1 : p2).trim();
+        try {
+          return katex.renderToString(expr, { displayMode: false, throwOnError: false });
+        } catch(e) {
+          return match;
+        }
+      });
+
+      // 3. Standalone LaTeX commands without $...$
+      str = str.replace(/(\\(?:frac|sqrt|vec|int|sum|lim|alpha|beta|gamma|pi|Delta|infty|le|ge|neq|pm|times|cdot)\b(?:\{[^{}]*\}|[a-zA-Z0-9_\^\{\}]+)*)/g, (match) => {
+        try {
+          return katex.renderToString(match.trim(), { displayMode: false, throwOnError: false });
+        } catch(e) {
+          return match;
+        }
+      });
+
+      return str.replace(/\n/g, '<br>');
+    },
+
+    async analyzeImportText() {
+      if (!this.importText.trim()) return;
+      this.parsing = true;
+      try {
+        const r = await fetch('/api/exam-builder/parse-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: this.importText })
+        });
+        const res = await r.json();
+        if (r.ok && res.success) {
+          this.parsedData = res.parsed;
+          const s = res.summary;
+          this.importSummary = `Đã nhận diện: ${s.part1_count} câu TNKQ (Phần I), ${s.part2_count} câu Đúng/Sai (Phần II), ${s.part3_count} câu Trả lời ngắn (Phần III), ${s.part4_count} câu Tự luận (Phần IV).`;
+        } else {
+          alert(res.detail || 'Không phân tích được văn bản!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+      this.parsing = false;
+    },
+
+    applyParsedData() {
+      if (!this.parsedData) return;
+      this.populateExamData(this.parsedData);
+      this.showImportModal = false;
+      this.showMsg('Đã đưa nội dung phân tích vào form đề thi thành công!', true);
+    },
+
+    addQ(part) {
+      const id = `${part.replace('part','p')}_q${uid()}`;
+      if (part === 'part1') {
+        this.exam.parts.part1.questions.push({
+          _id: uid(), id, text: '', options: {A:'',B:'',C:'',D:''}, answer: 'A', explanation: ''
+        });
+        this.activeTab = 'p1';
+      } else if (part === 'part2') {
+        this.exam.parts.part2.questions.push({
+          _id: uid(), id, text: '',
+          items: {
+            a: {text:'', answer: true},
+            b: {text:'', answer: false},
+            c: {text:'', answer: true},
+            d: {text:'', answer: false}
+          }
+        });
+        this.activeTab = 'p2';
+      } else if (part === 'part3') {
+        this.exam.parts.part3.questions.push({
+          _id: uid(), id, text: '', answer: '', accepted_other: '', tolerance: 0.01, explanation: ''
+        });
+        this.activeTab = 'p3';
+      } else if (part === 'part4') {
+        this.exam.parts.part4.questions.push({
+          _id: uid(), id, title: '', text: '',
+          rubric: {
+            max_score: 1.0,
+            criteria: [
+              {name: 'Phương pháp giải đúng', points: 0.5},
+              {name: 'Kết quả chính xác', points: 0.5}
+            ],
+            sample_answer: ''
+          }
+        });
+        this.activeTab = 'p4';
+      }
+    },
+
+    removeQ(part, idx) {
+      if (!confirm('Bạn có chắc muốn xóa câu này?')) return;
+      this.exam.parts[part].questions.splice(idx, 1);
+    },
+
+    buildPayload() {
+      const e = JSON.parse(JSON.stringify(this.exam));
+
+      e.parts.part1.questions = e.parts.part1.questions.map((q,i) => {
+        const {_id, ...rest} = q;
+        rest.id = `p1_q${i+1}`;
+        return rest;
+      });
+      e.parts.part2.questions = e.parts.part2.questions.map((q,i) => {
+        const {_id, ...rest} = q;
+        rest.id = `p2_q${i+1}`;
+        return rest;
+      });
+      e.parts.part3.questions = e.parts.part3.questions.map((q,i) => {
+        const {_id, accepted_other, ...rest} = q;
+        rest.id = `p3_q${i+1}`;
+        rest.accepted_answers = [rest.answer, ...(accepted_other || '').split('|').map(s=>s.trim()).filter(Boolean)];
+        return rest;
+      });
+      e.parts.part4.questions = e.parts.part4.questions.map((q,i) => {
+        const {_id, ...rest} = q;
+        rest.id = `p4_q${i+1}`;
+        return rest;
+      });
+
+      return e;
+    },
+
+    async saveExam() {
+      if (!this.exam.title.trim()) {
+        this.showMsg('Vui lòng nhập tiêu đề đề thi!', false);
+        return;
+      }
+      if (this.totalQuestionsCount === 0) {
+        this.showMsg('Đề thi phải có ít nhất 1 câu hỏi ở bất kỳ phần nào!', false);
+        return;
+      }
+
+      this.saving = true;
+      this.message = '';
+      try {
+        const payload = this.buildPayload();
+        const r = await fetch('/api/exam-builder/save', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const data = await r.json();
+        if (r.ok) {
+          this.exam.id = data.exam_id;
+          this.savedExamId = data.exam_id;
+          this.showMsg(`Đã lưu đề thi "${this.exam.title}" thành công! Học sinh đã có thể chọn đề này để thi.`, true);
+          history.replaceState(null,'',`/create-exam?edit=${data.exam_id}`);
+        } else {
+          this.showMsg(data.detail || 'Lỗi khi lưu đề!', false);
+        }
+      } catch(e) {
+        this.showMsg('Lỗi kết nối máy chủ!', false);
+      }
+      this.saving = false;
+    },
+
+    autoDraft() {
+      if (this.exam.title) {
+        this.autoSaveMsg = 'Tự lưu nháp: ' + new Date().toLocaleTimeString('vi-VN');
+      }
+    },
+
+    showMsg(msg, ok) {
+      this.message = msg;
+      this.messageOk = ok;
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+  };
+}
+</script>
+</body>
+</html>

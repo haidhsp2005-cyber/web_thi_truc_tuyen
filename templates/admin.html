@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trang Quản lý - Giáo viên</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen" x-data="adminApp()" x-init="init()">
+
+<!-- Header -->
+<div class="bg-blue-900 text-white py-4 px-6 shadow-lg">
+  <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">⚙️</span>
+      <h1 class="text-xl font-bold">Bảng Điều Khiển - Giáo Viên</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="/" class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">🏠 Trang học sinh</a>
+      <a href="/admin/logout" class="bg-red-500/80 hover:bg-red-500 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1" title="Đăng xuất khỏi phiên làm việc">
+        <span>🚪</span><span class="hidden sm:inline">Đăng xuất</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-6xl mx-auto p-6 space-y-6">
+
+  <!-- ======= MỤC NẠP ĐỀ THI MẪU VÀ TẢI MẪU (CHUẨN GDPT 2025) ======= -->
+  <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-950 rounded-3xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-5 border border-indigo-700/50">
+    <div class="flex items-start gap-4">
+      <div class="w-14 h-14 rounded-2xl bg-yellow-400 text-yellow-950 flex items-center justify-center text-3xl font-black shadow-lg flex-shrink-0">
+        🌟
+      </div>
+      <div>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-400/20 text-yellow-300 text-xs font-bold mb-1 border border-yellow-400/30">
+          <span>⭐ ĐỀ THI MẪU CHUẨN BỘ GIÁO DỤC 2025</span>
+        </div>
+        <h2 class="text-xl font-black tracking-tight">Cấu trúc Đề thi Mẫu: Toán 12 - Mã 101</h2>
+        <p class="text-indigo-200 text-sm mt-1 max-w-2xl">
+          Đầy đủ 30 câu hỏi cấu trúc mới: <strong>Phần I</strong> (12 câu TNKQ 4 lựa chọn), <strong>Phần II</strong> (4 câu Đúng/Sai), <strong>Phần III</strong> (6 câu Trả lời ngắn) với công thức LaTeX chuẩn. Thầy/Cô bấm nút để nạp đề vào hệ thống cho học sinh thi ngay hoặc xem mẫu.
+        </p>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end flex-shrink-0">
+      <button @click="addSampleExam()" :disabled="loadingSample"
+        class="bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black px-5 py-3 rounded-2xl text-sm transition-all shadow-lg flex items-center gap-2 hover:scale-[1.02] active:scale-95 disabled:opacity-50 cursor-pointer">
+        <span x-show="loadingSample" class="animate-spin">⏳</span>
+        <span x-show="!loadingSample">✨</span>
+        <span x-text="loadingSample ? 'Đang nạp...' : 'Nạp đề thi mẫu vào hệ thống'"></span>
+      </button>
+
+      <div class="relative" x-data="{ openTpl: false }">
+        <button @click="openTpl = !openTpl"
+          class="bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-3 rounded-2xl text-sm transition-all border border-white/20 flex items-center gap-2 cursor-pointer">
+          <span>📥</span> <span>Tải file mẫu</span> <span>▾</span>
+        </button>
+        <div x-show="openTpl" @click.outside="openTpl = false" x-cloak
+          class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl py-2 z-50 text-gray-800 border text-xs font-semibold divide-y">
+          <a href="/api/exam-builder/template/download?format=docx" class="flex items-center gap-2 px-4 py-3 hover:bg-blue-50 text-blue-900">
+            <span class="text-base">📘</span> Mẫu Word (.docx)
+          </a>
+          <a href="/api/exam-builder/template/download?format=txt" class="flex items-center gap-2 px-4 py-3 hover:bg-blue-50 text-gray-800">
+            <span class="text-base">📄</span> Mẫu Text (.txt)
+          </a>
+          <a href="/api/exam-builder/template/download?format=json" class="flex items-center gap-2 px-4 py-3 hover:bg-blue-50 text-gray-800">
+            <span class="text-base">⚙️</span> Mẫu JSON (.json)
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= TẢI LÊN FILE ĐỀ THI WORD / PDF ======= -->
+  <div class="bg-white rounded-3xl shadow-sm border-2 border-dashed border-blue-300 p-5 sm:p-6">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-800 flex items-center justify-center text-2xl font-bold flex-shrink-0">
+          📤
+        </div>
+        <div>
+          <h3 class="font-bold text-gray-900 text-base">Nhập đề thi từ file Word (.docx) hoặc PDF (.pdf)</h3>
+          <p class="text-xs text-gray-500 mt-0.5">
+            Hệ thống tự động nhận diện Phần I (TNKQ), Phần II (Đúng/Sai), Phần III (Trả lời ngắn) theo cấu trúc chuẩn GDPT 2025.
+          </p>
+          <p class="text-xs text-blue-700 mt-1 font-medium bg-blue-50/80 px-2.5 py-1 rounded-lg border border-blue-100 inline-block">
+            📌 <strong>Quy ước Word:</strong> Đáp án đúng chỉ cần <strong>tô màu đỏ</strong> (không ghi chữ [Đúng]). Đúng/Sai: Ý <strong>Đúng tô đỏ</strong>, ý <strong>Sai để màu đen</strong>. Trả lời ngắn: Ghi <code>Đáp án: &lt;kết quả&gt;</code> chữ đen bình thường (không cần tô đỏ).
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+        <input type="file" x-ref="examFileInput" accept=".docx,.pdf,.txt,.json" @change="uploadExamFile($event)" class="hidden">
+        <button @click="$refs.examFileInput.click()" :disabled="uploading"
+          class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold px-5 py-3 rounded-2xl text-sm transition-all shadow-md flex items-center gap-2 hover:scale-[1.02] active:scale-95 cursor-pointer">
+          <span x-show="uploading" class="animate-spin">⏳</span>
+          <span x-show="!uploading">📁</span>
+          <span x-text="uploading ? 'Đang trích xuất & nạp đề...' : 'Chọn file Word / PDF tải lên'"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Thông báo kết quả upload -->
+    <div x-show="uploadMsg" x-cloak class="mt-4 p-3 rounded-2xl text-sm font-semibold flex items-center justify-between gap-3"
+      :class="uploadMsgOk ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'">
+      <div class="flex items-center gap-2">
+        <span x-text="uploadMsgOk ? '✅' : '❌'"></span>
+        <span x-text="uploadMsg"></span>
+      </div>
+      <button @click="uploadMsg=''" class="text-gray-400 hover:text-gray-600">✕</button>
+    </div>
+  </div>
+
+  <!-- Stats tổng quan -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-white rounded-2xl shadow-sm border p-5 text-center">
+      <div class="text-3xl font-black text-blue-700" x-text="stats.total_submissions ?? 0"></div>
+      <div class="text-sm text-gray-500 mt-1">Bài đã nộp</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border p-5 text-center">
+      <div class="text-3xl font-black text-green-600" x-text="stats.graded ?? 0"></div>
+      <div class="text-sm text-gray-500 mt-1">Đã chấm xong</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border p-5 text-center">
+      <div class="text-3xl font-black text-indigo-600" x-text="stats.average_score ?? 0"></div>
+      <div class="text-sm text-gray-500 mt-1">Điểm trung bình</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border p-5 text-center">
+      <div class="text-3xl font-black text-orange-500" x-text="keyStatus.active_count ?? 0">
+      </div>
+      <div class="text-sm text-gray-500 mt-1">API Keys hoạt động</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- ======= QUẢN LÝ API KEYS ======= -->
+    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+      <div class="bg-indigo-900 text-white px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span>🔑</span>
+          <h2 class="font-bold">API Keys Xoay Vòng (Gemini)</h2>
+        </div>
+        <button @click="loadKeyStatus()" class="text-indigo-300 hover:text-white text-sm">🔄 Làm mới</button>
+      </div>
+      
+      <div class="p-5">
+        <!-- Thêm key mới -->
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Thêm API Key mới</label>
+          <div class="flex gap-2">
+            <input 
+              type="password" 
+              x-model="newKey" 
+              placeholder="Dán API key từ aistudio.google.com..."
+              class="flex-1 border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+            >
+            <button @click="addKey()" :disabled="!newKey.trim()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-40 transition-colors">
+              ➕ Thêm
+            </button>
+          </div>
+          <p class="text-xs text-gray-400 mt-1">
+            Lấy key miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 underline">aistudio.google.com</a>
+          </p>
+        </div>
+        
+        <!-- Danh sách keys -->
+        <div class="space-y-3">
+          <template x-if="keyStatus.keys?.length === 0 || !keyStatus.keys">
+            <div class="text-center py-6 text-gray-400">
+              <p class="text-2xl mb-2">🔑</p>
+              <p class="text-sm">Chưa có API key. Thêm ít nhất 1 key để sử dụng tính năng AI chấm bài tự luận.</p>
+            </div>
+          </template>
+          <template x-for="(key, i) in keyStatus.keys || []" :key="i">
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border">
+              <div class="w-2 h-2 rounded-full flex-shrink-0" :class="{'bg-green-500': key.status === 'active', 'bg-yellow-500': key.status === 'cooldown', 'bg-red-500': key.status === 'error'}"></div>
+              <div class="flex-1 min-w-0">
+                <p class="font-mono text-sm font-semibold text-gray-700" x-text="key.label"></p>
+                <div class="flex gap-3 text-xs text-gray-400 mt-0.5">
+                  <span x-text="`✅ ${key.success_count} | ❌ ${key.fail_count}`"></span>
+                  <span x-show="key.status === 'cooldown'" class="text-yellow-600 font-semibold" x-text="`⏳ Cooldown còn ${key.remaining_cooldown_seconds}s`"></span>
+                  <span x-show="key.status === 'error'" class="text-red-600 font-semibold">⚠️ Lỗi key</span>
+                  <span x-show="key.status === 'active'" class="text-green-600 font-semibold">● Đang hoạt động</span>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+        
+        <!-- Notification -->
+        <div x-show="keyMsg" :class="keyMsgOk ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'" class="mt-3 p-3 rounded-lg border text-sm" x-text="keyMsg"></div>
+      </div>
+    </div>
+
+    <!-- ======= THỐNG KÊ XẾP LOẠI ======= -->
+    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+      <div class="bg-green-900 text-white px-5 py-4">
+        <h2 class="font-bold flex items-center gap-2"><span>📊</span>Thống kê kết quả</h2>
+      </div>
+      <div class="p-5">
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="bg-green-50 rounded-xl p-3 text-center border border-green-200">
+            <div class="text-xl font-black text-green-700" x-text="stats.rank_distribution?.['Giỏi'] ?? 0"></div>
+            <div class="text-xs text-gray-500">🌟 Giỏi</div>
+          </div>
+          <div class="bg-blue-50 rounded-xl p-3 text-center border border-blue-200">
+            <div class="text-xl font-black text-blue-700" x-text="stats.rank_distribution?.['Khá'] ?? 0"></div>
+            <div class="text-xs text-gray-500">👍 Khá</div>
+          </div>
+          <div class="bg-yellow-50 rounded-xl p-3 text-center border border-yellow-200">
+            <div class="text-xl font-black text-yellow-700" x-text="stats.rank_distribution?.['Trung bình'] ?? 0"></div>
+            <div class="text-xs text-gray-500">📚 Trung bình</div>
+          </div>
+          <div class="bg-red-50 rounded-xl p-3 text-center border border-red-200">
+            <div class="text-xl font-black text-red-600" x-text="stats.rank_distribution?.['Yếu'] ?? 0"></div>
+            <div class="text-xs text-gray-500">💪 Yếu</div>
+          </div>
+        </div>
+        
+        <div class="space-y-2 text-sm border-t pt-4">
+          <div class="flex justify-between text-gray-600">
+            <span>Điểm cao nhất:</span>
+            <span class="font-bold text-green-600" x-text="stats.max_score ?? '—'"></span>
+          </div>
+          <div class="flex justify-between text-gray-600">
+            <span>Điểm thấp nhất:</span>
+            <span class="font-bold text-red-600" x-text="stats.min_score ?? '—'"></span>
+          </div>
+          <div class="flex justify-between text-gray-600">
+            <span>Điểm trung bình:</span>
+            <span class="font-bold text-blue-600" x-text="stats.average_score ?? '—'"></span>
+          </div>
+        </div>
+
+        <!-- Xuất Excel -->
+        <a href="/api/exam/export/excel" class="mt-5 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors">
+          📥 Xuất bảng điểm Excel (.xlsx)
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= DANH SÁCH BÀI NỘP ======= -->
+  <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+    <div class="bg-gray-800 text-white px-5 py-4 flex items-center justify-between">
+      <h2 class="font-bold flex items-center gap-2"><span>📋</span>Danh sách bài nộp (<span x-text="submissions.length"></span>)</h2>
+      <div class="flex items-center gap-2">
+        <button @click="clearAllSubmissions()" :disabled="submissions.length === 0" 
+          class="bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+          title="Xóa toàn bộ bài nộp để bắt đầu ca thi mới">
+          <span>🗑️</span><span>Xóa toàn bộ bài nộp</span>
+        </button>
+        <button @click="loadSubmissions()" class="text-gray-300 hover:text-white text-sm cursor-pointer">🔄 Làm mới</button>
+      </div>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-100 text-gray-600">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold">Họ và tên</th>
+            <th class="text-center px-4 py-3 font-semibold">Lớp</th>
+            <th class="text-center px-4 py-3 font-semibold">Thời gian nộp</th>
+            <th class="text-center px-4 py-3 font-semibold">Thời gian làm</th>
+            <th class="text-center px-4 py-3 font-semibold">Tổng điểm</th>
+            <th class="text-center px-4 py-3 font-semibold">Xếp loại</th>
+            <th class="text-center px-4 py-3 font-semibold">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y">
+          <template x-if="submissions.length === 0">
+            <tr>
+              <td colspan="7" class="text-center py-12 text-gray-400">
+                <p class="text-3xl mb-2">📭</p>
+                <p>Chưa có bài nộp nào.</p>
+              </td>
+            </tr>
+          </template>
+          <template x-for="sub in submissions" :key="sub.submission_id">
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3 font-medium text-gray-800" x-text="sub.student_name"></td>
+              <td class="px-4 py-3 text-center text-gray-600" x-text="sub.student_class"></td>
+              <td class="px-4 py-3 text-center text-gray-500 text-xs" x-text="sub.submitted_at ? new Date(sub.submitted_at).toLocaleString('vi-VN') : '—'"></td>
+              <td class="px-4 py-3 text-center text-gray-500 text-xs" x-text="sub.duration_seconds ? Math.floor(sub.duration_seconds/60) + 'p ' + (sub.duration_seconds%60) + 's' : '—'"></td>
+              <td class="px-4 py-3 text-center">
+                <span class="font-bold text-lg text-blue-800" x-text="sub.scores?.total_score ?? '…'"></span>
+                <span class="text-gray-400 text-xs">/10</span>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span 
+                  :class="{
+                    'bg-green-100 text-green-700': sub.scores?.rank === 'Giỏi',
+                    'bg-blue-100 text-blue-700': sub.scores?.rank === 'Khá',
+                    'bg-yellow-100 text-yellow-700': sub.scores?.rank === 'Trung bình',
+                    'bg-red-100 text-red-600': sub.scores?.rank === 'Yếu',
+                    'bg-gray-100 text-gray-500': !sub.scores?.rank
+                  }"
+                  class="px-2 py-1 rounded-full text-xs font-semibold"
+                  x-text="sub.scores?.rank || 'Đang chấm'"
+                ></span>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                  <a :href="`/api/admin/print/submission/${sub.submission_id}`" target="_blank" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 hover:text-indigo-900 rounded-lg text-xs font-bold transition-colors border border-indigo-200 flex items-center gap-1" title="In toàn bộ bài thi học sinh (có đề bài, câu trả lời, đáp án chuẩn, điểm số và nhận xét)">
+                    <span>🖨️</span><span>In bài thi</span>
+                  </a>
+                  <button @click="deleteSubmission(sub.submission_id, sub.student_name)" class="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 rounded-lg text-xs font-bold transition-colors border border-red-200 cursor-pointer" title="Xóa bài nộp này">
+                    <span>🗑️</span><span>Xóa</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ======= DANH SÁCH ĐỀ THI ======= -->
+  <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+    <div class="bg-yellow-600 text-white px-5 py-4 flex items-center justify-between">
+      <h2 class="font-bold flex items-center gap-2"><span>📋</span>Quản lý đề thi (<span x-text="examList.length"></span> đề)</h2>
+      <div class="flex gap-2">
+        <button @click="loadExamList()" class="text-yellow-200 hover:text-white text-sm cursor-pointer">🔄 Làm mới</button>
+      </div>
+    </div>
+    <div class="p-4">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-yellow-50 text-yellow-800">
+            <tr>
+              <th class="text-left px-3 py-2">Tiêu đề đề thi</th>
+              <th class="text-center px-3 py-2">Môn / Lớp</th>
+              <th class="text-center px-3 py-2">Số câu</th>
+              <th class="text-center px-3 py-2">Thời gian</th>
+              <th class="text-center px-3 py-2">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            <template x-if="examList.length === 0">
+              <tr><td colspan="5" class="text-center py-8 text-gray-400">
+                <p class="text-2xl mb-2">📭</p>
+                <p>Chưa có đề thi nào trong hệ thống. Hãy bấm <strong>"Nạp đề thi mẫu"</strong> ở trên hoặc chọn <strong>"Tải file Word / PDF"</strong> để nạp đề.</p>
+              </td></tr>
+            </template>
+            <template x-for="e in examList" :key="e.id">
+              <tr class="hover:bg-yellow-50 transition-colors">
+                <td class="px-3 py-2 font-medium text-gray-800">
+                  <a :href="`/create-exam?edit=${e.id}`" class="hover:text-blue-600 hover:underline" x-text="e.title"></a>
+                </td>
+                <td class="px-3 py-2 text-center text-gray-500 text-xs" x-text="`${e.subject} / Lớp ${e.grade}`"></td>
+                <td class="px-3 py-2 text-center text-xs text-gray-600">
+                  <span x-text="`${e.part1_count} TNKQ · ${e.part2_count} Đ/S · ${e.part3_count} TLN · ${e.part4_count} TL`"></span>
+                </td>
+                <td class="px-3 py-2 text-center text-gray-600" x-text="`${e.duration_minutes} phút`"></td>
+                <td class="px-3 py-2 text-center">
+                  <div class="flex gap-1.5 justify-center flex-wrap">
+                    <a :href="`/api/admin/print/exam/${e.id}`" target="_blank" class="px-2.5 py-1 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-900 rounded-lg text-xs font-bold transition-colors border border-green-200 flex items-center gap-1 cursor-pointer" title="In đề thi giấy cho học sinh làm (không có đáp án đỏ)">
+                      <span>📄</span><span>In đề thi</span>
+                    </a>
+                    <a :href="`/api/admin/print/answers/${e.id}`" target="_blank" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-900 rounded-lg text-xs font-bold transition-colors border border-red-200 flex items-center gap-1 cursor-pointer" title="In đáp án gốc & ma trận hướng dẫn chấm đề thi">
+                      <span>🔑</span><span>In đáp án gốc</span>
+                    </a>
+                    <a :href="`/create-exam?edit=${e.id}`" class="px-2.5 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs font-semibold transition-colors">✏️ Sửa</a>
+                    <button @click="deleteExam(e.id, e.title)" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer">🗑️ Xóa</button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= QUẢN LÝ TÀI KHOẢN (GIÁO VIÊN & ADMIN) ======= -->
+  <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h2 class="font-bold text-base flex items-center gap-2">
+          <span>👥</span>
+          <span>Quản lý Tài khoản Giáo viên & Quản trị</span>
+        </h2>
+        <p class="text-xs text-blue-200 mt-0.5">Tạo tài khoản giáo viên, đổi mật khẩu và quản lý danh sách truy cập.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button @click="showCreateTeacherModal = true" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer">
+          <span>➕</span><span>Tạo tài khoản Giáo viên</span>
+        </button>
+        <button @click="showChangePassModal = true" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+          <span>🔄</span><span>Đổi mật khẩu</span>
+        </button>
+        <button @click="loadUsers()" class="text-gray-300 hover:text-white text-sm cursor-pointer ml-1" title="Làm mới">🔄</button>
+      </div>
+    </div>
+
+    <!-- Thông báo kết quả tài khoản -->
+    <div x-show="userActionMsg" x-cloak class="m-5 mb-0 p-3 rounded-xl text-sm font-semibold flex items-center justify-between"
+      :class="userActionOk ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'">
+      <span x-text="userActionMsg"></span>
+      <button @click="userActionMsg = ''" class="font-bold opacity-75 hover:opacity-100">✕</button>
+    </div>
+
+    <!-- Bảng danh sách tài khoản -->
+    <div class="p-5">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 text-gray-700 text-xs uppercase font-bold border-b">
+            <tr>
+              <th class="px-4 py-3 text-left">Tài khoản</th>
+              <th class="px-4 py-3 text-left">Họ và tên</th>
+              <th class="px-4 py-3 text-center">Vai trò</th>
+              <th class="px-4 py-3 text-center">Trạng thái bảo vệ</th>
+              <th class="px-4 py-3 text-center">Ngày tạo</th>
+              <th class="px-4 py-3 text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <template x-for="u in userList" :key="u.id || u.username">
+              <tr class="hover:bg-gray-50 transition-colors" :class="u.is_protected || u.username.toLowerCase() === 'admin' ? 'bg-blue-50/40' : ''">
+                <td class="px-4 py-3 font-bold text-gray-900 flex items-center gap-2">
+                  <span x-text="u.is_protected || u.username.toLowerCase() === 'admin' ? '👑' : '👨‍🏫'"></span>
+                  <span x-text="u.username"></span>
+                </td>
+                <td class="px-4 py-3 text-gray-700" x-text="u.full_name || '—'"></td>
+                <td class="px-4 py-3 text-center">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold"
+                    :class="u.is_protected || u.username.toLowerCase() === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'"
+                    x-text="u.is_protected || u.username.toLowerCase() === 'admin' ? 'Quản trị viên' : 'Giáo viên'">
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <template x-if="u.is_protected || u.username.toLowerCase() === 'admin'">
+                    <span class="inline-flex items-center gap-1 bg-blue-900 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
+                      <span>🔒</span><span>Bất khả xâm phạm</span>
+                    </span>
+                  </template>
+                  <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin'">
+                    <span class="text-xs text-gray-500">Cho phép xóa</span>
+                  </template>
+                </td>
+                <td class="px-4 py-3 text-center text-xs text-gray-500" x-text="u.created_at || 'Mặc định'"></td>
+                <td class="px-4 py-3 text-center">
+                  <template x-if="u.is_protected || u.username.toLowerCase() === 'admin'">
+                    <span class="text-xs text-gray-400 italic">Không thể xóa</span>
+                  </template>
+                  <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin'">
+                    <button @click="deleteUserAccount(u.username)" 
+                      class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-red-200">
+                      🗑️ Xóa
+                    </button>
+                  </template>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tạo tài khoản giáo viên -->
+  <div x-show="showCreateTeacherModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div @click.outside="showCreateTeacherModal = false" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+          <span>➕</span><span>Tạo tài khoản Giáo viên mới</span>
+        </h3>
+        <button @click="showCreateTeacherModal = false" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tên đăng nhập (viết liền)</label>
+          <input x-model="newTeacherForm.username" type="text" placeholder="Ví dụ: giaovien_hoa..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Họ và tên Giáo viên</label>
+          <input x-model="newTeacherForm.fullName" type="text" placeholder="Ví dụ: Cô Trần Thị B..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu (≥ 6 ký tự)</label>
+          <input x-model="newTeacherForm.password" type="password" placeholder="Mật khẩu..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t">
+        <button @click="showCreateTeacherModal = false" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">Hủy</button>
+        <button @click="submitCreateTeacher()" class="px-5 py-2 rounded-xl text-sm font-bold bg-green-600 hover:bg-green-700 text-white shadow-md cursor-pointer">Tạo tài khoản</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Đổi mật khẩu -->
+  <div x-show="showChangePassModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div @click.outside="showChangePassModal = false" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+          <span>🔄</span><span>Đổi Mật Khẩu Tài Khoản</span>
+        </h3>
+        <button @click="showChangePassModal = false" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tên tài khoản</label>
+          <input x-model="changePassAdminForm.username" type="text" placeholder="Ví dụ: admin hoặc tên giáo viên..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu hiện tại</label>
+          <input x-model="changePassAdminForm.oldPassword" type="password" placeholder="Mật khẩu cũ..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu mới (≥ 6 ký tự)</label>
+          <input x-model="changePassAdminForm.newPassword" type="password" placeholder="Mật khẩu mới..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t">
+        <button @click="showChangePassModal = false" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">Hủy</button>
+        <button @click="submitChangePassAdmin()" class="px-5 py-2 rounded-xl text-sm font-bold bg-blue-700 hover:bg-blue-800 text-white shadow-md cursor-pointer">Lưu mật khẩu mới</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cloudflare Tunnel Hướng dẫn -->
+  <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5">
+    <h3 class="font-bold text-indigo-900 mb-3 flex items-center gap-2"><span>🌐</span>Phát đường link internet cho học sinh (Cloudflare Tunnel)</h3>
+    <p class="text-sm text-indigo-700 mb-3">Để học sinh ở nhà có thể thi, chạy lệnh sau (cần tải <code class="bg-indigo-100 px-1 rounded">cloudflared</code>):</p>
+    <div class="bg-indigo-900 text-green-300 font-mono text-sm rounded-xl p-4 select-all">
+      cloudflared tunnel --url http://localhost:8000
+    </div>
+    <p class="text-xs text-indigo-500 mt-2">Sau khi chạy, Cloudflare sẽ cấp đường link dạng <code>https://abc123.trycloudflare.com</code>. Copy link đó gửi cho học sinh là xong!</p>
+  </div>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+function adminApp() {
+  return {
+    stats: {},
+    keyStatus: { keys: [], active_count: 0, total_count: 0 },
+    submissions: [],
+    examList: [],
+    userList: [],
+    showCreateTeacherModal: false,
+    showChangePassModal: false,
+    userActionMsg: '',
+    userActionOk: true,
+    newTeacherForm: { username: '', fullName: '', password: '' },
+    changePassAdminForm: { username: '', oldPassword: '', newPassword: '' },
+    newKey: '',
+    keyMsg: '',
+    keyMsgOk: true,
+    loadingSample: false,
+    uploading: false,
+    uploadMsg: '',
+    uploadMsgOk: true,
+
+    async init() {
+      await Promise.all([this.loadStats(), this.loadKeyStatus(), this.loadSubmissions(), this.loadExamList(), this.loadUsers()]);
+      // Auto-refresh mỗi 10 giây
+      setInterval(() => { this.loadStats(); this.loadSubmissions(); this.loadKeyStatus(); }, 10000);
+    },
+
+    async loadUsers() {
+      try {
+        const r = await fetch('/api/admin/users');
+        if (r.ok) {
+          const data = await r.json();
+          this.userList = data.users || [];
+        }
+      } catch(e) {}
+    },
+
+    async submitCreateTeacher() {
+      const u = this.newTeacherForm.username.trim();
+      if (!u || u.length < 3) {
+        alert('Tên đăng nhập phải có ít nhất 3 ký tự!');
+        return;
+      }
+      if (!this.newTeacherForm.password || this.newTeacherForm.password.length < 6) {
+        alert('Mật khẩu phải có ít nhất 6 ký tự!');
+        return;
+      }
+      try {
+        const r = await fetch('/api/admin/users/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: u,
+            full_name: this.newTeacherForm.fullName.trim(),
+            password: this.newTeacherForm.password,
+            role: 'teacher'
+          })
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          this.userActionMsg = data.message;
+          this.userActionOk = true;
+          this.showCreateTeacherModal = false;
+          this.newTeacherForm = { username: '', fullName: '', password: '' };
+          await this.loadUsers();
+        } else {
+          alert(data.detail || 'Không thể tạo tài khoản!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    async submitChangePassAdmin() {
+      const u = this.changePassAdminForm.username.trim();
+      if (!u) {
+        alert('Vui lòng nhập tên tài khoản!');
+        return;
+      }
+      if (!this.changePassAdminForm.oldPassword) {
+        alert('Vui lòng nhập mật khẩu hiện tại!');
+        return;
+      }
+      if (!this.changePassAdminForm.newPassword || this.changePassAdminForm.newPassword.length < 6) {
+        alert('Mật khẩu mới phải có ít nhất 6 ký tự!');
+        return;
+      }
+      try {
+        const r = await fetch('/api/admin/users/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: u,
+            old_password: this.changePassAdminForm.oldPassword,
+            new_password: this.changePassAdminForm.newPassword
+          })
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          this.userActionMsg = data.message;
+          this.userActionOk = true;
+          this.showChangePassModal = false;
+          this.changePassAdminForm = { username: '', oldPassword: '', newPassword: '' };
+        } else {
+          alert(data.detail || 'Không thể đổi mật khẩu!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    async deleteUserAccount(username) {
+      if (!username) return;
+      if (username.toLowerCase() === 'admin') {
+        alert("Tài khoản 'admin' là tài khoản mặc định và KHÔNG THỂ XÓA!");
+        return;
+      }
+      if (!confirm(`Bạn có chắc muốn xóa tài khoản giáo viên "${username}" không?\nThao tác này không thể hoàn tác!`)) return;
+      try {
+        const r = await fetch('/api/admin/users/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: username })
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          this.userActionMsg = data.message;
+          this.userActionOk = true;
+          await this.loadUsers();
+        } else {
+          alert(data.detail || 'Không thể xóa tài khoản!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    async loadStats() {
+      try {
+        const r = await fetch('/api/admin/stats');
+        if (r.ok) this.stats = await r.json();
+      } catch(e) {}
+    },
+
+    async loadKeyStatus() {
+      try {
+        const r = await fetch('/api/admin/keys/status');
+        if (r.ok) this.keyStatus = await r.json();
+      } catch(e) {}
+    },
+
+    async loadSubmissions() {
+      try {
+        const r = await fetch('/api/admin/submissions');
+        if (r.ok) {
+          const data = await r.json();
+          this.submissions = data.submissions || [];
+        }
+      } catch(e) {}
+    },
+
+    async loadExamList() {
+      try {
+        const r = await fetch('/api/exam-builder/list');
+        if (r.ok) {
+          const data = await r.json();
+          this.examList = data.exams || [];
+        }
+      } catch(e) {}
+    },
+
+    async addSampleExam() {
+      this.loadingSample = true;
+      try {
+        const r = await fetch('/api/exam-builder/sample/add-to-system', { method: 'POST' });
+        const data = await r.json();
+        if (r.ok) {
+          alert('🎉 ' + data.message);
+          await this.loadExamList();
+        } else {
+          alert(data.detail || 'Không thể nạp đề thi mẫu!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+      this.loadingSample = false;
+    },
+
+    async uploadExamFile(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      this.uploading = true;
+      this.uploadMsg = '';
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const r = await fetch('/api/exam-builder/upload-file', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await r.json();
+        if (r.ok) {
+          this.uploadMsg = data.message;
+          this.uploadMsgOk = true;
+          await this.loadExamList();
+        } else {
+          this.uploadMsg = data.detail || 'Lỗi khi xử lý file đề thi!';
+          this.uploadMsgOk = false;
+        }
+      } catch(e) {
+        this.uploadMsg = 'Lỗi kết nối khi tải file lên máy chủ!';
+        this.uploadMsgOk = false;
+      }
+      this.uploading = false;
+      event.target.value = ''; // Reset input
+    },
+
+    async deleteSubmission(subId, studentName) {
+      if (!confirm(`Bạn có chắc muốn xóa bài làm của thí sinh "${studentName || subId}"?\nThao tác này không thể khôi phục!`)) return;
+      try {
+        const r = await fetch(`/api/admin/submissions/${subId}`, { method: 'DELETE' });
+        const data = await r.json();
+        if (r.ok) {
+          await this.loadSubmissions();
+          await this.loadStats();
+        } else {
+          alert(data.detail || 'Lỗi khi xóa bài làm!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    async clearAllSubmissions() {
+      if (!confirm('⚠️ CẢNH BÁO:\nBạn có chắc chắn muốn XÓA TOÀN BỘ bài nộp của học sinh để bắt đầu ca thi mới?\nThao tác này KHÔNG THỂ khôi phục!')) return;
+      try {
+        const r = await fetch('/api/admin/submissions/clear/all', { method: 'DELETE' });
+        const data = await r.json();
+        if (r.ok) {
+          alert(data.message);
+          await this.loadSubmissions();
+          await this.loadStats();
+        } else {
+          alert(data.detail || 'Lỗi khi xóa bài nộp!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    async deleteExam(examId, title) {
+      if (!confirm(`Xóa đề thi "${title}"?\nThao tác này không thể khôi phục!`)) return;
+      try {
+        const r = await fetch(`/api/exam-builder/delete/${examId}`, { method: 'DELETE' });
+        const data = await r.json();
+        if (r.ok) {
+          alert(data.message);
+          await this.loadExamList();
+        } else {
+          alert(data.detail || 'Lỗi xóa đề!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối!');
+      }
+    },
+
+    async addKey() {
+      const key = this.newKey.trim();
+      if (!key) return;
+      try {
+        const r = await fetch('/api/admin/keys/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ api_key: key })
+        });
+        const data = await r.json();
+        if (r.ok) {
+          this.keyMsg = data.message;
+          this.keyMsgOk = true;
+          this.newKey = '';
+          await this.loadKeyStatus();
+        } else {
+          this.keyMsg = data.detail || 'Lỗi!';
+          this.keyMsgOk = false;
+        }
+      } catch(e) {
+        this.keyMsg = 'Lỗi kết nối!';
+        this.keyMsgOk = false;
+      }
+      setTimeout(() => this.keyMsg = '', 4000);
+    }
+  };
+}
+</script>
+</body>
+</html>

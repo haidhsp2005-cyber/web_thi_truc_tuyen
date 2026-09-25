@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C environments & virtualenvs
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Database SQLite cục bộ (hệ thống sẽ tự khởi tạo trên server)
+data/exam_db.sqlite
+data/exam_db.sqlite-journal
+
+# Logs
+*.log
+logs/
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
