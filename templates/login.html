@@ -39,7 +39,7 @@
   <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
     
     <!-- Thanh điều hướng Tab -->
-    <div class="bg-gray-100 p-2 border-b grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs sm:text-sm font-bold">
+    <div class="bg-gray-100 p-2 border-b grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-xs sm:text-sm font-bold">
       <button 
         type="button" 
         @click="switchTab('login')"
@@ -68,16 +68,6 @@
       >
         <span>➕</span>
         <span>Tạo tài khoản</span>
-      </button>
-
-      <button 
-        type="button" 
-        @click="switchTab('manage_users')"
-        :class="activeTab === 'manage_users' ? 'tab-active' : 'tab-inactive'"
-        class="py-2.5 px-3 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
-      >
-        <span>👥</span>
-        <span>DS & Xóa TK</span>
       </button>
     </div>
 
@@ -148,13 +138,6 @@
             >
               <span x-text="loginForm.showPassword ? '🙈' : '👁️'"></span>
             </button>
-          </div>
-        </div>
-
-        <div class="bg-blue-50/80 rounded-2xl p-3 border border-blue-100 text-xs text-blue-800 flex items-start gap-2">
-          <span>💡</span>
-          <div>
-            <strong>Tài khoản mặc định:</strong> Tên đăng nhập: <code class="bg-white px-1.5 py-0.5 rounded font-mono font-bold text-blue-900 border">admin</code> | Mật khẩu: <code class="bg-white px-1.5 py-0.5 rounded font-mono font-bold text-blue-900 border">Longcang2026@</code>
           </div>
         </div>
 
@@ -343,96 +326,13 @@
     </div>
 
 
-    <!-- ================= TAB 4: QUẢN LÝ & XÓA TÀI KHOẢN ================= -->
-    <div x-show="activeTab === 'manage_users'" x-cloak class="p-6 sm:p-8 space-y-5">
-      <div class="flex items-center justify-between border-b pb-3 mb-2">
-        <div>
-          <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <span>👥</span>
-            <span>Danh sách Tài khoản Hệ thống</span>
-          </h2>
-          <p class="text-xs text-gray-500 mt-0.5">Quản lý và xóa tài khoản giáo viên khi không còn sử dụng.</p>
-        </div>
-        <button 
-          type="button" 
-          @click="loadUsersList()" 
-          class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-xl border flex items-center gap-1 cursor-pointer"
-        >
-          <span>🔄</span> <span>Làm mới</span>
-        </button>
-      </div>
-
-      <!-- Danh sách users -->
-      <div class="space-y-3">
-        <template x-for="u in userList" :key="u.id || u.username">
-          <div class="p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-            :class="u.is_protected || u.username.toLowerCase() === 'admin' ? 'bg-blue-50/70 border-blue-200' : 'bg-gray-50 border-gray-200 hover:border-gray-300'"
-          >
-            <div class="flex items-start gap-3">
-              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                :class="u.is_protected || u.username.toLowerCase() === 'admin' ? 'bg-blue-900 text-white' : 'bg-white border text-gray-700'"
-              >
-                <span x-text="u.is_protected || u.username.toLowerCase() === 'admin' ? '👑' : '👨‍🏫'"></span>
-              </div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="font-bold text-gray-900 text-sm" x-text="u.username"></span>
-                  <span x-show="u.full_name" class="text-xs text-gray-500" x-text="'(' + u.full_name + ')'"></span>
-                  
-                  <!-- Badge bảo vệ Admin -->
-                  <template x-if="u.is_protected || u.username.toLowerCase() === 'admin'">
-                    <span class="inline-flex items-center gap-1 bg-blue-900 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
-                      <span>🔒</span> <span>MẶC ĐỊNH (BẢO VỆ)</span>
-                    </span>
-                  </template>
-
-                  <!-- Badge Giáo viên -->
-                  <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin'">
-                    <span class="inline-flex items-center gap-1 bg-green-100 text-green-800 text-[11px] font-bold px-2 py-0.5 rounded-full border border-green-200">
-                      <span>✓</span> <span>Giáo viên</span>
-                    </span>
-                  </template>
-                </div>
-                <p class="text-xs text-gray-500 mt-1" x-text="'Ngày tạo: ' + (u.created_at || 'Mặc định hệ thống')"></p>
-              </div>
-            </div>
-
-            <!-- Hành động -->
-            <div class="flex items-center gap-2 self-end sm:self-center">
-              <template x-if="u.is_protected || u.username.toLowerCase() === 'admin'">
-                <span class="text-xs text-gray-400 italic font-medium px-2 py-1 bg-white/80 rounded-lg border border-gray-200">
-                  🚫 Không thể xóa
-                </span>
-              </template>
-
-              <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin'">
-                <button 
-                  type="button" 
-                  @click="handleDeleteUser(u.username)"
-                  class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 font-bold px-3 py-1.5 rounded-xl text-xs border border-red-200 transition-all flex items-center gap-1 cursor-pointer"
-                  title="Xóa tài khoản giáo viên này"
-                >
-                  <span>🗑️</span>
-                  <span>Xóa tài khoản</span>
-                </button>
-              </template>
-            </div>
-          </div>
-        </template>
-
-        <div x-show="userList.length === 0" class="text-center py-6 text-gray-400 text-xs">
-          Đang tải danh sách tài khoản...
-        </div>
-      </div>
-    </div>
-
     <!-- Footer card -->
     <div class="bg-gray-50 border-t px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
       <a href="/" class="inline-flex items-center gap-1.5 text-gray-600 hover:text-blue-900 font-semibold transition-colors">
         <span>🏠</span>
         <span>Quay lại trang thi học sinh</span>
       </a>
-      <span class="text-gray-400">Tài khoản mặc định: admin • Mật khẩu: Longcang2026@</span>
+      <span class="text-gray-400">Hệ thống bảo mật phục vụ công tác kiểm tra & thi trực tuyến</span>
     </div>
 
   </div>
@@ -448,7 +348,7 @@
 <script>
 function adminLoginApp() {
   return {
-    activeTab: 'login', // 'login' | 'change_pass' | 'create_user' | 'manage_users'
+    activeTab: 'login', // 'login' | 'change_pass' | 'create_user'
     loading: false,
     errorMessage: '',
     successMessage: '',
@@ -475,8 +375,6 @@ function adminLoginApp() {
       confirmPassword: ''
     },
 
-    userList: [],
-
     init() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('next')) {
@@ -485,7 +383,6 @@ function adminLoginApp() {
       if (params.get('tab')) {
         this.switchTab(params.get('tab'));
       }
-      this.loadUsersList();
       this.$nextTick(() => {
         document.getElementById('login_username_input')?.focus();
       });
@@ -495,9 +392,6 @@ function adminLoginApp() {
       this.activeTab = tab;
       this.errorMessage = '';
       this.successMessage = '';
-      if (tab === 'manage_users') {
-        this.loadUsersList();
-      }
     },
 
     async handleLogin() {
@@ -639,10 +533,10 @@ function adminLoginApp() {
             password: '',
             confirmPassword: ''
           };
-          await this.loadUsersList();
-          // Chuyển sang tab danh sách sau 1.2s
+          // Chuyển sang tab đăng nhập sau 1.2s
           setTimeout(() => {
-            this.switchTab('manage_users');
+            this.loginForm.username = u;
+            this.switchTab('login');
           }, 1200);
         } else {
           this.errorMessage = data.detail || 'Không thể tạo tài khoản!';
@@ -651,51 +545,6 @@ function adminLoginApp() {
         this.errorMessage = 'Lỗi kết nối khi tạo tài khoản!';
       }
       this.loading = false;
-    },
-
-    async loadUsersList() {
-      try {
-        const resp = await fetch('/api/admin/users');
-        const data = await resp.json();
-        if (resp.ok && data.users) {
-          this.userList = data.users;
-        }
-      } catch (err) {
-        console.error('Lỗi khi tải danh sách users:', err);
-      }
-    },
-
-    async handleDeleteUser(username) {
-      if (!username) return;
-      if (username.toLowerCase() === 'admin') {
-        alert("Tài khoản 'admin' là tài khoản hệ thống mặc định và KHÔNG THỂ XÓA!");
-        return;
-      }
-
-      if (!confirm(`Bạn có chắc chắn muốn xóa tài khoản giáo viên "${username}" không?\nThao tác này không thể hoàn tác!`)) {
-        return;
-      }
-
-      this.errorMessage = '';
-      this.successMessage = '';
-
-      try {
-        const resp = await fetch('/api/admin/users/delete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: username })
-        });
-
-        const data = await resp.json();
-        if (resp.ok && data.success) {
-          this.successMessage = data.message || `Đã xóa tài khoản "${username}" thành công!`;
-          await this.loadUsersList();
-        } else {
-          this.errorMessage = data.detail || 'Không thể xóa tài khoản!';
-        }
-      } catch (err) {
-        this.errorMessage = 'Lỗi kết nối khi xóa tài khoản!';
-      }
     }
   };
 }

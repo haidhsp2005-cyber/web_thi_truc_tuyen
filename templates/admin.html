@@ -13,7 +13,13 @@
   <div class="max-w-6xl mx-auto flex items-center justify-between">
     <div class="flex items-center gap-3">
       <span class="text-2xl">⚙️</span>
-      <h1 class="text-xl font-bold">Bảng Điều Khiển - Giáo Viên</h1>
+      <div>
+        <h1 class="text-xl font-bold">Bảng Điều Khiển - Quản Trị & Giáo Viên</h1>
+        <p class="text-xs text-blue-200 mt-0.5" x-show="currentUser" x-cloak>
+          Đang đăng nhập: <strong class="text-white" x-text="currentUser.full_name || currentUser.username"></strong> 
+          (<span x-text="isAdmin() ? 'Quản trị viên (Toàn quyền)' : 'Giáo viên'"></span>)
+        </p>
+      </div>
     </div>
     <div class="flex items-center gap-2">
       <a href="/" class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">🏠 Trang học sinh</a>
@@ -445,10 +451,18 @@
                     <span class="text-xs text-gray-400 italic">Không thể xóa</span>
                   </template>
                   <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin'">
-                    <button @click="deleteUserAccount(u.username)" 
-                      class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-red-200">
-                      🗑️ Xóa
-                    </button>
+                    <div>
+                      <template x-if="isAdmin()">
+                        <button @click="deleteUserAccount(u.username)" 
+                          class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-red-200"
+                          title="Xóa tài khoản giáo viên này">
+                          🗑️ Xóa
+                        </button>
+                      </template>
+                      <template x-if="!isAdmin()">
+                        <span class="text-xs text-gray-400 italic" title="Chỉ tài khoản admin mới có quyền xóa tài khoản">Chỉ Admin mới được xóa</span>
+                      </template>
+                    </div>
                   </template>
                 </td>
               </tr>
@@ -538,6 +552,7 @@
 <script>
 function adminApp() {
   return {
+    currentUser: null,
     stats: {},
     keyStatus: { keys: [], active_count: 0, total_count: 0 },
     submissions: [],
@@ -558,9 +573,23 @@ function adminApp() {
     uploadMsgOk: true,
 
     async init() {
-      await Promise.all([this.loadStats(), this.loadKeyStatus(), this.loadSubmissions(), this.loadExamList(), this.loadUsers()]);
+      await Promise.all([this.loadCurrentUser(), this.loadStats(), this.loadKeyStatus(), this.loadSubmissions(), this.loadExamList(), this.loadUsers()]);
       // Auto-refresh mỗi 10 giây
       setInterval(() => { this.loadStats(); this.loadSubmissions(); this.loadKeyStatus(); }, 10000);
+    },
+
+    async loadCurrentUser() {
+      try {
+        const r = await fetch('/api/admin/me');
+        if (r.ok) {
+          const d = await r.json();
+          this.currentUser = d.user;
+        }
+      } catch(e) {}
+    },
+
+    isAdmin() {
+      return this.currentUser && (this.currentUser.role === 'admin' || this.currentUser.username?.toLowerCase() === 'admin');
     },
 
     async loadUsers() {
@@ -648,6 +677,10 @@ function adminApp() {
     },
 
     async deleteUserAccount(username) {
+      if (!this.isAdmin()) {
+        alert("Chỉ tài khoản Quản trị viên (admin) mới có quyền xóa tài khoản!");
+        return;
+      }
       if (!username) return;
       if (username.toLowerCase() === 'admin') {
         alert("Tài khoản 'admin' là tài khoản mặc định và KHÔNG THỂ XÓA!");

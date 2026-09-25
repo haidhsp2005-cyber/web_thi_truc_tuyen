@@ -143,11 +143,19 @@ async def change_password(req: ChangePasswordRequest, request: Request):
 
 @router.post("/users/delete")
 @router.delete("/users/{username}")
-async def remove_user(username: str = None, req: DeleteUserRequest = None):
+async def remove_user(request: Request, username: str = None, req: DeleteUserRequest = None):
     """
     Xóa tài khoản giáo viên.
+    CHỈ CÓ TÀI KHOẢN ADMIN MỚI CÓ QUYỀN XÓA TÀI KHOẢN.
     KHÔNG BAO GIỜ CHO PHÉP XÓA TÀI KHOẢN ADMIN MẶC ĐỊNH.
     """
+    current_user = get_current_user_from_request(request)
+    if not current_user or (current_user.get("role") != "admin" and current_user.get("username", "").lower() != "admin"):
+        raise HTTPException(
+            status_code=403,
+            detail="Quyền bị từ chối: Chỉ có tài khoản Quản trị viên (admin) mới có quyền xóa tài khoản!"
+        )
+
     target = ""
     if req and req.username:
         target = req.username.strip()
