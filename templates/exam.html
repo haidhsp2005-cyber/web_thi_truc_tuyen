@@ -597,6 +597,14 @@ function examApp() {
       }
       let str = String(rawText);
 
+      // Pre-sanitize unicode math symbols
+      str = str.replace(/−/g, '-').replace(/′/g, "'");
+
+      // Auto-repair broken system braces like ${x+y=502x-y=10$ or ${ax+by=c...$
+      str = str.replace(/\$\{([^$]+?)\$/g, (match, body) => {
+        return `$\\begin{cases} ${body} \\end{cases}$`;
+      });
+
       // 1. $$...$$ or \[...\]
       str = str.replace(/(?:\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\])/g, (match, p1, p2) => {
         const expr = (p1 !== undefined ? p1 : p2).trim();
@@ -607,8 +615,8 @@ function examApp() {
         }
       });
 
-      // 2. $...$ or \(...\)
-      str = str.replace(/(?:\$([^\$\n]+?)\$|\\\(([\s\S]*?)\\\))/g, (match, p1, p2) => {
+      // 2. $...$ or \(...\) (supports multiline equations)
+      str = str.replace(/(?:\$((?:\\\$|[^\$])+?)\$|\\\(([\s\S]*?)\\\))/g, (match, p1, p2) => {
         const expr = (p1 !== undefined ? p1 : p2).trim();
         try {
           return katex.renderToString(expr, { displayMode: false, throwOnError: false });

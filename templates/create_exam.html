@@ -234,10 +234,13 @@
     <button @click="activeTab='p4'" :class="activeTab==='p4' ? 'active':''" class="tab-btn whitespace-nowrap">
       📄 Phần IV - Tự luận (<span x-text="exam.parts.part4.questions.length"></span>)
     </button>
+    <button @click="activeTab='all'" :class="activeTab==='all' ? 'active':''" class="tab-btn whitespace-nowrap bg-amber-50 text-amber-900 border-amber-300 font-bold hover:bg-amber-100">
+      👁️ Xem tất cả (<span x-text="totalQuestionsCount"></span> câu)
+    </button>
   </div>
 
   <!-- ======= PHẦN I: TNKQ ======= -->
-  <div x-show="activeTab==='p1'" x-cloak>
+  <div x-show="activeTab==='p1' || activeTab==='all'" x-cloak class="mb-8">
     <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-4 text-sm text-indigo-900 flex items-center justify-between">
       <div>
         <strong>Phần I (5.0 điểm):</strong> Trắc nghiệm 4 lựa chọn. Nhập nội dung câu hỏi, 4 phương án A/B/C/D và click vào chữ cái để chọn đáp án đúng.
@@ -319,7 +322,7 @@
   </div>
 
   <!-- ======= PHẦN II: ĐÚNG/SAI ======= -->
-  <div x-show="activeTab==='p2'" x-cloak>
+  <div x-show="activeTab==='p2' || activeTab==='all'" x-cloak class="mb-8">
     <div class="bg-purple-50 border border-purple-200 rounded-2xl p-4 mb-4 text-sm text-purple-900 flex items-center justify-between">
       <div>
         <strong>Phần II:</strong> Trắc nghiệm Đúng / Sai. Mỗi câu gồm mô tả và 4 ý a), b), c), d). Click chọn <strong>Đúng</strong> hoặc <strong>Sai</strong> cho từng ý.
@@ -383,7 +386,7 @@
   </div>
 
   <!-- ======= PHẦN III: TRẢ LỜI NGẮN ======= -->
-  <div x-show="activeTab==='p3'" x-cloak>
+  <div x-show="activeTab==='p3' || activeTab==='all'" x-cloak class="mb-8">
     <div class="bg-teal-50 border border-teal-200 rounded-2xl p-4 mb-4 text-sm text-teal-900 flex items-center justify-between">
       <div>
         <strong>Phần III:</strong> Trả lời ngắn. Thí sinh tự điền số hoặc kết quả vào ô trống. Nhập đáp án chính và các đáp án tương đương (nếu có).
@@ -442,7 +445,7 @@
   </div>
 
   <!-- ======= PHẦN IV: TỰ LUẬN ======= -->
-  <div x-show="activeTab==='p4'" x-cloak>
+  <div x-show="activeTab==='p4' || activeTab==='all'" x-cloak class="mb-8">
     <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-4 text-sm text-orange-900 flex items-center justify-between">
       <div>
         <strong>Phần IV (Tùy chọn):</strong> Tự luận. Nếu đề thi không có tự luận (như đề thi THPT 100% trắc nghiệm), để trống phần này. Nếu có, AI sẽ chấm theo rubric.
@@ -962,6 +965,14 @@ function examBuilder() {
 
       let str = String(rawText);
 
+      // Pre-sanitize unicode math symbols
+      str = str.replace(/−/g, '-').replace(/′/g, "'");
+
+      // Auto-repair broken system braces like ${x+y=502x-y=10$ or ${ax+by=c...$
+      str = str.replace(/\$\{([^$]+?)\$/g, (match, body) => {
+        return `$\\begin{cases} ${body} \\end{cases}$`;
+      });
+
       // 1. $$...$$ or \[...\] -> displayMode
       str = str.replace(/(?:\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\])/g, (match, p1, p2) => {
         const expr = (p1 !== undefined ? p1 : p2).trim();
@@ -972,8 +983,8 @@ function examBuilder() {
         }
       });
 
-      // 2. $...$ or \(...\) -> inlineMode
-      str = str.replace(/(?:\$([^\$\n]+?)\$|\\\(([\s\S]*?)\\\))/g, (match, p1, p2) => {
+      // 2. $...$ or \(...\) -> inlineMode (supports multiline equations)
+      str = str.replace(/(?:\$((?:\\\$|[^\$])+?)\$|\\\(([\s\S]*?)\\\))/g, (match, p1, p2) => {
         const expr = (p1 !== undefined ? p1 : p2).trim();
         try {
           return katex.renderToString(expr, { displayMode: false, throwOnError: false });

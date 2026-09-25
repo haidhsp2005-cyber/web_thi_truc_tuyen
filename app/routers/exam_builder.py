@@ -156,8 +156,54 @@ def _is_run_red_or_marked(run) -> tuple[bool, bool]:
     return is_red, is_underline
 
 
+def _sanitize_math_symbols(math_latex: str) -> str:
+    """Chuẩn hóa các ký tự toán học Unicode sang chuẩn LaTeX KaTeX."""
+    if not math_latex:
+        return ""
+    # Thay thế các ký hiệu Unicode bằng lệnh LaTeX tương đương
+    replacements = [
+        ("−", "-"),
+        ("′", "'"),
+        ("≠", "\\neq "),
+        ("≤", "\\le "),
+        ("≥", "\\ge "),
+        ("×", "\\times "),
+        ("·", "\\cdot "),
+        ("±", "\\pm "),
+        ("∞", "\\infty "),
+        ("÷", "\\div "),
+        ("∠", "\\angle "),
+        ("⊥", "\\perp "),
+        ("∥", "\\parallel "),
+        ("≈", "\\approx "),
+        ("∈", "\\in "),
+        ("∉", "\\notin "),
+        ("⊂", "\\subset "),
+        ("⊃", "\\supset "),
+        ("∪", "\\cup "),
+        ("∩", "\\cap "),
+        ("∅", "\\emptyset "),
+        ("∆", "\\Delta "),
+        ("Δ", "\\Delta "),
+        ("π", "\\pi "),
+        ("α", "\\alpha "),
+        ("β", "\\beta "),
+        ("γ", "\\gamma "),
+        ("λ", "\\lambda "),
+        ("θ", "\\theta "),
+        ("ω", "\\omega "),
+    ]
+    for orig, rep in replacements:
+        math_latex = math_latex.replace(orig, rep)
+    
+    # Chuẩn hóa biến có dấu phẩy trên: {a}^{'} -> a', {x}_{0} -> x_0
+    math_latex = re.sub(r"\{([a-zA-Z])\}\^\{'\}", r"\1'", math_latex)
+    math_latex = re.sub(r"\{([a-zA-Z])\}\^\{′\}", r"\1'", math_latex)
+    return math_latex.strip()
+
+
 def _omml_node_to_latex(node) -> str:
-    """Chuyển đổi một node Word Office Math (OMML) sang cú pháp LaTeX."""
+    """Chuyển đổi một node Word Office Math (OMML) sang cú pháp LaTeX chuẩn KaTeX."""
     tag = node.tag.split("}")[-1]
     if tag == "t":
         return node.text or ""
@@ -184,9 +230,51 @@ def _omml_node_to_latex(node) -> str:
         sub = "".join(_omml_node_to_latex(c) for c in (node.xpath('./*[local-name()="sub"]') or []))
         sup = "".join(_omml_node_to_latex(c) for c in (node.xpath('./*[local-name()="sup"]') or []))
         return f"{{{base}}}_{{{sub}}}^{{{sup}}}"
+    elif tag == "eqArr":  # Mảng phương trình (hệ phương trình trong Word OMML)
+        rows = []
+        for e in node.xpath('./*[local-name()="e"]'):
+            row_txt = "".join(_omml_node_to_latex(c) for c in e).strip()
+            if row_txt:
+                rows.append(row_txt)
+        return " \\\\ ".join(rows)
+    elif tag == "m":  # Ma trận
+        mr_list = node.xpath('./*[local-name()="mr"]')
+        rows = []
+        for mr in mr_list:
+            cells = ["".join(_omml_node_to_latex(c) for c in e).strip() for e in mr.xpath('./*[local-name()="e"]')]
+            rows.append(" & ".join(cells))
+        return " \\\\ ".join(rows)
     elif tag == "d":  # Dấu ngoặc (delimiters)
-        e = "".join(_omml_node_to_latex(c) for c in (node.xpath('./*[local-name()="e"]') or []))
-        return f"({e})"
+        beg_list = node.xpath('./*[local-name()="dPr"]/*[local-name()="begChr"]/@*[local-name()="val"]')
+        end_list = node.xpath('./*[local-name()="dPr"]/*[local-name()="endChr"]/@*[local-name()="val"]')
+        
+        beg = beg_list[0] if beg_list else "("
+        end = end_list[0] if end_list else ")"
+
+        # Lấy nội dung các phần tử con bên trong delimiter
+        e_elements = node.xpath('./*[local-name()="e"]')
+        content_parts = []
+        for e in e_elements:
+            t = "".join(_omml_node_to_latex(c) for c in e).strip()
+            if t:
+                content_parts.append(t)
+        content = " \\\\ ".join(content_parts)
+
+        # Xử lý trường hợp hệ phương trình: begChr là '{' và endChr rỗng
+        if beg == "{" and (not end or end == ""):
+            return f"\\begin{{cases}} {content} \\end{{cases}}"
+        elif beg == "{" and end == "}":
+            return f"\\left\\{{ {content} \\right\\}}"
+        elif beg == "[" and end == "]":
+            return f"\\left[ {content} \\right]"
+        elif beg == "(" and end == ")":
+            return f"\\left( {content} \\right)"
+        elif beg == "|" and end == "|":
+            return f"\\left| {content} \\right|"
+        elif not end:
+            return f"\\left{beg} {content} \\right."
+        else:
+            return f"\\left{beg} {content} \\right{end}"
     elif tag == "groupChr":  # Dấu vectơ hoặc gạch ngang trên đầu: \vec{u}
         e = "".join(_omml_node_to_latex(c) for c in (node.xpath('./*[local-name()="e"]') or []))
         return f"\\vec{{{e}}}"
@@ -216,7 +304,8 @@ def _extract_element_runs_and_math(elem, p) -> List[str]:
             else:
                 parts.append(txt)
         elif tag in ("oMath", "oMathPara"):
-            math_latex = _omml_node_to_latex(child).strip()
+            raw_math = _omml_node_to_latex(child).strip()
+            math_latex = _sanitize_math_symbols(raw_math)
             if math_latex:
                 parts.append(f" ${math_latex}$ ")
         elif tag == "hyperlink":
@@ -225,30 +314,38 @@ def _extract_element_runs_and_math(elem, p) -> List[str]:
 
 
 def _extract_docx_paragraphs_with_format(doc) -> List[str]:
-    """Trích xuất văn bản từ file Word bảo toàn thông tin chữ in đỏ, gạch chân và công thức toán OMML."""
+    """
+    Trích xuất văn bản từ file Word bảo toàn thứ tự tự nhiên của các đoạn văn và bảng biểu (tables),
+    đồng thời giữ thông tin chữ in đỏ, gạch chân và chuyển đổi công thức toán OMML sang LaTeX chuẩn.
+    """
+    import docx
     paragraphs = []
 
-    for p in doc.paragraphs:
-        annotated_runs = _extract_element_runs_and_math(p._element, p)
-        line = "".join(annotated_runs).strip()
-        if line:
-            paragraphs.append(line)
-
-    for table in doc.tables:
-        for row in table.rows:
-            row_parts = []
-            for cell in row.cells:
-                cell_parts = []
-                for p in cell.paragraphs:
-                    cell_runs = _extract_element_runs_and_math(p._element, p)
-                    t = "".join(cell_runs).strip()
-                    if t:
-                        cell_parts.append(t)
-                cell_text = " ".join(cell_parts).strip()
-                if cell_text:
-                    row_parts.append(cell_text)
-            if row_parts:
-                paragraphs.append("  ".join(row_parts))
+    # Duyệt qua các phần tử con của body theo đúng thứ tự xuất hiện trong tài liệu
+    for child in doc.element.body:
+        tag = child.tag.split("}")[-1]
+        if tag == "p":
+            p = docx.text.paragraph.Paragraph(child, doc)
+            annotated_runs = _extract_element_runs_and_math(child, p)
+            line = "".join(annotated_runs).strip()
+            if line:
+                paragraphs.append(line)
+        elif tag == "tbl":
+            table = docx.table.Table(child, doc)
+            for row in table.rows:
+                row_parts = []
+                for cell in row.cells:
+                    cell_parts = []
+                    for p in cell.paragraphs:
+                        cell_runs = _extract_element_runs_and_math(p._element, p)
+                        t = "".join(cell_runs).strip()
+                        if t:
+                            cell_parts.append(t)
+                    cell_text = " ".join(cell_parts).strip()
+                    if cell_text:
+                        row_parts.append(cell_text)
+                if row_parts:
+                    paragraphs.append("  ".join(row_parts))
 
     return paragraphs
 
@@ -464,34 +561,62 @@ async def delete_exam(exam_id: str):
 
 def _extract_blocks(text_segment: str) -> List[str]:
     """Tách đoạn văn thành từng khối câu hỏi bắt đầu bằng Câu X:, Bài X:, Cau X: hoặc Question X:"""
-    raw_blocks = re.split(r"(?=(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:C[âa]u|B[àa]i|Question)\s+\d+[\.:\-\/\s])", text_segment, flags=re.IGNORECASE)
+    # Khớp Câu X:, [Câu X], (Câu X), Bài X:, Question X:...
+    pattern = r"(?=(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)\s*\d+(?:\]|\))?[\.:\-\/\s\)])"
+    raw_blocks = re.split(pattern, text_segment, flags=re.IGNORECASE)
     blocks = []
     for b in raw_blocks:
         b_clean = b.strip()
         start_probe = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*", "", b_clean)
-        if re.match(r"^(?:C[âa]u|B[àa]i|Question)\s+\d+", start_probe, re.IGNORECASE):
+        if re.match(r"^(?:\[|\()?(?:C[âa]u|B[àa]i|Question)\s*\d+", start_probe, re.IGNORECASE):
             blocks.append(b_clean)
+
+    # Dự phòng: Nếu đề không dùng chữ "Câu/Bài", mà chỉ đánh số "1.", "2." ở đầu dòng
+    if not blocks:
+        num_pattern = r"(?=(?:^|\n)\s*(?:\[|\()?\d+[\.:\-\)\/]\s+)"
+        raw_num_blocks = re.split(num_pattern, text_segment)
+        for b in raw_num_blocks:
+            b_clean = b.strip()
+            if re.match(r"^(?:\[|\()?\d+[\.:\-\)\/]\s+", b_clean):
+                blocks.append(b_clean)
+
     return blocks
 
 
-def _parse_part1_block(q_block: str) -> Optional[dict]:
+def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty_if_missing: bool = False) -> Optional[dict]:
     """Phân tích một khối câu hỏi thành câu trắc nghiệm 4 lựa chọn (Phần I)."""
-    # Không dùng IGNORECASE để phân biệt A, B, C, D (hoa) với a, b, c, d (thường) của Phần II
-    opt_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<key>[A-D])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)[\.\)\:\/\-]\s*(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+    # Khớp A., A:, A), A/, A-, (A), [A]. Nếu allow_lowercase=True, hỗ trợ cả a, b, c, d
+    if allow_lowercase:
+        opt_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-Da-d])[\)\]]|(?P<key_plain>[A-Da-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+    else:
+        opt_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-D])[\)\]]|(?P<key_plain>[A-D])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+
     matches = list(re.finditer(opt_regex, q_block))
+
+    # Nếu không tìm thấy ít nhất 2 phương án
     if len(matches) < 2:
+        if create_empty_if_missing:
+            # Vẫn giữ câu hỏi, tạo 4 lựa chọn trống để giáo viên bổ sung thay vì làm mất câu
+            raw_q_text = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
+            q_text = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_q_text).strip()
+            return {
+                "text": q_text,
+                "options": {"A": "", "B": "", "C": "", "D": ""},
+                "answer": "A",
+                "explanation": ""
+            }
         return None
 
     first_opt_start = matches[0].start()
     raw_q_text = q_block[:first_opt_start].strip()
-    raw_q_text = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:C[âa]u|B[àa]i|Question)\s+\d+[\.:\-\/\s]*", "", raw_q_text, flags=re.IGNORECASE)
+    raw_q_text = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", raw_q_text, flags=re.IGNORECASE)
     q_text = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_q_text).strip()
 
     options = {"A": "", "B": "", "C": "", "D": ""}
     detected_answer = ""
 
     for idx, m in enumerate(matches):
-        key = m.group("key").upper()
+        key = (m.group("key_b") or m.group("key_plain")).upper()
         content_start = m.end()
         content_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(q_block)
         raw_val = q_block[content_start:content_end].strip()
@@ -523,24 +648,36 @@ def _parse_part1_block(q_block: str) -> Optional[dict]:
     }
 
 
-def _parse_part2_block(q_block: str, doc_has_red: bool = False) -> Optional[dict]:
+def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_missing: bool = False) -> Optional[dict]:
     """Phân tích một khối câu hỏi thành câu trắc nghiệm Đúng/Sai (Phần II)."""
-    # Không dùng IGNORECASE để chỉ bắt các mệnh đề chữ thường a, b, c, d
-    item_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<key>[a-d])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)[\.\)\:\/\-]\s*(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+    item_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[a-d])[\)\]]|(?P<key_plain>[a-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
     matches = list(re.finditer(item_regex, q_block))
+
     if len(matches) < 2:
+        if create_empty_if_missing:
+            raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
+            q_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc).strip()
+            return {
+                "text": q_desc,
+                "items": {
+                    "a": {"text": "", "answer": True},
+                    "b": {"text": "", "answer": False},
+                    "c": {"text": "", "answer": True},
+                    "d": {"text": "", "answer": False}
+                }
+            }
         return None
 
     first_item_start = matches[0].start()
     raw_desc = q_block[:first_item_start].strip()
-    raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:C[âa]u|B[àa]i|Question)\s+\d+[\.:\-\/\s]*", "", raw_desc, flags=re.IGNORECASE)
+    raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", raw_desc, flags=re.IGNORECASE)
     q_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc).strip()
 
     q_has_red = "{{RED}}" in q_block or "{{UNDERLINE}}" in q_block
     items = {}
 
     for idx, m in enumerate(matches):
-        key = m.group("key").lower()
+        key = (m.group("key_b") or m.group("key_plain")).lower()
         content_start = m.end()
         content_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(q_block)
         raw_val = q_block[content_start:content_end].strip()
@@ -568,7 +705,7 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False) -> Optional[dict
 
 def _parse_part3_block(q_block: str) -> dict:
     """Phân tích câu trả lời ngắn (Phần III)."""
-    clean_q = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:C[âa]u|B[àa]i|Question)\s+\d+[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
+    clean_q = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
     clean_q = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", clean_q).strip()
 
     ans_match = re.search(r"(?:Đáp án|KQ|Kết quả|Đ/A)[:\s]+([^\n]+)", clean_q, re.IGNORECASE)
@@ -591,6 +728,7 @@ async def parse_exam_text(payload: dict):
     """
     Phân tích văn bản đề thi thô thành cấu trúc các phần thi chuẩn.
     Hỗ trợ nhận diện các định dạng: Câu 1, A., B., C., D., a), b), c), d), Đáp án:...
+    Bảo toàn 100% số lượng câu hỏi trong tài liệu, không làm mất bất kỳ câu hỏi nào.
     """
     text = payload.get("text", "").strip()
     if not text:
@@ -669,71 +807,95 @@ async def parse_exam_text(payload: dict):
             
             if current_section:
                 sections[current_section] += "\n" + content
+
+        # Xử lý từng phần khi có phân mục rõ ràng
+        # Phần I: Luôn giữ toàn bộ các câu trong Phần I
+        p1_blocks = _extract_blocks(sections["part1"])
+        for q_block in p1_blocks:
+            # Thử phân tích dạng trắc nghiệm (hỗ trợ cả A-D lẫn a-d)
+            p1_res = _parse_part1_block(q_block, allow_lowercase=True, create_empty_if_missing=True)
+            if p1_res:
+                p1_res["id"] = f"p1_q{len(parsed['parts']['part1']['questions']) + 1}"
+                parsed["parts"]["part1"]["questions"].append(p1_res)
+
+        # Phần II: Trắc nghiệm Đúng/Sai
+        p2_blocks = _extract_blocks(sections["part2"])
+        for q_block in p2_blocks:
+            p2_res = _parse_part2_block(q_block, doc_has_red=has_red_keys, create_empty_if_missing=True)
+            if p2_res:
+                p2_res["id"] = f"p2_q{len(parsed['parts']['part2']['questions']) + 1}"
+                parsed["parts"]["part2"]["questions"].append(p2_res)
+
+        # Phần III: Trả lời ngắn
+        p3_blocks = _extract_blocks(sections["part3"])
+        for q_block in p3_blocks:
+            p3_res = _parse_part3_block(q_block)
+            p3_res["id"] = f"p3_q{len(parsed['parts']['part3']['questions']) + 1}"
+            parsed["parts"]["part3"]["questions"].append(p3_res)
+
+        # Phần IV: Tự luận
+        p4_blocks = _extract_blocks(sections["part4"])
+        for q_block in p4_blocks:
+            clean_q = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
+            clean_q = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", clean_q).strip()
+            first_sentence = clean_q.split(".")[0][:60]
+            parsed["parts"]["part4"]["questions"].append({
+                "id": f"p4_q{len(parsed['parts']['part4']['questions']) + 1}",
+                "title": first_sentence or "Câu tự luận",
+                "text": clean_q,
+                "rubric": {
+                    "max_score": 1.0,
+                    "criteria": [
+                        {"name": "Phương pháp và lập luận", "points": 0.5},
+                        {"name": "Kết quả tính toán chính xác", "points": 0.5}
+                    ],
+                    "sample_answer": ""
+                }
+            })
+
     else:
-        sections["part1"] = text
+        # TRƯỜNG HỢP ĐỀ KHÔNG CÓ TIÊU ĐỀ PHẦN I, PHẦN II (ví dụ đề 20 câu trắc nghiệm thuần túy):
+        # Trích xuất toàn bộ các câu hỏi trong tài liệu
+        all_blocks = _extract_blocks(text)
+        for b in all_blocks:
+            # 1. Kiểm tra xem có phải câu hỏi Đúng/Sai (Phần II) hay không (phải có từ khóa khẳng định hoặc đúng sai)
+            is_explicit_tf = bool(re.search(r"(?:khẳng định sau đúng hay sai|xét tính đúng sai|xét các mệnh đề|xét các khẳng định)", b, re.IGNORECASE))
+            if is_explicit_tf:
+                p2_res = _parse_part2_block(b, doc_has_red=has_red_keys)
+                if p2_res:
+                    p2_res["id"] = f"p2_q{len(parsed['parts']['part2']['questions']) + 1}"
+                    parsed["parts"]["part2"]["questions"].append(p2_res)
+                    continue
 
-    # Xử lý Phần I
-    p1_blocks = _extract_blocks(sections["part1"])
-    for q_block in p1_blocks:
-        p1_res = _parse_part1_block(q_block)
-        if p1_res:
-            p1_res["id"] = f"p1_q{len(parsed['parts']['part1']['questions']) + 1}"
-            parsed["parts"]["part1"]["questions"].append(p1_res)
-        else:
-            # Dự phòng: nếu rơi vào Phần I nhưng lại là dạng Đúng/Sai
-            p2_fallback = _parse_part2_block(q_block, doc_has_red=has_red_keys)
-            if p2_fallback:
-                p2_fallback["id"] = f"p2_q{len(parsed['parts']['part2']['questions']) + 1}"
-                parsed["parts"]["part2"]["questions"].append(p2_fallback)
-            elif len(part_splits) <= 1:
-                # Nếu đề không chia section rõ ràng, thử tiếp dạng Trả lời ngắn
-                p3_fallback = _parse_part3_block(q_block)
-                p3_fallback["id"] = f"p3_q{len(parsed['parts']['part3']['questions']) + 1}"
-                parsed["parts"]["part3"]["questions"].append(p3_fallback)
+            # 2. Thử dạng Trắc nghiệm 4 lựa chọn (Phần I - A, B, C, D)
+            p1_res = _parse_part1_block(b, allow_lowercase=False)
+            if p1_res:
+                p1_res["id"] = f"p1_q{len(parsed['parts']['part1']['questions']) + 1}"
+                parsed["parts"]["part1"]["questions"].append(p1_res)
+                continue
 
-    # Xử lý Phần II
-    p2_blocks = _extract_blocks(sections["part2"])
-    for q_block in p2_blocks:
-        p2_res = _parse_part2_block(q_block, doc_has_red=has_red_keys)
-        if p2_res:
-            p2_res["id"] = f"p2_q{len(parsed['parts']['part2']['questions']) + 1}"
-            parsed["parts"]["part2"]["questions"].append(p2_res)
-        else:
-            # Dự phòng: nếu rơi vào Phần II nhưng lại là dạng Trắc nghiệm 4 lựa chọn
-            p1_fallback = _parse_part1_block(q_block)
+            # 3. Thử dạng Trắc nghiệm với nhãn a), b), c), d)
+            p1_lower = _parse_part1_block(b, allow_lowercase=True)
+            if p1_lower:
+                p1_lower["id"] = f"p1_q{len(parsed['parts']['part1']['questions']) + 1}"
+                parsed["parts"]["part1"]["questions"].append(p1_lower)
+                continue
+
+            # 4. Kiểm tra xem có dòng "Đáp án: <số>" để xếp vào Trả lời ngắn (Phần III)
+            has_ans_line = bool(re.search(r"(?:Đáp án|KQ|Kết quả|Đ/A)[:\s]+[^\n]+", b, re.IGNORECASE))
+            if has_ans_line:
+                p3_res = _parse_part3_block(b)
+                p3_res["id"] = f"p3_q{len(parsed['parts']['part3']['questions']) + 1}"
+                parsed["parts"]["part3"]["questions"].append(p3_res)
+                continue
+
+            # 5. Mặc định đưa vào Phần I để giáo viên chỉnh sửa, TUYỆT ĐỐI KHÔNG LÀM MẤT CÂU
+            p1_fallback = _parse_part1_block(b, allow_lowercase=True, create_empty_if_missing=True)
             if p1_fallback:
                 p1_fallback["id"] = f"p1_q{len(parsed['parts']['part1']['questions']) + 1}"
                 parsed["parts"]["part1"]["questions"].append(p1_fallback)
 
-    # Xử lý Phần III
-    p3_blocks = _extract_blocks(sections["part3"])
-    for q_block in p3_blocks:
-        p3_res = _parse_part3_block(q_block)
-        p3_res["id"] = f"p3_q{len(parsed['parts']['part3']['questions']) + 1}"
-        parsed["parts"]["part3"]["questions"].append(p3_res)
-
-    # Xử lý Phần IV
-    p4_blocks = _extract_blocks(sections["part4"])
-    for q_block in p4_blocks:
-        clean_q = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:C[âa]u|B[àa]i|Question)\s+\d+[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
-        clean_q = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", clean_q).strip()
-        first_sentence = clean_q.split(".")[0][:60]
-        parsed["parts"]["part4"]["questions"].append({
-            "id": f"p4_q{len(parsed['parts']['part4']['questions']) + 1}",
-            "title": first_sentence or "Câu tự luận",
-            "text": clean_q,
-            "rubric": {
-                "max_score": 1.0,
-                "criteria": [
-                    {"name": "Phương pháp và lập luận", "points": 0.5},
-                    {"name": "Kết quả tính toán chính xác", "points": 0.5}
-                ],
-                "sample_answer": ""
-            }
-        })
-
-    # Nếu sau khi phân loại theo section mà vẫn CHƯA CÓ CÂU HỎI NÀO ở cả 4 phần:
-    # Quét toàn văn bản để tự động gom nhặt tất cả các câu hỏi Câu X:
+    # Đảm bảo tổng số câu tìm được: nếu sau các bước mà vẫn rỗng, quét toàn bộ dòng
     total_found = (
         len(parsed["parts"]["part1"]["questions"])
         + len(parsed["parts"]["part2"]["questions"])
@@ -743,19 +905,10 @@ async def parse_exam_text(payload: dict):
     if total_found == 0:
         all_blocks = _extract_blocks(text)
         for b in all_blocks:
-            p1_c = _parse_part1_block(b)
+            p1_c = _parse_part1_block(b, allow_lowercase=True, create_empty_if_missing=True)
             if p1_c:
                 p1_c["id"] = f"p1_q{len(parsed['parts']['part1']['questions']) + 1}"
                 parsed["parts"]["part1"]["questions"].append(p1_c)
-                continue
-            p2_c = _parse_part2_block(b, doc_has_red=has_red_keys)
-            if p2_c:
-                p2_c["id"] = f"p2_q{len(parsed['parts']['part2']['questions']) + 1}"
-                parsed["parts"]["part2"]["questions"].append(p2_c)
-                continue
-            p3_c = _parse_part3_block(b)
-            p3_c["id"] = f"p3_q{len(parsed['parts']['part3']['questions']) + 1}"
-            parsed["parts"]["part3"]["questions"].append(p3_c)
 
     return {
         "success": True,
@@ -765,6 +918,12 @@ async def parse_exam_text(payload: dict):
             "part2_count": len(parsed["parts"]["part2"]["questions"]),
             "part3_count": len(parsed["parts"]["part3"]["questions"]),
             "part4_count": len(parsed["parts"]["part4"]["questions"]),
+            "total_count": (
+                len(parsed["parts"]["part1"]["questions"])
+                + len(parsed["parts"]["part2"]["questions"])
+                + len(parsed["parts"]["part3"]["questions"])
+                + len(parsed["parts"]["part4"]["questions"])
+            )
         }
     }
 
