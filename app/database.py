@@ -23,10 +23,21 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
+def get_connection() -> sqlite3.Connection:
+    """Lấy kết nối SQLite tối ưu hóa đa luồng, hỗ trợ hàng trăm thí sinh nộp bài cùng lúc."""
+    conn = sqlite3.connect(str(DB_PATH), timeout=30.0)
+    try:
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA synchronous=NORMAL;")
+    except Exception:
+        pass
+    return conn
+
+
 def init_db():
     """Khởi tạo database SQLite."""
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS submissions (
@@ -81,7 +92,7 @@ def init_db():
 
 def save_submission(submission_data: dict, result_data: dict = None):
     """Lưu bài nộp vào database."""
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     
     answers = {
@@ -114,7 +125,7 @@ def save_submission(submission_data: dict, result_data: dict = None):
 
 def get_submission(submission_id: str) -> Optional[dict]:
     """Lấy kết quả bài thi theo ID."""
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("SELECT * FROM submissions WHERE id = ?", (submission_id,))
     row = c.fetchone()
@@ -152,7 +163,7 @@ def get_submission(submission_id: str) -> Optional[dict]:
 
 def get_all_submissions(exam_id: str = None) -> List[dict]:
     """Lấy tất cả bài nộp (cho admin)."""
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     
     if exam_id:
@@ -192,7 +203,7 @@ def get_all_submissions(exam_id: str = None) -> List[dict]:
 
 def delete_submission(submission_id: str) -> bool:
     """Xóa một bài nộp theo submission_id."""
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("DELETE FROM submissions WHERE id = ?", (submission_id,))
     deleted = c.rowcount > 0
@@ -203,7 +214,7 @@ def delete_submission(submission_id: str) -> bool:
 
 def delete_all_submissions(exam_id: str = None) -> int:
     """Xóa tất cả bài nộp (có thể lọc theo exam_id)."""
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     if exam_id:
         c.execute("DELETE FROM submissions WHERE exam_id = ?", (exam_id,))
@@ -247,7 +258,7 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
 
 
 def get_config(key: str, default=None):
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("SELECT value FROM config WHERE key = ?", (key,))
     row = c.fetchone()
@@ -261,7 +272,7 @@ def get_config(key: str, default=None):
 
 
 def set_config(key: str, value):
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)", (key, json.dumps(value)))
     conn.commit()
@@ -274,7 +285,7 @@ def get_user_by_username(username: str) -> Optional[dict]:
     """Tìm tài khoản theo tên đăng nhập (không phân biệt hoa thường)."""
     if not username:
         return None
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("""
         SELECT id, username, password_hash, full_name, role, is_protected, created_at, updated_at
@@ -298,7 +309,7 @@ def get_user_by_username(username: str) -> Optional[dict]:
 
 def get_all_users() -> List[dict]:
     """Lấy danh sách tất cả tài khoản (ẩn hash mật khẩu)."""
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("""
         SELECT id, username, full_name, role, is_protected, created_at, updated_at
@@ -332,7 +343,7 @@ def create_user(username: str, password: str, full_name: str = "", role: str = "
     if clean_username_lower == "admin":
         raise ValueError("Tên đăng nhập 'admin' là tài khoản mặc định của hệ thống!")
 
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("SELECT id FROM admin_users WHERE LOWER(username) = LOWER(?)", (clean_username_lower,))
     if c.fetchone():
@@ -369,7 +380,7 @@ def update_user_password(username: str, new_password: str) -> bool:
         raise ValueError(f"Không tìm thấy tài khoản '{clean_username}'!")
 
     p_hash = hash_password(new_password)
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("""
         UPDATE admin_users SET password_hash = ?, updated_at = datetime('now')
@@ -395,7 +406,7 @@ def delete_user(username: str) -> bool:
     if user.get("is_protected"):
         raise ValueError(f"Tài khoản '{user['username']}' là tài khoản được bảo vệ và không thể xóa!")
 
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = get_connection()
     c = conn.cursor()
     c.execute("DELETE FROM admin_users WHERE LOWER(username) = LOWER(?)", (clean_username,))
     conn.commit()
