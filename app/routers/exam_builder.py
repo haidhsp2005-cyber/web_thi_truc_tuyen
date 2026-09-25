@@ -157,7 +157,7 @@ def _is_run_red_or_marked(run) -> tuple[bool, bool]:
 
 
 def _sanitize_math_symbols(math_latex: str) -> str:
-    """Chuẩn hóa các ký tự toán học Unicode sang chuẩn LaTeX KaTeX."""
+    """Chuẩn hóa các ký tự toán học Unicode và cú pháp hệ phương trình sang chuẩn LaTeX KaTeX."""
     if not math_latex:
         return ""
     # Thay thế các ký hiệu Unicode bằng lệnh LaTeX tương đương
@@ -199,6 +199,36 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     # Chuẩn hóa biến có dấu phẩy trên: {a}^{'} -> a', {x}_{0} -> x_0
     math_latex = re.sub(r"\{([a-zA-Z])\}\^\{'\}", r"\1'", math_latex)
     math_latex = re.sub(r"\{([a-zA-Z])\}\^\{′\}", r"\1'", math_latex)
+
+    # 1. Sửa lỗi Word OMML gộp hệ phương trình: ${...$
+    math_latex = re.sub(r"\$\{([^$]+?)\$", r"$\\begin{cases} \1 \\end{cases}$", math_latex)
+
+    # 2. Chuẩn hóa hệ phương trình dạng \left\{ \begin{matrix} hoặc \begin{array} sang \begin{cases}
+    math_latex = re.sub(r"\\left\\\{\s*\\begin\{(?:matrix|array)\}(?:\{[a-zA-Z]*\})?", r"\\begin{cases}", math_latex)
+    math_latex = re.sub(r"\\end\{(?:matrix|array)\}(?:\s*\\right\.?)?", r"\\end{cases}", math_latex)
+
+    # 3. Tự động đóng \begin{cases} nếu người dùng quên gõ \end{cases}
+    cases_open = len(re.findall(r"\\begin\{cases\}", math_latex))
+    cases_close = len(re.findall(r"\\end\{cases\}", math_latex))
+    if cases_open > cases_close:
+        missing = cases_open - cases_close
+        if math_latex.endswith("$"):
+            math_latex = math_latex[:-1] + (" \\end{cases}" * missing) + "$"
+        else:
+            math_latex = math_latex + (" \\end{cases}" * missing)
+
+    # 4. Tự động đóng \left\{ nếu thiếu \right
+    if "\\left\\{" in math_latex and "\\right" not in math_latex:
+        if math_latex.endswith("$"):
+            math_latex = math_latex[:-1] + " \\right.$"
+        else:
+            math_latex = math_latex + " \\right."
+
+    # 5. Tự động đóng dấu $ nếu lẻ dấu $
+    dollar_count = math_latex.count("$")
+    if dollar_count % 2 != 0:
+        math_latex = math_latex + "$"
+
     return math_latex.strip()
 
 
@@ -641,8 +671,8 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
             detected_answer = ans_match.group(1).upper()
 
     return {
-        "text": q_text,
-        "options": options,
+        "text": _sanitize_math_symbols(q_text),
+        "options": {k: _sanitize_math_symbols(v) for k, v in options.items()},
         "answer": detected_answer or "A",
         "explanation": ""
     }
@@ -658,7 +688,7 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
             raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
             q_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc).strip()
             return {
-                "text": q_desc,
+                "text": _sanitize_math_symbols(q_desc),
                 "items": {
                     "a": {"text": "", "answer": True},
                     "b": {"text": "", "answer": False},
@@ -695,10 +725,10 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
 
         val = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_val)
         val = re.sub(r"[\(\[\{]?(?:Sai|S|Đúng|Đ|D)[\)\]\}]?\s*$", "", val, flags=re.IGNORECASE).strip()
-        items[key] = {"text": val, "answer": ans}
+        items[key] = {"text": _sanitize_math_symbols(val), "answer": ans}
 
     return {
-        "text": q_desc,
+        "text": _sanitize_math_symbols(q_desc),
         "items": items
     }
 
@@ -714,10 +744,11 @@ def _parse_part3_block(q_block: str) -> dict:
         answer = ans_match.group(1).strip()
         clean_q = clean_q[:ans_match.start()].strip()
 
+    clean_ans = _sanitize_math_symbols(answer)
     return {
-        "text": clean_q,
-        "answer": answer,
-        "accepted_answers": [answer] if answer else [],
+        "text": _sanitize_math_symbols(clean_q),
+        "answer": clean_ans,
+        "accepted_answers": [clean_ans] if clean_ans else [],
         "tolerance": 0.01,
         "explanation": ""
     }

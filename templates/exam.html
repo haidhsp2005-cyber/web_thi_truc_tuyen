@@ -600,12 +600,43 @@ function examApp() {
       // Pre-sanitize unicode math symbols
       str = str.replace(/−/g, '-').replace(/′/g, "'");
 
-      // Auto-repair broken system braces like ${x+y=502x-y=10$ or ${ax+by=c...$
+      // 1. Auto-repair broken system braces like ${x+y=50...$
       str = str.replace(/\$\{([^$]+?)\$/g, (match, body) => {
         return `$\\begin{cases} ${body} \\end{cases}$`;
       });
 
-      // 1. $$...$$ or \[...\]
+      // 2. Chuyển đổi \left\{\begin{matrix} hoặc \left\{\begin{array} sang \begin{cases}
+      str = str.replace(/\\left\\\{\s*\\begin\{(?:matrix|array)\}(?:\{[a-zA-Z]*\})?/g, '\\begin{cases}');
+      str = str.replace(/\\end\{(?:matrix|array)\}(?:\s*\\right\.?)?/g, '\\end{cases}');
+
+      // 3. Tự động đóng \begin{cases} nếu thiếu \end{cases}
+      const numBegin = (str.match(/\\begin\{cases\}/g) || []).length;
+      const numEnd = (str.match(/\\end\{cases\}/g) || []).length;
+      if (numBegin > numEnd) {
+        const missing = numBegin - numEnd;
+        if (str.endsWith('$')) {
+          str = str.slice(0, -1) + ' \\end{cases}'.repeat(missing) + '$';
+        } else {
+          str = str + ' \\end{cases}'.repeat(missing);
+        }
+      }
+
+      // 4. Tự động đóng \left\{ nếu thiếu \right
+      if (str.includes('\\left\\{') && !str.includes('\\right')) {
+        if (str.endsWith('$')) {
+          str = str.slice(0, -1) + ' \\right.$';
+        } else {
+          str = str + ' \\right.';
+        }
+      }
+
+      // 5. Tự động đóng dấu $ nếu lẻ dấu $
+      const dollarCount = (str.match(/\$/g) || []).length;
+      if (dollarCount % 2 !== 0) {
+        str = str + '$';
+      }
+
+      // 6. $$...$$ or \[...\]
       str = str.replace(/(?:\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\])/g, (match, p1, p2) => {
         const expr = (p1 !== undefined ? p1 : p2).trim();
         try {
@@ -615,7 +646,7 @@ function examApp() {
         }
       });
 
-      // 2. $...$ or \(...\) (supports multiline equations)
+      // 7. $...$ or \(...\) (supports multiline equations)
       str = str.replace(/(?:\$((?:\\\$|[^\$])+?)\$|\\\(([\s\S]*?)\\\))/g, (match, p1, p2) => {
         const expr = (p1 !== undefined ? p1 : p2).trim();
         try {
@@ -625,7 +656,7 @@ function examApp() {
         }
       });
 
-      // 3. Standalone math tokens if not already converted
+      // 8. Standalone math tokens if not already converted
       str = str.replace(/(\\(?:frac|sqrt|vec|int|sum|lim|alpha|beta|gamma|pi|Delta|infty|le|ge|neq|pm|times|cdot)\b(?:\{[^{}]*\}|[a-zA-Z0-9_\^\{\}]+)*)/g, (match) => {
         try {
           return katex.renderToString(match.trim(), { displayMode: false, throwOnError: false });
