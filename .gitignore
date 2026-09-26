@@ -21,6 +21,7 @@ logs/
 # IDE & OS files
 .vscode/
 .idea/
-.DS_Store
 Thumbs.db
 scratch/
+*.exe
+cloudflared.exe

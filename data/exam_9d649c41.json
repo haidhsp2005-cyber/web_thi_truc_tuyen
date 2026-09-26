@@ -1,0 +1,434 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 6",
+  "subject": "Toán học",
+  "grade": "6",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Giá trị của biểu thức  $A=25-5\\cdot 2+10$  là:",
+          "options": {
+            "A": "25",
+            "B": "30",
+            "C": "20",
+            "D": "15"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Bạn An có 50000 đồng, An mua 3 quyển vở giá 8000 đồng/quyển và 2 chiếc bút bi giá 5000 đồng/chiếc. Số tiền còn lại của An là:",
+          "options": {
+            "A": "16000 đồng",
+            "B": "20000 đồng",
+            "C": "24000 đồng",
+            "D": "14000 đồng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Cho tập hợp  $A=\\left\\{ x\\in \\mathbb{N}\\mid 5<x\\le 9 \\right\\}$ . Số phần tử của tập hợp  $A$  là:",
+          "options": {
+            "A": "3",
+            "B": "6",
+            "C": "4",
+            "D": "5"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Mẹ mua 2 kg thịt lợn giá 120000 đồng/kg và 3 kg rau giá 15000 đồng/kg. Tổng số tiền mẹ phải trả là:",
+          "options": {
+            "A": "265000 đồng",
+            "B": "285000 đồng",
+            "C": "240000 đồng",
+            "D": "270000 đồng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Thứ tự thực hiện các phép tính đối với biểu thức không có dấu ngoặc là:",
+          "options": {
+            "A": "Nhân và chia  $→$  Nâng lên lũy thừa  $→$  Cộng và trừ",
+            "B": "Cộng và trừ  $→$  Nhân và chia  $→$  Nâng lên lũy thừa",
+            "C": "Cộng và trừ  $→$  Nâng lên lũy thừa  $→$  Nhân và chia",
+            "D": "Nâng lên lũy thừa  $→$  Nhân và chia  $→$  Cộng và trừ"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Kết quả của phép tính  $3^{3}\\cdot 3^{2}$  dưới dạng một lũy thừa là:",
+          "options": {
+            "A": "$3^{5}$",
+            "B": "$9^{5}$",
+            "C": "$9^{6}$",
+            "D": "$3^{6}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Số phần tử của tập hợp  $B=\\left\\{ 0;2;4;6;\\ldots ;100 \\right\\}$  là:",
+          "options": {
+            "A": "100",
+            "B": "51",
+            "C": "50",
+            "D": "101"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Kết quả của phép tính  $5^{6}:5^{2}$  là:",
+          "options": {
+            "A": "$5^{3}$",
+            "B": "$5^{8}$",
+            "C": "$1^{4}$",
+            "D": "$5^{4}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Một cửa hàng buổi sáng bán được 125 kg gạo, buổi chiều bán được nhiều hơn buổi sáng 35 kg gạo. Tổng số gạo cửa hàng bán được trong cả ngày là:",
+          "options": {
+            "A": "250 kg",
+            "B": "160 kg",
+            "C": "285 kg",
+            "D": "215 kg"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Khẳng định nào sau đây là ĐÚNG?",
+          "options": {
+            "A": "$0\\notin \\mathbb{N}$",
+            "B": "$3.5\\in \\mathbb{N}$",
+            "C": "Số tự nhiên nhỏ nhất là 1",
+            "D": "$0\\in \\mathbb{N}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Cho tập hợp  $M=\\left\\{ x\\in {\\mathbb{N}}^{*}\\mid x<4 \\right\\}$ . Tập hợp  $M$  viết dưới dạng liệt kê phần tử là:",
+          "options": {
+            "A": "$\\left\\{ 1; 2; 3; 4 \\right\\}$",
+            "B": "$\\left\\{ 0; 1; 2; 3; 4 \\right\\}$",
+            "C": "$\\left\\{ 1; 2; 3 \\right\\}$",
+            "D": "$\\left\\{ 0; 1; 2; 3 \\right\\}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Cho  $x$  là số tự nhiên thỏa mãn  $2\\cdot (x-3)=10$ . Giá trị của  $x$  là:",
+          "options": {
+            "A": "$x=7$",
+            "B": "$x=5$",
+            "C": "$x=6$",
+            "D": "$x=8$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Một ô tô chở 4 chuyến hàng, mỗi chuyến chở được 125 thùng hàng, mỗi thùng chứa 12 hộp bánh. Tổng số hộp bánh ô tô chở được là:",
+          "options": {
+            "A": "1500 hộp",
+            "B": "6000 hộp",
+            "C": "4800 hộp",
+            "D": "5000 hộp"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Kết quả của phép tính  $2^{4}$  bằng:",
+          "options": {
+            "A": "16",
+            "B": "32",
+            "C": "6",
+            "D": "8"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Tính nhanh giá trị của biểu thức  $125\\cdot 37\\cdot 8$ :",
+          "options": {
+            "A": "3700",
+            "B": "37000",
+            "C": "370000",
+            "D": "370"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Kết quả của phép tính  $2024^{0}$  là:",
+          "options": {
+            "A": "2024",
+            "B": "1",
+            "C": "0",
+            "D": "4048"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$ , biết:  $3x-5=13$ .",
+          "options": {
+            "A": "$x=3$",
+            "B": "$x=6$",
+            "C": "$x=5$",
+            "D": "$x=4$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Giá trị của biểu thức  $B=36:[3\\cdot (5-2)]$  là:",
+          "options": {
+            "A": "12",
+            "B": "3",
+            "C": "4",
+            "D": "6"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Cách viết nào sau đây biểu diễn đúng tập hợp các chữ cái có trong từ 'TOAN'?",
+          "options": {
+            "A": "$\\left\\{ T, O, A, N \\right\\}$",
+            "B": "$(T,O,A,N)$",
+            "C": "$[T,O,A,N]$",
+            "D": "$\\left\\{ T, O, A, N, T \\right\\}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$ , biết:  $15+x=37$ .",
+          "options": {
+            "A": "$x=22$",
+            "B": "$x=52$",
+            "C": "$x=21$",
+            "D": "$x=23$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho biểu thức  $P=5^{3}-3\\cdot 2^{3}+48:6$ . Xét tính đúng sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Giá trị của biểu thức  $3\\cdot 2^{3}$  bằng 48.",
+              "answer": false
+            },
+            "b": {
+              "text": "Giá trị của lũy thừa  $5^{3}$  bằng 125.",
+              "answer": true
+            },
+            "c": {
+              "text": "Giá trị của biểu thức  $P$  bằng 109.",
+              "answer": false
+            },
+            "d": {
+              "text": "Thứ tự thực hiện phép tính trong biểu thức là tính lũy thừa trước, rồi đến nhân chia, cuối cùng là cộng trừ.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Bác An mang 500000 đồng ra chợ mua 5 kg gạo tẻ giá 15000 đồng/kg, 2 kg thịt bò giá 180000 đồng/kg và dùng số tiền còn lại mua rau củ. Xét tính đúng sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Tổng số tiền bác An mua gạo và thịt bò là 425000 đồng.",
+              "answer": false
+            },
+            "b": {
+              "text": "Số tiền bác An còn lại để mua rau củ là 75000 đồng.",
+              "answer": false
+            },
+            "c": {
+              "text": "Số tiền bác An mua gạo tẻ là 75000 đồng.",
+              "answer": true
+            },
+            "d": {
+              "text": "Số tiền bác An mua thịt bò là 360000 đồng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Cho các bài toán tìm số tự nhiên  $x$ . Xét tính đúng sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Nếu  $4x-12=20$  thì  $x=2$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Nếu  $x+25=60$  thì  $x=35$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Nếu  $2^{x}=16$  thì suy ra  $x=4$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Nếu  $(x-5)\\cdot 3=18$  thì  $x=10$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Cho tập hợp  $X=\\left\\{ x\\in \\mathbb{N}\\mid 10\\le x<15 \\right\\}$  và tập hợp  $Y=\\left\\{ 10;11;12;13;14;15 \\right\\}$ . Xét tính đúng sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Tập hợp  $X$  được viết dưới dạng liệt kê phần tử là  $X=\\left\\{ 10;11;12;13;14 \\right\\}$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Số phần tử của tập hợp  $X$  là 6 phần tử.",
+              "answer": false
+            },
+            "c": {
+              "text": "Phần tử 15 thuộc tập hợp  $X$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "Tập hợp  $X$  và tập hợp  $Y$  không bằng nhau.",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một hội trường có các hàng ghế xếp thành hình chữ nhật. Biết hàng ghế đầu có 15 ghế, các hàng sau mỗi hàng nhiều hơn hàng trước 2 ghế và hàng cuối cùng có 31 ghế. Hỏi hội trường đó có tất cả bao nhiêu ghế?",
+          "answer": "207",
+          "accepted_answers": [
+            "207"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$  lớn nhất thỏa mãn:  $3^{x}<100$ .",
+          "answer": "4",
+          "accepted_answers": [
+            "4"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Một cửa hàng có 520 kg gạo. Buổi sáng cửa hàng bán được 145 kg gạo, buổi chiều bán được số gạo gấp đôi buổi sáng. Sau hai buổi bán, cửa hàng còn lại bao nhiêu kilôgam gạo?",
+          "answer": "85",
+          "accepted_answers": [
+            "85"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Tính giá trị của biểu thức:  $A=100-[60-(3^{2}-2)\\cdot 2]$ .",
+          "answer": "54",
+          "accepted_answers": [
+            "54"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Cho tập hợp  $A=\\left\\{ x\\in \\mathbb{N}\\mid 12\\le x\\le 2026 \\right\\}$ . Tính số phần tử của tập hợp  $A$ .",
+          "answer": "2015",
+          "accepted_answers": [
+            "2015"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$  thỏa mãn:  $24+3\\cdot (x-5)=39$ .",
+          "answer": "10",
+          "accepted_answers": [
+            "10"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_9d649c41",
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 1.0,
+    "part3_per_question": 0.1667,
+    "part4_total": 0.0
+  }
+}

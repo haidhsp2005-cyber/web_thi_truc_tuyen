@@ -1,0 +1,434 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 9",
+  "subject": "Toán học",
+  "grade": "9",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Hệ phương trình  $\\begin{cases} 3x-y=2 \\\\ 6x-2y=4 \\end{cases}$  có số nghiệm là:",
+          "options": {
+            "A": "Vô nghiệm",
+            "B": "Vô số nghiệm",
+            "C": "Có đúng một nghiệm",
+            "D": "Có hai nghiệm phân biệt"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 3x+y=7 \\\\ x-y=1 \\end{cases}$ . Nghiệm  $(x;y)$  của hệ thỏa mãn phương trình nào sau đây?",
+          "options": {
+            "A": "$x-y=3$",
+            "B": "$x+2y=4$",
+            "C": "$2x-y=1$",
+            "D": "$x+y=3$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Vừa gà vừa chó\nBó lại cho tròn\n36 con\n100 chân chẵn\nHỏi có bao nhiêu con gà?",
+          "options": {
+            "A": "20",
+            "B": "16",
+            "C": "22",
+            "D": "14"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Điều kiện của tham số hoặc hệ để phương trình sau có nghiệm duy nhất không cần xét, với hệ phương trình  $\\begin{cases} x+2y=5 \\\\ 3x-y=1 \\end{cases}$ , giá trị của biểu thức  $P=x^{2}+y^{2}$  là:",
+          "options": {
+            "A": "13",
+            "B": "25",
+            "C": "10",
+            "D": "5"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Nếu lấy một số có hai chữ số chia cho tổng các chữ số của nó thì được thương là  $6$  và dư  $3$ . Nếu lấy số đó trừ đi  $27$  thì được số viết theo thứ tự ngược lại với số ban đầu. Số ban đầu là:",
+          "options": {
+            "A": "63",
+            "B": "57",
+            "C": "85",
+            "D": "45"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Tìm hai số tự nhiên biết tổng của chúng bằng  $59$  và hiệu của chúng bằng  $7$ .",
+          "options": {
+            "A": "35 và 24",
+            "B": "32 và 27",
+            "C": "31 và 28",
+            "D": "33 và 26"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 5x-2y=3 \\\\ 2x+3y=8 \\end{cases}$ . Tính giá trị của  $x+y$ .",
+          "options": {
+            "A": "3",
+            "B": "4",
+            "C": "1",
+            "D": "2"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Hệ phương trình  $\\begin{cases} 4x+3y=5 \\\\ x-3y=5 \\end{cases}$  có nghiệm  $(x;y)$  là:",
+          "options": {
+            "A": "$(2;1)$",
+            "B": "$(-1;3)$",
+            "C": "$(1;-2)$",
+            "D": "$(2;-1)$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Một khu vườn hình chữ nhật có chu vi  $70 m$ . Biết chiều dài hơn chiều rộng  $5 m$ . Gọi chiều dài là  $x$ , chiều rộng là  $y$  (mét). Hệ phương trình nào sau đây biểu diễn các giả thiết trên?",
+          "options": {
+            "A": "$\\begin{cases} x+y=70 \\\\ x-y=5 \\end{cases}$",
+            "B": "$\\begin{cases} x-y=70 \\\\ x+y=5 \\end{cases}$",
+            "C": "$\\begin{cases} 2(x+y)=35 \\\\ x+y=5 \\end{cases}$",
+            "D": "$\\begin{cases} x+y=35 \\\\ x-y=5 \\end{cases}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Cặp số nào dưới đây KHÔNG phải là nghiệm của phương trình  $2x-y=3$ ?",
+          "options": {
+            "A": "$(1;-1)$",
+            "B": "$(2;1)$",
+            "C": "$(3;2)$",
+            "D": "$(0;-3)$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Tìm số tự nhiên có hai chữ số, biết rằng chữ số hàng chục lớn hơn chữ số hàng đơn vị là  $2$ , và nếu viết hai chữ số ấy theo thứ tự ngược lại thì được một số mới bằng  $\\frac{4}{7}$  số ban đầu.",
+          "options": {
+            "A": "86",
+            "B": "97",
+            "C": "64",
+            "D": "75"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Hai vòi nước cùng chảy vào một bể cạn thì sau  $4 giờ48 phút$  đầy bể ( $4 giờ48 phút=\\frac{24}{5} giờ$ ). Nếu mở vòi thứ nhất trong  $3 giờ$  và vòi thứ hai trong  $4 giờ$  thì đầy  $\\frac{3}{4}$  bể. Hỏi nếu mở riêng vòi thứ nhất thì sau bao lâu đầy bể?",
+          "options": {
+            "A": "8 giờ",
+            "B": "15 giờ",
+            "C": "10 giờ",
+            "D": "12 giờ"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Một ô tô đi quãng đường từ tỉnh A đến tỉnh B với vận tốc và thời gian đã định. Nếu vận tốc tăng thêm  $10 km/h$  thì thời gian giảm đi  $1 giờ$ . Nếu vận tốc giảm đi  $10 km/h$  thì thời gian tăng thêm  $1 giờ$  và  $20 phút$ . Tính quãng đường AB.",
+          "options": {
+            "A": "$300 km$",
+            "B": "$400 km$",
+            "C": "$360 km$",
+            "D": "$240 km$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} x-y=4 \\\\ 2x+y=5 \\end{cases}$ . Khi giải hệ bằng phương pháp cộng đại số, ta cộng từng vế hai phương trình để được phương trình nào sau đây?",
+          "options": {
+            "A": "$-x=9$",
+            "B": "$3y=9$",
+            "C": "$3x=9$",
+            "D": "$3x=-1$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Hai xí nghiệp theo kế hoạch phải làm tổng cộng  $360$  dụng cụ. Thực tế xí nghiệp I vượt mức  $12%$ , xí nghiệp II vượt mức  $10%$ , do đó cả hai xí nghiệp làm được  $400$  dụng cụ. Hỏi theo kế hoạch mỗi xí nghiệp phải làm bao nhiêu dụng cụ?",
+          "options": {
+            "A": "Xí nghiệp I: 150, Xí nghiệp II: 210",
+            "B": "Xí nghiệp I: 180, Xí nghiệp II: 180",
+            "C": "Xí nghiệp I: 220, Xí nghiệp II: 140",
+            "D": "Xí nghiệp I: 200, Xí nghiệp II: 160"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Một mảnh đất hình chữ nhật có diện tích  $360{ m^{2}$ . Nếu tăng chiều rộng thêm  $2 m$  và giảm chiều dài đi  $3 m$  thì diện tích mảnh đất không đổi. Tính chiều dài ban đầu của mảnh đất.",
+          "options": {
+            "A": "$18 m$",
+            "B": "$30 m$",
+            "C": "$20 m$",
+            "D": "$24 m$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Hệ phương trình nào sau đây vô nghiệm?",
+          "options": {
+            "A": "$\\begin{cases} x+y=3 \\\\ x-y=1 \\end{cases}$",
+            "B": "$\\begin{cases} x+2y=3 \\\\ 2x+4y=6 \\end{cases}$",
+            "C": "$\\begin{cases} 2x-y=4 \\\\ 4x-2y=5 \\end{cases}$",
+            "D": "$\\begin{cases} 3x-y=2 \\\\ x+y=6 \\end{cases}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Đường thẳng nào sau đây biểu diễn tập nghiệm của phương trình  $x+2y=4$ ?",
+          "options": {
+            "A": "Đi qua gốc tọa độ  $(0;0)$",
+            "B": "Đi qua điểm  $(0;2)$  và  $(4;0)$",
+            "C": "Đi qua điểm  $(1;1)$  và  $(2;2)$",
+            "D": "Đi qua điểm  $(0;4)$  và  $(2;0)$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Cặp số nào sau đây là nghiệm của hệ phương trình  $\\begin{cases} 2x-y=1 \\\\ x+y=5 \\end{cases}$ ?",
+          "options": {
+            "A": "$(1;4)$",
+            "B": "$(0;5)$",
+            "C": "$(2;3)$",
+            "D": "$(3;2)$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 2x+3y=11 \\\\ x-y=3 \\end{cases}$ . Khẳng định nào sau đây là đúng về nghiệm của hệ?",
+          "options": {
+            "A": "$x<0$  và  $y<0$",
+            "B": "$x<0$  và  $y>0$",
+            "C": "$x>0$  và  $y<0$",
+            "D": "$x>0$  và  $y>0$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một xưởng may lập kế hoạch may một lô áo trong một thời gian quy định. Nếu mỗi ngày may được  $30$  áo thì hoàn thành sớm hơn thời hạn  $1$  ngày. Nếu mỗi ngày may được  $20$  áo thì bị chậm mất  $3$  ngày so với thời hạn. Xét tính đúng sai sau đây:",
+          "items": {
+            "a": {
+              "text": "Phương trình biểu diễn giả thiết thứ hai là  $20(y-3)=x$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Nếu gọi tổng số áo là  $x$  và thời gian quy định là  $y$ , ta có phương trình từ giả thiết thứ nhất là  $30(y-1)=x$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Thời gian quy định để hoàn thành lô áo là  $7$  ngày.",
+              "answer": true
+            },
+            "d": {
+              "text": "Tổng số áo trong lô hàng là  $240$  chiếc.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Cho hai đường thẳng  $d_{1}:2x-y=3$  và  $d_{2}:x+y=3$ . Xét tính đúng sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Giao điểm của hai đường thẳng nằm trên trục hoành.",
+              "answer": false
+            },
+            "b": {
+              "text": "Hoành độ giao điểm của hai đường thẳng là  $x=2$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Tung độ giao điểm của hai đường thẳng là  $y=1$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Tọa độ giao điểm của hai đường thẳng là nghiệm của hệ phương trình  $\\begin{cases} 2x-y=3 \\\\ x+y=3 \\end{cases}$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Một người mua 2 loại vở loại I và loại II hết tổng cộng  $72000$  đồng. Giá vở loại I là  $6000$  đồng/cuốn, giá vở loại II là  $4000$  đồng/cuốn. Tổng số vở mua là  $14$  cuốn. Xét tính đúng sai của các phát biểu sau:",
+          "items": {
+            "a": {
+              "text": "Gọi số cuốn vở loại I là  $x$ , số cuốn vở loại II là  $y$ , ta có phương trình tổng số vở là  $x+y=14$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Số cuốn vở loại I người đó mua là  $8$  cuốn.",
+              "answer": true
+            },
+            "c": {
+              "text": "Số tiền mua vở loại II nhiều hơn số tiền mua vở loại I.",
+              "answer": false
+            },
+            "d": {
+              "text": "Phương trình biểu diễn tổng số tiền mua vở là  $4000x+6000y=72000$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 3x-2y=4 \\\\ x+2y=4 \\end{cases}$ . Xét tính đúng sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Cộng từng vế hai phương trình của hệ ta được phương trình  $4x=8$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Nghiệm  $x$  của hệ phương trình bằng  $3$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Cặp số  $(2;1)$  làm cho cả hai phương trình của hệ trở thành các mệnh đề sai.",
+              "answer": false
+            },
+            "d": {
+              "text": "Nghiệm  $y$  của hệ phương trình bằng  $1$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một khu vườn hình chữ nhật có chu vi bằng  $100 m$ . Nếu chiều dài giảm đi  $5 m$  và chiều rộng tăng thêm  $5 m$  thì diện tích của khu vườn không đổi. Tính chiều rộng ban đầu của khu vườn (đơn vị mét).",
+          "answer": "20",
+          "accepted_answers": [
+            "20"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Một người đi xe đạp và một người đi bộ xuất phát cùng một lúc từ hai địa điểm A và B cách nhau  $24 km$ , đi ngược chiều nhau và gặp nhau sau  $2 giờ$ . Tính vận tốc của người đi xe đạp (đơn vị  $km/h$ ), biết vận tốc người đi xe đạp lớn hơn vận tốc người đi bộ  $4 km/h$ .",
+          "answer": "8",
+          "accepted_answers": [
+            "8"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Tổng số tiền mua 3 quả bóng xanh và 2 quả bóng đỏ là  $140000$  đồng. Tổng số tiền mua 2 quả bóng xanh và 3 quả bóng đỏ là  $135000$  đồng. Tính giá tiền của 1 quả bóng xanh (đơn vị nghìn đồng).",
+          "answer": "30",
+          "accepted_answers": [
+            "30"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 2x+y=7 \\\\ x-2y=1 \\end{cases}$  có nghiệm  $(x_{1};y_{1})$ . Hãy tính giá trị của biểu thức  $T=x_{1}\\cdot y_{1}$ .",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tìm hai số có tổng bằng  $45$  và hiệu bằng  $13$ . Hãy viết số lớn.",
+          "answer": "29",
+          "accepted_answers": [
+            "29"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 3x-y=5 \\\\ x+y=3 \\end{cases}$  có nghiệm  $(x_{0};y_{0})$ . Tính giá trị của biểu thức  $S=x_{0}+y_{0}$ .",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_af75717f",
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 1.0,
+    "part3_per_question": 0.1667,
+    "part4_total": 0.0
+  }
+}

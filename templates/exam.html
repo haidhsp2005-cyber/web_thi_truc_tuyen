@@ -798,12 +798,56 @@ function examApp() {
       }
       let str = String(rawText);
 
-      // Pre-sanitize unicode math symbols
-      str = str.replace(/−/g, '-').replace(/′/g, "'");
+      // Dọn dẹp mã HTML lỗi KaTeX nếu bị rò rỉ vào text
+      str = str.replace(/<span[^>]*class="katex-error"[^>]*>([\s\S]*?)<\/span>/gi, '$1')
+               .replace(/style="color:\s*#cc0000"[^>]*>/gi, '');
 
-      // 1. Auto-repair broken system braces like ${x+y=50...$
-      str = str.replace(/\$\{([^$]+?)\$/g, (match, body) => {
-        return `$\\begin{cases} ${body} \\end{cases}$`;
+      // Pre-sanitize unicode math symbols
+      str = str.replace(/−/g, '-')
+               .replace(/′/g, "'")
+               .replace(/⋅/g, ' \\cdot ')
+               .replace(/·/g, ' \\cdot ')
+               .replace(/…/g, ' \\ldots ')
+               .replace(/≤/g, ' \\le ')
+               .replace(/≥/g, ' \\ge ')
+               .replace(/≠/g, ' \\ne ')
+               .replace(/ℕ\*/g, '\\mathbb{N}^*')
+               .replace(/ℕ/g, '\\mathbb{N}')
+               .replace(/ℤ/g, '\\mathbb{Z}')
+               .replace(/ℚ/g, '\\mathbb{Q}')
+               .replace(/ℝ/g, '\\mathbb{R}')
+               .replace(/∣/g, ' \\mid ');
+
+      // 0. Bỏ dấu $ bao bọc quanh số đơn giản: "$1$" -> "1", "$-1$" -> "-1"
+      if (/^\s*\$([+-]?\d+(?:[\.,]\d+)?)\$\s*$/.test(str)) {
+        return str.replace(/^\s*\$([+-]?\d+(?:[\.,]\d+)?)\$\s*$/, '$1');
+      }
+
+      // Tự động sửa số mũ bị lỗi mất ngoặc mở: 3}^{5} -> 3^{5}, {3}^{3} -> 3^{3}
+      str = str.replace(/\{?([a-zA-Z0-9]+)\}\^\{?([a-zA-Z0-9_+-]+)\}?/g, '$1^{$2}');
+
+      // Tự động sửa tập hợp ở các phương án bị mất ngoặc mở: $1;2;3}$ -> $\{1; 2; 3\}$
+      str = str.replace(/^\s*\$?\s*(?<!\\\{)(?<!\{)([a-zA-Z0-9_+\-,\s;]+)\}\s*\$?\s*$/, (m, inner) => {
+        const formatted = inner.trim().replace(/\s*([;,])\s*/g, '$1 ');
+        return `$\\left\\{ ${formatted} \\right\\}$`;
+      });
+
+      // Tự động sửa tập hợp trong công thức: $A = {x \in N ...}$ hay $B = {0; 2; 4; ...}$ -> $A = \{ x \in N ... \}$
+      str = str.replace(/([A-Za-z]\s*=\s*)\{([\s\S]+?)\}(?=\s*(?:\$|$))/g, (m, prefix, content) => {
+        if (/\\in|\\notin|\\mid|;|\\ldots/.test(content)) {
+          const c = content.trim()
+            .replace(/^\\left\\\{\s*/, '')
+            .replace(/\s*\\right\\\}$/, '')
+            .replace(/^\\\{\s*/, '')
+            .replace(/\s*\\\}$/, '');
+          return `${prefix}\\left\\{ ${c} \\right\\}`;
+        }
+        return m;
+      });
+
+      // 1. Auto-repair broken system braces from Word OMML: CHỈ bọc \begin{cases} nếu có xuống dòng, \\ hoặc &
+      str = str.replace(/\$\{\s*([^$]*?(?:\\\\|\n|&)[^$]*?)\}\s*\$/g, (match, body) => {
+        return `$\\begin{cases} ${body.trim()} \\end{cases}$`;
       });
 
       // 2. Chuyển đổi \left\{\begin{matrix} hoặc \left\{\begin{array} sang \begin{cases}

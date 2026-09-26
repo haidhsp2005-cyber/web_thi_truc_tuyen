@@ -1,0 +1,434 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 9 Đề 2",
+  "subject": "Toán học",
+  "grade": "9",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Hệ phương trình  $\\begin{cases} 3x-y=5 \\\\ 6x-2y=10 \\end{cases}$  có số nghiệm là bao nhiêu?",
+          "options": {
+            "A": "Vô nghiệm",
+            "B": "Vô số nghiệm",
+            "C": "Có đúng một nghiệm",
+            "D": "Có đúng hai nghiệm"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Số nghiệm của hệ phương trình  $\\begin{cases} x+2y=3 \\\\ 2x+4y=6 \\end{cases}$  là:",
+          "options": {
+            "A": "1",
+            "B": "Vô số",
+            "C": "2",
+            "D": "0"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Tìm hai số tự nhiên biết tổng của chúng bằng  $59$  và hai lần số lớn trừ ba lần số nhỏ bằng  $7$ . Số lớn là:",
+          "options": {
+            "A": "24",
+            "B": "40",
+            "C": "35",
+            "D": "38"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Mua  $3$  quyển vở và  $2$  chiếc bút bi hết  $31$  nghìn đồng. Mua  $2$  quyển vở và  $1$  chiếc bút bi như thế hết  $20$  nghìn đồng. Giá tiền một quyển vở là:",
+          "options": {
+            "A": "$9$  nghìn đồng",
+            "B": "$10$  nghìn đồng",
+            "C": "$8$  nghìn đồng",
+            "D": "$7$  nghìn đồng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Hai vòi nước cùng chảy vào một bể cạn sau  $2$  giờ thì đầy bể. Nếu mở vòi thứ nhất chảy trong  $1$  giờ và vòi thứ hai chảy trong  $\\frac{1}{2}$  giờ thì được  $\\frac{2}{5}$  bể. Thời gian vòi thứ nhất chảy một mình đầy bể là:",
+          "options": {
+            "A": "$4$  giờ",
+            "B": "$3$  giờ",
+            "C": "$5$  giờ",
+            "D": "$6$  giờ"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 3x-2y=4 \\\\ 2x+y=5 \\end{cases}$ . Giá trị của  $x^{2}+y^{2}$  bằng:",
+          "options": {
+            "A": "10",
+            "B": "13",
+            "C": "25",
+            "D": "5"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 2x-y=3 \\\\ x+y=6 \\end{cases}$ . Tính giá trị của biểu thức  $S=x+y$ .",
+          "options": {
+            "A": "5",
+            "B": "6",
+            "C": "3",
+            "D": "4"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Tổng  $x+y$  của nghiệm hệ phương trình  $\\begin{cases} x-y=2 \\\\ 2x+y=10 \\end{cases}$  bằng bao nhiêu?",
+          "options": {
+            "A": "6",
+            "B": "5",
+            "C": "8",
+            "D": "4"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Hệ phương trình nào sau đây vô nghiệm?",
+          "options": {
+            "A": "$\\begin{cases} x+y=2 \\\\ x-y=0 \\end{cases}$",
+            "B": "$\\begin{cases} x-2y=1 \\\\ 2x+y=3 \\end{cases}$",
+            "C": "$\\begin{cases} 3x-y=1 \\\\ -6x+2y=-2 \\end{cases}$",
+            "D": "$\\begin{cases} 2x+y=3 \\\\ 4x+2y=7 \\end{cases}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Hệ phương trình  $\\begin{cases} 2x+3y=5 \\\\ x-y=0 \\end{cases}$  có nghiệm là:",
+          "options": {
+            "A": "$(2;2)$",
+            "B": "$(1;1)$",
+            "C": "$(0;0)$",
+            "D": "$(-1;-1)$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Một khu vườn hình chữ nhật có chu vi bằng  $70$  m. Biết chiều dài lớn hơn chiều rộng  $15$  m. Tính chiều dài của khu vườn.",
+          "options": {
+            "A": "$25$  m",
+            "B": "$35$  m",
+            "C": "$30$  m",
+            "D": "$20$  m"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Một ô tô đi quãng đường từ tỉnh A đến tỉnh B với vận tốc xác định. Nếu tăng vận tốc thêm  $10$  km/h thì đến sớm hơn  $1$  giờ. Nếu giảm vận tốc đi  $10$  km/h thì đến muộn hơn  $1$  giờ 30 phút. Quãng đường AB dài bao nhiêu km?",
+          "options": {
+            "A": "$300$  km",
+            "B": "$500$  km",
+            "C": "$400$  km",
+            "D": "$250$  km"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Cặp số  $(-2;3)$  là nghiệm của hệ phương trình nào sau đây?",
+          "options": {
+            "A": "$\\begin{cases} x+y=1 \\\\ 2x-y=-7 \\end{cases}$",
+            "B": "$\\begin{cases} x-y=1 \\\\ x+y=1 \\end{cases}$",
+            "C": "$\\begin{cases} 2x+y=-1 \\\\ x+3y=7 \\end{cases}$",
+            "D": "$\\begin{cases} 3x+y=-3 \\\\ x-2y=4 \\end{cases}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} x+2y=4 \\\\ 2x-y=3 \\end{cases}$ . Nghiệm  $(x;y)$  của hệ phương trình là:",
+          "options": {
+            "A": "$(3;1)$",
+            "B": "$(1;1)$",
+            "C": "$(2;1)$",
+            "D": "$(1;2)$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 4x+3y=6 \\\\ x-y=2 \\end{cases}$ . Giá trị của tích  $xy$  bằng:",
+          "options": {
+            "A": "-2",
+            "B": "$\\frac{24}{49}$",
+            "C": "2",
+            "D": "$-\\frac{24}{49}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Một mảnh vườn hình chữ nhật có diện tích  $300$   $m^{2}$ . Nếu tăng chiều dài thêm  $5$  m và giảm chiều rộng đi  $4$  m thì diện tích không đổi. Chiều dài mảnh vườn là:",
+          "options": {
+            "A": "$30$  m",
+            "B": "$25$  m",
+            "C": "$20$  m",
+            "D": "$15$  m"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Hệ phương trình  $\\begin{cases} 3x-y=7 \\\\ x+2y=7 \\end{cases}$  có nghiệm  $(x;y)$ . Tỉ số  $\\frac{x}{y}$  bằng:",
+          "options": {
+            "A": "$\\frac{3}{2}$",
+            "B": "3",
+            "C": "2",
+            "D": "$\\frac{2}{3}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Tìm hai số có tổng bằng  $25$  và hiệu bằng  $7$ . Số lớn là:",
+          "options": {
+            "A": "18",
+            "B": "15",
+            "C": "17",
+            "D": "16"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Cặp số nào sau đây là nghiệm của hệ phương trình  $\\begin{cases} 2x-y=3 \\\\ x+y=3 \\end{cases}$ ?",
+          "options": {
+            "A": "$(1;2)$",
+            "B": "$(3;0)$",
+            "C": "$(2;1)$",
+            "D": "$(-1;4)$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Vừa gà vừa chó, bó lại cho tròn, ba mươi sáu con, một trăm chân chẵn. Hỏi có bao nhiêu con gà?",
+          "options": {
+            "A": "$14$  con",
+            "B": "$12$  con",
+            "C": "$24$  con",
+            "D": "$22$  con"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một khu vườn hình chữ nhật có chu vi  $100$  m. Nếu giảm chiều dài đi  $5$  m và tăng chiều rộng lên  $5$  m thì diện tích tăng thêm  $75$   $m^{2}$ . Xét các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Gọi chiều dài là  $x$ , chiều rộng là  $y$ , ta có phương trình tổng chiều dài và chiều rộng là  $x+y=100$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Nửa chu vi của khu vườn là  $50$  m.",
+              "answer": true
+            },
+            "c": {
+              "text": "Diện tích ban đầu của khu vườn là  $xy$  ( $m^{2}$ ).",
+              "answer": true
+            },
+            "d": {
+              "text": "Chiều dài của khu vườn là  $35$  m và chiều rộng là  $15$  m.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 2x+4y=10 \\\\ x+2y=5 \\end{cases}$ . Xét tính đúng sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Cặp số  $(1;2)$  là một nghiệm của hệ phương trình.",
+              "answer": true
+            },
+            "b": {
+              "text": "Hai phương trình của hệ tương đương hoàn toàn với nhau.",
+              "answer": true
+            },
+            "c": {
+              "text": "Hệ phương trình đã cho có duy nhất một nghiệm.",
+              "answer": false
+            },
+            "d": {
+              "text": "Phương trình thứ nhất có thể rút gọn thành  $x+2y=5$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Một người đi xe máy quãng đường từ A đến B dài  $120$  km với vận tốc dự định. Thực tế vận tốc tăng thêm  $10$  km/h nên đến sớm hơn dự định  $30$  phút. Xét các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Gọi vận tốc dự định là  $x$  (km/h) thì thời gian dự định là  $\\frac{120}{x}$  (giờ).",
+              "answer": true
+            },
+            "b": {
+              "text": "Phương trình lập được theo đề bài là  $\\frac{120}{x}-\\frac{120}{x+10}=0.5$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Vận tốc dự định của xe máy là  $60$  km/h.",
+              "answer": false
+            },
+            "d": {
+              "text": "Vận tốc thực tế của người đó là  $x-10$  (km/h).",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 3x+y=5 \\\\ x-y=3 \\end{cases}$ . Xét tính đúng sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Cộng hai phương trình vế theo vế ta được phương trình  $4x=8$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Giá trị của  $x$  là  $x=3$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Hệ phương trình có nghiệm duy nhất là  $(1;2)$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "Giá trị của  $y$  là  $y=-1$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một ca nô xuôi dòng một khúc sông dài  $48$  km hết  $2$  giờ và ngược dòng khúc sông đó hết  $3$  giờ. Tính vận tốc dòng nước (km/h).",
+          "answer": "4",
+          "accepted_answers": [
+            "4"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Một người mua  $15$  bông hoa gồm cả hồng và cúc hết tổng cộng  $120$  nghìn đồng. Biết một bông hồng giá  $10$  nghìn đồng và một bông cúc giá  $5$  nghìn đồng. Hỏi người đó mua bao nhiêu bông hồng?",
+          "answer": "9",
+          "accepted_answers": [
+            "9"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Tìm hai số tự nhiên có tổng bằng  $100$  và nếu lấy số lớn chia cho số nhỏ thì được thương là  $3$  và dư  $4$ . Tìm số lớn.",
+          "answer": "76",
+          "accepted_answers": [
+            "76"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Hai lớp 9A và 9B tham gia lao động trồng cây, tổng số cây trồng được là  $140$  cây. Nếu lớp 9A trồng thêm được  $10$  cây và lớp 9B trồng vượt mức  $20%$  số cây của mình thì tổng số cây hai lớp trồng được là  $164$  cây. Hỏi lớp 9A trồng được bao nhiêu cây?",
+          "answer": "80",
+          "accepted_answers": [
+            "80"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tìm nghiệm  $(x;y)$  của hệ phương trình  $\\begin{cases} 3x-2y=1 \\\\ x+y=3 \\end{cases}$ . Hãy tính tổng  $x+y$ .",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} x+y=7 \\\\ x-y=3 \\end{cases}$ . Tính giá trị của biểu thức  $P=2x-y$ .",
+          "answer": "8",
+          "accepted_answers": [
+            "8"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_31ec9cff",
+  "scoring": {
+    "part1_total": 5,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 1,
+    "part3_per_question": 0.1667,
+    "part4_total": 0
+  }
+}

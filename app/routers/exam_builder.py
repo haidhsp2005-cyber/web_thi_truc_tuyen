@@ -162,6 +162,10 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     """Chuẩn hóa các ký tự toán học Unicode và cú pháp hệ phương trình sang chuẩn LaTeX KaTeX."""
     if not math_latex:
         return ""
+    # Dọn dẹp mã HTML lỗi KaTeX nếu bị rò rỉ vào text
+    math_latex = re.sub(r'<span[^>]*class="katex-error"[^>]*>([\s\S]*?)</span>', r'\1', math_latex)
+    math_latex = re.sub(r'style="color:\s*#cc0000"[^>]*>', '', math_latex)
+
     # Thay thế các ký hiệu Unicode bằng lệnh LaTeX tương đương
     replacements = [
         ("−", "-"),
@@ -170,7 +174,9 @@ def _sanitize_math_symbols(math_latex: str) -> str:
         ("≤", "\\le "),
         ("≥", "\\ge "),
         ("×", "\\times "),
+        ("⋅", "\\cdot "),
         ("·", "\\cdot "),
+        ("…", "\\ldots "),
         ("±", "\\pm "),
         ("∞", "\\infty "),
         ("÷", "\\div "),
@@ -185,6 +191,12 @@ def _sanitize_math_symbols(math_latex: str) -> str:
         ("∪", "\\cup "),
         ("∩", "\\cap "),
         ("∅", "\\emptyset "),
+        ("ℕ*", "\\mathbb{N}^*"),
+        ("ℕ", "\\mathbb{N}"),
+        ("ℤ", "\\mathbb{Z}"),
+        ("ℚ", "\\mathbb{Q}"),
+        ("ℝ", "\\mathbb{R}"),
+        ("∣", "\\mid "),
         ("∆", "\\Delta "),
         ("Δ", "\\Delta "),
         ("π", "\\pi "),
@@ -202,14 +214,40 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     math_latex = re.sub(r"\{([a-zA-Z])\}\^\{'\}", r"\1'", math_latex)
     math_latex = re.sub(r"\{([a-zA-Z])\}\^\{′\}", r"\1'", math_latex)
 
-    # 1. Sửa lỗi Word OMML gộp hệ phương trình: ${...$
+    # Tự động sửa số mũ bị lỗi mất ngoặc mở do Word OMML: 3}^{5} -> 3^{5}, {3}^{3} -> 3^{3}
+    math_latex = re.sub(r"\{?([a-zA-Z0-9]+)\}\^\{?([a-zA-Z0-9_+-]+)\}?", r"\1^{\2}", math_latex)
+
+    # Tự động sửa tập hợp ở các phương án bị mất ngoặc mở: $1;2;3}$ -> $\{1; 2; 3\}$ hay $T,O,A,N}$ -> $\{T, O, A, N\}$
+    def fix_set_option(m):
+        inner = m.group(1).strip()
+        inner_formatted = re.sub(r'\s*([;,])\s*', r'\1 ', inner)
+        return f"$\\left\\{{ {inner_formatted} \\right\\}}$"
+
+    math_latex = re.sub(r"^\s*\$?\s*(?<!\\\{)(?<!\{)([a-zA-Z0-9_+\-,\s;]+)\}\s*\$?\s*$", fix_set_option, math_latex)
+
+    # Tự động sửa tập hợp trong công thức: $A = {x \in N ...}$ hay $B = {0; 2; 4; ...}$ -> $A = \{ x \in N ... \}$
+    # Vì trong LaTeX KaTeX, { ... } trong math mode bị ẩn. Muốn hiển thị ngoặc nhọn tập hợp phải là \{ ... \}
+    def fix_set_in_math(m):
+        prefix = m.group(1)
+        content = m.group(2).strip()
+        if any(k in content for k in ['\\in', '\\notin', '\\mid', ';', '\\ldots']):
+            content = re.sub(r"^\\left\\\{\s*", "", content)
+            content = re.sub(r"\s*\\right\\\}$", "", content)
+            content = re.sub(r"^\\\{\s*", "", content)
+            content = re.sub(r"\s*\\\}$", "", content)
+            return f"{prefix}\\left\\{{ {content} \\right\\}}"
+        return m.group(0)
+
+    math_latex = re.sub(r"([A-Za-z]\s*=\s*)\{([\s\S]+?)\}(?=\s*(?:\$|$))", fix_set_in_math, math_latex)
+
+    # 1. Sửa lỗi Word OMML gộp hệ phương trình: CHỈ chuyển thành \begin{cases} khi có \\ hoặc & hoặc xuống dòng
     def fix_omml_brace(m):
         body = m.group(1).strip()
         if r"\\" in body or "\n" in body or "&" in body:
             return f"$\\begin{{cases}} {body} \\end{{cases}}$"
-        return f"${body}$"
+        return f"${{{body}}}$"
 
-    math_latex = re.sub(r"\$\{([^$]+?)\$", fix_omml_brace, math_latex)
+    math_latex = re.sub(r"\$\{\s*([^$]*?(?:\\\\|\n|&)[^$]*?)\}\s*\$", fix_omml_brace, math_latex)
 
     # 2. Chuẩn hóa hệ phương trình dạng \left\{ \begin{matrix} hoặc \begin{array} sang \begin{cases}
     math_latex = re.sub(r"\\left\\\{\s*\\begin\{(?:matrix|array)\}(?:\{[a-zA-Z]*\})?", r"\\begin{cases}", math_latex)

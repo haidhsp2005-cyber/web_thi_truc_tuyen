@@ -1,34 +1,32 @@
 @echo off
-chcp 65001 >nul
-title Cloudflare Quick Tunnel - Hệ Thống Thi Trực Tuyến 2026
+title Cloudflare Quick Tunnel - He Thong Thi Truc Tuyen 2026
+cls
 echo ========================================================
-echo   CLOUDFLARE TUNNEL - PHÁT LINK CHO HỌC SINH THI
+echo   CLOUDFLARE TUNNEL - PHAT LINK CHO HOC SINH THI
 echo ========================================================
 echo.
 
-REM 1. Kiểm tra và tự động tải cloudflared.exe nếu chưa có
-if not exist "cloudflared.exe" (
-    echo [1/2] Đang tự động tải công cụ cloudflared chính thức (khoảng 20MB)...
-    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe' -OutFile 'cloudflared.exe'"
-    if exist "cloudflared.exe" (
-        echo [OK] Tải cloudflared.exe thành công!
-    ) else (
-        echo [LOI] Không thể tải. Vui lòng kiểm tra lại kết nối mạng!
-        pause
-        exit /b 1
-    )
+if not exist cloudflared.exe (
+    echo [1/2] Dang tai cloudflared.exe tu dong...
+    powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe', 'cloudflared.exe')"
 )
 
-REM 2. Chạy đường hầm kết nối localhost:8000
-echo.
-echo [2/2] Đang kết nối máy tính của bạn ra Internet...
+if not exist cloudflared.exe (
+    echo [LOI] Khong the tai cloudflared.exe. Vui long kiem tra lai mang!
+    pause
+    exit /b 1
+)
+
+echo [OK] Da san sang cong cu Cloudflare!
 echo.
 echo ========================================================
-echo  * QUAN TRỌNG: Bạn cần chạy song song file "run.bat" trước!
-echo  * Hãy tìm dòng có dạng: 
-echo      https://xxxx-xxxx-xxxx.trycloudflare.com
-echo  * Copy link đó gửi cho học sinh là làm bài được ngay!
-echo  * Giữ cửa sổ này mở trong suốt thời gian học sinh thi.
+echo  * LUU Y: Ban can chay song song file "run.bat" truoc!
+echo  * Doi vai giay, he thong se hien thi duong link co dang:
+echo.
+echo      https://...trycloudflare.com
+echo.
+echo  * Copy duong link tren gui cho hoc sinh lam bai ngay!
+echo  * Luu y: Giu cua so nay mo trong suot thoi gian thi.
 echo ========================================================
 echo.
 
