@@ -367,6 +367,9 @@
                     <a :href="`/api/admin/print/answers/${e.id}`" target="_blank" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-900 rounded-lg text-xs font-bold transition-colors border border-red-200 flex items-center gap-1 cursor-pointer" title="In đáp án gốc & ma trận hướng dẫn chấm đề thi">
                       <span>🔑</span><span>In đáp án gốc</span>
                     </a>
+                    <a :href="`/api/exam-builder/export/json/${e.id}`" class="px-2.5 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 rounded-lg text-xs font-bold transition-colors border border-yellow-200 flex items-center gap-1 cursor-pointer" title="Tải file JSON về máy tính để sao lưu vĩnh viễn">
+                      <span>💾</span><span>Tải JSON</span>
+                    </a>
                     <a :href="`/create-exam?edit=${e.id}`" class="px-2.5 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs font-semibold transition-colors">✏️ Sửa</a>
                     <button @click="deleteExam(e.id, e.title)" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer">🗑️ Xóa</button>
                   </div>

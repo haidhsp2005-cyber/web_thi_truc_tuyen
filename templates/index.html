@@ -4,9 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hệ thống Kiểm tra Trực tuyến</title>
+<style>
+  [x-cloak] { display: none !important; }
+  #app-preloader {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0f172a;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: white; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: opacity 0.35s ease;
+  }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  .spinner-circle {
+    width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: #38bdf8; border-radius: 50%;
+    animation: spinSlow 0.8s linear infinite;
+  }
+</style>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center p-4" x-data="loginApp()" x-init="init()">
+
+<!-- Màn hình khởi chạy che giao diện khi tải trang -->
+<div id="app-preloader">
+  <div class="spinner-circle" style="margin-bottom: 1.25rem;"></div>
+  <h2 style="font-size: 1.2rem; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 0.35rem;">HỆ THỐNG THI TRỰC TUYẾN 2026</h2>
+  <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1.25rem;">⚡ Hệ thống đang khởi chạy & tải dữ liệu... Vui lòng chờ!</p>
+  <div style="width: 180px; height: 4px; background: #334155; border-radius: 9999px; overflow: hidden;">
+    <div style="width: 100%; height: 100%; background: #38bdf8; animation: pulse 1.2s infinite;"></div>
+  </div>
+</div>
 
 <div class="w-full max-w-lg">
   <!-- Logo -->
@@ -144,6 +170,14 @@ function startExam() {
 }
 
 document.addEventListener('keydown', (e) => { if (e.key === 'Enter') startExam(); });
+
+window.addEventListener('load', () => {
+  const p = document.getElementById('app-preloader');
+  if (p) {
+    p.style.opacity = '0';
+    setTimeout(() => p.remove(), 400);
+  }
+});
 </script>
 </body>
 </html>

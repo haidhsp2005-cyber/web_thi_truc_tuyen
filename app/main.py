@@ -84,6 +84,13 @@ app.include_router(admin_router.router)
 app.include_router(exam_builder_router.router)
 
 
+@app.get("/health")
+@app.get("/ping")
+async def health_check():
+    """Endpoint Keep-Alive cho UptimeRobot / Cron-job chống ngủ đông Render."""
+    return {"status": "ok", "message": "Hệ thống thi trực tuyến đang hoạt động bình thường", "year": 2026}
+
+
 # ===================== HTML Routes =====================
 
 @app.get("/", response_class=HTMLResponse)

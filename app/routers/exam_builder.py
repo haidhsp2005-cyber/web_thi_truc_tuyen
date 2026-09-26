@@ -12,6 +12,8 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
+from ..database import load_exam
+
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
 
@@ -592,6 +594,21 @@ async def save_exam(exam_data: dict):
     )
     logger.info(f"Đã lưu đề thi: {exam_id} - {exam_data['title']}")
     return {"success": True, "exam_id": exam_id, "message": f"Đã lưu đề thi '{exam_data['title']}' thành công!"}
+
+
+@router.get("/export/json/{exam_id}")
+async def export_exam_json(exam_id: str):
+    """Tải đề thi về máy dưới dạng file JSON (để lưu trữ vĩnh viễn trên máy tính)."""
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+    content = json.dumps(exam, ensure_ascii=False, indent=2)
+    filename = f"{exam_id}.json"
+    return Response(
+        content=content.encode("utf-8"),
+        media_type="application/json",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
 
 
 @router.delete("/delete/{exam_id}")

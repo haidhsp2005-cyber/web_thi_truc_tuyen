@@ -429,6 +429,15 @@ function resultApp() {
         this.loading = false;
         return;
       }
+
+      // Đọc trước từ sessionStorage để hiển thị bảng điểm ngay tức khắc (0 giây chờ)
+      const cached = sessionStorage.getItem('cached_result_' + submissionId);
+      if (cached) {
+        try {
+          this.result = JSON.parse(cached);
+          this.loading = false;
+        } catch(e) {}
+      }
       
       await this.loadResult();
       this.loading = false;

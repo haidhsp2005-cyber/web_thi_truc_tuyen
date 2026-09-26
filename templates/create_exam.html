@@ -52,6 +52,11 @@
         class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md text-sm">
         <span>👁️</span><span class="hidden sm:inline">Xem trước</span>
       </button>
+      <button @click="downloadCurrentExamJson()" type="button"
+        class="bg-yellow-500 hover:bg-yellow-400 text-yellow-950 font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md text-sm cursor-pointer"
+        title="Tải file JSON về máy tính cá nhân để lưu trữ vĩnh viễn">
+        <span>💾</span><span class="hidden sm:inline">Tải JSON</span>
+      </button>
       <button @click="saveExam(false)" :disabled="saving"
         class="bg-green-500 hover:bg-green-400 disabled:opacity-50 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md text-sm cursor-pointer">
         <span x-show="saving" class="animate-spin">⏳</span>
@@ -1303,6 +1308,19 @@ function examBuilder() {
       if (this.exam.title) {
         this.autoSaveMsg = 'Tự lưu nháp: ' + new Date().toLocaleTimeString('vi-VN');
       }
+    },
+
+    downloadCurrentExamJson() {
+      const payload = this.buildPayload();
+      const str = JSON.stringify(payload, null, 2);
+      const blob = new Blob([str], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const cleanTitle = (this.exam.title || 'de_thi').replace(/[^a-zA-Z0-9_\u00C0-\u024F\u1EA0-\u1EF9]/g, '_');
+      a.download = `${cleanTitle}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
     },
 
     showMsg(msg, ok) {

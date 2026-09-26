@@ -174,7 +174,17 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         "success": True,
         "submission_id": submission_id,
         "student_name": student_name,
+        "student_class": student_class,
+        "exam_id": exam_id,
+        "started_at": submission_data["started_at"],
+        "submitted_at": submission_data["submitted_at"],
+        "duration_seconds": submission_data["duration_seconds"],
+        "status": "graded",
         "scores": scores,
+        "part1_result": p1_result,
+        "part2_result": p2_result,
+        "part3_result": p3_result,
+        "part4_result": p4_result,
         "part4_grading": "pending" if p4_answer.strip() else "skipped",
         "message": "Bài đã được chấm xong! Điểm tự luận sẽ cập nhật sau vài giây."
     }
