@@ -8,26 +8,40 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
-<style type="text/tailwindcss">
-  [x-cloak] { display: none !important; }
-  .nav-btn { @apply w-8 h-8 rounded-xl text-xs font-bold border-2 transition-all flex items-center justify-center cursor-pointer shadow-sm; }
-  .nav-answered { @apply bg-green-500 border-green-600 text-white !important; }
-  .nav-flagged { @apply bg-yellow-400 border-yellow-500 text-yellow-900 !important; }
-  .nav-active { @apply ring-2 ring-offset-1 ring-blue-500 !important; }
-  .nav-unanswered { @apply bg-white border-gray-300 text-gray-600 hover:border-blue-400; }
-  .q-option:hover { @apply border-blue-400 bg-blue-50; }
-  .q-option.selected { @apply border-blue-600 bg-blue-100 font-semibold; }
-  .section-tab { @apply px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer; }
-  .section-tab.active { @apply bg-blue-900 text-white; }
-  .section-tab:not(.active) { @apply bg-gray-100 text-gray-600 hover:bg-gray-200; }
-</style>
 <style>
   [x-cloak] { display: none !important; }
+
+  /* Crisp font rendering on desktop and mobile */
+  html, body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* Sharp KaTeX formula typography */
+  .katex {
+    font-size: 1.08em !important;
+    text-rendering: optimizeLegibility;
+  }
+  .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.3rem 0;
+    margin: 0.5em 0 !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Touch controls optimization */
+  button, label, input, select, textarea {
+    touch-action: manipulation;
+  }
+
   .nav-btn {
-    width: 2rem;
-    height: 2rem;
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: 0.75rem;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     border-width: 2px;
     display: inline-flex;
@@ -35,10 +49,11 @@
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.15s ease-in-out;
   }
   .nav-answered {
-    background-color: #22c55e !important;
-    border-color: #16a34a !important;
+    background-color: #16a34a !important;
+    border-color: #15803d !important;
     color: #ffffff !important;
   }
   .nav-flagged {
@@ -47,12 +62,31 @@
     color: #713f12 !important;
   }
   .nav-active {
-    box-shadow: 0 0 0 2px #3b82f6 !important;
+    box-shadow: 0 0 0 3px #3b82f6 !important;
   }
   .nav-unanswered {
     background-color: #ffffff;
     border-color: #d1d5db;
+    color: #374151;
+  }
+  .section-tab {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .section-tab.active {
+    background-color: #1e3a8a;
+    color: #ffffff;
+  }
+  .section-tab:not(.active) {
+    background-color: #f3f4f6;
     color: #4b5563;
+  }
+  .section-tab:not(.active):hover {
+    background-color: #e5e7eb;
   }
 </style>
 </head>
@@ -61,25 +95,36 @@
 <!-- Top Bar: Thông tin + Đồng hồ -->
 <div class="fixed top-0 left-0 right-0 z-50 bg-blue-900 text-white shadow-lg">
   <div class="flex items-center justify-between px-4 py-3 max-w-screen-xl mx-auto">
-    <div class="flex items-center gap-3">
-      <span class="text-2xl">📝</span>
-      <div>
-        <p class="font-bold text-sm leading-tight" x-text="examData?.title || 'Đang tải...'"></p>
-        <p class="text-blue-300 text-xs" x-text="`${studentName} - Lớp ${studentClass}`"></p>
+    <div class="flex items-center gap-2.5 min-w-0">
+      <span class="text-2xl flex-shrink-0">📝</span>
+      <div class="min-w-0 truncate">
+        <p class="font-bold text-xs sm:text-sm leading-tight truncate" x-text="examData?.title || 'Đang tải...'"></p>
+        <p class="text-blue-300 text-[11px] sm:text-xs truncate" x-text="`${studentName} - Lớp ${studentClass}`"></p>
       </div>
     </div>
     
     <!-- Đồng hồ đếm ngược -->
-    <div :class="timeLeft < 300 ? 'bg-red-600 animate-pulse' : 'bg-blue-800'" class="px-5 py-2 rounded-xl text-center min-w-[100px] border border-blue-700">
-      <div class="text-2xl font-mono font-black" x-text="formatTime(timeLeft)"></div>
-      <div class="text-xs text-blue-200">còn lại</div>
+    <div :class="timeLeft < 300 ? 'bg-red-600 animate-pulse' : 'bg-blue-800'" class="px-3 sm:px-5 py-1.5 sm:py-2 rounded-xl text-center min-w-[85px] sm:min-w-[100px] border border-blue-700 shadow-sm flex-shrink-0">
+      <div class="text-xl sm:text-2xl font-mono font-black tracking-tight" x-text="formatTime(timeLeft)"></div>
+      <div class="text-[10px] sm:text-xs text-blue-200">còn lại</div>
     </div>
 
-    <!-- Nộp bài -->
-    <button @click="confirmSubmit()" class="bg-green-500 hover:bg-green-400 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 transition-colors">
-      <span>📤</span>
-      <span class="hidden sm:block">Nộp bài</span>
-    </button>
+    <!-- Actions -->
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <button 
+        @click="showMobilePalette = true" 
+        class="lg:hidden bg-blue-800 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-2.5 py-2 rounded-xl flex items-center gap-1.5 border border-blue-700 shadow-sm transition-all cursor-pointer"
+        title="Bảng câu hỏi"
+      >
+        <span>📋</span>
+        <span x-text="`${answeredCount}/${totalCount}`"></span>
+      </button>
+
+      <button @click="confirmSubmit()" class="bg-green-500 hover:bg-green-400 text-white font-bold px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm">
+        <span>📤</span>
+        <span class="hidden sm:inline">Nộp bài</span>
+      </button>
+    </div>
   </div>
   
   <!-- Progress bar -->
@@ -416,6 +461,104 @@
   </div>
 </div>
 
+<!-- Mobile Drawer: Bảng câu hỏi -->
+<div 
+  x-show="showMobilePalette" 
+  x-cloak
+  class="fixed inset-0 z-50 lg:hidden flex flex-col justify-end"
+  style="background-color: rgba(0,0,0,0.5);"
+>
+  <div 
+    @click.away="showMobilePalette = false"
+    class="bg-white rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl p-5 overflow-hidden"
+  >
+    <div class="flex items-center justify-between pb-3 border-b">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🗂️</span>
+        <h3 class="font-bold text-gray-900 text-base">Danh sách câu hỏi</h3>
+        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full" x-text="`${answeredCount}/${totalCount} đã làm`"></span>
+      </div>
+      <button @click="showMobilePalette = false" class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center font-bold text-base cursor-pointer">✕</button>
+    </div>
+
+    <div class="overflow-y-auto py-4 space-y-4 flex-1">
+      <!-- Phần I -->
+      <div x-show="p1Questions.length > 0">
+        <p class="text-xs text-indigo-700 font-bold uppercase mb-2">Phần I - Trắc nghiệm (<span x-text="p1Questions.length"></span> câu)</p>
+        <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
+          <template x-for="(q, i) in p1Questions" :key="q.id">
+            <button
+              @click="goToQuestion('p1', i); showMobilePalette = false"
+              :class="[
+                currentPart === 'p1' && currentIdx === i ? 'ring-2 ring-offset-1 ring-blue-600 font-black' : '',
+                p1Answers[q.id] ? 'bg-green-500 border-green-600 text-white font-bold' : (flagged['p1_' + i] ? 'bg-yellow-400 border-yellow-500 text-yellow-900 font-bold' : 'bg-white border-gray-300 text-gray-700')
+              ]"
+              class="h-9 rounded-xl text-xs border-2 transition-all flex items-center justify-center font-bold shadow-sm"
+              x-text="i + 1"
+            ></button>
+          </template>
+        </div>
+      </div>
+
+      <!-- Phần II -->
+      <div x-show="p2Questions.length > 0">
+        <p class="text-xs text-purple-700 font-bold uppercase mb-2">Phần II - Đúng / Sai (<span x-text="p2Questions.length"></span> câu)</p>
+        <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
+          <template x-for="(q, i) in p2Questions" :key="q.id">
+            <button
+              @click="goToQuestion('p2', i); showMobilePalette = false"
+              :class="[
+                currentPart === 'p2' && currentIdx === i ? 'ring-2 ring-offset-1 ring-purple-600 font-black' : '',
+                isP2Answered(q.id) ? 'bg-green-500 border-green-600 text-white font-bold' : (flagged['p2_' + i] ? 'bg-yellow-400 border-yellow-500 text-yellow-900 font-bold' : 'bg-white border-gray-300 text-gray-700')
+              ]"
+              class="h-9 rounded-xl text-xs border-2 transition-all flex items-center justify-center font-bold shadow-sm"
+              x-text="i + 1 + p1Questions.length"
+            ></button>
+          </template>
+        </div>
+      </div>
+
+      <!-- Phần III -->
+      <div x-show="p3Questions.length > 0">
+        <p class="text-xs text-teal-700 font-bold uppercase mb-2">Phần III - Trả lời ngắn (<span x-text="p3Questions.length"></span> câu)</p>
+        <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
+          <template x-for="(q, i) in p3Questions" :key="q.id">
+            <button
+              @click="goToQuestion('p3', i); showMobilePalette = false"
+              :class="[
+                currentPart === 'p3' && currentIdx === i ? 'ring-2 ring-offset-1 ring-teal-600 font-black' : '',
+                p3Answers[q.id] && p3Answers[q.id].trim() ? 'bg-green-500 border-green-600 text-white font-bold' : (flagged['p3_' + i] ? 'bg-yellow-400 border-yellow-500 text-yellow-900 font-bold' : 'bg-white border-gray-300 text-gray-700')
+              ]"
+              class="h-9 rounded-xl text-xs border-2 transition-all flex items-center justify-center font-bold shadow-sm"
+              x-text="i + 1 + p1Questions.length + p2Questions.length"
+            ></button>
+          </template>
+        </div>
+      </div>
+
+      <!-- Phần IV -->
+      <div x-show="p4Questions.length > 0">
+        <p class="text-xs text-orange-700 font-bold uppercase mb-2">Phần IV - Tự luận</p>
+        <button
+          @click="goToQuestion('p4', 0); showMobilePalette = false"
+          :class="[
+            currentPart === 'p4' ? 'ring-2 ring-offset-1 ring-orange-500 font-black' : '',
+            p4Answer.trim() ? 'bg-green-500 border-green-600 text-white font-bold' : 'bg-white border-gray-300 text-gray-700'
+          ]"
+          class="w-full py-2.5 rounded-xl text-xs font-bold border-2 transition-all flex items-center justify-center shadow-sm"
+        >Câu hỏi Tự luận</button>
+      </div>
+
+      <!-- Chú thích -->
+      <div class="pt-3 border-t flex flex-wrap items-center justify-between text-xs text-gray-500 gap-2">
+        <div class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 bg-green-500 rounded inline-block"></span> Đã làm</div>
+        <div class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 bg-yellow-400 rounded inline-block"></span> Xem lại</div>
+        <div class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 bg-white border border-gray-400 rounded inline-block"></span> Chưa làm</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <script>
@@ -442,8 +585,10 @@ function examApp() {
     
     // UI
     showConfirm: false,
+    showMobilePalette: false,
     submitting: false,
     timeLeft: 45 * 60,
+    targetEndTime: null,
     timerInterval: null,
 
     // Questions
@@ -499,8 +644,8 @@ function examApp() {
         const resp = await fetch(`/api/exam/current?exam_id=${this.examId}`);
         if (resp.ok) {
           this.examData = await resp.json();
-          this.timeLeft = (this.examData.duration_minutes || 45) * 60;
           this.setupShuffledExam();
+          this.startCountdown();
         }
       } catch(e) {
         alert('Không thể tải đề thi! Kiểm tra kết nối mạng.');
@@ -508,17 +653,57 @@ function examApp() {
       
       this.loading = false;
       
-      // Khởi động đồng hồ
-      this.timerInterval = setInterval(() => {
-        this.timeLeft--;
-        if (this.timeLeft <= 0) {
-          clearInterval(this.timerInterval);
-          this.autoSubmit();
+      // Đồng bộ đồng hồ đếm ngược tức thì khi quay lại trang / chuyển tab / mở khóa điện thoại
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          this.updateTimerTick();
         }
-      }, 1000);
+      });
+      window.addEventListener('focus', () => {
+        this.updateTimerTick();
+      });
       
       // Render LaTeX sau khi tải xong
       this.$nextTick(() => this.renderAllLatex());
+    },
+
+    startCountdown() {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+      
+      const endKey = 'exam_end_time_' + this.examId;
+      let storedEnd = sessionStorage.getItem(endKey);
+      const durationSecs = (this.examData?.duration_minutes || 45) * 60;
+      
+      if (!storedEnd) {
+        this.targetEndTime = Date.now() + durationSecs * 1000;
+        sessionStorage.setItem(endKey, this.targetEndTime.toString());
+      } else {
+        this.targetEndTime = parseInt(storedEnd, 10);
+      }
+      
+      // Cập nhật ngay lập tức theo thời gian thực
+      this.updateTimerTick();
+      
+      // Chạy interval 1 giây 1 lần đồng bộ chính xác với Date.now()
+      this.timerInterval = setInterval(() => {
+        this.updateTimerTick();
+      }, 1000);
+    },
+
+    updateTimerTick() {
+      if (!this.targetEndTime) return;
+      const diff = Math.ceil((this.targetEndTime - Date.now()) / 1000);
+      this.timeLeft = Math.max(0, diff);
+      if (this.timeLeft <= 0) {
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+        this.autoSubmit();
+      }
     },
 
     setupShuffledExam() {
@@ -683,9 +868,14 @@ function examApp() {
     },
 
     formatTime(secs) {
-      const m = Math.floor(secs / 60).toString().padStart(2, '0');
-      const s = (secs % 60).toString().padStart(2, '0');
-      return `${m}:${s}`;
+      if (isNaN(secs) || secs < 0) secs = 0;
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      const s = Math.floor(secs % 60);
+      if (h > 0) {
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      }
+      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     },
     
     getP1DisplayOptions(q) {
@@ -809,8 +999,10 @@ function examApp() {
         
         if (resp.ok) {
           const result = await resp.json();
-          clearInterval(this.timerInterval);
+          if (this.timerInterval) clearInterval(this.timerInterval);
           sessionStorage.removeItem('exam_answers');
+          sessionStorage.removeItem('exam_end_time_' + this.examId);
+          sessionStorage.removeItem('exam_shuffled_' + this.examId);
           sessionStorage.setItem('submission_id', result.submission_id);
           window.location.href = `/result?id=${result.submission_id}`;
         } else {

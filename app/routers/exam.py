@@ -3,7 +3,9 @@ API Routers - Exam endpoints
 """
 import uuid
 import logging
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+VIETNAM_TZ = timezone(timedelta(hours=7))
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from typing import Optional
@@ -129,13 +131,17 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     
     scores = calculate_total_score(p1_result, p2_result, p3_result, 0.0, exam)
     
+    client_submitted = data.get("submitted_at")
+    if not client_submitted or not isinstance(client_submitted, str):
+        client_submitted = datetime.now(VIETNAM_TZ).isoformat()
+    
     submission_data = {
         "submission_id": submission_id,
         "student_name": student_name,
         "student_class": student_class,
         "exam_id": exam_id,
         "started_at": data.get("started_at", ""),
-        "submitted_at": datetime.now().isoformat(),
+        "submitted_at": client_submitted,
         "duration_seconds": data.get("duration_seconds", 0),
         "part1_answers": p1_answers,
         "part2_answers": p2_answers,

@@ -5,7 +5,7 @@ Hỗ trợ: Excel (.xlsx), HTML (in ấn/PDF), Word (.docx)
 import io
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 
 import openpyxl
@@ -16,6 +16,21 @@ from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 logger = logging.getLogger(__name__)
+
+VIETNAM_TZ = timezone(timedelta(hours=7))
+
+def format_datetime_vn(iso_str: str) -> str:
+    if not iso_str:
+        return ""
+    try:
+        dt = datetime.fromisoformat(str(iso_str).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc).astimezone(VIETNAM_TZ)
+        else:
+            dt = dt.astimezone(VIETNAM_TZ)
+        return dt.strftime("%H:%M:%S - %d/%m/%Y")
+    except Exception:
+        return str(iso_str)
 
 
 def export_class_results_excel(submissions: List[dict], exam_title: str = "Bảng điểm") -> bytes:
@@ -122,13 +137,7 @@ def export_result_html(submission: dict, exam_data: dict) -> str:
     p3 = submission.get("part3_result", {})
     p4 = submission.get("part4_result", {})
     
-    submitted_at = submission.get("submitted_at", "")
-    if submitted_at:
-        try:
-            dt = datetime.fromisoformat(submitted_at)
-            submitted_at = dt.strftime("%d/%m/%Y %H:%M")
-        except:
-            pass
+    submitted_at = format_datetime_vn(submission.get("submitted_at", ""))
 
     rank_class = {"Giỏi": "text-green-700", "Khá": "text-blue-700", "Trung bình": "text-yellow-700", "Yếu": "text-red-600"}
     rank_color = rank_class.get(scores.get("rank", ""), "text-gray-700")
@@ -393,13 +402,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
     p3_res = submission.get("part3_result", {})
     p4_res = submission.get("part4_result", {})
 
-    submitted_at = submission.get("submitted_at", "")
-    if submitted_at:
-        try:
-            dt = datetime.fromisoformat(submitted_at)
-            submitted_at = dt.strftime("%d/%m/%Y %H:%M")
-        except:
-            pass
+    submitted_at = format_datetime_vn(submission.get("submitted_at", ""))
 
     # Chi tiết Phần I
     p1_details_html = ""

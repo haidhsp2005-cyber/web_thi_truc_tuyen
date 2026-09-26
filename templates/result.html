@@ -56,9 +56,15 @@
               <span class="text-6xl sm:text-7xl font-black tracking-tight" x-text="result.scores?.total_score ?? 0"></span>
               <span class="text-2xl sm:text-3xl text-blue-300 font-bold">/ 10 điểm</span>
             </div>
-            <p class="text-blue-200 mt-2 text-sm flex items-center gap-2">
-              <span>⏱️</span>
-              <span x-text="'Thời gian hoàn thành: ' + formatDuration(result.duration_seconds)"></span>
+            <p class="text-blue-200 mt-2 text-sm flex flex-wrap items-center gap-y-1 gap-x-4">
+              <span class="flex items-center gap-1.5">
+                <span>⏱️</span>
+                <span x-text="'Thời gian hoàn thành: ' + formatDuration(result.duration_seconds)"></span>
+              </span>
+              <span class="flex items-center gap-1.5" x-show="result.submitted_at">
+                <span>📅</span>
+                <span x-text="'Nộp lúc: ' + formatDateTime(result.submitted_at)"></span>
+              </span>
             </p>
           </div>
 
@@ -358,8 +364,8 @@ function resultApp() {
 
     get studentInfo() {
       if (!this.result) return '';
-      const dt = this.result.submitted_at ? new Date(this.result.submitted_at).toLocaleString('vi-VN') : '';
-      return `Thí sinh: ${this.result.student_name} - Lớp: ${this.result.student_class} | Nộp bài: ${dt}`;
+      const dt = this.formatDateTime(this.result.submitted_at);
+      return `Thí sinh: ${this.result.student_name} - Lớp: ${this.result.student_class} | Nộp lúc: ${dt}`;
     },
 
     get p1Stats() {
@@ -457,6 +463,23 @@ function resultApp() {
         return `${m} phút ${s} giây`;
       }
       return `${s} giây`;
+    },
+
+    formatDateTime(isoStr) {
+      if (!isoStr) return '';
+      try {
+        const d = new Date(isoStr);
+        if (isNaN(d.getTime())) return isoStr;
+        const hours = d.getHours().toString().padStart(2, '0');
+        const mins = d.getMinutes().toString().padStart(2, '0');
+        const secs = d.getSeconds().toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const year = d.getFullYear();
+        return `${hours}:${mins}:${secs} - ${day}/${month}/${year}`;
+      } catch(e) {
+        return isoStr;
+      }
     },
 
     printStudentResult() {
