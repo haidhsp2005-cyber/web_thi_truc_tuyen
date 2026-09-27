@@ -24,6 +24,9 @@ def clean_math_for_print(text: str) -> str:
     if not text:
         return ""
     s = str(text)
+    # Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị: { (m^{2}) -> (m^{2})
+    s = re.sub(r'\{(\s*\([^\)]+\))\}?', r'\1', s)
+    s = re.sub(r'\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?', r'\1', s)
     s = re.sub(
         r'\$?\s*\{\s*([^{}]*?(?:\\\\|\n|&)[^{}]*?)\s*(?:\}\$|\$\}|\}|\$)',
         lambda m: f"$\\begin{{cases}} {m.group(1).strip().replace(chr(10), ' \\\\ ')} \\end{{cases}}$",

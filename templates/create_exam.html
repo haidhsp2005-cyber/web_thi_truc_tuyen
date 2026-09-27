@@ -1275,6 +1275,10 @@ function examBuilder() {
       str = str.replace(/<span[^>]*class="katex-error"[^>]*>([\s\S]*?)<\/span>/gi, '$1')
                .replace(/style="color:\s*#cc0000"[^>]*>/gi, '');
 
+      // Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị: { (m^{2}) -> (m^{2})
+      str = str.replace(/\{(\s*\([^\)]+\))\}?/g, '$1')
+               .replace(/\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?/g, '$1');
+
       // Pre-sanitize unicode math symbols
       str = str.replace(/−/g, '-')
                .replace(/′/g, "'")
@@ -1394,7 +1398,15 @@ function examBuilder() {
 
       // 7. $...$ or \(...\) -> inlineMode (supports multiline equations)
       str = str.replace(/(?:\$((?:\\\$|[^\$])+?)\$|\\\(([\s\S]*?)\\\))/g, (match, p1, p2) => {
-        const expr = (p1 !== undefined ? p1 : p2).trim();
+        let expr = (p1 !== undefined ? p1 : p2).trim();
+        // Tự động cân bằng ngoặc nhọn { } nếu biểu thức bị thiếu
+        const opens = (expr.match(/\{/g) || []).length;
+        const closes = (expr.match(/\}/g) || []).length;
+        if (opens > closes) {
+          expr = expr + '}'.repeat(opens - closes);
+        } else if (closes > opens) {
+          expr = '{'.repeat(closes - opens) + expr;
+        }
         try {
           return katex.renderToString(expr, { displayMode: false, throwOnError: false });
         } catch(e) {

@@ -863,6 +863,10 @@ function examApp() {
       str = str.replace(/<span[^>]*class="katex-error"[^>]*>([\s\S]*?)<\/span>/gi, '$1')
                .replace(/style="color:\s*#cc0000"[^>]*>/gi, '');
 
+      // Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị: { (m^{2}) -> (m^{2})
+      str = str.replace(/\{(\s*\([^\)]+\))\}?/g, '$1')
+               .replace(/\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?/g, '$1');
+
       // Pre-sanitize unicode math symbols
       str = str.replace(/−/g, '-')
                .replace(/′/g, "'")

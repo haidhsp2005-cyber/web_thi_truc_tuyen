@@ -213,6 +213,10 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     for orig, rep in replacements:
         math_latex = math_latex.replace(orig, rep)
     
+    # Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị: { (m^{2}) -> (m^{2})
+    math_latex = re.sub(r'\{(\s*\([^\)]+\))\}?', r'\1', math_latex)
+    math_latex = re.sub(r'\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?', r'\1', math_latex)
+
     # Chuẩn hóa biến có dấu phẩy trên: {a}^{'} -> a', {x}_{0} -> x_0
     math_latex = re.sub(r"\{([a-zA-Z])\}\^\{'\}", r"\1'", math_latex)
     math_latex = re.sub(r"\{([a-zA-Z])\}\^\{′\}", r"\1'", math_latex)
