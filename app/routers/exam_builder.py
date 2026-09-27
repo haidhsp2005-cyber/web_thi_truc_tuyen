@@ -12,7 +12,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
-from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR
+from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
@@ -255,6 +255,10 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     for orig, rep in replacements:
         math_latex = math_latex.replace(orig, rep)
     
+    # Dọn dẹp lỗi ngoặc nhọn mồ côi: 200{ m^{2} -> 200 m^{2} hoặc { m^{2} -> m^{2}
+    math_latex = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', math_latex)
+    math_latex = re.sub(r'(^|[^\\])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', math_latex)
+
     # Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị: { (m^{2}) -> (m^{2})
     math_latex = re.sub(r'\{(\s*\([^\)]+\))\}?', r'\1', math_latex)
     math_latex = re.sub(r'\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?', r'\1', math_latex)
@@ -348,6 +352,27 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     dollar_count = math_latex.count("$")
     if dollar_count % 2 != 0:
         math_latex = math_latex + "$"
+
+    # 7b. Tự động dọn ngoặc nhọn mồ côi trước chữ cái / đơn vị (như { m^{2} -> m^{2})
+    math_latex = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', math_latex)
+    math_latex = re.sub(r'(^|[^\\])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', math_latex)
+
+    # 7c. Tự động cân bằng ngoặc nhọn { và } nếu lệch
+    open_braces = math_latex.count("{")
+    close_braces = math_latex.count("}")
+    if open_braces > close_braces:
+        math_latex = re.sub(r'^\{\s*([a-zA-Z])', r'\1', math_latex)
+        open_braces = math_latex.count("{")
+    if open_braces > close_braces:
+        if math_latex.endswith("$"):
+            math_latex = math_latex[:-1] + ("}" * (open_braces - close_braces)) + "$"
+        else:
+            math_latex = math_latex + ("}" * (open_braces - close_braces))
+    elif close_braces > open_braces:
+        if math_latex.startswith("$"):
+            math_latex = "$" + ("{" * (close_braces - open_braces)) + math_latex[1:]
+        else:
+            math_latex = ("{" * (close_braces - open_braces)) + math_latex
 
     # 8. Bỏ bao bọc $ $ không cần thiết cho số nguyên / số thập phân đơn giản (VD: $1$ -> 1, $-1$ -> -1)
     math_latex = re.sub(r"^\s*\$([+-]?\d+(?:[\.,]\d+)?)\$\s*$", r"\1", math_latex)
@@ -545,28 +570,58 @@ def _extract_docx_paragraphs_with_format(doc, images_map: dict = None) -> List[s
                 paragraphs.append(line)
         elif tag == "tbl":
             table = docx.table.Table(child, doc)
-            table_html_rows = []
+            
+            # Kiểm tra xem bảng này có phải là bảng chứa các phương án trắc nghiệm A, B, C, D không
+            is_option_table = False
             for row in table.rows:
-                cell_htmls = []
                 for cell in row.cells:
-                    cell_parts = []
-                    for p in cell.paragraphs:
-                        cell_runs = _extract_element_runs_and_math(p._element, p, images_map)
-                        t = "".join(cell_runs).strip()
-                        if t:
-                            cell_parts.append(t)
-                    cell_text = " ".join(cell_parts).strip()
-                    cell_htmls.append(f'<td class="border border-gray-400 px-3 py-1 text-center font-medium">{cell_text}</td>')
-                if cell_htmls:
-                    table_html_rows.append(f'<tr>{"".join(cell_htmls)}</tr>')
-            if table_html_rows:
-                table_html = (
-                    f'<div class="overflow-x-auto my-3 text-center">'
-                    f'<table class="inline-table border-collapse border border-gray-400 text-sm bg-white shadow-xs rounded">'
-                    f'<tbody>{"".join(table_html_rows)}</tbody>'
-                    f'</table></div>'
-                )
-                paragraphs.append(table_html)
+                    cell_clean = re.sub(r'^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*', '', cell.text.strip())
+                    if re.match(r'^(?:[\(\[])?[A-Da-d][\.\)\:\/\-\]\)]\s*', cell_clean):
+                        is_option_table = True
+                        break
+                if is_option_table:
+                    break
+
+            if is_option_table:
+                # Nếu là bảng chứa phương án A, B, C, D, xuất ra các dòng văn bản cách nhau để parser nhận diện chính xác
+                for row in table.rows:
+                    row_parts = []
+                    for cell in row.cells:
+                        cell_parts = []
+                        for p in cell.paragraphs:
+                            cell_runs = _extract_element_runs_and_math(p._element, p, images_map)
+                            t = "".join(cell_runs).strip()
+                            if t:
+                                cell_parts.append(t)
+                        cell_text = " ".join(cell_parts).strip()
+                        if cell_text:
+                            row_parts.append(cell_text)
+                    if row_parts:
+                        paragraphs.append("    ".join(row_parts))
+            else:
+                # Nếu là bảng số liệu, bảng biến thiên thật sự, xuất ra bảng HTML có khung kẻ viền
+                table_html_rows = []
+                for row in table.rows:
+                    cell_htmls = []
+                    for cell in row.cells:
+                        cell_parts = []
+                        for p in cell.paragraphs:
+                            cell_runs = _extract_element_runs_and_math(p._element, p, images_map)
+                            t = "".join(cell_runs).strip()
+                            if t:
+                                cell_parts.append(t)
+                        cell_text = " ".join(cell_parts).strip()
+                        cell_htmls.append(f'<td class="border border-gray-400 px-3 py-1 text-center font-medium">{cell_text}</td>')
+                    if cell_htmls:
+                        table_html_rows.append(f'<tr>{"".join(cell_htmls)}</tr>')
+                if table_html_rows:
+                    table_html = (
+                        f'<div class="overflow-x-auto my-3 text-center">'
+                        f'<table class="inline-table border-collapse border border-gray-400 text-sm bg-white shadow-xs rounded">'
+                        f'<tbody>{"".join(table_html_rows)}</tbody>'
+                        f'</table></div>'
+                    )
+                    paragraphs.append(table_html)
 
     return paragraphs
 
@@ -699,6 +754,9 @@ async def save_exam(exam_data: dict):
     """Lưu đề thi mới hoặc cập nhật đề thi hiện tại."""
     if not exam_data.get("title", "").strip():
         raise HTTPException(400, "Vui lòng nhập tiêu đề đề thi!")
+    
+    # Tự động chữa lành các lỗi bảng, ngoặc nhọn mồ côi nếu có
+    heal_exam_data(exam_data)
     
     parts = exam_data.get("parts", {})
     p1_qs = parts.get("part1", {}).get("questions", [])
@@ -846,19 +904,25 @@ def _extract_blocks(text_segment: str) -> List[str]:
 
 def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty_if_missing: bool = False) -> Optional[dict]:
     """Phân tích một khối câu hỏi thành câu trắc nghiệm 4 lựa chọn (Phần I)."""
+    # Gỡ bỏ các thẻ HTML table bọc quanh phương án nếu bị rò rỉ từ bảng Word
+    clean_block = re.sub(r'<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>', '\n', q_block, flags=re.I)
+    clean_block = re.sub(r'</?(?:table|tbody|tr|div)[^>]*>', '\n', clean_block, flags=re.I)
+    clean_block = re.sub(r'<td[^>]*>', '  ', clean_block, flags=re.I)
+    clean_block = re.sub(r'</td>', '  ', clean_block, flags=re.I)
+
     # Khớp A., A:, A), A/, A-, (A), [A]. Nếu allow_lowercase=True, hỗ trợ cả a, b, c, d
     if allow_lowercase:
-        opt_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-Da-d])[\)\]]|(?P<key_plain>[A-Da-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+        opt_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-Da-d])[\)\]]|(?P<key_plain>[A-Da-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
     else:
-        opt_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-D])[\)\]]|(?P<key_plain>[A-D])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+        opt_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-D])[\)\]]|(?P<key_plain>[A-D])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
 
-    matches = list(re.finditer(opt_regex, q_block))
+    matches = list(re.finditer(opt_regex, clean_block))
 
     # Nếu không tìm thấy ít nhất 2 phương án
     if len(matches) < 2:
         if create_empty_if_missing:
             # Vẫn giữ câu hỏi, tạo 4 lựa chọn trống để giáo viên bổ sung thay vì làm mất câu
-            raw_q_text = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
+            raw_q_text = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", clean_block, flags=re.IGNORECASE)
             q_text = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_q_text).strip()
             return {
                 "text": q_text,
@@ -870,16 +934,16 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
 
     # Trích xuất ảnh nếu có
     image_url = ""
-    img_match = re.search(r"\[IMAGE:\s*([^\]]+)\]", q_block)
+    img_match = re.search(r"\[IMAGE:\s*([^\]]+)\]", clean_block)
     if img_match:
         image_url = img_match.group(1).strip()
     else:
-        md_img = re.search(r"!\[[^\]]*\]\(([^)]+)\)", q_block)
+        md_img = re.search(r"!\[[^\]]*\]\(([^)]+)\)", clean_block)
         if md_img:
             image_url = md_img.group(1).strip()
 
     first_opt_start = matches[0].start()
-    raw_q_text = q_block[:first_opt_start].strip()
+    raw_q_text = clean_block[:first_opt_start].strip()
     raw_q_text = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", raw_q_text, flags=re.IGNORECASE)
     raw_q_text = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_q_text)
     raw_q_text = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", raw_q_text)
@@ -894,9 +958,9 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
     for idx, m in enumerate(matches):
         key = (m.group("key_b") or m.group("key_plain")).upper()
         content_start = m.end()
-        content_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(q_block)
-        raw_val = q_block[content_start:content_end].strip()
-        full_opt_str = q_block[m.start():content_end]
+        content_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(clean_block)
+        raw_val = clean_block[content_start:content_end].strip()
+        full_opt_str = clean_block[m.start():content_end]
 
         is_marked = False
         if "{{RED}}" in full_opt_str or "{{UNDERLINE}}" in full_opt_str:
@@ -909,6 +973,7 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
         val = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", val)
         val = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", val, flags=re.IGNORECASE|re.MULTILINE)
         val = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", val, flags=re.IGNORECASE).strip()
+        val = re.sub(r"<[^>]+>", "", val).strip()
 
         options[key] = val
         if is_marked and not detected_answer:
@@ -932,22 +997,27 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
 
 def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_missing: bool = False) -> Optional[dict]:
     """Phân tích một khối câu hỏi thành câu trắc nghiệm Đúng/Sai (Phần II)."""
-    item_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[a-d])[\)\]]|(?P<key_plain>[a-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
-    matches = list(re.finditer(item_regex, q_block))
+    clean_block = re.sub(r'<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>', '\n', q_block, flags=re.I)
+    clean_block = re.sub(r'</?(?:table|tbody|tr|div)[^>]*>', '\n', clean_block, flags=re.I)
+    clean_block = re.sub(r'<td[^>]*>', '  ', clean_block, flags=re.I)
+    clean_block = re.sub(r'</td>', '  ', clean_block, flags=re.I)
+
+    item_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[a-d])[\)\]]|(?P<key_plain>[a-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+    matches = list(re.finditer(item_regex, clean_block))
 
     # Trích xuất ảnh nếu có
     image_url = ""
-    img_match = re.search(r"\[IMAGE:\s*([^\]]+)\]", q_block)
+    img_match = re.search(r"\[IMAGE:\s*([^\]]+)\]", clean_block)
     if img_match:
         image_url = img_match.group(1).strip()
     else:
-        md_img = re.search(r"!\[[^\]]*\]\(([^)]+)\)", q_block)
+        md_img = re.search(r"!\[[^\]]*\]\(([^)]+)\)", clean_block)
         if md_img:
             image_url = md_img.group(1).strip()
 
     if len(matches) < 2:
         if create_empty_if_missing:
-            raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
+            raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", clean_block, flags=re.IGNORECASE)
             raw_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc)
             raw_desc = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", raw_desc)
             raw_desc = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", raw_desc)
@@ -968,7 +1038,7 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
         return None
 
     first_item_start = matches[0].start()
-    raw_desc = q_block[:first_item_start].strip()
+    raw_desc = clean_block[:first_item_start].strip()
     raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", raw_desc, flags=re.IGNORECASE)
     raw_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc)
     raw_desc = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", raw_desc)
@@ -977,15 +1047,15 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
     raw_desc = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", raw_desc, flags=re.IGNORECASE).strip()
     q_desc = raw_desc
 
-    q_has_red = "{{RED}}" in q_block or "{{UNDERLINE}}" in q_block
+    q_has_red = "{{RED}}" in clean_block or "{{UNDERLINE}}" in clean_block
     items = {}
 
     for idx, m in enumerate(matches):
         key = (m.group("key_b") or m.group("key_plain")).lower()
         content_start = m.end()
-        content_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(q_block)
-        raw_val = q_block[content_start:content_end].strip()
-        full_item_str = q_block[m.start():content_end]
+        content_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(clean_block)
+        raw_val = clean_block[content_start:content_end].strip()
+        full_item_str = clean_block[m.start():content_end]
 
         ans = True
         if "{{RED}}" in full_item_str or "{{UNDERLINE}}" in full_item_str:
@@ -1002,6 +1072,7 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
         val = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", val)
         val = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", val, flags=re.IGNORECASE|re.MULTILINE)
         val = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", val, flags=re.IGNORECASE).strip()
+        val = re.sub(r"<[^>]+>", "", val).strip()
         items[key] = {"text": _sanitize_math_symbols(val), "answer": ans}
 
     res_p2 = {

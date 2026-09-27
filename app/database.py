@@ -4,6 +4,7 @@ Database - Lưu trữ bài thi và cấu hình dùng SQLite + JSON
 import json
 import sqlite3
 import os
+import re
 import hashlib
 import logging
 from datetime import datetime
@@ -276,6 +277,126 @@ def delete_all_submissions(exam_id: str = None) -> int:
     return count
 
 
+def heal_exam_data(exam: dict) -> bool:
+    """Tự động kiểm tra và chữa lành các câu hỏi bị kẹt phương án trong bảng HTML/text,
+    hoặc chứa lỗi ngoặc nhọn KaTeX mồ côi (như 200{ m^{2}).
+    Trả về True nếu có sửa đổi dữ liệu."""
+    if not isinstance(exam, dict) or "parts" not in exam:
+        return False
+    modified = False
+
+    # 1. Phần I
+    p1 = exam.get("parts", {}).get("part1", {})
+    if isinstance(p1, dict) and "questions" in p1 and isinstance(p1["questions"], list):
+        for q in p1["questions"]:
+            if not isinstance(q, dict):
+                continue
+            text = q.get("text", "")
+            # Sửa ngoặc nhọn mồ côi trước chữ cái / đơn vị
+            if text:
+                new_text = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', text)
+                new_text = re.sub(r'(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', new_text)
+                if new_text != text:
+                    q["text"] = new_text
+                    text = new_text
+                    modified = True
+
+            opts = q.get("options") or {}
+            has_valid_opts = any(v and str(v).strip() for v in opts.values())
+            if not has_valid_opts and text:
+                clean = re.sub(r'<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>', '\n', text, flags=re.I)
+                clean = re.sub(r'</?(?:table|tbody|tr|div)[^>]*>', '\n', clean, flags=re.I)
+                clean = re.sub(r'<td[^>]*>', '  ', clean, flags=re.I)
+                clean = re.sub(r'</td>', '  ', clean, flags=re.I)
+
+                opt_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?:(?P<bracket>[\(\[])(?P<key_b>[A-Da-d])[\)\]]|(?P<key_plain>[A-Da-d])[\.\)\:\/\-])\s*'
+                matches = list(re.finditer(opt_regex, clean))
+                if len(matches) >= 2:
+                    new_opts = {"A": "", "B": "", "C": "", "D": ""}
+                    for idx, m in enumerate(matches):
+                        key = (m.group("key_b") or m.group("key_plain")).upper()
+                        c_start = m.end()
+                        c_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(clean)
+                        val = clean[c_start:c_end].strip()
+                        val = re.sub(r'<[^>]+>', '', val).strip()
+                        new_opts[key] = val
+                    q["options"] = new_opts
+
+                    table_idx = text.find('<div class="overflow-x-auto')
+                    if table_idx == -1:
+                        table_idx = text.find('<table')
+                    if table_idx != -1:
+                        q["text"] = text[:table_idx].strip()
+                    else:
+                        first_pos = matches[0].start()
+                        q["text"] = clean[:first_pos].strip()
+                    modified = True
+
+    # 2. Phần II
+    p2 = exam.get("parts", {}).get("part2", {})
+    if isinstance(p2, dict) and "questions" in p2 and isinstance(p2["questions"], list):
+        for q in p2["questions"]:
+            if not isinstance(q, dict):
+                continue
+            text = q.get("text", "")
+            if text:
+                new_text = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', text)
+                new_text = re.sub(r'(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', new_text)
+                if new_text != text:
+                    q["text"] = new_text
+                    text = new_text
+                    modified = True
+
+            items = q.get("items") or {}
+            has_valid_items = any(
+                (isinstance(v, dict) and v.get("text", "").strip()) or (isinstance(v, str) and v.strip())
+                for v in items.values()
+            )
+            if not has_valid_items and text:
+                clean = re.sub(r'<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>', '\n', text, flags=re.I)
+                clean = re.sub(r'</?(?:table|tbody|tr|div)[^>]*>', '\n', clean, flags=re.I)
+                clean = re.sub(r'<td[^>]*>', '  ', clean, flags=re.I)
+                clean = re.sub(r'</td>', '  ', clean, flags=re.I)
+
+                item_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?:(?P<bracket>[\(\[])(?P<key_b>[a-d])[\)\]]|(?P<key_plain>[a-d])[\.\)\:\/\-])\s*'
+                matches = list(re.finditer(item_regex, clean))
+                if len(matches) >= 2:
+                    new_items = {}
+                    for idx, m in enumerate(matches):
+                        key = (m.group("key_b") or m.group("key_plain")).lower()
+                        c_start = m.end()
+                        c_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(clean)
+                        val = clean[c_start:c_end].strip()
+                        val = re.sub(r'<[^>]+>', '', val).strip()
+                        new_items[key] = {"text": val, "answer": True}
+                    q["items"] = new_items
+
+                    table_idx = text.find('<div class="overflow-x-auto')
+                    if table_idx == -1:
+                        table_idx = text.find('<table')
+                    if table_idx != -1:
+                        q["text"] = text[:table_idx].strip()
+                    else:
+                        first_pos = matches[0].start()
+                        q["text"] = clean[:first_pos].strip()
+                    modified = True
+
+    # 3. Phần III & IV
+    for part_name in ("part3", "part4"):
+        p = exam.get("parts", {}).get(part_name, {})
+        if isinstance(p, dict) and "questions" in p and isinstance(p["questions"], list):
+            for q in p["questions"]:
+                if isinstance(q, dict) and q.get("text"):
+                    text = q["text"]
+                    new_text = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', text)
+                    new_text = re.sub(r'(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', new_text)
+                    if new_text != text:
+                        q["text"] = new_text
+                        modified = True
+
+    return modified
+
+
 def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
     """Tải đề thi từ SQLite database hoặc file JSON (tìm theo filename hoặc thuộc tính id)."""
     if not exam_id:
@@ -285,14 +406,27 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
     try:
         conn = get_connection()
         c = conn.cursor()
-        c.execute("SELECT data_json FROM exams WHERE id = ?", (exam_id,))
+        c.execute("SELECT id, data_json FROM exams WHERE id = ?", (exam_id,))
         row = c.fetchone()
         if not row and not exam_id.startswith("exam_"):
-            c.execute("SELECT data_json FROM exams WHERE id = ?", (f"exam_{exam_id}",))
+            c.execute("SELECT id, data_json FROM exams WHERE id = ?", (f"exam_{exam_id}",))
             row = c.fetchone()
         conn.close()
-        if row and row[0]:
-            return json.loads(row[0])
+        if row and row[1]:
+            real_id = row[0]
+            exam_data = json.loads(row[1])
+            if heal_exam_data(exam_data):
+                try:
+                    conn2 = get_connection()
+                    c2 = conn2.cursor()
+                    c2.execute("UPDATE exams SET data_json = ?, updated_at = datetime('now') WHERE id = ?", 
+                               (json.dumps(exam_data, ensure_ascii=False), real_id))
+                    conn2.commit()
+                    conn2.close()
+                    logger.info(f"Đã tự động chữa lành và cập nhật đề thi {real_id} vào SQLite.")
+                except Exception as update_err:
+                    logger.warning(f"Lỗi cập nhật lại đề thi {real_id}: {update_err}")
+            return exam_data
     except Exception as ex:
         logger.warning(f"Lỗi đọc đề {exam_id} từ SQLite: {ex}")
 

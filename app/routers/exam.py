@@ -13,7 +13,7 @@ import io
 
 from ..models import StudentInfo, ExamSubmission
 from ..database import (
-    load_exam, save_submission, get_submission, get_all_submissions
+    load_exam, save_submission, get_submission, get_all_submissions, heal_exam_data
 )
 from ..services.grading_service import (
     grade_part1, grade_part2, grade_part3, calculate_total_score
@@ -31,6 +31,8 @@ async def get_current_exam(exam_id: str = "exam_001"):
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
+    
+    heal_exam_data(exam)
     
     # Loại bỏ đáp án trước khi gửi cho học sinh
     safe_exam = {

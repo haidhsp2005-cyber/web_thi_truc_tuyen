@@ -12,6 +12,12 @@
 <style>
   [x-cloak] { display: none !important; }
 
+  /* Ngăn chặn KaTeX hiển thị chữ đỏ lỗi */
+  .katex-error {
+    color: inherit !important;
+    font-family: inherit !important;
+  }
+
   /* Crisp font rendering on desktop and mobile */
   html, body {
     -webkit-font-smoothing: antialiased;
@@ -813,12 +819,22 @@ function examApp() {
       const savedShuffled = sessionStorage.getItem(sessionKey);
       if (savedShuffled) {
         try {
-          this.examData = JSON.parse(savedShuffled);
-          return;
+          const parsed = JSON.parse(savedShuffled);
+          // Kiểm tra xem dữ liệu đã lưu có bị lỗi phương án rỗng không
+          const hasBrokenOptions = parsed?.parts?.part1?.questions?.some(q => 
+            !q.options || (!q.options.A && !q.options.B && !q.options.C && !q.options.D)
+          );
+          if (!hasBrokenOptions) {
+            this.examData = parsed;
+            this.healExamData(this.examData);
+            return;
+          }
+          sessionStorage.removeItem(sessionKey);
         } catch(e) {}
       }
       
       if (!this.examData || !this.examData.parts) return;
+      this.healExamData(this.examData);
       
       const data = JSON.parse(JSON.stringify(this.examData));
       
@@ -828,6 +844,7 @@ function examApp() {
         data.parts.part1.questions = this.shuffleArray(data.parts.part1.questions);
         const optLabels = ['A', 'B', 'C', 'D'];
         data.parts.part1.questions.forEach(q => {
+          this.healQuestion(q);
           if (q.options) {
             const keys = Object.keys(q.options);
             const shuffledKeys = this.shuffleArray(keys);
@@ -868,6 +885,173 @@ function examApp() {
       sessionStorage.setItem(sessionKey, JSON.stringify(this.examData));
     },
 
+    healExamData(data) {
+      if (!data || !data.parts) return;
+      // 1. Phần I
+      if (data.parts.part1 && Array.isArray(data.parts.part1.questions)) {
+        data.parts.part1.questions.forEach(q => this.healQuestion(q));
+      }
+      // 2. Phần II
+      if (data.parts.part2 && Array.isArray(data.parts.part2.questions)) {
+        data.parts.part2.questions.forEach(q => this.healPart2Question(q));
+      }
+      // 3. Phần III & IV
+      ['part3', 'part4'].forEach(pKey => {
+        if (data.parts[pKey] && Array.isArray(data.parts[pKey].questions)) {
+          data.parts[pKey].questions.forEach(q => {
+            if (q && q.text) {
+              q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2')
+                             .replace(/(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+            }
+          });
+        }
+      });
+    },
+
+    healQuestion(q) {
+      if (!q || !q.text) return;
+      // Dọn dẹp ngoặc nhọn mồ côi
+      q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2')
+                     .replace(/(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+
+      const opts = q.options || {};
+      const hasValidOpts = (opts.A && opts.A.trim()) || (opts.B && opts.B.trim()) || (opts.C && opts.C.trim()) || (opts.D && opts.D.trim());
+      if (hasValidOpts) return;
+
+      // Trích xuất các phương án từ text nếu bị kẹt trong bảng HTML hoặc text
+      let clean = q.text.replace(/<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>/gi, '\n')
+                        .replace(/<\/?(?:table|tbody|tr|div)[^>]*>/gi, '\n')
+                        .replace(/<td[^>]*>/gi, '  ')
+                        .replace(/<\/td>/gi, '  ');
+
+      const optRegex = /(?:^|[\s\n>]|(?<=\}\}))(?:(?:\([A-Da-d]\)|\[[A-Da-d]\])|([A-Da-d])[\.\)\:\/\-])\s*/g;
+      let match;
+      const matches = [];
+      while ((match = optRegex.exec(clean)) !== null) {
+        matches.push({
+          key: (match[1] || match[0].replace(/[\(\)\[\]\.\:\/\-\s]/g, '')).toUpperCase(),
+          index: match.index,
+          length: match[0].length
+        });
+      }
+
+      if (matches.length >= 2) {
+        const newOpts = { A: '', B: '', C: '', D: '' };
+        for (let i = 0; i < matches.length; i++) {
+          const m = matches[i];
+          const start = m.index + m.length;
+          const end = (i + 1 < matches.length) ? matches[i + 1].index : clean.length;
+          let val = clean.slice(start, end).trim().replace(/<[^>]+>/g, '').trim();
+          newOpts[m.key] = val;
+        }
+        q.options = newOpts;
+
+        // Cắt bỏ phần bảng khỏi nội dung câu hỏi
+        let tableIdx = q.text.search(/<div[^>]*overflow-x-auto/i);
+        if (tableIdx === -1) tableIdx = q.text.search(/<table/i);
+        if (tableIdx !== -1) {
+          q.text = q.text.substring(0, tableIdx).trim();
+        } else if (matches.length > 0) {
+          q.text = clean.substring(0, matches[0].index).trim();
+        }
+
+        const optLabels = ['A', 'B', 'C', 'D'];
+        const keys = Object.keys(newOpts);
+        q.displayOptions = keys.map((k, idx) => ({
+          origKey: k,
+          displayLabel: optLabels[idx] || k,
+          text: newOpts[k]
+        }));
+      }
+    },
+
+    healPart2Question(q) {
+      if (!q || !q.text) return;
+      q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2')
+                     .replace(/(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+
+      const items = q.items || {};
+      const hasValidItems = Object.values(items).some(v => (v?.text !== undefined ? v.text.trim() : String(v).trim()));
+      if (hasValidItems) return;
+
+      let clean = q.text.replace(/<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>/gi, '\n')
+                        .replace(/<\/?(?:table|tbody|tr|div)[^>]*>/gi, '\n')
+                        .replace(/<td[^>]*>/gi, '  ')
+                        .replace(/<\/td>/gi, '  ');
+
+      const itemRegex = /(?:^|[\s\n>]|(?<=\}\}))(?:(?:\([a-d]\)|\[[a-d]\])|([a-d])[\.\)\:\/\-])\s*/gi;
+      let match;
+      const matches = [];
+      while ((match = itemRegex.exec(clean)) !== null) {
+        matches.push({
+          key: (match[1] || match[0].replace(/[\(\)\[\]\.\:\/\-\s]/g, '')).toLowerCase(),
+          index: match.index,
+          length: match[0].length
+        });
+      }
+
+      if (matches.length >= 2) {
+        const newItems = {};
+        for (let i = 0; i < matches.length; i++) {
+          const m = matches[i];
+          const start = m.index + m.length;
+          const end = (i + 1 < matches.length) ? matches[i + 1].index : clean.length;
+          let val = clean.slice(start, end).trim().replace(/<[^>]+>/g, '').trim();
+          newItems[m.key] = { text: val, answer: true };
+        }
+        q.items = newItems;
+
+        let tableIdx = q.text.search(/<div[^>]*overflow-x-auto/i);
+        if (tableIdx === -1) tableIdx = q.text.search(/<table/i);
+        if (tableIdx !== -1) {
+          q.text = q.text.substring(0, tableIdx).trim();
+        } else if (matches.length > 0) {
+          q.text = clean.substring(0, matches[0].index).trim();
+        }
+
+        const itemLabels = ['a', 'b', 'c', 'd'];
+        const keys = Object.keys(newItems);
+        q.displayItems = keys.map((k, idx) => ({
+          origKey: k,
+          displayLabel: itemLabels[idx] || k,
+          text: newItems[k].text
+        }));
+      }
+    },
+
+    safeKatex(rawExpr, displayMode) {
+      if (!rawExpr || !window.katex) return rawExpr || '';
+      let expr = String(rawExpr).trim();
+
+      // Dọn dẹp ngoặc nhọn mồ côi trước chữ cái hoặc đơn vị: { m^{2} -> m^{2}
+      expr = expr.replace(/^\{\s*([a-zA-Z])/, '$1')
+                 .replace(/(^|[^\\])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+
+      // Tự động cân bằng ngoặc nhọn { và } nếu lệch
+      let openBraces = (expr.match(/\{/g) || []).length;
+      let closeBraces = (expr.match(/\}/g) || []).length;
+      if (openBraces > closeBraces) {
+        expr = expr.replace(/^\{\s*([a-zA-Z])/, '$1');
+        openBraces = (expr.match(/\{/g) || []).length;
+      }
+      if (openBraces > closeBraces) {
+        expr = expr + '}'.repeat(openBraces - closeBraces);
+      } else if (closeBraces > openBraces) {
+        expr = '{'.repeat(closeBraces - openBraces) + expr;
+      }
+
+      try {
+        return katex.renderToString(expr, { displayMode: !!displayMode, throwOnError: true });
+      } catch (e1) {
+        try {
+          let stripped = expr.replace(/[\{\}]/g, '');
+          return katex.renderToString(stripped, { displayMode: !!displayMode, throwOnError: false });
+        } catch (e2) {
+          return `<span class="font-medium text-blue-700 italic">${rawExpr}</span>`;
+        }
+      }
+    },
+
     shuffleArray(arr) {
       const res = [...arr];
       for (let i = res.length - 1; i > 0; i--) {
@@ -888,8 +1072,10 @@ function examApp() {
       str = str.replace(/<span[^>]*class="katex-error"[^>]*>([\s\S]*?)<\/span>/gi, '$1')
                .replace(/style="color:\s*#cc0000"[^>]*>/gi, '');
 
-      // Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị: { (m^{2}) -> (m^{2})
-      str = str.replace(/\{(\s*\([^\)]+\))\}?/g, '$1')
+      // Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị và chữ cái: 200{ m^{2} -> 200 m^{2}
+      str = str.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2')
+               .replace(/(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2')
+               .replace(/\{(\s*\([^\)]+\))\}?/g, '$1')
                .replace(/\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?/g, '$1');
 
       // Pre-sanitize unicode math symbols, chemistry and physics symbols
@@ -1012,30 +1198,18 @@ function examApp() {
       // 6. $$...$$ or \[...\]
       str = str.replace(/(?:\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\])/g, (match, p1, p2) => {
         const expr = (p1 !== undefined ? p1 : p2).trim();
-        try {
-          return katex.renderToString(expr, { displayMode: true, throwOnError: false });
-        } catch(e) {
-          return match;
-        }
+        return this.safeKatex(expr, true);
       });
 
       // 7. $...$ or \(...\) (supports multiline equations)
       str = str.replace(/(?:\$((?:\\\$|[^\$])+?)\$|\\\(([\s\S]*?)\\\))/g, (match, p1, p2) => {
         const expr = (p1 !== undefined ? p1 : p2).trim();
-        try {
-          return katex.renderToString(expr, { displayMode: false, throwOnError: false });
-        } catch(e) {
-          return match;
-        }
+        return this.safeKatex(expr, false);
       });
 
       // 8. Standalone math tokens if not already converted
       str = str.replace(/(\\(?:frac|sqrt|vec|int|sum|lim|alpha|beta|gamma|pi|Delta|infty|le|ge|neq|pm|times|cdot)\b(?:\{[^{}]*\}|[a-zA-Z0-9_\^\{\}]+)*)/g, (match) => {
-        try {
-          return katex.renderToString(match.trim(), { displayMode: false, throwOnError: false });
-        } catch(e) {
-          return match;
-        }
+        return this.safeKatex(match.trim(), false);
       });
 
       return str;
@@ -1068,6 +1242,7 @@ function examApp() {
     
     getP1DisplayOptions(q) {
       if (!q) return [];
+      this.healQuestion(q);
       if (q.displayOptions && q.displayOptions.length > 0) {
         return q.displayOptions;
       }
@@ -1084,6 +1259,7 @@ function examApp() {
 
     getP2DisplayItems(q) {
       if (!q) return [];
+      this.healPart2Question(q);
       if (q.displayItems && q.displayItems.length > 0) {
         return q.displayItems;
       }
