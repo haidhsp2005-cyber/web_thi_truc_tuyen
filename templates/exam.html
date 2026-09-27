@@ -7,6 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/mhchem.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
 <style>
   [x-cloak] { display: none !important; }
@@ -722,6 +723,8 @@ function examApp() {
         return;
       }
       
+      window.zoomExamImage = (url) => { this.zoomImage(url); };
+      
       // Khôi phục bài làm đã lưu (auto-save)
       const saved = sessionStorage.getItem('exam_answers');
       if (saved) {
@@ -889,7 +892,7 @@ function examApp() {
       str = str.replace(/\{(\s*\([^\)]+\))\}?/g, '$1')
                .replace(/\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?/g, '$1');
 
-      // Pre-sanitize unicode math symbols
+      // Pre-sanitize unicode math symbols, chemistry and physics symbols
       str = str.replace(/−/g, '-')
                .replace(/′/g, "'")
                .replace(/⋅/g, ' \\cdot ')
@@ -903,7 +906,28 @@ function examApp() {
                .replace(/ℤ/g, '\\mathbb{Z}')
                .replace(/ℚ/g, '\\mathbb{Q}')
                .replace(/ℝ/g, '\\mathbb{R}')
-               .replace(/∣/g, ' \\mid ');
+               .replace(/∣/g, ' \\mid ')
+               .replace(/Ω|Ω/g, ' \\Omega ')
+               .replace(/μ|µ/g, ' \\mu ')
+               .replace(/°C|℃/g, ' ^\\circ\\text{C}')
+               .replace(/°/g, ' ^\\circ ')
+               .replace(/→/g, ' \\rightarrow ')
+               .replace(/⇌|⇄/g, ' \\rightleftharpoons ')
+               .replace(/↔/g, ' \\leftrightarrow ')
+               .replace(/⇒/g, ' \\Rightarrow ')
+               .replace(/⇔/g, ' \\Leftrightarrow ')
+               .replace(/↑/g, ' \\uparrow ')
+               .replace(/↓/g, ' \\downarrow ');
+
+      // Xử lý ảnh nhúng inline [IMAGE: url] hoặc ![...](url)
+      str = str.replace(/\[IMAGE:\s*([^\]]+)\]/gi, (match, url) => {
+        const u = url.trim();
+        return `<div class="my-3 text-center"><img src="${u}" class="max-h-72 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in hover:opacity-95" onclick="window.zoomExamImage && window.zoomExamImage('${u}')" alt="Hình vẽ minh họa"><p class="text-xs text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to</p></div>`;
+      });
+      str = str.replace(/!\[([^\]]*)\]\(([^)]+)\)/gi, (match, alt, url) => {
+        const u = url.trim();
+        return `<div class="my-3 text-center"><img src="${u}" class="max-h-72 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in hover:opacity-95" onclick="window.zoomExamImage && window.zoomExamImage('${u}')" alt="${alt || 'Hình vẽ minh họa'}"><p class="text-xs text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to</p></div>`;
+      });
 
       // 0. Bỏ dấu $ bao bọc quanh số đơn giản: "$1$" -> "1", "$-1$" -> "-1"
       if (/^\s*\$([+-]?\d+(?:[\.,]\d+)?)\$\s*$/.test(str)) {

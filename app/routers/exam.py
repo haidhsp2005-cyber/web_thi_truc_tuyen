@@ -52,7 +52,8 @@ async def get_current_exam(exam_id: str = "exam_001"):
             {
                 "id": q.get("id"),
                 "text": q.get("text", ""),
-                "options": q.get("options", {})
+                "options": q.get("options", {}),
+                "image": q.get("image") or ""
             } for q in p1.get("questions", [])
         ]
     }
@@ -67,8 +68,12 @@ async def get_current_exam(exam_id: str = "exam_001"):
                 "id": q.get("id"),
                 "text": q.get("text", ""),
                 "items": {
-                    k: {"text": v.get("text", "")} for k, v in q.get("items", {}).items()
-                }
+                    k: {
+                        "text": v.get("text", "") if isinstance(v, dict) else str(v),
+                        "image": v.get("image") if isinstance(v, dict) else None
+                    } for k, v in q.get("items", {}).items()
+                },
+                "image": q.get("image") or ""
             } for q in p2.get("questions", [])
         ]
     }
@@ -79,7 +84,11 @@ async def get_current_exam(exam_id: str = "exam_001"):
         "name": p3.get("name", "Phần III: Trả lời ngắn"),
         "instruction": p3.get("instruction", "Điền đáp án vào ô trống. Chỉ ghi kết quả (số hoặc biểu thức đơn giản nhất)."),
         "questions": [
-            {"id": q.get("id"), "text": q.get("text", "")} for q in p3.get("questions", [])
+            {
+                "id": q.get("id"),
+                "text": q.get("text", ""),
+                "image": q.get("image") or ""
+            } for q in p3.get("questions", [])
         ]
     }
     
@@ -92,7 +101,8 @@ async def get_current_exam(exam_id: str = "exam_001"):
             {
                 "id": q.get("id"),
                 "title": q.get("title", ""),
-                "text": q.get("text", "")
+                "text": q.get("text", ""),
+                "image": q.get("image") or ""
             } for q in p4.get("questions", [])
         ]
     }

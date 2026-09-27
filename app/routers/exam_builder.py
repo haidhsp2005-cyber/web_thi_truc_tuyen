@@ -230,6 +230,27 @@ def _sanitize_math_symbols(math_latex: str) -> str:
         ("λ", "\\lambda "),
         ("θ", "\\theta "),
         ("ω", "\\omega "),
+        ("Ω", "\\Omega "),
+        ("Ω", "\\Omega "),
+        ("μ", "\\mu "),
+        ("µ", "\\mu "),
+        ("°C", "^\\circ\\text{C}"),
+        ("℃", "^\\circ\\text{C}"),
+        ("°", "^\\circ "),
+        ("→", "\\rightarrow "),
+        ("⇌", "\\rightleftharpoons "),
+        ("⇄", "\\rightleftharpoons "),
+        ("↔", "\\leftrightarrow "),
+        ("⇒", "\\Rightarrow "),
+        ("⇔", "\\Leftrightarrow "),
+        ("↑", "\\uparrow "),
+        ("↓", "\\downarrow "),
+        ("ρ", "\\rho "),
+        ("η", "\\eta "),
+        ("σ", "\\sigma "),
+        ("τ", "\\tau "),
+        ("φ", "\\varphi "),
+        ("Φ", "\\Phi "),
     ]
     for orig, rep in replacements:
         math_latex = math_latex.replace(orig, rep)
@@ -467,6 +488,15 @@ def _extract_element_runs_and_math(elem, p, images_map: dict = None) -> List[str
             txt = r.text
             if not txt:
                 continue
+
+            # Xử lý chỉ số dưới (Subscript) và chỉ số trên (Superscript) trong môn Lý, Hóa (H2O, Fe3+, 10^5...)
+            is_sub = getattr(r.font, "subscript", False) or bool(child.xpath('.//*[local-name()="vertAlign"][@*[local-name()="val"]="subscript"]'))
+            is_sup = getattr(r.font, "superscript", False) or bool(child.xpath('.//*[local-name()="vertAlign"][@*[local-name()="val"]="superscript"]'))
+            if is_sub:
+                txt = f"<sub>{txt}</sub>"
+            elif is_sup:
+                txt = f"<sup>{txt}</sup>"
+
             r_red, r_u = _is_run_red_or_marked(r)
             if r_red:
                 parts.append(f"{{{{RED}}}}{txt}{{{{/RED}}}}")
@@ -498,6 +528,7 @@ def _extract_docx_paragraphs_with_format(doc, images_map: dict = None) -> List[s
     """
     Trích xuất văn bản từ file Word bảo toàn thứ tự tự nhiên của các đoạn văn, hình ảnh và bảng biểu (tables),
     đồng thời giữ thông tin chữ in đỏ, gạch chân và chuyển đổi công thức toán OMML sang LaTeX chuẩn.
+    Hỗ trợ hiển thị bảng biến thiên và bảng số liệu môn Lý, Hóa thành bảng HTML sạch đẹp.
     """
     import docx
     paragraphs = []
@@ -514,8 +545,9 @@ def _extract_docx_paragraphs_with_format(doc, images_map: dict = None) -> List[s
                 paragraphs.append(line)
         elif tag == "tbl":
             table = docx.table.Table(child, doc)
+            table_html_rows = []
             for row in table.rows:
-                row_parts = []
+                cell_htmls = []
                 for cell in row.cells:
                     cell_parts = []
                     for p in cell.paragraphs:
@@ -524,10 +556,17 @@ def _extract_docx_paragraphs_with_format(doc, images_map: dict = None) -> List[s
                         if t:
                             cell_parts.append(t)
                     cell_text = " ".join(cell_parts).strip()
-                    if cell_text:
-                        row_parts.append(cell_text)
-                if row_parts:
-                    paragraphs.append("  ".join(row_parts))
+                    cell_htmls.append(f'<td class="border border-gray-400 px-3 py-1 text-center font-medium">{cell_text}</td>')
+                if cell_htmls:
+                    table_html_rows.append(f'<tr>{"".join(cell_htmls)}</tr>')
+            if table_html_rows:
+                table_html = (
+                    f'<div class="overflow-x-auto my-3 text-center">'
+                    f'<table class="inline-table border-collapse border border-gray-400 text-sm bg-white shadow-xs rounded">'
+                    f'<tbody>{"".join(table_html_rows)}</tbody>'
+                    f'</table></div>'
+                )
+                paragraphs.append(table_html)
 
     return paragraphs
 
