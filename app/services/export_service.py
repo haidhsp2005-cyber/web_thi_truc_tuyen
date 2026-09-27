@@ -17,6 +17,25 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 logger = logging.getLogger(__name__)
 
+import re
+
+def clean_math_for_print(text: str) -> str:
+    """Chuẩn hóa công thức toán và hệ phương trình trước khi xuất in ấn."""
+    if not text:
+        return ""
+    s = str(text)
+    s = re.sub(
+        r'\$?\s*\{\s*([^{}]*?(?:\\\\|\n|&)[^{}]*?)\s*(?:\}\$|\$\}|\}|\$)',
+        lambda m: f"$\\begin{{cases}} {m.group(1).strip().replace(chr(10), ' \\\\ ')} \\end{{cases}}$",
+        s
+    )
+    s = re.sub(
+        r'([^$]|^)(\\begin\{cases\}[\s\S]*?\\end\{cases\})([^$]|$)',
+        r'\1$\2$\3',
+        s
+    )
+    return s
+
 VIETNAM_TZ = timezone(timedelta(hours=7))
 
 def format_datetime_vn(iso_str: str) -> str:
@@ -675,13 +694,13 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
         for k in ["A", "B", "C", "D"]:
             v = opts.get(k, "")
             if v:
-                opts_rendered.append(f"<span class='mr-6'><b>{k}.</b> {v}</span>")
+                opts_rendered.append(f"<span class='mr-6'><b>{k}.</b> {clean_math_for_print(v)}</span>")
         opts_block = f"<div class='mt-1 text-sm pl-4 flex flex-wrap gap-y-1'>{' '.join(opts_rendered)}</div>"
 
         img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
         p1_html += f"""
         <div class="mb-3 text-sm">
-          <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {q.get('text', '')}</p>
+          <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {clean_math_for_print(q.get('text', ''))}</p>
           {img_html}
           {opts_block}
         </div>"""
@@ -699,14 +718,14 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
                 if k in items:
                     v = items[k]
                     txt = v.get("text", "") if isinstance(v, dict) else str(v)
-                    items_list.append({"key": k, "text": txt})
+                    items_list.append({"key": k, "text": clean_math_for_print(txt)})
                     
         items_rendered = "".join([f"<p class='pl-4 text-sm mt-0.5'><b>{it.get('key')})</b> {it.get('text')}</p>" for it in items_list])
         img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
 
         p2_html += f"""
         <div class="mb-3 text-sm">
-          <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {q.get('text', '')}</p>
+          <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {clean_math_for_print(q.get('text', ''))}</p>
           {img_html}
           {items_rendered}
         </div>"""
@@ -734,7 +753,7 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
             img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
             p4_rendered += f"""
             <div class="mb-2 text-sm">
-              <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {q.get('text', '')}</p>
+              <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {clean_math_for_print(q.get('text', ''))}</p>
               {img_html}
             </div>"""
         p4_html = f"""

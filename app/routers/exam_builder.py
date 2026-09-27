@@ -243,14 +243,29 @@ def _sanitize_math_symbols(math_latex: str) -> str:
 
     math_latex = re.sub(r"([A-Za-z]\s*=\s*)\{([\s\S]+?)\}(?=\s*(?:\$|$))", fix_set_in_math, math_latex)
 
-    # 1. Sửa lỗi Word OMML gộp hệ phương trình: CHỈ chuyển thành \begin{cases} khi có \\ hoặc & hoặc xuống dòng
-    def fix_omml_brace(m):
-        body = m.group(1).strip()
-        if r"\\" in body or "\n" in body or "&" in body:
-            return f"$\\begin{{cases}} {body} \\end{{cases}}$"
-        return f"${{{body}}}$"
+    # 1. Tự động nhận diện và chuyển đổi mọi dạng hệ phương trình dấu ngoặc nhọn:
+    #   ${x+y=3 \\ x-y=1$    (thiếu } đóng)
+    #   ${x+y=3 \\ x-y=1}$   (chuẩn có $)
+    #   {x+y=3 \\ x-y=1}     (không có $)
+    #   {x+y=3 \\ x-y=1}$    (thiếu $ mở)
+    def repl_sys(match):
+        body = match.group(1).strip()
+        inner = re.sub(r'(?<!\\)\n+', r' \\\\ ', body)
+        inner = inner.strip('{}')
+        return f"$\\begin{{cases}} {inner} \\end{{cases}}$"
 
-    math_latex = re.sub(r"\$\{\s*([^$]*?(?:\\\\|\n|&)[^$]*?)\}\s*\$", fix_omml_brace, math_latex)
+    math_latex = re.sub(
+        r'\$?\s*\{\s*([^{}]*?(?:\\\\|\n|&)[^{}]*?)\s*(?:\}\$|\$\}|\}|\$)',
+        repl_sys,
+        math_latex
+    )
+
+    # 1b. Đảm bảo \begin{cases} ... \end{cases} luôn được bọc trong $...$
+    math_latex = re.sub(
+        r'([^$]|^)(\\begin\{cases\}[\s\S]*?\\end\{cases\})([^$]|$)',
+        r'\1$\2$\3',
+        math_latex
+    )
 
     # 2. Chuẩn hóa hệ phương trình dạng \left\{ \begin{matrix} hoặc \begin{array} sang \begin{cases}
     math_latex = re.sub(r"\\left\\\{\s*\\begin\{(?:matrix|array)\}(?:\{[a-zA-Z]*\})?", r"\\begin{cases}", math_latex)
