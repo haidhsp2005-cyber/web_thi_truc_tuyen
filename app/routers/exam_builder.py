@@ -12,12 +12,12 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
-from ..database import load_exam, save_exam_record, get_connection, EXAMS_DIR
+from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = EXAMS_DIR
 STATIC_DIR = Path(__file__).parent.parent.parent / "static"
 UPLOADS_DIR = STATIC_DIR / "uploads"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
@@ -89,20 +89,9 @@ async def list_exams():
 @router.get("/get/{exam_id}")
 async def get_exam_full(exam_id: str):
     """Lấy toàn bộ đề thi kể cả đáp án (cho giáo viên chỉnh sửa)."""
-    # 1. Thử file theo exam_id
-    path = DATA_DIR / f"{exam_id}.json"
-    if path.exists():
-        return json.loads(path.read_text(encoding="utf-8"))
-    
-    # 2. Quét tìm theo id bên trong file
-    for f in DATA_DIR.glob("*.json"):
-        try:
-            data = json.loads(f.read_text(encoding="utf-8"))
-            if data.get("id") == exam_id:
-                return data
-        except Exception:
-            continue
-            
+    data = load_exam(exam_id)
+    if data:
+        return data
     raise HTTPException(404, "Không tìm thấy đề thi!")
 
 
@@ -783,14 +772,11 @@ async def export_exam_json(exam_id: str):
 
 @router.delete("/delete/{exam_id}")
 async def delete_exam(exam_id: str):
-    """Xóa đề thi (không xóa đề thi mẫu)."""
-    if exam_id in ("sample_exam", "exam_001", "exam_toan_12_101"):
+    """Xóa đề thi (xóa sạch cả trong SQLite database và file JSON trên đĩa)."""
+    if exam_id in ("sample_exam", "exam_toan_12_101"):
         raise HTTPException(400, "Không thể xóa đề thi mẫu chuẩn của hệ thống!")
-    path = DATA_DIR / f"{exam_id}.json"
-    if not path.exists():
-        raise HTTPException(404, "Không tìm thấy đề thi!")
-    path.unlink()
-    return {"success": True, "message": "Đã xóa đề thi!"}
+    delete_exam_record(exam_id)
+    return {"success": True, "message": "Đã xóa đề thi thành công!"}
 
 
 # ===================== PARSER NHẬP ĐỀ TỰ ĐỘNG =====================

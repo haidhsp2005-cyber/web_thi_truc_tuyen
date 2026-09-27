@@ -968,18 +968,19 @@ function adminApp() {
     },
 
     async deleteExam(examId, title) {
-      if (!confirm(`Xóa đề thi "${title}"?\nThao tác này không thể khôi phục!`)) return;
+      if (!confirm(`Bạn có chắc chắn muốn xóa đề thi "${title}"?\nThao tác này không thể khôi phục!`)) return;
       try {
-        const r = await fetch(`/api/exam-builder/delete/${examId}`, { method: 'DELETE' });
+        const r = await fetch(`/api/exam-builder/delete/${encodeURIComponent(examId)}`, { method: 'DELETE' });
         const data = await r.json();
-        if (r.ok) {
-          alert(data.message);
-          await this.loadExamList();
+        if (r.ok && data.success) {
+          alert('🗑️ ' + (data.message || 'Đã xóa đề thi!'));
         } else {
-          alert(data.detail || 'Lỗi xóa đề!');
+          alert('⚠️ ' + (data.detail || data.message || 'Lỗi khi xóa đề thi!'));
         }
       } catch(e) {
-        alert('Lỗi kết nối!');
+        alert('Lỗi kết nối máy chủ!');
+      } finally {
+        await this.loadExamList();
       }
     },
 

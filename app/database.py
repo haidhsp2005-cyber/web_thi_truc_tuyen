@@ -19,6 +19,7 @@ else:
     EXAMS_DIR = Path(__file__).parent.parent / "data"
 
 EXAMS_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR = EXAMS_DIR
 DB_PATH = EXAMS_DIR / "exam_db.sqlite" 
 PASSWORD_SALT = "longcang_exam_salt_2026"
 
@@ -276,18 +277,35 @@ def delete_all_submissions(exam_id: str = None) -> int:
 
 
 def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
-    """Tải đề thi từ file JSON (tìm theo filename hoặc thuộc tính id)."""
+    """Tải đề thi từ SQLite database hoặc file JSON (tìm theo filename hoặc thuộc tính id)."""
     if not exam_id:
         exam_id = "exam_001"
 
-    # 1. Thử theo tên file trực tiếp
+    # 1. Thử tìm trong SQLite database (nhanh nhất và không phụ thuộc disk)
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT data_json FROM exams WHERE id = ?", (exam_id,))
+        row = c.fetchone()
+        if not row and not exam_id.startswith("exam_"):
+            c.execute("SELECT data_json FROM exams WHERE id = ?", (f"exam_{exam_id}",))
+            row = c.fetchone()
+        conn.close()
+        if row and row[0]:
+            return json.loads(row[0])
+    except Exception as ex:
+        logger.warning(f"Lỗi đọc đề {exam_id} từ SQLite: {ex}")
+
+    # 2. Thử theo tên file trực tiếp
     path = EXAMS_DIR / f"{exam_id}.json"
     if path.exists():
         with open(path, encoding="utf-8") as f:
             return json.load(f)
 
-    # 2. Quét các file JSON trong EXAMS_DIR để so khớp theo id
+    # 3. Quét các file JSON trong EXAMS_DIR để so khớp theo id
     for f in sorted(EXAMS_DIR.glob("*.json")):
+        if f.name.endswith(".sqlite") or f.name.startswith("exam_db"):
+            continue
         try:
             with open(f, encoding="utf-8") as jf:
                 data = json.load(jf)
@@ -296,13 +314,14 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
         except Exception:
             continue
 
-    # 3. Fallback đề mẫu nếu có
-    fallback = EXAMS_DIR / "exam_toan_12_101.json"
-    if not fallback.exists():
-        fallback = EXAMS_DIR / "sample_exam.json"
-    if fallback.exists():
-        with open(fallback, encoding="utf-8") as f:
-            return json.load(f)
+    # 4. Fallback đề mẫu nếu có (chỉ áp dụng khi yêu cầu là exam_001 hoặc sample_exam)
+    if exam_id in ("exam_001", "sample_exam"):
+        fallback = EXAMS_DIR / "exam_toan_12_101.json"
+        if not fallback.exists():
+            fallback = EXAMS_DIR / "sample_exam.json"
+        if fallback.exists():
+            with open(fallback, encoding="utf-8") as f:
+                return json.load(f)
     return None
 
 
@@ -495,6 +514,69 @@ def save_exam_record(exam_data: dict):
         conn.close()
     except Exception as e:
         logger.warning(f"Lỗi lưu đề thi vào SQLite: {e}")
+
+
+def delete_exam_record(exam_id: str) -> bool:
+    """Xóa đề thi khỏi cả SQLite database và tệp JSON trên đĩa."""
+    deleted_any = False
+    
+    # 1. Xóa khỏi bảng SQLite exams
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("DELETE FROM exams WHERE id = ?", (exam_id,))
+        if c.rowcount > 0:
+            deleted_any = True
+        c.execute("DELETE FROM exams WHERE id = ?", (f"exam_{exam_id}",))
+        if c.rowcount > 0:
+            deleted_any = True
+        c.execute("DELETE FROM exams WHERE LOWER(id) = LOWER(?)", (exam_id,))
+        if c.rowcount > 0:
+            deleted_any = True
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logger.warning(f"Lỗi khi xóa đề {exam_id} khỏi SQLite: {e}")
+
+    # 2. Xóa các file JSON trên đĩa
+    candidate_dirs = [EXAMS_DIR]
+    if DATA_DIR not in candidate_dirs:
+        candidate_dirs.append(DATA_DIR)
+
+    for d in candidate_dirs:
+        # Xóa theo tên trực tiếp
+        for fname in [f"{exam_id}.json", f"exam_{exam_id}.json"]:
+            p = d / fname
+            if p.exists():
+                try:
+                    p.unlink()
+                    deleted_any = True
+                except Exception as ex:
+                    logger.warning(f"Lỗi xóa file {p}: {ex}")
+
+        # Quét các file json nếu có "id" trùng với exam_id hoặc f.stem trùng
+        try:
+            for f in d.glob("*.json"):
+                if f.name.endswith(".sqlite") or f.name.startswith("exam_db"):
+                    continue
+                if f.stem in (exam_id, f"exam_{exam_id}"):
+                    try:
+                        f.unlink()
+                        deleted_any = True
+                    except Exception:
+                        pass
+                    continue
+                try:
+                    data = json.loads(f.read_text(encoding="utf-8"))
+                    if data.get("id") == exam_id or data.get("id") == f"exam_{exam_id}":
+                        f.unlink()
+                        deleted_any = True
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    return deleted_any
 
 
 def export_full_backup() -> dict:
