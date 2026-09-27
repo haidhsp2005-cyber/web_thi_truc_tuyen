@@ -293,13 +293,40 @@
           <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
             class="p-4 bg-gray-50/70 hover:bg-indigo-50/30 rounded-2xl border border-gray-200 cursor-pointer text-base text-gray-900 leading-relaxed min-h-[50px] transition-colors">
             <div x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-sm\'>Nhấp để nhập nội dung câu hỏi...</span>'"></div>
+            <!-- Ảnh minh họa câu hỏi nếu có -->
+            <div x-show="q.image" class="mt-3 text-center">
+              <img :src="q.image" class="max-h-60 rounded-xl border border-gray-200 shadow-sm mx-auto object-contain cursor-zoom-in hover:opacity-95 transition-opacity" @click.stop="zoomImage(q.image)" alt="Hình vẽ / Đồ thị câu hỏi">
+              <p class="text-[11px] text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to</p>
+            </div>
           </div>
 
-          <!-- Chế độ sửa: Khi bấm Sửa mới hiện textarea -->
+          <!-- Chế độ sửa: Khi bấm Sửa mới hiện textarea và công cụ ảnh -->
           <div x-show="isEditing(q)">
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Nội dung câu hỏi <span class="text-red-500">*</span></label>
-            <textarea x-model="q.text" rows="3" placeholder="Nhập câu hỏi..."
+            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Nội dung câu hỏi <span class="text-red-500">*</span></label>
+              <div class="flex items-center gap-2">
+                <input type="file" accept="image/*" class="hidden" :id="'p1_img_' + q._id" @change="uploadQuestionImage($event, q)">
+                <button type="button" @click="document.getElementById('p1_img_' + q._id).click()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2.5 py-1 rounded-lg border border-indigo-200 flex items-center gap-1 cursor-pointer transition-colors">
+                  <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
+                </button>
+                <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
+                  <span>🗑️ Xóa ảnh</span>
+                </button>
+              </div>
+            </div>
+            <textarea x-model="q.text" @paste="handlePasteImage($event, q)" rows="3" placeholder="Nhập câu hỏi... (Có thể dán trực tiếp ảnh đồ thị/hình vẽ bằng phím Ctrl + V tại đây)"
               class="input-base w-full block border-2 border-indigo-200 rounded-2xl p-3.5 text-base focus:outline-none focus:border-indigo-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+            
+            <!-- Xem trước ảnh trong chế độ sửa -->
+            <div x-show="q.image" class="mt-3 p-3 bg-indigo-50/50 rounded-2xl border border-indigo-200 flex flex-col items-center">
+              <img :src="q.image" class="max-h-52 rounded-lg border shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh câu hỏi">
+              <div class="mt-2 flex items-center gap-3 text-xs">
+                <span class="text-gray-500 font-medium">Đã gắn ảnh câu hỏi</span>
+                <button type="button" @click="zoomImage(q.image)" class="text-indigo-600 font-bold hover:underline">🔍 Xem lớn</button>
+                <button type="button" @click="q.image = ''" class="text-red-600 font-bold hover:underline">🗑️ Xóa ảnh</button>
+              </div>
+            </div>
+
             <!-- Hiển thị công thức KaTeX trực quan ngay bên dưới khi đang sửa -->
             <div x-show="hasMath(q.text)" class="mt-2 p-3 bg-blue-50/70 border border-blue-200 rounded-2xl text-blue-950 font-medium text-base"
               x-html="renderMathHtml(q.text)"></div>
@@ -394,12 +421,39 @@
           <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
             class="p-4 bg-gray-50/70 hover:bg-purple-50/30 rounded-2xl border border-gray-200 cursor-pointer text-base text-gray-900 leading-relaxed min-h-[50px] transition-colors">
             <div x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-sm\'>Nhấp để nhập mô tả bài toán...</span>'"></div>
+            <!-- Ảnh minh họa câu hỏi nếu có -->
+            <div x-show="q.image" class="mt-3 text-center">
+              <img :src="q.image" class="max-h-60 rounded-xl border border-gray-200 shadow-sm mx-auto object-contain cursor-zoom-in hover:opacity-95 transition-opacity" @click.stop="zoomImage(q.image)" alt="Hình vẽ / Đồ thị câu hỏi">
+              <p class="text-[11px] text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to</p>
+            </div>
           </div>
           <!-- Chế độ sửa -->
           <div x-show="isEditing(q)">
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Mô tả / Ngữ cảnh bài toán <span class="text-red-500">*</span></label>
-            <textarea x-model="q.text" rows="3" placeholder="VD: Cho hàm số y = f(x)... Xét tính đúng sai của các khẳng định sau:"
+            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Mô tả / Ngữ cảnh bài toán <span class="text-red-500">*</span></label>
+              <div class="flex items-center gap-2">
+                <input type="file" accept="image/*" class="hidden" :id="'p2_img_' + q._id" @change="uploadQuestionImage($event, q)">
+                <button type="button" @click="document.getElementById('p2_img_' + q._id).click()" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold px-2.5 py-1 rounded-lg border border-purple-200 flex items-center gap-1 cursor-pointer transition-colors">
+                  <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
+                </button>
+                <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
+                  <span>🗑️ Xóa ảnh</span>
+                </button>
+              </div>
+            </div>
+            <textarea x-model="q.text" @paste="handlePasteImage($event, q)" rows="3" placeholder="VD: Cho hàm số y = f(x)... Xét tính đúng sai của các khẳng định sau: (Có thể dán ảnh bằng Ctrl+V tại đây)"
               class="input-base w-full block border-2 border-purple-200 rounded-2xl p-3.5 text-base focus:outline-none focus:border-purple-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+            
+            <!-- Xem trước ảnh trong chế độ sửa -->
+            <div x-show="q.image" class="mt-3 p-3 bg-purple-50/50 rounded-2xl border border-purple-200 flex flex-col items-center">
+              <img :src="q.image" class="max-h-52 rounded-lg border shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh câu hỏi">
+              <div class="mt-2 flex items-center gap-3 text-xs">
+                <span class="text-gray-500 font-medium">Đã gắn ảnh câu hỏi</span>
+                <button type="button" @click="zoomImage(q.image)" class="text-purple-600 font-bold hover:underline">🔍 Xem lớn</button>
+                <button type="button" @click="q.image = ''" class="text-red-600 font-bold hover:underline">🗑️ Xóa ảnh</button>
+              </div>
+            </div>
+
             <div x-show="hasMath(q.text)" class="mt-2 p-3 bg-purple-50/70 border border-purple-200 rounded-2xl text-purple-950 font-medium text-base"
               x-html="renderMathHtml(q.text)"></div>
           </div>
@@ -476,12 +530,39 @@
           <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
             class="p-4 bg-gray-50/70 hover:bg-teal-50/30 rounded-2xl border border-gray-200 cursor-pointer text-base text-gray-900 leading-relaxed min-h-[50px] transition-colors">
             <div x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-sm\'>Nhấp để nhập câu hỏi...</span>'"></div>
+            <!-- Ảnh minh họa câu hỏi nếu có -->
+            <div x-show="q.image" class="mt-3 text-center">
+              <img :src="q.image" class="max-h-60 rounded-xl border border-gray-200 shadow-sm mx-auto object-contain cursor-zoom-in hover:opacity-95 transition-opacity" @click.stop="zoomImage(q.image)" alt="Hình vẽ / Đồ thị câu hỏi">
+              <p class="text-[11px] text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to</p>
+            </div>
           </div>
           <!-- Chế độ sửa -->
           <div x-show="isEditing(q)">
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Nội dung câu hỏi <span class="text-red-500">*</span></label>
-            <textarea x-model="q.text" rows="3" placeholder="VD: Tính diện tích toàn phần của hình nón..."
+            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Nội dung câu hỏi <span class="text-red-500">*</span></label>
+              <div class="flex items-center gap-2">
+                <input type="file" accept="image/*" class="hidden" :id="'p3_img_' + q._id" @change="uploadQuestionImage($event, q)">
+                <button type="button" @click="document.getElementById('p3_img_' + q._id).click()" class="text-xs bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-2.5 py-1 rounded-lg border border-teal-200 flex items-center gap-1 cursor-pointer transition-colors">
+                  <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
+                </button>
+                <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
+                  <span>🗑️ Xóa ảnh</span>
+                </button>
+              </div>
+            </div>
+            <textarea x-model="q.text" @paste="handlePasteImage($event, q)" rows="3" placeholder="VD: Tính diện tích toàn phần của hình nón... (Có thể dán ảnh bằng Ctrl+V tại đây)"
               class="input-base w-full block border-2 border-teal-200 rounded-2xl p-3.5 text-base focus:outline-none focus:border-teal-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+            
+            <!-- Xem trước ảnh trong chế độ sửa -->
+            <div x-show="q.image" class="mt-3 p-3 bg-teal-50/50 rounded-2xl border border-teal-200 flex flex-col items-center">
+              <img :src="q.image" class="max-h-52 rounded-lg border shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh câu hỏi">
+              <div class="mt-2 flex items-center gap-3 text-xs">
+                <span class="text-gray-500 font-medium">Đã gắn ảnh câu hỏi</span>
+                <button type="button" @click="zoomImage(q.image)" class="text-teal-600 font-bold hover:underline">🔍 Xem lớn</button>
+                <button type="button" @click="q.image = ''" class="text-red-600 font-bold hover:underline">🗑️ Xóa ảnh</button>
+              </div>
+            </div>
+
             <div x-show="hasMath(q.text)" class="mt-2 p-3 bg-teal-50/70 border border-teal-200 rounded-2xl text-teal-950 font-medium text-base"
               x-html="renderMathHtml(q.text)"></div>
           </div>
@@ -544,9 +625,31 @@
               class="input-base font-semibold rounded-xl px-4 py-2.5">
           </div>
           <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Đề bài đầy đủ <span class="text-red-500">*</span></label>
-            <textarea x-model="q.text" rows="4" placeholder="Nhập đề bài tự luận chi tiết..."
+            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Đề bài đầy đủ <span class="text-red-500">*</span></label>
+              <div class="flex items-center gap-2">
+                <input type="file" accept="image/*" class="hidden" :id="'p4_img_' + q._id" @change="uploadQuestionImage($event, q)">
+                <button type="button" @click="document.getElementById('p4_img_' + q._id).click()" class="text-xs bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold px-2.5 py-1 rounded-lg border border-orange-200 flex items-center gap-1 cursor-pointer transition-colors">
+                  <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
+                </button>
+                <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
+                  <span>🗑️ Xóa ảnh</span>
+                </button>
+              </div>
+            </div>
+            <textarea x-model="q.text" @paste="handlePasteImage($event, q)" rows="4" placeholder="Nhập đề bài tự luận chi tiết... (Có thể dán ảnh bằng Ctrl+V tại đây)"
               class="input-base w-full block border-2 border-gray-200 rounded-2xl p-4 text-base focus:outline-none focus:border-orange-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
+            
+            <!-- Xem trước ảnh -->
+            <div x-show="q.image" class="mt-3 p-3 bg-orange-50/50 rounded-2xl border border-orange-200 flex flex-col items-center">
+              <img :src="q.image" class="max-h-52 rounded-lg border shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh câu hỏi">
+              <div class="mt-2 flex items-center gap-3 text-xs">
+                <span class="text-gray-500 font-medium">Đã gắn ảnh câu hỏi</span>
+                <button type="button" @click="zoomImage(q.image)" class="text-orange-600 font-bold hover:underline">🔍 Xem lớn</button>
+                <button type="button" @click="q.image = ''" class="text-red-600 font-bold hover:underline">🗑️ Xóa ảnh</button>
+              </div>
+            </div>
+
             <div x-show="hasMath(q.text)" class="mt-2.5 p-3.5 bg-orange-50/80 border border-orange-200 rounded-2xl text-base text-gray-900 shadow-sm"
               x-html="renderMathHtml(q.text)"></div>
           </div>
@@ -680,6 +783,11 @@
                 <span class="font-bold text-indigo-700 flex-shrink-0" x-text="`Câu ${idx + 1}:`"></span>
                 <span class="flex-1 leading-relaxed" x-html="renderMathHtml(q.text)"></span>
               </div>
+              <template x-if="q.image">
+                <div class="my-3 text-center">
+                  <img :src="q.image" class="max-h-60 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh minh họa">
+                </div>
+              </template>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pl-4 sm:pl-6 text-sm">
                 <template x-for="optKey in ['A','B','C','D']" :key="optKey">
                   <div :class="q.answer === optKey ? 'bg-green-50 border-green-300 text-green-900 font-medium' : 'border-gray-200 text-gray-700'"
@@ -714,6 +822,11 @@
                 <span class="font-bold text-purple-700 flex-shrink-0" x-text="`Câu ${idx + 1}:`"></span>
                 <span class="flex-1 leading-relaxed" x-html="renderMathHtml(q.text)"></span>
               </div>
+              <template x-if="q.image">
+                <div class="my-3 text-center">
+                  <img :src="q.image" class="max-h-60 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh minh họa">
+                </div>
+              </template>
               <div class="space-y-2 pl-4 sm:pl-6 text-sm">
                 <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
                   <div class="p-2.5 rounded-xl border border-gray-200 flex items-center justify-between gap-3 bg-gray-50/60">
@@ -747,6 +860,11 @@
                 <span class="font-bold text-teal-700 flex-shrink-0" x-text="`Câu ${idx + 1}:`"></span>
                 <span class="flex-1 leading-relaxed" x-html="renderMathHtml(q.text)"></span>
               </div>
+              <template x-if="q.image">
+                <div class="my-3 text-center">
+                  <img :src="q.image" class="max-h-60 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh minh họa">
+                </div>
+              </template>
               <div class="pl-4 sm:pl-6 text-sm flex items-center gap-3">
                 <span class="text-xs font-bold text-gray-500">Đáp án chuẩn:</span>
                 <span class="px-3 py-1 bg-teal-50 border border-teal-200 text-teal-900 font-bold rounded-xl" x-html="renderMathHtml(q.answer)"></span>
@@ -771,6 +889,11 @@
                 <span class="flex-1 font-bold" x-text="q.title"></span>
               </div>
               <div class="pl-4 sm:pl-6 text-sm text-gray-700 leading-relaxed" x-html="renderMathHtml(q.text)"></div>
+              <template x-if="q.image">
+                <div class="my-3 text-center">
+                  <img :src="q.image" class="max-h-60 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh minh họa">
+                </div>
+              </template>
             </div>
           </template>
         </div>
@@ -792,6 +915,25 @@
   </div>
 </div>
 
+<!-- ===================== MODAL PHÓNG TO HÌNH ẢNH / ĐỒ THỊ ===================== -->
+<div x-show="zoomedImage" x-cloak 
+  class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-6" 
+  @click="zoomedImage = null" 
+  @keydown.escape.window="zoomedImage = null">
+  <div class="relative max-w-4xl max-h-[92vh] bg-white rounded-3xl p-3 sm:p-5 shadow-2xl overflow-hidden flex flex-col items-center" @click.stop>
+    <div class="w-full flex justify-between items-center pb-3 border-b mb-3">
+      <span class="font-bold text-sm sm:text-base text-gray-800 flex items-center gap-2">
+        <span>🔍</span>
+        <span>Chi tiết hình vẽ / Đồ thị câu hỏi</span>
+      </span>
+      <button @click="zoomedImage = null" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold flex items-center justify-center transition-colors">✕</button>
+    </div>
+    <div class="p-2 overflow-auto flex items-center justify-center max-h-[80vh] w-full">
+      <img :src="zoomedImage" class="max-w-full max-h-[75vh] object-contain rounded-xl shadow border" alt="Hình phóng to">
+    </div>
+  </div>
+</div>
+
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
 let _uid = 0;
@@ -810,6 +952,65 @@ function examBuilder() {
     katexReady: false,
     showPreviewModal: false,
     globalEditMode: false,
+    zoomedImage: null,
+
+    zoomImage(url) {
+      this.zoomedImage = url;
+    },
+
+    async uploadQuestionImage(event, q) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/exam-builder/upload-image', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          q.image = data.url;
+          this.showMsg('Đã tải hình ảnh / đồ thị lên thành công!', true);
+        } else {
+          alert(data.detail || 'Lỗi khi tải ảnh lên máy chủ!');
+        }
+      } catch(err) {
+        alert('Lỗi kết nối máy chủ khi tải ảnh!');
+      } finally {
+        event.target.value = '';
+      }
+    },
+
+    async handlePasteImage(event, q) {
+      const items = (event.clipboardData || window.clipboardData)?.items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          event.preventDefault();
+          const file = items[i].getAsFile();
+          if (!file) continue;
+          const formData = new FormData();
+          formData.append('file', file);
+          try {
+            const res = await fetch('/api/exam-builder/upload-image', {
+              method: 'POST',
+              body: formData
+            });
+            const data = await res.json();
+            if (res.ok && data.url) {
+              q.image = data.url;
+              this.showMsg('Đã dán hình ảnh từ clipboard (Ctrl+V) thành công!', true);
+            } else {
+              alert(data.detail || 'Lỗi khi tải ảnh dán lên!');
+            }
+          } catch(err) {
+            alert('Lỗi kết nối khi tải ảnh dán!');
+          }
+          break;
+        }
+      }
+    },
 
     isEditing(q) {
       if (this.globalEditMode) return true;
@@ -1227,12 +1428,12 @@ function examBuilder() {
       const id = `${part.replace('part','p')}_q${uid()}`;
       if (part === 'part1') {
         this.exam.parts.part1.questions.push({
-          _id: uid(), id, text: '', options: {A:'',B:'',C:'',D:''}, answer: 'A', explanation: '', _editing: true
+          _id: uid(), id, text: '', image: '', options: {A:'',B:'',C:'',D:''}, answer: 'A', explanation: '', _editing: true
         });
         this.activeTab = 'p1';
       } else if (part === 'part2') {
         this.exam.parts.part2.questions.push({
-          _id: uid(), id, text: '', _editing: true,
+          _id: uid(), id, text: '', image: '', _editing: true,
           items: {
             a: {text:'', answer: true},
             b: {text:'', answer: false},
@@ -1243,12 +1444,12 @@ function examBuilder() {
         this.activeTab = 'p2';
       } else if (part === 'part3') {
         this.exam.parts.part3.questions.push({
-          _id: uid(), id, text: '', answer: '', accepted_other: '', tolerance: 0.01, explanation: '', _editing: true
+          _id: uid(), id, text: '', image: '', answer: '', accepted_other: '', tolerance: 0.01, explanation: '', _editing: true
         });
         this.activeTab = 'p3';
       } else if (part === 'part4') {
         this.exam.parts.part4.questions.push({
-          _id: uid(), id, title: '', text: '', _editing: true,
+          _id: uid(), id, title: '', text: '', image: '', _editing: true,
           rubric: {
             max_score: 1.0,
             criteria: [

@@ -678,9 +678,11 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
                 opts_rendered.append(f"<span class='mr-6'><b>{k}.</b> {v}</span>")
         opts_block = f"<div class='mt-1 text-sm pl-4 flex flex-wrap gap-y-1'>{' '.join(opts_rendered)}</div>"
 
+        img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
         p1_html += f"""
         <div class="mb-3 text-sm">
           <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {q.get('text', '')}</p>
+          {img_html}
           {opts_block}
         </div>"""
 
@@ -700,10 +702,12 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
                     items_list.append({"key": k, "text": txt})
                     
         items_rendered = "".join([f"<p class='pl-4 text-sm mt-0.5'><b>{it.get('key')})</b> {it.get('text')}</p>" for it in items_list])
+        img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
 
         p2_html += f"""
         <div class="mb-3 text-sm">
           <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {q.get('text', '')}</p>
+          {img_html}
           {items_rendered}
         </div>"""
 
@@ -711,10 +715,14 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
     p3_html = ""
     p3_qs = parts.get("part3", {}).get("questions", [])
     for idx, q in enumerate(p3_qs, 1):
+        img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
         p3_html += f"""
-        <div class="mb-3 text-sm flex items-start justify-between gap-3">
-          <p class="font-medium text-gray-900 flex-1"><b>Câu {idx}:</b> {q.get('text', '')}</p>
-          <span class="border-b border-dotted border-gray-500 w-32 text-center text-xs text-gray-400 pb-0.5 flex-shrink-0">Đáp số: .................</span>
+        <div class="mb-3 text-sm">
+          <div class="flex items-start justify-between gap-3">
+            <p class="font-medium text-gray-900 flex-1"><b>Câu {idx}:</b> {q.get('text', '')}</p>
+            <span class="border-b border-dotted border-gray-500 w-32 text-center text-xs text-gray-400 pb-0.5 flex-shrink-0">Đáp số: .................</span>
+          </div>
+          {img_html}
         </div>"""
 
     # 4. Phần IV
@@ -723,9 +731,11 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
     if p4_qs:
         p4_rendered = ""
         for idx, q in enumerate(p4_qs, 1):
+            img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
             p4_rendered += f"""
             <div class="mb-2 text-sm">
               <p class="font-medium text-gray-900"><b>Câu {idx}:</b> {q.get('text', '')}</p>
+              {img_html}
             </div>"""
         p4_html = f"""
         <div class="mt-4 pt-3 border-t">

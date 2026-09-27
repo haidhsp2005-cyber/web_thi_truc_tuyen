@@ -18,6 +18,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
 
 DATA_DIR = Path(__file__).parent.parent.parent / "data"
+STATIC_DIR = Path(__file__).parent.parent.parent / "static"
+UPLOADS_DIR = STATIC_DIR / "uploads"
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _list_exam_files() -> List[dict]:
@@ -374,13 +377,52 @@ def _omml_node_to_latex(node) -> str:
         return "".join(parts)
 
 
-def _extract_element_runs_and_math(elem, p) -> List[str]:
-    """Trích xuất một phần tử đoạn văn Word gồm cả chữ thường và công thức toán OMML."""
+def _extract_images_from_docx(doc, exam_id: str) -> dict:
+    """Trích xuất tất cả ảnh nhúng trong tài liệu Word docx và lưu vào static/uploads/."""
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    images_map = {}
+    try:
+        for r_id, rel in doc.part.rels.items():
+            if "image" in getattr(rel, "target_ref", ""):
+                img_part = rel.target_part
+                content_type = getattr(img_part, "content_type", "")
+                ext = ".png"
+                if "jpeg" in content_type or "jpg" in content_type:
+                    ext = ".jpg"
+                elif "gif" in content_type:
+                    ext = ".gif"
+                elif "svg" in content_type:
+                    ext = ".svg"
+                
+                filename = f"docx_{exam_id}_{uuid.uuid4().hex[:6]}{ext}"
+                filepath = UPLOADS_DIR / filename
+                filepath.write_bytes(img_part.blob)
+                images_map[r_id] = f"/static/uploads/{filename}"
+    except Exception as e:
+        logger.warning(f"Lỗi trích xuất ảnh docx: {e}")
+    return images_map
+
+
+def _extract_element_runs_and_math(elem, p, images_map: dict = None) -> List[str]:
+    """Trích xuất một phần tử đoạn văn Word gồm cả chữ thường, hình ảnh và công thức toán OMML."""
     import docx
     parts = []
+    images_map = images_map or {}
     for child in elem:
         tag = child.tag.split("}")[-1]
         if tag == "r":
+            # Kiểm tra xem run có chứa hình vẽ drawing hay pict không
+            for drawing in child.xpath('.//*[local-name()="drawing"]'):
+                for blip in drawing.xpath('.//*[local-name()="blip"]'):
+                    r_id = blip.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed')
+                    if r_id and r_id in images_map:
+                        parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
+            for pict in child.xpath('.//*[local-name()="pict"]'):
+                for img_data in pict.xpath('.//*[local-name()="imagedata"]'):
+                    r_id = img_data.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+                    if r_id and r_id in images_map:
+                        parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
+
             r = docx.text.run.Run(child, p)
             txt = r.text
             if not txt:
@@ -392,30 +434,41 @@ def _extract_element_runs_and_math(elem, p) -> List[str]:
                 parts.append(f"{{{{UNDERLINE}}}}{txt}{{{{/UNDERLINE}}}}")
             else:
                 parts.append(txt)
+        elif tag == "drawing":
+            for blip in child.xpath('.//*[local-name()="blip"]'):
+                r_id = blip.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed')
+                if r_id and r_id in images_map:
+                    parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
+        elif tag == "pict":
+            for img_data in child.xpath('.//*[local-name()="imagedata"]'):
+                r_id = img_data.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+                if r_id and r_id in images_map:
+                    parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
         elif tag in ("oMath", "oMathPara"):
             raw_math = _omml_node_to_latex(child).strip()
             math_latex = _sanitize_math_symbols(raw_math)
             if math_latex:
                 parts.append(f" ${math_latex}$ ")
         elif tag == "hyperlink":
-            parts.extend(_extract_element_runs_and_math(child, p))
+            parts.extend(_extract_element_runs_and_math(child, p, images_map))
     return parts
 
 
-def _extract_docx_paragraphs_with_format(doc) -> List[str]:
+def _extract_docx_paragraphs_with_format(doc, images_map: dict = None) -> List[str]:
     """
-    Trích xuất văn bản từ file Word bảo toàn thứ tự tự nhiên của các đoạn văn và bảng biểu (tables),
+    Trích xuất văn bản từ file Word bảo toàn thứ tự tự nhiên của các đoạn văn, hình ảnh và bảng biểu (tables),
     đồng thời giữ thông tin chữ in đỏ, gạch chân và chuyển đổi công thức toán OMML sang LaTeX chuẩn.
     """
     import docx
     paragraphs = []
+    images_map = images_map or {}
 
     # Duyệt qua các phần tử con của body theo đúng thứ tự xuất hiện trong tài liệu
     for child in doc.element.body:
         tag = child.tag.split("}")[-1]
         if tag == "p":
             p = docx.text.paragraph.Paragraph(child, doc)
-            annotated_runs = _extract_element_runs_and_math(child, p)
+            annotated_runs = _extract_element_runs_and_math(child, p, images_map)
             line = "".join(annotated_runs).strip()
             if line:
                 paragraphs.append(line)
@@ -426,7 +479,7 @@ def _extract_docx_paragraphs_with_format(doc) -> List[str]:
                 for cell in row.cells:
                     cell_parts = []
                     for p in cell.paragraphs:
-                        cell_runs = _extract_element_runs_and_math(p._element, p)
+                        cell_runs = _extract_element_runs_and_math(p._element, p, images_map)
                         t = "".join(cell_runs).strip()
                         if t:
                             cell_parts.append(t)
@@ -439,11 +492,54 @@ def _extract_docx_paragraphs_with_format(doc) -> List[str]:
     return paragraphs
 
 
+def _extract_pdf_pages_with_inline_images(content_bytes: bytes, exam_id: str) -> str:
+    """Trích xuất nội dung văn bản kèm hình ảnh đồ thị, bảng biến thiên từ PDF theo đúng tọa độ Y."""
+    import fitz
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    doc = fitz.open(stream=content_bytes, filetype="pdf")
+    all_lines = []
+    
+    for pno, page in enumerate(doc):
+        elements = []
+        blocks = page.get_text("blocks")
+        for b in blocks:
+            txt = b[4].strip()
+            if txt:
+                elements.append((b[1], "text", txt))
+                
+        images = page.get_images(full=True)
+        saved_xrefs = set()
+        for idx, img in enumerate(images):
+            xref = img[0]
+            if xref in saved_xrefs:
+                continue
+            saved_xrefs.add(xref)
+            rects = page.get_image_rects(xref)
+            y0 = rects[0].y0 if rects else 9999
+            
+            try:
+                base_img = doc.extract_image(xref)
+                ext = base_img.get("ext", "png")
+                filename = f"pdf_{exam_id}_p{pno+1}_img{idx+1}.{ext}"
+                filepath = UPLOADS_DIR / filename
+                filepath.write_bytes(base_img["image"])
+                url = f"/static/uploads/{filename}"
+                elements.append((y0, "image", f"\n[IMAGE: {url}]\n"))
+            except Exception as e:
+                logger.warning(f"Lỗi trích xuất ảnh PDF trang {pno+1}: {e}")
+                
+        elements.sort(key=lambda x: x[0])
+        for el in elements:
+            all_lines.append(el[2])
+            
+    return "\n".join(all_lines)
+
+
 @router.post("/upload-file")
 async def upload_exam_file(file: UploadFile = File(...)):
     """
     Nhập đề thi từ file Word (.docx), PDF (.pdf), Text (.txt) hoặc JSON (.json).
-    Tự động trích xuất văn bản, phân tích các câu hỏi và lưu vào hệ thống.
+    Tự động trích xuất văn bản, hình ảnh minh họa (đồ thị, bảng biến thiên, sơ đồ Lý/Hóa/Sinh) và lưu vào hệ thống.
     """
     filename = file.filename or ""
     ext = Path(filename).suffix.lower()
@@ -453,12 +549,14 @@ async def upload_exam_file(file: UploadFile = File(...)):
 
     content_bytes = await file.read()
     raw_text = ""
+    file_exam_id = uuid.uuid4().hex[:8]
 
     if ext == ".docx":
         try:
             import docx
             doc = docx.Document(io.BytesIO(content_bytes))
-            paragraphs = _extract_docx_paragraphs_with_format(doc)
+            images_map = _extract_images_from_docx(doc, file_exam_id)
+            paragraphs = _extract_docx_paragraphs_with_format(doc, images_map=images_map)
             raw_text = "\n".join(paragraphs)
         except Exception as e:
             logger.error(f"Lỗi đọc file docx: {e}")
@@ -466,23 +564,10 @@ async def upload_exam_file(file: UploadFile = File(...)):
 
     elif ext == ".pdf":
         try:
-            import pypdf
-            reader = pypdf.PdfReader(io.BytesIO(content_bytes))
-            pages_text = []
-            for i, page in enumerate(reader.pages):
-                pt = page.extract_text() or ""
-                if pt.strip():
-                    pages_text.append(pt)
-            raw_text = "\n".join(pages_text)
+            raw_text = _extract_pdf_pages_with_inline_images(content_bytes, file_exam_id)
         except Exception as e:
-            try:
-                import fitz
-                doc = fitz.open(stream=content_bytes, filetype="pdf")
-                pages_text = [page.get_text() for page in doc]
-                raw_text = "\n".join(pages_text)
-            except Exception as e2:
-                logger.error(f"Lỗi đọc file PDF: {e2}")
-                raise HTTPException(400, f"Không thể đọc file PDF: {e}")
+            logger.error(f"Lỗi đọc file PDF: {e}")
+            raise HTTPException(400, f"Không thể đọc file PDF: {e}")
 
     elif ext == ".json":
         try:
@@ -711,10 +796,25 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
             }
         return None
 
+    # Trích xuất ảnh nếu có
+    image_url = ""
+    img_match = re.search(r"\[IMAGE:\s*([^\]]+)\]", q_block)
+    if img_match:
+        image_url = img_match.group(1).strip()
+    else:
+        md_img = re.search(r"!\[[^\]]*\]\(([^)]+)\)", q_block)
+        if md_img:
+            image_url = md_img.group(1).strip()
+
     first_opt_start = matches[0].start()
     raw_q_text = q_block[:first_opt_start].strip()
     raw_q_text = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", raw_q_text, flags=re.IGNORECASE)
-    q_text = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_q_text).strip()
+    raw_q_text = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_q_text)
+    raw_q_text = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", raw_q_text)
+    raw_q_text = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", raw_q_text)
+    raw_q_text = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", raw_q_text, flags=re.IGNORECASE|re.MULTILINE)
+    raw_q_text = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", raw_q_text, flags=re.IGNORECASE)
+    q_text = raw_q_text.strip()
 
     options = {"A": "", "B": "", "C": "", "D": ""}
     detected_answer = ""
@@ -733,7 +833,10 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
             is_marked = True
 
         val = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_val)
-        val = re.sub(r"(\*\s*$|^\s*\*|\[[xX]\]|\(đúng\)|\(Đúng\))", "", val).strip()
+        val = re.sub(r"(\*\s*$|^\s*\*|\[[xX]\]|\(đúng\)|\(Đúng\))", "", val)
+        val = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", val)
+        val = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", val, flags=re.IGNORECASE|re.MULTILINE)
+        val = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", val, flags=re.IGNORECASE).strip()
 
         options[key] = val
         if is_marked and not detected_answer:
@@ -744,12 +847,15 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
         if ans_match:
             detected_answer = ans_match.group(1).upper()
 
-    return {
+    res_part1 = {
         "text": _sanitize_math_symbols(q_text),
         "options": {k: _sanitize_math_symbols(v) for k, v in options.items()},
         "answer": detected_answer or "A",
         "explanation": ""
     }
+    if image_url:
+        res_part1["image"] = image_url
+    return res_part1
 
 
 def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_missing: bool = False) -> Optional[dict]:
@@ -757,12 +863,26 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
     item_regex = r'(?:^|[\s\n]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[a-d])[\)\]]|(?P<key_plain>[a-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
     matches = list(re.finditer(item_regex, q_block))
 
+    # Trích xuất ảnh nếu có
+    image_url = ""
+    img_match = re.search(r"\[IMAGE:\s*([^\]]+)\]", q_block)
+    if img_match:
+        image_url = img_match.group(1).strip()
+    else:
+        md_img = re.search(r"!\[[^\]]*\]\(([^)]+)\)", q_block)
+        if md_img:
+            image_url = md_img.group(1).strip()
+
     if len(matches) < 2:
         if create_empty_if_missing:
             raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
-            q_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc).strip()
-            return {
-                "text": _sanitize_math_symbols(q_desc),
+            raw_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc)
+            raw_desc = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", raw_desc)
+            raw_desc = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", raw_desc)
+            raw_desc = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", raw_desc, flags=re.IGNORECASE|re.MULTILINE)
+            raw_desc = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", raw_desc, flags=re.IGNORECASE).strip()
+            res_p2_empty = {
+                "text": _sanitize_math_symbols(raw_desc),
                 "items": {
                     "a": {"text": "", "answer": True},
                     "b": {"text": "", "answer": False},
@@ -770,12 +890,20 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
                     "d": {"text": "", "answer": False}
                 }
             }
+            if image_url:
+                res_p2_empty["image"] = image_url
+            return res_p2_empty
         return None
 
     first_item_start = matches[0].start()
     raw_desc = q_block[:first_item_start].strip()
     raw_desc = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", raw_desc, flags=re.IGNORECASE)
-    q_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc).strip()
+    raw_desc = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_desc)
+    raw_desc = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", raw_desc)
+    raw_desc = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", raw_desc)
+    raw_desc = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", raw_desc, flags=re.IGNORECASE|re.MULTILINE)
+    raw_desc = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", raw_desc, flags=re.IGNORECASE).strip()
+    q_desc = raw_desc
 
     q_has_red = "{{RED}}" in q_block or "{{UNDERLINE}}" in q_block
     items = {}
@@ -798,19 +926,39 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
             ans = True
 
         val = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", raw_val)
-        val = re.sub(r"[\(\[\{]?(?:Sai|S|Đúng|Đ|D)[\)\]\}]?\s*$", "", val, flags=re.IGNORECASE).strip()
+        val = re.sub(r"[\(\[\{]?(?:Sai|S|Đúng|Đ|D)[\)\]\}]?\s*$", "", val, flags=re.IGNORECASE)
+        val = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", val)
+        val = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", val, flags=re.IGNORECASE|re.MULTILINE)
+        val = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", val, flags=re.IGNORECASE).strip()
         items[key] = {"text": _sanitize_math_symbols(val), "answer": ans}
 
-    return {
+    res_p2 = {
         "text": _sanitize_math_symbols(q_desc),
         "items": items
     }
+    if image_url:
+        res_p2["image"] = image_url
+    return res_p2
 
 
 def _parse_part3_block(q_block: str) -> dict:
     """Phân tích câu trả lời ngắn (Phần III)."""
+    # Trích xuất ảnh nếu có
+    image_url = ""
+    img_match = re.search(r"\[IMAGE:\s*([^\]]+)\]", q_block)
+    if img_match:
+        image_url = img_match.group(1).strip()
+    else:
+        md_img = re.search(r"!\[[^\]]*\]\(([^)]+)\)", q_block)
+        if md_img:
+            image_url = md_img.group(1).strip()
+
     clean_q = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
-    clean_q = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", clean_q).strip()
+    clean_q = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", clean_q)
+    clean_q = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", clean_q)
+    clean_q = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", clean_q)
+    clean_q = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", clean_q, flags=re.IGNORECASE|re.MULTILINE)
+    clean_q = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", clean_q, flags=re.IGNORECASE).strip()
 
     ans_match = re.search(r"(?:Đáp án|KQ|Kết quả|Đ/A)[:\s]+([^\n]+)", clean_q, re.IGNORECASE)
     answer = ""
@@ -819,13 +967,17 @@ def _parse_part3_block(q_block: str) -> dict:
         clean_q = clean_q[:ans_match.start()].strip()
 
     clean_ans = _sanitize_math_symbols(answer)
-    return {
+    res_p3 = {
         "text": _sanitize_math_symbols(clean_q),
         "answer": clean_ans,
         "accepted_answers": [clean_ans] if clean_ans else [],
         "tolerance": 0.01,
         "explanation": ""
     }
+    if image_url:
+        res_p3["image"] = image_url
+    return res_p3
+
 
 
 @router.post("/parse-text")
@@ -941,10 +1093,13 @@ async def parse_exam_text(payload: dict):
         # Phần IV: Tự luận
         p4_blocks = _extract_blocks(sections["part4"])
         for q_block in p4_blocks:
-            clean_q = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", q_block, flags=re.IGNORECASE)
+            img_m = re.search(r"\[IMAGE:\s*([^\]]+)\]", q_block)
+            image_url = img_m.group(1).strip() if img_m else ""
+            clean_q = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", q_block).strip()
+            clean_q = re.sub(r"^(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:\[|\()?(?:C[âa]u|B[àa]i|Question)?\s*\d+(?:\]|\))?[\.:\-\/\s]*", "", clean_q, flags=re.IGNORECASE)
             clean_q = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", clean_q).strip()
             first_sentence = clean_q.split(".")[0][:60]
-            parsed["parts"]["part4"]["questions"].append({
+            q_p4_item = {
                 "id": f"p4_q{len(parsed['parts']['part4']['questions']) + 1}",
                 "title": first_sentence or "Câu tự luận",
                 "text": clean_q,
@@ -956,7 +1111,10 @@ async def parse_exam_text(payload: dict):
                     ],
                     "sample_answer": ""
                 }
-            })
+            }
+            if image_url:
+                q_p4_item["image"] = image_url
+            parsed["parts"]["part4"]["questions"].append(q_p4_item)
 
     else:
         # TRƯỜNG HỢP ĐỀ KHÔNG CÓ TIÊU ĐỀ PHẦN I, PHẦN II (ví dụ đề 20 câu trắc nghiệm thuần túy):
@@ -1275,3 +1433,33 @@ def _ensure_part_structure(exam_data: dict):
         for i, q in enumerate(parts.get(part_key, {}).get("questions", []), 1):
             if not q.get("id"):
                 q["id"] = f"{prefix}{i}"
+
+
+@router.post("/upload-image")
+async def upload_question_image(file: UploadFile = File(...)):
+    """Tải lên hình ảnh minh họa cho câu hỏi (đồ thị, bảng biến thiên, mạch điện Lý, cấu trúc Hóa, sơ đồ Sinh)."""
+    allowed_exts = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".bmp"}
+    filename = file.filename or "image.png"
+    ext = Path(filename).suffix.lower()
+    if ext not in allowed_exts:
+        ext = ".png"
+    
+    upload_dir = STATIC_DIR / "uploads"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    
+    unique_name = f"img_{uuid.uuid4().hex[:12]}{ext}"
+    target_path = upload_dir / unique_name
+    
+    content = await file.read()
+    if len(content) > 15 * 1024 * 1024:
+        raise HTTPException(400, "Dung lượng ảnh vượt quá 15MB!")
+        
+    target_path.write_bytes(content)
+    
+    image_url = f"/static/uploads/{unique_name}"
+    return {
+        "success": True,
+        "image_url": image_url,
+        "filename": unique_name
+    }
+

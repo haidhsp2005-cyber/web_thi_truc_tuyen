@@ -249,7 +249,17 @@
         
         <template x-if="p1Questions[currentIdx]">
           <div>
-            <p class="text-gray-800 text-base leading-relaxed mb-6 font-medium" x-html="renderLatex(p1Questions[currentIdx].text)"></p>
+            <p class="text-gray-800 text-base leading-relaxed mb-4 font-medium" x-html="renderLatex(p1Questions[currentIdx].text)"></p>
+            
+            <template x-if="p1Questions[currentIdx].image">
+              <div class="my-4 text-center">
+                <img :src="p1Questions[currentIdx].image" 
+                     alt="Hình vẽ / Đồ thị câu hỏi" 
+                     class="max-h-72 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in hover:opacity-95 transition-all"
+                     @click="zoomImage(p1Questions[currentIdx].image)">
+                <p class="text-xs text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to xem chi tiết</p>
+              </div>
+            </template>
             
             <div class="space-y-3">
               <template x-for="opt in getP1DisplayOptions(p1Questions[currentIdx])" :key="opt.origKey">
@@ -289,7 +299,17 @@
         
         <template x-if="p2Questions[currentIdx]">
           <div>
-            <p class="text-gray-800 font-medium mb-5 leading-relaxed text-base sm:text-lg" x-html="renderLatex(p2Questions[currentIdx].text)"></p>
+            <p class="text-gray-800 font-medium mb-4 leading-relaxed text-base sm:text-lg" x-html="renderLatex(p2Questions[currentIdx].text)"></p>
+            
+            <template x-if="p2Questions[currentIdx].image">
+              <div class="my-4 text-center">
+                <img :src="p2Questions[currentIdx].image" 
+                     alt="Hình vẽ / Đồ thị câu hỏi" 
+                     class="max-h-72 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in hover:opacity-95 transition-all"
+                     @click="zoomImage(p2Questions[currentIdx].image)">
+                <p class="text-xs text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to xem chi tiết</p>
+              </div>
+            </template>
             
             <div class="space-y-4">
               <template x-for="item in getP2DisplayItems(p2Questions[currentIdx])" :key="item.origKey">
@@ -351,7 +371,17 @@
         
         <template x-if="p3Questions[currentIdx]">
           <div>
-            <p class="text-gray-800 font-medium mb-6 leading-relaxed text-lg" x-html="renderLatex(p3Questions[currentIdx].text)"></p>
+            <p class="text-gray-800 font-medium mb-4 leading-relaxed text-lg" x-html="renderLatex(p3Questions[currentIdx].text)"></p>
+            
+            <template x-if="p3Questions[currentIdx].image">
+              <div class="my-4 text-center">
+                <img :src="p3Questions[currentIdx].image" 
+                     alt="Hình vẽ / Đồ thị câu hỏi" 
+                     class="max-h-72 mx-auto rounded-xl border border-gray-200 shadow-sm object-contain cursor-zoom-in hover:opacity-95 transition-all"
+                     @click="zoomImage(p3Questions[currentIdx].image)">
+                <p class="text-xs text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to xem chi tiết</p>
+              </div>
+            </template>
             
             <div class="flex items-center gap-3">
               <label class="text-gray-600 font-semibold flex-shrink-0">Đáp án:</label>
@@ -395,6 +425,13 @@
               <div>
                 <p class="font-semibold text-orange-800 text-sm mb-1" x-text="q.title"></p>
                 <p class="text-gray-600 text-sm leading-relaxed" x-html="renderLatex(q.text)"></p>
+                <template x-if="q.image">
+                  <div class="my-3 text-center">
+                    <img :src="q.image" alt="Hình vẽ minh họa"
+                         class="max-h-60 mx-auto rounded-lg border object-contain cursor-zoom-in"
+                         @click.stop="zoomImage(q.image)">
+                  </div>
+                </template>
               </div>
             </label>
           </template>
@@ -575,6 +612,25 @@
   </div>
 </div>
 
+<!-- ===================== MODAL PHÓNG TO HÌNH ẢNH / ĐỒ THỊ CHO HỌC SINH ===================== -->
+<div x-show="zoomedImage" x-cloak 
+  class="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-sm p-3 sm:p-6" 
+  @click="zoomedImage = null" 
+  @keydown.escape.window="zoomedImage = null">
+  <div class="relative max-w-4xl max-h-[92vh] bg-white rounded-3xl p-3 sm:p-5 shadow-2xl overflow-hidden flex flex-col items-center" @click.stop>
+    <div class="w-full flex justify-between items-center pb-3 border-b mb-3">
+      <span class="font-bold text-sm sm:text-base text-gray-800 flex items-center gap-2">
+        <span>🔍</span>
+        <span>Chi tiết hình vẽ / Đồ thị câu hỏi</span>
+      </span>
+      <button @click="zoomedImage = null" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold flex items-center justify-center transition-colors">✕</button>
+    </div>
+    <div class="p-2 overflow-auto flex items-center justify-center max-h-[80vh] w-full">
+      <img :src="zoomedImage" class="max-w-full max-h-[75vh] object-contain rounded-xl shadow border" alt="Hình phóng to">
+    </div>
+  </div>
+</div>
+
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <script>
@@ -602,6 +658,11 @@ function examApp() {
     // UI
     showConfirm: false,
     showMobilePalette: false,
+    zoomedImage: null,
+
+    zoomImage(url) {
+      this.zoomedImage = url;
+    },
     submitting: false,
     timeLeft: 45 * 60,
     targetEndTime: null,

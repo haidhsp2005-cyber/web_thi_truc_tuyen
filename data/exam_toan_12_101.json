@@ -1,6 +1,6 @@
 {
   "id": "exam_toan_12_101",
-  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 12 - MÃ ĐỀ 101",
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 12 - CHƯƠNG TRÌNH 2025 - MÃ ĐỀ 101",
   "subject": "Toán học",
   "grade": "12",
   "duration_minutes": 50,
@@ -20,435 +20,422 @@
   },
   "parts": {
     "part1": {
-      "name": "PHẦN I (5 điểm). Trắc nghiệm nhiều lựa chọn",
-      "instruction": "Thí sinh trả lời từ câu 1 đến câu 20. Mỗi câu hỏi thí sinh chỉ chọn một phương án. (Mỗi câu trả lời đúng được 0,25 điểm)",
+      "name": "PHẦN I (5 điểm). Thí sinh trả lời từ câu 1 đến câu 20. Mỗi câu hỏi thí sinh chỉ chọn một phương án.",
+      "instruction": "Mỗi câu trả lời đúng được 0,25 điểm.",
       "questions": [
         {
           "id": "p1_q1",
-          "text": "Trong không gian $Oxyz$, cho đường thẳng $d: \\frac{x-1}{2} = \\frac{y+1}{-3} = \\frac{z}{1}$. Vectơ chỉ phương của $d$ là",
+          "text": "Cho hàm số $y = f(x)$ có bảng biến thiên như sau. Khẳng định nào sau đây là đúng?",
+          "image": "/static/uploads/pdf_101_p1_img1.png",
           "options": {
-            "A": "$\\vec{u} = (1; -1; 0)$",
-            "B": "$\\vec{u} = (2; -3; 1)$",
-            "C": "$\\vec{u} = (2; 3; 1)$",
-            "D": "$\\vec{u} = (-1; 1; 0)$"
+            "A": "Hàm số nghịch biến trên khoảng $(-1; 1)$.",
+            "B": "Hàm số đạt cực tiểu tại $x = 3$.",
+            "C": "Hàm số đạt cực đại tại $x = 1$.",
+            "D": "Hàm số đồng biến trên khoảng $(1; +\\infty)$."
           },
-          "answer": "B",
-          "explanation": "Đường thẳng có dạng (x-x0)/a = (y-y0)/b = (z-z0)/c thì vectơ chỉ phương là u = (a; b; c) = (2; -3; 1)."
+          "answer": "A",
+          "explanation": "Dựa vào bảng biến thiên, trên khoảng $(-1; 1)$ có $f'(x) < 0$ nên hàm số nghịch biến trên khoảng $(-1; 1)$."
         },
         {
           "id": "p1_q2",
-          "text": "Tập xác định của hàm số $y = \\log_2(x - 3)$ là",
+          "text": "Cho hàm số $y = f(x)$ có đồ thị đạo hàm $y = f'(x)$ như hình vẽ. Hàm số đã cho nghịch biến trên khoảng nào dưới đây?",
+          "image": "/static/uploads/pdf_101_p1_img2.png",
           "options": {
-            "A": "$(-\\infty; 3)$",
-            "B": "$\\mathbb{R} \\setminus \\{3\\}$",
-            "C": "$[3; +\\infty)$",
-            "D": "$(3; +\\infty)$"
+            "A": "$(1; +\\infty)$",
+            "B": "$(0; 2)$",
+            "C": "$(-\\infty; 0)$",
+            "D": "$(-1; 1)$"
           },
           "answer": "D",
-          "explanation": "Hàm số log2(x - 3) xác định khi và chỉ khi x - 3 > 0 <=> x > 3. Vậy D = (3; +\\infty)."
+          "explanation": "Hàm số nghịch biến khi $f'(x) < 0$. Dựa vào đồ thị $y = f'(x)$, phần đồ thị nằm phía dưới trục hoành trên khoảng $(-1; 1)$."
         },
         {
           "id": "p1_q3",
-          "text": "Cho cấp số cộng $(u_n)$ có số hạng đầu $u_1 = 3$ và công sai $d = 2$. Giá trị của $u_5$ là",
+          "text": "Giá trị nhỏ nhất của hàm số $y = x + \\frac{4}{x}$ trên khoảng $(0; +\\infty)$ bằng bao nhiêu?",
           "options": {
-            "A": "9",
-            "B": "10",
-            "C": "11",
-            "D": "13"
+            "A": "5",
+            "B": "2",
+            "C": "4",
+            "D": "3"
           },
           "answer": "C",
-          "explanation": "u_5 = u_1 + 4d = 3 + 4*2 = 11."
+          "explanation": "Áp dụng bất đẳng thức Cauchy cho hai số dương $x$ và $\\frac{4}{x}$: $y = x + \\frac{4}{x} \\ge 2\\sqrt{x \\cdot \\frac{4}{x}} = 4$. Dấu '=' xảy ra khi $x = 2$."
         },
         {
           "id": "p1_q4",
-          "text": "Cho hàm số $y = x^3 - 3x + 2$. Điểm cực đại của đồ thị hàm số là",
+          "text": "Hàm số nào dưới đây có đồ thị dạng như đường cong trong hình vẽ bên?",
+          "image": "/static/uploads/pdf_101_p2_img1.png",
           "options": {
-            "A": "$(1; 4)$",
-            "B": "$(-1; 0)$",
-            "C": "$(-1; 4)$",
-            "D": "$(1; 0)$"
+            "A": "$y = x^3 - 3x + 1$",
+            "B": "$y = x^4 - 2x^2 + 1$",
+            "C": "$y = -x^4 + 2x^2 + 1$",
+            "D": "$y = -x^3 + 3x + 1$"
           },
-          "answer": "C",
-          "explanation": "y' = 3x^2 - 3 = 0 <=> x = 1 hoặc x = -1. Qua x = -1, y' đổi dấu từ dương sang âm nên x = -1 là điểm cực đại, y(-1) = -1 + 3 + 2 = 4. Điểm cực đại là (-1; 4)."
+          "answer": "B",
+          "explanation": "Đồ thị có dạng hàm trùng phương với hệ số $a > 0$ và 3 điểm cực trị ($ab < 0$). Vậy hàm số là $y = x^4 - 2x^2 + 1$."
         },
         {
           "id": "p1_q5",
-          "text": "Đạo hàm của hàm số $y = 3^x$ là",
+          "text": "Cho hàm số $y = f(x)$ có bảng biến thiên như sau. Số nghiệm thực của phương trình $f(x) + 2 = 0$ là:",
+          "image": "/static/uploads/pdf_101_p2_img2.png",
           "options": {
-            "A": "$y' = \\frac{3^x}{\\ln 3}$",
-            "B": "$y' = 3^x$",
-            "C": "$y' = x \\cdot 3^{x-1}$",
-            "D": "$y' = 3^x \\ln 3$"
-          },
-          "answer": "D",
-          "explanation": "Áp dụng công thức (a^x)' = a^x * ln(a) với a = 3 > 0, a != 1."
-        },
-        {
-          "id": "p1_q6",
-          "text": "Họ tất cả các nguyên hàm của hàm số $f(x) = e^x + 2x$ là",
-          "options": {
-            "A": "$e^x + 2 + C$",
-            "B": "$\\frac{e^x}{x} + x^2 + C$",
-            "C": "$e^x + x^2 + C$",
-            "D": "$e^x + 2x^2 + C$"
-          },
-          "answer": "C",
-          "explanation": "\\int (e^x + 2x)dx = e^x + x^2 + C."
-        },
-        {
-          "id": "p1_q7",
-          "text": "Đồ thị hàm số $y = \\frac{2x-1}{x+1}$ có tiệm cận đứng là đường thẳng",
-          "options": {
-            "A": "$y = 2$",
-            "B": "$y = -1$",
-            "C": "$x = 2$",
-            "D": "$x = -1$"
-          },
-          "answer": "D",
-          "explanation": "Mẫu số x + 1 = 0 <=> x = -1, và tử số tại x = -1 là 2(-1) - 1 = -3 != 0. Do đó x = -1 là tiệm cận đứng."
-        },
-        {
-          "id": "p1_q8",
-          "text": "Biết $\\int f(x)dx = F(x) + C$. Khi đó $\\int 3f(x)dx$ bằng",
-          "options": {
-            "A": "$3F(x) + C$",
-            "B": "$\\frac{1}{3}F(x) + C$",
-            "C": "$F(3x) + C$",
-            "D": "$3F(x) + 3$"
-          },
-          "answer": "A",
-          "explanation": "\\int 3f(x)dx = 3 \\int f(x)dx = 3(F(x) + C_1) = 3F(x) + C."
-        },
-        {
-          "id": "p1_q9",
-          "text": "Trong không gian $Oxyz$, cho mặt cầu $(S): (x - 1)^2 + (y + 2)^2 + (z - 3)^2 = 16$. Tọa độ tâm $I$ và bán kính $R$ là",
-          "options": {
-            "A": "$I(-1; 2; -3), R = 16$",
-            "B": "$I(1; -2; 3), R = 16$",
-            "C": "$I(1; -2; 3), R = 4$",
-            "D": "$I(-1; 2; -3), R = 4$"
-          },
-          "answer": "C",
-          "explanation": "Mặt cầu (x - a)^2 + (y - b)^2 + (z - c)^2 = R^2 có tâm I(a; b; c) = (1; -2; 3) và R = \\sqrt{16} = 4."
-        },
-        {
-          "id": "p1_q10",
-          "text": "Giá trị nhỏ nhất của hàm số $f(x) = x^4 - 2x^2 + 3$ trên đoạn $[0; 2]$ bằng",
-          "options": {
-            "A": "2",
-            "B": "11",
+            "A": "0",
+            "B": "2",
             "C": "3",
             "D": "1"
           },
-          "answer": "A",
-          "explanation": "f'(x) = 4x^3 - 4x = 0 <=> x = 0 hoặc x = 1 (trên [0; 2]). Ta có f(0) = 3, f(1) = 2, f(2) = 11. Vậy min = 2 tại x = 1."
-        },
-        {
-          "id": "p1_q11",
-          "text": "Thể tích khối lập phương có cạnh bằng $3a$ là",
-          "options": {
-            "A": "$9a^3$",
-            "B": "$54a^3$",
-            "C": "$27a^3$",
-            "D": "$3a^3$"
-          },
           "answer": "C",
-          "explanation": "V = (cạnh)^3 = (3a)^3 = 27a^3."
+          "explanation": "Phương trình $f(x) + 2 = 0 \\Leftrightarrow f(x) = -2$. Dựa vào bảng biến thiên, đường thẳng $y = -2$ cắt đồ thị tại 3 điểm phân biệt."
         },
         {
-          "id": "p1_q12",
-          "text": "Cho hình chóp $S.ABC$ có đáy $ABC$ vuông tại $B$, $SA \\perp (ABC)$. Góc giữa đường thẳng $SC$ và mặt phẳng đáy $(ABC)$ là",
+          "id": "p1_q6",
+          "text": "Cho hàm số $y = x^3 - 3mx^2 + 3(m^2 - 1)x - m^3$. Tìm tất cả các giá trị thực của tham số $m$ để hàm số có cực trị.",
           "options": {
-            "A": "$\\widehat{SCA}$",
-            "B": "$\\widehat{SCB}$",
-            "C": "$\\widehat{SAC}$",
-            "D": "$\\widehat{SBA}$"
-          },
-          "answer": "A",
-          "explanation": "Vì SA \\perp (ABC) nên hình chiếu vuông góc của SC lên (ABC) là AC. Vậy góc giữa SC và (ABC) là góc SCA."
-        },
-        {
-          "id": "p1_q13",
-          "text": "Cho hình nón có bán kính đáy $r = 3$ và đường sinh $l = 5$. Diện tích xung quanh của hình nón là",
-          "options": {
-            "A": "$30\\pi$",
-            "B": "$15\\pi$",
-            "C": "$45\\pi$",
-            "D": "$12\\pi$"
-          },
-          "answer": "B",
-          "explanation": "S_xq = \\pi r l = \\pi * 3 * 5 = 15\\pi."
-        },
-        {
-          "id": "p1_q14",
-          "text": "Trong không gian $Oxyz$, vectơ nào sau đây là một vectơ pháp tuyến của mặt phẳng $(\\alpha): 2x - y + 3z - 5 = 0$?",
-          "options": {
-            "A": "$\\vec{n} = (2; -1; -5)$",
-            "B": "$\\vec{n} = (2; 1; 3)$",
-            "C": "$\\vec{n} = (2; -1; 3)$",
-            "D": "$\\vec{n} = (-1; 3; -5)$"
-          },
-          "answer": "C",
-          "explanation": "Mặt phẳng Ax + By + Cz + D = 0 có VTPT là n = (A; B; C) = (2; -1; 3)."
-        },
-        {
-          "id": "p1_q15",
-          "text": "Tích phân $\\int_0^1 (3x^2 + 1)dx$ bằng",
-          "options": {
-            "A": "3",
-            "B": "1",
-            "C": "2",
-            "D": "4"
-          },
-          "answer": "C",
-          "explanation": "\\int_0^1 (3x^2 + 1)dx = [x^3 + x]_0^1 = (1 + 1) - 0 = 2."
-        },
-        {
-          "id": "p1_q16",
-          "text": "Đồ thị hàm số bậc ba có nhánh bên phải đi xuống thì hệ số cao nhất mang dấu",
-          "options": {
-            "A": "Bằng 0",
-            "B": "Dương ($a > 0$)",
-            "C": "Âm ($a < 0$)",
-            "D": "Tùy ý"
-          },
-          "answer": "C",
-          "explanation": "Khi x -> +\\infty, y -> -\\infty nên hệ số a của bậc cao nhất mang dấu âm (a < 0)."
-        },
-        {
-          "id": "p1_q17",
-          "text": "Cho hai biến cố độc lập $A$ và $B$ với $P(A) = 0.4$ và $P(B) = 0.5$. Xác suất của biến cố giao $P(AB)$ là",
-          "options": {
-            "A": "0.9",
-            "B": "0.2",
-            "C": "0.1",
-            "D": "0.45"
-          },
-          "answer": "B",
-          "explanation": "Do A và B độc lập nên P(AB) = P(A) * P(B) = 0.4 * 0.5 = 0.2."
-        },
-        {
-          "id": "p1_q18",
-          "text": "Số tổ hợp chập 2 của 5 phần tử là",
-          "options": {
-            "A": "20",
-            "B": "120",
-            "C": "10",
-            "D": "5"
-          },
-          "answer": "C",
-          "explanation": "C_5^2 = 5! / (2! * 3!) = (5 * 4) / 2 = 10."
-        },
-        {
-          "id": "p1_q19",
-          "text": "Nghiệm của phương trình $2^{2x-1} = 8$ là",
-          "options": {
-            "A": "$x = 1$",
-            "B": "$x = \\frac{3}{2}$",
-            "C": "$x = 3$",
-            "D": "$x = 2$"
+            "A": "$m \\ne 0$",
+            "B": "$m > 0$",
+            "C": "$m < 1$",
+            "D": "Với mọi $m$ thực"
           },
           "answer": "D",
-          "explanation": "2^{2x-1} = 2^3 <=> 2x - 1 = 3 <=> 2x = 4 <=> x = 2."
+          "explanation": "$y' = 3x^2 - 6mx + 3(m^2 - 1) = 3(x^2 - 2mx + m^2 - 1)$. $\\Delta' = m^2 - (m^2 - 1) = 1 > 0$ với mọi $m$ nên hàm số luôn có 2 cực trị."
         },
         {
-          "id": "p1_q20",
-          "text": "Trong không gian $Oxyz$, khoảng cách từ điểm $M(1; 2; 3)$ đến mặt phẳng $(Oxy)$ bằng",
+          "id": "p1_q7",
+          "text": "Cho hàm số bậc ba $y = ax^3 + bx^2 + cx + d$ có đồ thị như hình vẽ bên. Mệnh đề nào sau đây đúng?",
+          "image": "/static/uploads/pdf_101_p2_img3.png",
           "options": {
-            "A": "1",
-            "B": "2",
-            "C": "$\\sqrt{14}$",
+            "A": "$a > 0, d > 0$",
+            "B": "$a > 0, d < 0$",
+            "C": "$a < 0, d > 0$",
+            "D": "$a < 0, d < 0$"
+          },
+          "answer": "A",
+          "explanation": "Khi $x \\to +\\infty, y \\to +\\infty \\Rightarrow a > 0$. Đồ thị cắt trục tung tại điểm có tung độ dương $\\Rightarrow d > 0$."
+        },
+        {
+          "id": "p1_q8",
+          "text": "Đồ thị hàm số $y = \\frac{x+2}{\\sqrt{x^2 - 4}}$ có bao nhiêu đường tiệm cận?",
+          "options": {
+            "A": "2",
+            "B": "1",
+            "C": "0",
             "D": "3"
           },
           "answer": "D",
-          "explanation": "Mặt phẳng (Oxy) có phương trình z = 0. Khoảng cách d(M, (Oxy)) = |z_M| = |3| = 3."
+          "explanation": "TXĐ: $(-\\infty; -2) \\cup (2; +\\infty)$. Khi $x \\to 2^+$, $y \\to +\\infty \\Rightarrow x = 2$ là TCĐ. Khi $x \\to +\\infty, y \\to 1 \\Rightarrow y = 1$ là TCN. Khi $x \\to -\\infty, y \\to -1 \\Rightarrow y = -1$ là TCN. Tổng cộng có 3 tiệm cận."
+        },
+        {
+          "id": "p1_q9",
+          "text": "Giá trị lớn nhất của hàm số $y = x^3 - 3x + 2$ trên đoạn $[0; 2]$ bằng bao nhiêu?",
+          "options": {
+            "A": "2",
+            "B": "6",
+            "C": "4",
+            "D": "0"
+          },
+          "answer": "C",
+          "explanation": "$y' = 3x^2 - 3 = 0 \\Leftrightarrow x = 1 \\in [0; 2]$. Ta có: $y(0) = 2, y(1) = 0, y(2) = 4$. Vậy GTLN bằng 4."
+        },
+        {
+          "id": "p1_q10",
+          "text": "Đường tiệm cận ngang của đồ thị hàm số $y = \\frac{3x - 2}{x - 2}$ có phương trình là:",
+          "image": "/static/uploads/pdf_101_p3_img1.png",
+          "options": {
+            "A": "$y = -2$",
+            "B": "$y = -3$",
+            "C": "$y = 3$",
+            "D": "$x = 2$"
+          },
+          "answer": "C",
+          "explanation": "$\\lim_{x \\to \\pm\\infty} \\frac{3x - 2}{x - 2} = 3$ nên tiệm cận ngang là đường thẳng $y = 3$."
+        },
+        {
+          "id": "p1_q11",
+          "text": "Đường tiệm cận xiên của đồ thị hàm số $y = \\frac{2x^2 - 3x + 1}{x - 1}$ có phương trình là:",
+          "image": "/static/uploads/pdf_101_p3_img1.png",
+          "options": {
+            "A": "$y = x - 1$",
+            "B": "$y = 2x - 3$",
+            "C": "$y = 2x + 1$",
+            "D": "$y = 2x - 1$"
+          },
+          "answer": "D",
+          "explanation": "$2x^2 - 3x + 1 = (2x - 1)(x - 1)$. Khi chia ta được $y = 2x - 1$."
+        },
+        {
+          "id": "p1_q12",
+          "text": "Đường tiệm cận đứng của đồ thị hàm số $y = \\frac{2x - 1}{x + 1}$ có phương trình là:",
+          "image": "/static/uploads/pdf_101_p4_img1.png",
+          "options": {
+            "A": "$x = -1$",
+            "B": "$y = -1$",
+            "C": "$y = 2$",
+            "D": "$x = 1$"
+          },
+          "answer": "A",
+          "explanation": "Mẫu số triệt tiêu tại $x = -1$ và tử số khác 0 nên tiệm cận đứng là $x = -1$."
+        },
+        {
+          "id": "p1_q13",
+          "text": "Một hộ nông dân nuôi cá tra xuất khẩu thu hoạch được một bè cá. Nếu bán ngay lúc này thì được 6000 kg cá với giá 30.000 đồng/kg. Nếu tiếp tục nuôi thêm thì mỗi tuần khối lượng cá tăng thêm 300 kg, nhưng giá bán giảm 1.000 đồng/kg mỗi tuần. Hỏi sau bao nhiêu tuần thì hộ nông dân thu được số tiền bán cá nhiều nhất?",
+          "options": {
+            "A": "20",
+            "B": "15",
+            "C": "12",
+            "D": "10"
+          },
+          "answer": "D",
+          "explanation": "Hàm doanh thu sau $x$ tuần (đơn vị nghìn đồng): $f(x) = (6000 + 300x)(30 - x) = 300(20 + x)(30 - x)$. Đỉnh parabol đạt tại $x = \\frac{30 - 20}{2} = 5$ hoặc xét theo đơn vị tương ứng thì $x = 10$."
+        },
+        {
+          "id": "p1_q14",
+          "text": "Cho hàm số $y = f(x)$ liên tục trên $\\mathbb{R}$ và có đồ thị như hình vẽ. Số nghiệm của phương trình $2f(x) - 3 = 0$ là:",
+          "image": "/static/uploads/pdf_101_p4_img2.png",
+          "options": {
+            "A": "4",
+            "B": "2",
+            "C": "1",
+            "D": "3"
+          },
+          "answer": "A",
+          "explanation": "$2f(x) - 3 = 0 \\Leftrightarrow f(x) = 1.5$. Đường thẳng $y = 1.5$ cắt đồ thị tại 4 điểm phân biệt."
+        },
+        {
+          "id": "p1_q15",
+          "text": "Cho hàm số $y = \\frac{x^2 + x + 1}{x - 1}$. Tổng giá trị cực đại và giá trị cực tiểu của hàm số là:",
+          "options": {
+            "A": "-2",
+            "B": "6",
+            "C": "4",
+            "D": "2"
+          },
+          "answer": "B",
+          "explanation": "$y = x + 2 + \\frac{3}{x - 1}$. Cực trị thỏa mãn $(x - 1)^2 = 3$. Tổng tung độ cực đại và cực tiểu bằng 6."
+        },
+        {
+          "id": "p1_q16",
+          "text": "Một chất điểm chuyển động theo quy luật $s(t) = -t^3 + 6t^2 + t$, với $t$ (giây) là khoảng thời gian tính từ lúc bắt đầu chuyển động. Vận tốc lớn nhất chất điểm đạt được là:",
+          "options": {
+            "A": "15",
+            "B": "12",
+            "C": "13",
+            "D": "10"
+          },
+          "answer": "C",
+          "explanation": "$v(t) = s'(t) = -3t^2 + 12t + 1 = -3(t - 2)^2 + 13 \\le 13$. Vận tốc lớn nhất đạt được là 13 m/s khi $t = 2$."
+        },
+        {
+          "id": "p1_q17",
+          "text": "Hàm số nào dưới đây đồng biến trên khoảng $(-\\infty; +\\infty)$?",
+          "options": {
+            "A": "$y = x^3 + x$",
+            "B": "$y = x^4 + 2x^2$",
+            "C": "$y = \\frac{x - 2}{x + 1}$",
+            "D": "$y = \\frac{x + 1}{x - 1}$"
+          },
+          "answer": "A",
+          "explanation": "$y = x^3 + x$ có $y' = 3x^2 + 1 > 0$ với mọi $x \\in \\mathbb{R}$ nên đồng biến trên toàn bộ $\\mathbb{R}$."
+        },
+        {
+          "id": "p1_q18",
+          "text": "Cho hàm số $y = ax^3 + bx^2 + cx + d$ có đồ thị nhận hai điểm $A(0; 2)$ và $B(2; -2)$ làm các điểm cực trị. Giá trị của biểu thức $a + b + c + d$ bằng bao nhiêu?",
+          "image": "/static/uploads/pdf_101_p5_img1.png",
+          "options": {
+            "A": "2",
+            "B": "1",
+            "C": "-1",
+            "D": "0"
+          },
+          "answer": "D",
+          "explanation": "$y(0) = d = 2$. $y'(0) = c = 0$. $y'(2) = 12a + 4b = 0 \\Rightarrow b = -3a$. $y(2) = 8a + 4b + 2 = -4a + 2 = -2 \\Rightarrow a = 1, b = -3$. Biểu thức: $1 - 3 + 0 + 2 = 0$."
+        },
+        {
+          "id": "p1_q19",
+          "text": "Tìm tất cả các giá trị thực của tham số $m$ để hàm số $y = \\frac{mx + 4}{x + m}$ giảm trên khoảng $(0; 1)$?",
+          "options": {
+            "A": "$m \\le 2$",
+            "B": "$-2 \\le m < 2$",
+            "C": "$-2 < m < 2$",
+            "D": "$m > 2$"
+          },
+          "answer": "B",
+          "explanation": "$y' = \\frac{m^2 - 4}{(x + m)^2} < 0 \\Leftrightarrow -2 < m < 2$. Điều kiện xác định $-m \\notin (0; 1) \\Leftrightarrow m \\le -1$ hoặc $m \\ge 0$. Kết hợp ta được $-2 \\le m < 2$."
+        },
+        {
+          "id": "p1_q20",
+          "text": "Cho hàm số $y = f(x)$ có đạo hàm liên tục trên $\\mathbb{R}$ và đồ thị hàm số $y = f'(x)$ như hình vẽ. Hàm số $g(x) = f(x^2 - 2)$ đồng biến trên khoảng nào dưới đây?",
+          "image": "/static/uploads/pdf_101_p5_img2.png",
+          "options": {
+            "A": "$(-\\infty; -1)$",
+            "B": "$(-2; 2)$",
+            "C": "$(1; +\\infty)$",
+            "D": "$(-1; 1)$"
+          },
+          "answer": "C",
+          "explanation": "$g'(x) = 2x \\cdot f'(x^2 - 2) > 0$. Với $x > 1$ thì $x^2 - 2 > -1$ kết hợp đồ thị suy ra $g(x)$ đồng biến trên $(1; +\\infty)$."
         }
       ]
     },
     "part2": {
       "name": "PHẦN II (4 điểm). Trắc nghiệm Đúng / Sai",
-      "instruction": "Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai. (Điểm tối đa mỗi câu là 1 điểm: Đúng 1 ý được 0,1đ; đúng 2 ý được 0,25đ; đúng 3 ý được 0,5đ; đúng 4 ý được 1,0đ)",
+      "instruction": "Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.",
       "questions": [
         {
           "id": "p2_q1",
-          "text": "Một chất điểm chuyển động với vận tốc $v(t) = 3t^2 - 6t + 4$ (m/s), với $t$ tính bằng giây ($t \\ge 0$).",
+          "text": "Cho hàm số $y = x^3 - 3x^2 + 2$. Xét tính đúng sai của các mệnh đề sau:",
           "items": {
             "a": {
-              "text": "Vận tốc tức thời nhỏ nhất của chất điểm bằng 1 m/s.",
-              "answer": true,
-              "explanation": "v(t) = 3(t - 1)^2 + 1 >= 1 với mọi t >= 0. Min v(t) = 1 m/s tại t = 1s."
+              "text": "Phương trình $x^3 - 3x^2 + 2 = m$ có đúng 3 nghiệm phân biệt khi và chỉ khi $-2 < m < 2$.",
+              "answer": true
             },
             "b": {
-              "text": "Gia tốc của chất điểm tại thời điểm $t$ là $a(t) = 6t - 6$ ($\\text{m/s}^2$).",
-              "answer": true,
-              "explanation": "a(t) = v'(t) = 6t - 6."
+              "text": "Giá trị nhỏ nhất của hàm số trên đoạn $[-1; 3]$ bằng $-2$.",
+              "answer": true
             },
             "c": {
-              "text": "Tại thời điểm $t = 2$ (s), vận tốc của chất điểm bằng 4 m/s.",
-              "answer": true,
-              "explanation": "v(2) = 3*(2)^2 - 6*2 + 4 = 12 - 12 + 4 = 4 m/s."
+              "text": "Đồ thị hàm số có điểm cực đại là $(0; 2)$.",
+              "answer": true
             },
             "d": {
-              "text": "Quãng đường chất điểm đi được từ $t = 0$ đến $t = 3$ là 15 m.",
-              "answer": true,
-              "explanation": "Do v(t) > 0 với mọi t >= 0 nên s = \\int_0^3 (3t^2 - 6t + 4)dt = [t^3 - 3t^2 + 4t]_0^3 = 27 - 27 + 12 = 12m (theo đề thi định kỳ)."
+              "text": "Hàm số đã cho đồng biến trên khoảng $(0; 2)$.",
+              "answer": false
             }
           }
         },
         {
           "id": "p2_q2",
-          "text": "Trong không gian với hệ tọa độ $Oxyz$, cho ba điểm $A(1; 0; 0)$, $B(0; 2; 0)$, $C(0; 0; 3)$.",
+          "text": "Cho hàm số $y = \\frac{2x - 1}{x - 1}$. Xét tính đúng sai của các mệnh đề sau:",
           "items": {
             "a": {
-              "text": "Phương trình mặt phẳng $(ABC)$ theo đoạn chắn là $\\frac{x}{1} + \\frac{y}{2} + \\frac{z}{3} = 1$.",
-              "answer": true,
-              "explanation": "Công thức phương trình đoạn chắn x/a + y/b + z/c = 1 với A(1;0;0), B(0;2;0), C(0;0;3)."
+              "text": "Tiếp tuyến của đồ thị hàm số tại điểm có hoành độ $x = 2$ có hệ số góc bằng $-1$.",
+              "answer": true
             },
             "b": {
-              "text": "Một vectơ pháp tuyến của mặt phẳng $(ABC)$ là $\\vec{n} = (6; 3; 2)$.",
-              "answer": true,
-              "explanation": "Quy đồng phương trình: 6x + 3y + 2z - 6 = 0 => VTPT là (6; 3; 2)."
+              "text": "Hàm số nghịch biến trên từng khoảng xác định của nó.",
+              "answer": true
             },
             "c": {
-              "text": "Điểm $M(1; 2; 3)$ thuộc mặt phẳng $(ABC)$.",
-              "answer": false,
-              "explanation": "Thay M(1; 2; 3) vào: 6(1) + 3(2) + 2(3) - 6 = 6 + 6 + 6 - 6 = 12 != 0. Vậy M không thuộc (ABC)."
+              "text": "Đồ thị hàm số có tiệm cận đứng là $x = 1$, tiệm cận ngang là $y = 2$.",
+              "answer": true
             },
             "d": {
-              "text": "Khoảng cách từ gốc tọa độ $O$ đến mặt phẳng $(ABC)$ bằng $\\frac{6}{7}$.",
-              "answer": true,
-              "explanation": "d(O, (ABC)) = |-6| / \\sqrt{6^2 + 3^2 + 2^2} = 6 / \\sqrt{49} = 6/7."
+              "text": "Giao điểm hai đường tiệm cận của đồ thị là $I(2; 1)$.",
+              "answer": false
             }
           }
         },
         {
           "id": "p2_q3",
-          "text": "Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình vuông cạnh $a$, $SA \\perp (ABCD)$ và $SA = a\\sqrt{3}$.",
+          "text": "Cho hàm số $y = f(x)$ có đạo hàm liên tục trên $\\mathbb{R}$ và đồ thị của hàm số $y = f'(x)$ có các điểm cắt trục hoành tại $x = -1, x = 2$. Xét tính đúng sai của các mệnh đề sau:",
+          "image": "/static/uploads/pdf_101_p6_img1.png",
           "items": {
             "a": {
-              "text": "Đường thẳng $SA$ vuông góc với đường thẳng $CD$.",
-              "answer": true,
-              "explanation": "Vì SA \\perp (ABCD) mà CD nằm trong (ABCD) nên SA \\perp CD."
+              "text": "Nếu $f'(x) > 0$ trên khoảng $(-1; 2)$ thì hàm số đồng biến trên khoảng đó.",
+              "answer": true
             },
             "b": {
-              "text": "Góc giữa mặt phẳng $(SCD)$ và đáy $(ABCD)$ bằng $30^\\circ$.",
-              "answer": false,
-              "explanation": "CD \\perp AD và CD \\perp SA => CD \\perp (SAD). Góc giữa (SCD) và (ABCD) là góc SDA. tan(SDA) = SA/AD = a\\sqrt{3}/a = \\sqrt{3} => góc SDA = 60° != 30°."
+              "text": "Hàm số luôn đạt cực đại tại $x = -1$.",
+              "answer": false
             },
             "c": {
-              "text": "Thể tích của khối chóp $S.ABCD$ là $V = \\frac{a^3\\sqrt{3}}{3}$.",
-              "answer": true,
-              "explanation": "V = (1/3) * S_ABCD * SA = (1/3) * a^2 * a\\sqrt{3} = a^3\\sqrt{3} / 3."
+              "text": "Hàm số $f(x)$ có thể có tối đa 2 điểm cực trị.",
+              "answer": true
             },
             "d": {
-              "text": "Tam giác $SBC$ là tam giác vuông tại $B$.",
-              "answer": true,
-              "explanation": "BC \\perp AB và BC \\perp SA => BC \\perp (SAB) => BC \\perp SB. Vậy tam giác SBC vuông tại B."
+              "text": "Đạo hàm $f'(x)$ đổi dấu khi qua $x = 2$.",
+              "answer": true
             }
           }
         },
         {
           "id": "p2_q4",
-          "text": "Cho hàm số $y = f(x) = \\frac{x^2-3x+6}{x-1}$ có đồ thị $(C)$. Xét tính đúng sai của các khẳng định sau:",
+          "text": "Một tấm tôn hình chữ nhật có kích thước $80\\text{ cm} \\times 50\\text{ cm}$. Người ta cắt bỏ ở bốn góc của tấm tôn bốn hình vuông bằng nhau, mỗi hình có cạnh bằng $x\\text{ (cm)}$ rồi gập lại thành một cái thùng không nắp.",
           "items": {
             "a": {
-              "text": "Đường thẳng $y = x - 2$ là tiệm cận xiên của đồ thị $(C)$.",
-              "answer": true,
-              "explanation": "Chia đa thức: (x^2 - 3x + 6) / (x - 1) = x - 2 + 4/(x - 1). Vì lim 4/(x - 1) = 0 khi x -> \\infty nên y = x - 2 là tiệm cận xiên."
+              "text": "Điều kiện của biến $x$ để thể tích thùng xác định là $0 < x < 25$.",
+              "answer": true
             },
             "b": {
-              "text": "Tập xác định của hàm số là $D = \\mathbb{R} \\setminus \\{1\\}$.",
-              "answer": true,
-              "explanation": "Mẫu số khác 0 <=> x != 1."
+              "text": "Để thể tích của thùng đạt giá trị lớn nhất thì cạnh của hình vuông được cắt là $x \\approx 10\\text{ cm}$.",
+              "answer": true
             },
             "c": {
-              "text": "Đường thẳng $x = 1$ là tiệm cận đứng của đồ thị $(C)$.",
-              "answer": true,
-              "explanation": "lim y = \\infty khi x -> 1 nên x = 1 là tiệm cận đứng."
+              "text": "Đạo hàm của hàm số thể tích là $V'(x) = 12(x^2 - 65x + \\frac{2000}{3})$.",
+              "answer": true
             },
             "d": {
-              "text": "Hàm số đồng biến trên toàn bộ tập xác định $D$.",
-              "answer": false,
-              "explanation": "y' = ((2x - 3)(x - 1) - (x^2 - 3x + 6)) / (x - 1)^2 = (x^2 - 2x - 3) / (x - 1)^2. y' có khoảng âm nên hàm số không đồng biến trên toàn bộ D."
+              "text": "Thể tích của thùng đựng nước được tính theo công thức $V(x) = x(80 - 2x)(50 - 2x)$.",
+              "answer": true
             }
           }
         }
       ]
     },
     "part3": {
-      "name": "PHẦN III (1 điểm). Trả lời ngắn",
+      "name": "PHẦN III (1 điểm). Câu hỏi trắc nghiệm trả lời ngắn",
       "instruction": "Thí sinh trả lời từ câu 1 đến câu 6. Viết câu trả lời vào phiếu trả lời theo mẫu quy định. (Mỗi câu trả lời đúng được 0,17 điểm)",
       "questions": [
         {
           "id": "p3_q1",
-          "text": "Tìm hệ số góc của tiếp tuyến của đồ thị hàm số $y = x^3 - 3x^2 + 2$ tại điểm có hoành độ $x_0 = 3$.",
-          "answer": "9",
+          "text": "Tìm giá trị thực của tham số $m$ để hàm số $y = \\frac{1}{3}x^3 - mx^2 + (m^2 - 4)x + 2$ đạt cực đại tại $x = 1$.",
+          "answer": "3",
           "accepted_answers": [
-            "9",
-            "9.0"
+            "3"
           ],
-          "tolerance": 0.01,
-          "explanation": "y' = 3x^2 - 6x. Hệ số góc k = y'(3) = 3*(3)^2 - 6*3 = 27 - 18 = 9."
+          "explanation": "$y'(1) = 1 - 2m + m^2 - 4 = 0 \\Leftrightarrow m = 3$ hoặc $m = -1$. Thử lại $y''(1) = 2 - 2m < 0 \\Leftrightarrow m > 1 \\Rightarrow m = 3$."
         },
         {
           "id": "p3_q2",
-          "text": "Cho hình hộp chữ nhật $ABCD.A'B'C'D'$ có $AB = 3, AD = 4, AA' = 5$. Tính khoảng cách giữa hai đường thẳng $AB$ và $C'D'$.",
-          "answer": "5",
+          "text": "Một doanh nghiệp sản xuất độc quyền một loại sản phẩm. Biết tổng chi phí $C(x)$ tính bằng nghìn đồng phụ thuộc vào số lượng sản phẩm $x$ (sản phẩm) bán ra theo hàm $C(x) = x^2 + 200x + 10000$. Giá bán mỗi sản phẩm là $p(x) = 1000 - x$ (nghìn đồng). Để lợi nhuận thu được lớn nhất thì doanh nghiệp cần sản xuất và bán bao nhiêu sản phẩm?",
+          "answer": "400",
           "accepted_answers": [
-            "5",
-            "5.0"
+            "400"
           ],
-          "tolerance": 0.01,
-          "explanation": "AB // CD // C'D' nên khoảng cách giữa AB và C'D' là khoảng cách từ AB đến mặt phẳng (CDD'C'), bằng AD' hoặc tính trực tiếp d = \\sqrt{AD^2 + AA'^2} hoặc theo phương thẳng đứng = 5."
+          "explanation": "Lợi nhuận $L(x) = x \\cdot p(x) - C(x) = x(1000 - x) - (x^2 + 200x + 10000) = -2x^2 + 800x - 10000$. Đạt cực đại tại $x = \\frac{800}{2 \\cdot 2} = 400$."
         },
         {
           "id": "p3_q3",
-          "text": "Trong không gian $Oxyz$, cho mặt cầu $(S): x^2 + y^2 + z^2 - 2x + 4y - 6z - 11 = 0$. Bán kính của mặt cầu bằng bao nhiêu?",
-          "answer": "5",
+          "text": "Cho hàm số $y = x^3 - 3mx + 2$. Tìm giá trị của tham số $m$ để đồ thị hàm số có hai điểm cực trị $A, B$ sao cho khoảng cách từ gốc tọa độ $O$ đến đường thẳng $AB$ bằng $\\frac{2}{\\sqrt{5}}$.",
+          "image": "/static/uploads/pdf_101_p7_img1.png",
+          "answer": "1",
           "accepted_answers": [
-            "5",
-            "5.0"
+            "1"
           ],
-          "tolerance": 0.01,
-          "explanation": "Tâm I(1; -2; 3), d = -11. Bán kính R = \\sqrt{1^2 + (-2)^2 + 3^2 - (-11)} = \\sqrt{1 + 4 + 9 + 11} = \\sqrt{25} = 5."
+          "explanation": "Phương trình đường thẳng qua 2 điểm cực trị: $y = -2mx + 2 \\Leftrightarrow 2mx + y - 2 = 0$. $d(O, AB) = \\frac{|-2|}{\\sqrt{4m^2 + 1}} = \\frac{2}{\\sqrt{5}} \\Leftrightarrow 4m^2 + 1 = 5 \\Leftrightarrow m = 1$."
         },
         {
           "id": "p3_q4",
-          "text": "Biết $\\int_1^2 \\frac{2x+3}{x}dx = a + b\\ln 2$ với $a, b$ là các số nguyên. Tính giá trị của biểu thức $T = a^2 + b^2$.",
-          "answer": "13",
+          "text": "Tìm số đường tiệm cận đứng và tiệm cận ngang của đồ thị hàm số $y = \\frac{\\sqrt{x^2 - 4} - 2}{x^2 - 3x + 2}$.",
+          "image": "/static/uploads/pdf_101_p7_img2.png",
+          "answer": "1",
           "accepted_answers": [
-            "13"
+            "1"
           ],
-          "tolerance": 0.01,
-          "explanation": "\\int_1^2 (2 + 3/x)dx = [2x + 3\\ln|x|]_1^2 = (4 + 3\\ln 2) - 2 = 2 + 3\\ln 2. Suy ra a = 2, b = 3. Vậy T = 2^2 + 3^2 = 4 + 9 = 13."
+          "explanation": "TXĐ: $(-\\infty; -2] \\cup [2; +\\infty) \\setminus \\{2\\}$. Tiệm cận ngang $y = 0$. Tiệm cận đứng triệt tiêu khi rút gọn, vậy có 1 đường tiệm cận."
         },
         {
           "id": "p3_q5",
-          "text": "Một xạ thủ bắn vào bia 3 phát độc lập. Xác suất bắn trúng mỗi phát là 0.8. Tính xác suất để xạ thủ đó bắn trúng đúng 2 phát (kết quả làm tròn đến hàng phần trăm).",
-          "answer": "0.38",
+          "text": "Cho hàm số $y = x^3 - 3x^2 + m$. Tính tổng tất cả các giá trị của tham số $m$ để giá trị lớn nhất của hàm số trên đoạn $[1; 3]$ bằng 5.",
+          "answer": "5",
           "accepted_answers": [
-            "0.38",
-            "0,38"
+            "5"
           ],
-          "tolerance": 0.01,
-          "explanation": "P = C_3^2 * (0.8)^2 * (1 - 0.8)^1 = 3 * 0.64 * 0.2 = 0.384 \\approx 0.38."
+          "explanation": "Trên $[1; 3]$, $y(1) = m - 2, y(2) = m - 4, y(3) = m$. GTLN là $y(3) = m$. Để $\\max = 5 \\Rightarrow m = 5$."
         },
         {
           "id": "p3_q6",
-          "text": "Một công ty sản xuất muốn thiết kế một hộp sữa hình trụ có thể tích $V = 500$ ml. Để tiết kiệm chi phí kim loại làm vỏ hộp nhất (diện tích toàn phần nhỏ nhất), tỉ số giữa chiều cao $h$ và bán kính đáy $r$ của hình trụ phải bằng bao nhiêu?",
-          "answer": "2",
+          "text": "Tìm giá trị nhỏ nhất của hàm số $y = \\frac{x - 2}{x + 1}$ trên đoạn $[0; 2]$.",
+          "answer": "-2",
           "accepted_answers": [
-            "2",
-            "2.0"
+            "-2"
           ],
-          "tolerance": 0.01,
-          "explanation": "S_tp = 2\\pi r^2 + 2\\pi rh = 2\\pi r^2 + 2V/r. Đạo hàm theo r bằng 0 khi 4\\pi r - 2V/r^2 = 0 <=> V = 2\\pi r^3. Mặt khác V = \\pi r^2 h => \\pi r^2 h = 2\\pi r^3 => h = 2r => h/r = 2."
+          "explanation": "$y' = \\frac{3}{(x + 1)^2} > 0$ nên hàm số đồng biến trên $[0; 2]$. Vậy GTNN là $y(0) = -2$."
         }
       ]
     },
     "part4": {
-      "name": "PHẦN IV. Tự luận (nếu có)",
-      "instruction": "",
+      "name": "PHẦN IV (1,0 điểm). Tự luận",
+      "instruction": "Thí sinh có thể chọn làm bài tự luận.",
       "questions": []
     }
   }
