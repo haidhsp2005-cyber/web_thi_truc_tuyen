@@ -12,7 +12,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
-from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data
+from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, file_url_to_base64
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
@@ -483,7 +483,8 @@ def _extract_images_from_docx(doc, exam_id: str) -> dict:
                 filename = f"docx_{exam_id}_{uuid.uuid4().hex[:6]}{ext}"
                 filepath = UPLOADS_DIR / filename
                 filepath.write_bytes(img_part.blob)
-                images_map[r_id] = f"/static/uploads/{filename}"
+                # Nhúng trực tiếp Base64 Data URI vào map để lưu vĩnh viễn trong file JSON
+                images_map[r_id] = convert_bytes_to_base64_data_uri(img_part.blob, ext)
     except Exception as e:
         logger.warning(f"Lỗi trích xuất ảnh docx: {e}")
     return images_map
@@ -657,7 +658,8 @@ def _extract_pdf_pages_with_inline_images(content_bytes: bytes, exam_id: str) ->
                 filename = f"pdf_{exam_id}_p{pno+1}_img{idx+1}.{ext}"
                 filepath = UPLOADS_DIR / filename
                 filepath.write_bytes(base_img["image"])
-                url = f"/static/uploads/{filename}"
+                # Nhúng trực tiếp Base64 Data URI để lưu vĩnh viễn trong file JSON
+                url = convert_bytes_to_base64_data_uri(base_img["image"], ext)
                 elements.append((y0, "image", f"\n[IMAGE: {url}]\n"))
             except Exception as e:
                 logger.warning(f"Lỗi trích xuất ảnh PDF trang {pno+1}: {e}")
@@ -710,6 +712,8 @@ async def upload_exam_file(file: UploadFile = File(...)):
                 data["title"] = Path(filename).stem
             if not data.get("id"):
                 data["id"] = f"exam_{uuid.uuid4().hex[:8]}"
+            heal_exam_data(data)
+            save_exam_record(data)
             out_path = DATA_DIR / f"{data['id']}.json"
             out_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
             return {
@@ -858,6 +862,7 @@ async def export_exam_json(exam_id: str):
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(404, "Không tìm thấy đề thi!")
+    heal_exam_data(exam)
     content = json.dumps(exam, ensure_ascii=False, indent=2)
     filename = f"{exam_id}.json"
     return Response(
@@ -1599,10 +1604,11 @@ async def upload_question_image(file: UploadFile = File(...)):
         
     target_path.write_bytes(content)
     
-    image_url = f"/static/uploads/{unique_name}"
+    # Tạo Base64 Data URI để nhúng trực tiếp và lưu trữ vĩnh viễn trong file JSON
+    base64_url = convert_bytes_to_base64_data_uri(content, ext)
     return {
         "success": True,
-        "image_url": image_url,
+        "image_url": base64_url,
         "filename": unique_name
     }
 

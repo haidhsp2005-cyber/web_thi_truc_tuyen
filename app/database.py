@@ -5,6 +5,8 @@ import json
 import sqlite3
 import os
 import re
+import base64
+import io
 import hashlib
 import logging
 from datetime import datetime
@@ -277,6 +279,105 @@ def delete_all_submissions(exam_id: str = None) -> int:
     return count
 
 
+def convert_bytes_to_base64_data_uri(image_bytes: bytes, ext: str = "png") -> str:
+    """Chuyển đổi dữ liệu ảnh thành chuỗi Base64 Data URI, tự động tối ưu hóa kích thước nếu quá lớn."""
+    try:
+        from PIL import Image
+        img = Image.open(io.BytesIO(image_bytes))
+        
+        # Nếu ảnh quá lớn, resize lại để giữ file JSON gọn nhẹ (tối đa 1200px chiều dài/rộng)
+        max_dim = 1200
+        if img.width > max_dim or img.height > max_dim:
+            img.thumbnail((max_dim, max_dim), Image.Resampling.LANCZOS)
+            
+        out_buf = io.BytesIO()
+        fmt = img.format if img.format else "PNG"
+        if fmt.upper() in ("JPEG", "JPG"):
+            img.convert("RGB").save(out_buf, format="JPEG", quality=85, optimize=True)
+            mime = "image/jpeg"
+        elif fmt.upper() == "WEBP":
+            img.save(out_buf, format="WEBP", quality=85)
+            mime = "image/webp"
+        else:
+            img.save(out_buf, format="PNG", optimize=True)
+            mime = "image/png"
+            
+        b64 = base64.b64encode(out_buf.getvalue()).decode("ascii")
+        return f"data:{mime};base64,{b64}"
+    except Exception:
+        clean_ext = ext.lstrip(".").lower()
+        mime = "image/png"
+        if clean_ext in ("jpg", "jpeg"):
+            mime = "image/jpeg"
+        elif clean_ext == "svg":
+            mime = "image/svg+xml"
+        elif clean_ext == "webp":
+            mime = "image/webp"
+        b64 = base64.b64encode(image_bytes).decode("ascii")
+        return f"data:{mime};base64,{b64}"
+
+
+def file_url_to_base64(url: str, static_dir: Path = None) -> str:
+    """Nếu URL là đường dẫn tĩnh cục bộ /static/uploads/..., chuyển thành Data URI base64 để nhúng thẳng vào JSON."""
+    if not url or not isinstance(url, str):
+        return url
+    if url.startswith("data:image/"):
+        return url
+    if url.startswith("/static/"):
+        if static_dir is None:
+            static_dir = Path(__file__).parent.parent / "static"
+        rel_path = url[len("/static/"):].lstrip("/\\")
+        local_file = static_dir / rel_path
+        if local_file.exists():
+            try:
+                data = local_file.read_bytes()
+                ext = local_file.suffix.lower()
+                return convert_bytes_to_base64_data_uri(data, ext)
+            except Exception as e:
+                logger.warning(f"Lỗi đọc ảnh tĩnh sang base64 {local_file}: {e}")
+    return url
+
+
+def heal_question_images(q: dict) -> bool:
+    """Chuyển đổi toàn bộ đường dẫn ảnh cục bộ sang Base64 để nhúng trọn vẹn vào file JSON và CSDL."""
+    if not isinstance(q, dict):
+        return False
+    modified = False
+    img = q.get("image")
+    if img and isinstance(img, str) and img.startswith("/static/"):
+        new_img = file_url_to_base64(img)
+        if new_img != img:
+            q["image"] = new_img
+            modified = True
+
+    # Đối với phần II: kiểm tra ảnh của từng ý a, b, c, d
+    items = q.get("items")
+    if isinstance(items, dict):
+        for item_key, item_val in items.items():
+            if isinstance(item_val, dict) and item_val.get("image") and str(item_val["image"]).startswith("/static/"):
+                new_item_img = file_url_to_base64(item_val["image"])
+                if new_item_img != item_val["image"]:
+                    item_val["image"] = new_item_img
+                    modified = True
+
+    # Đối với text có ảnh nhúng inline [IMAGE: /static/...] hoặc ![](...)
+    text = q.get("text", "")
+    if text and "/static/" in text:
+        def _repl_img(m):
+            return f"[IMAGE: {file_url_to_base64(m.group(1).strip())}]"
+        new_text = re.sub(r'\[IMAGE:\s*(/static/[^\]]+)\]', _repl_img, text)
+        def _repl_md_img(m):
+            alt = m.group(1)
+            u = m.group(2).strip()
+            return f"![{alt}]({file_url_to_base64(u)})"
+        new_text = re.sub(r'!\[([^\]]*)\]\((/static/[^)]+)\)', _repl_md_img, new_text)
+        if new_text != text:
+            q["text"] = new_text
+            modified = True
+
+    return modified
+
+
 def heal_exam_data(exam: dict) -> bool:
     """Tự động kiểm tra và chữa lành các câu hỏi bị kẹt phương án trong bảng HTML/text,
     hoặc chứa lỗi ngoặc nhọn KaTeX mồ côi (như 200{ m^{2}).
@@ -300,6 +401,10 @@ def heal_exam_data(exam: dict) -> bool:
                     q["text"] = new_text
                     text = new_text
                     modified = True
+
+            # Chuyển đổi đường dẫn ảnh tĩnh sang Base64 để lưu vĩnh viễn trong JSON
+            if heal_question_images(q):
+                modified = True
 
             opts = q.get("options") or {}
             has_valid_opts = any(v and str(v).strip() for v in opts.values())
@@ -347,6 +452,10 @@ def heal_exam_data(exam: dict) -> bool:
                     text = new_text
                     modified = True
 
+            # Chuyển đổi đường dẫn ảnh tĩnh sang Base64 để lưu vĩnh viễn trong JSON
+            if heal_question_images(q):
+                modified = True
+
             items = q.get("items") or {}
             has_valid_items = any(
                 (isinstance(v, dict) and v.get("text", "").strip()) or (isinstance(v, str) and v.strip())
@@ -386,13 +495,16 @@ def heal_exam_data(exam: dict) -> bool:
         p = exam.get("parts", {}).get(part_name, {})
         if isinstance(p, dict) and "questions" in p and isinstance(p["questions"], list):
             for q in p["questions"]:
-                if isinstance(q, dict) and q.get("text"):
-                    text = q["text"]
-                    new_text = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', text)
-                    new_text = re.sub(r'(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', new_text)
-                    if new_text != text:
-                        q["text"] = new_text
+                if isinstance(q, dict):
+                    if heal_question_images(q):
                         modified = True
+                    if q.get("text"):
+                        text = q["text"]
+                        new_text = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', text)
+                        new_text = re.sub(r'(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', new_text)
+                        if new_text != text:
+                            q["text"] = new_text
+                            modified = True
 
     return modified
 
