@@ -348,9 +348,13 @@
                   class="flex-1 text-sm sm:text-base font-semibold text-gray-900 cursor-pointer py-1 px-1 min-h-[36px] flex items-center"
                   x-html="renderMathHtml(q.options[opt]) || '<span class=\'text-gray-300 font-normal italic text-xs\'>Trống...</span>'"></div>
 
-                <!-- Chế độ sửa: Ô nhập liệu -->
-                <input x-show="isEditing(q)" x-model="q.options[opt]" type="text" :placeholder="`Phương án ${opt}...`"
-                  class="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm sm:text-base focus:outline-none focus:border-indigo-500 font-medium">
+                <!-- Chế độ sửa: Ô nhập liệu & Xem trước trực tiếp KaTeX -->
+                <div x-show="isEditing(q)" class="flex-1 space-y-1.5">
+                  <input x-model="q.options[opt]" type="text" :placeholder="`Phương án ${opt}...`"
+                    class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm sm:text-base focus:outline-none focus:border-indigo-500 font-medium">
+                  <div x-show="hasMath(q.options[opt])" class="p-2 bg-indigo-50/70 border border-indigo-100 rounded-xl text-sm font-semibold text-gray-900 shadow-sm"
+                    x-html="renderMathHtml(q.options[opt])"></div>
+                </div>
               </div>
             </div>
           </template>
@@ -471,10 +475,14 @@
                   class="flex-1 text-sm sm:text-base font-semibold text-gray-900 cursor-pointer py-1 px-1 min-h-[36px] flex items-center"
                   x-html="renderMathHtml(q.items[itemKey]?.text) || '<span class=\'text-gray-300 font-normal italic text-xs\'>Trống...</span>'"></div>
 
-                <!-- Chế độ sửa -->
-                <input x-show="isEditing(q)" x-model="q.items[itemKey].text" type="text"
-                  :placeholder="`Nội dung mệnh đề ${itemKey}...`"
-                  class="flex-1 w-full border-2 border-gray-200 rounded-xl px-4 py-2 text-sm sm:text-base focus:outline-none focus:border-purple-500 bg-white transition-colors">
+                <!-- Chế độ sửa & Xem trước trực tiếp KaTeX -->
+                <div x-show="isEditing(q)" class="flex-1 w-full space-y-1.5">
+                  <input x-model="q.items[itemKey].text" type="text"
+                    :placeholder="`Nội dung mệnh đề ${itemKey}...`"
+                    class="w-full border-2 border-gray-200 rounded-xl px-4 py-2 text-sm sm:text-base focus:outline-none focus:border-purple-500 bg-white transition-colors font-medium">
+                  <div x-show="hasMath(q.items[itemKey]?.text)" class="p-2 bg-purple-50/70 border border-purple-100 rounded-xl text-sm font-semibold text-gray-900 shadow-sm"
+                    x-html="renderMathHtml(q.items[itemKey]?.text)"></div>
+                </div>
                 
                 <div class="flex gap-2 flex-shrink-0">
                   <button type="button" @click="q.items[itemKey].answer = true"
