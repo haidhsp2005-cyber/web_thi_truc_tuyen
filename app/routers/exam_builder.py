@@ -12,7 +12,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
-from ..database import load_exam
+from ..database import load_exam, save_exam_record, get_connection, EXAMS_DIR
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
@@ -24,28 +24,60 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _list_exam_files() -> List[dict]:
-    """Quét thư mục data/ lấy tất cả file JSON đề thi."""
-    exams = []
-    for f in sorted(DATA_DIR.glob("*.json")):
-        if f.name == "exam_db.sqlite":
+    """Lấy danh sách tất cả đề thi từ bảng SQLite exams và thư mục data/ (không bao giờ mất đề)."""
+    exams_map = {}
+
+    # 1. Quét từ bảng SQLite exams
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT id, title, subject, grade, data_json FROM exams")
+        for r in c.fetchall():
+            try:
+                data = json.loads(r[4])
+                eid = r[0]
+                exams_map[eid] = {
+                    "file": eid,
+                    "id": eid,
+                    "title": data.get("title", r[1]),
+                    "subject": data.get("subject", r[2] or "Khác"),
+                    "grade": str(data.get("grade", r[3] or "")),
+                    "duration_minutes": data.get("duration_minutes", 45),
+                    "part1_count": len(data.get("parts", {}).get("part1", {}).get("questions", [])),
+                    "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
+                    "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
+                    "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
+                }
+            except Exception:
+                pass
+        conn.close()
+    except Exception as ex:
+        logger.warning(f"Lỗi đọc danh sách đề từ SQLite: {ex}")
+
+    # 2. Quét thêm từ các file JSON trong EXAMS_DIR
+    for f in sorted(EXAMS_DIR.glob("*.json")):
+        if f.name.endswith(".sqlite"):
             continue
         try:
             data = json.loads(f.read_text(encoding="utf-8"))
-            exams.append({
-                "file": f.stem,
-                "id": data.get("id", f.stem),
-                "title": data.get("title", f.stem),
-                "subject": data.get("subject", "Khác"),
-                "grade": str(data.get("grade", "")),
-                "duration_minutes": data.get("duration_minutes", 45),
-                "part1_count": len(data.get("parts", {}).get("part1", {}).get("questions", [])),
-                "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
-                "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
-                "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
-            })
+            eid = data.get("id", f.stem)
+            if eid not in exams_map:
+                exams_map[eid] = {
+                    "file": f.stem,
+                    "id": eid,
+                    "title": data.get("title", f.stem),
+                    "subject": data.get("subject", "Khác"),
+                    "grade": str(data.get("grade", "")),
+                    "duration_minutes": data.get("duration_minutes", 45),
+                    "part1_count": len(data.get("parts", {}).get("part1", {}).get("questions", [])),
+                    "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
+                    "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
+                    "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
+                }
         except Exception as e:
             logger.warning(f"Bỏ qua file {f.name}: {e}")
-    return exams
+
+    return list(exams_map.values())
 
 
 @router.get("/list")
@@ -729,12 +761,8 @@ async def save_exam(exam_data: dict):
     _ensure_part_structure(exam_data)
 
     exam_id = exam_data["id"]
-    out_path = DATA_DIR / f"{exam_id}.json"
-    out_path.write_text(
-        json.dumps(exam_data, ensure_ascii=False, indent=2),
-        encoding="utf-8"
-    )
-    logger.info(f"Đã lưu đề thi: {exam_id} - {exam_data['title']}")
+    save_exam_record(exam_data)
+    logger.info(f"Đã lưu đề thi vào CSDL và file: {exam_id} - {exam_data['title']}")
     return {"success": True, "exam_id": exam_id, "message": f"Đã lưu đề thi '{exam_data['title']}' thành công!"}
 
 

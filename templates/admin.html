@@ -238,9 +238,41 @@
           </div>
         </div>
 
+        <!-- BỘ LỌC ĐỀ THI & LỚP CHO THỐNG KÊ & EXCEL -->
+        <div class="mt-4 pt-4 border-t space-y-2.5">
+          <div class="text-xs font-bold uppercase text-gray-700 flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><span>🎯</span><span>Lọc theo Đề & Lớp:</span></span>
+            <button x-show="selectedExamFilter || selectedClassFilter" @click="selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" class="text-blue-600 hover:underline font-bold text-[11px] cursor-pointer" x-cloak>
+              ✕ Bỏ lọc
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Chọn Đề thi:</label>
+              <select x-model="selectedExamFilter" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
+                <option value="">-- Tất cả đề thi --</option>
+                <template x-for="e in examList" :key="e.id">
+                  <option :value="e.id" x-text="`${e.title} (${e.subject || ''})`"></option>
+                </template>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Chọn Lớp:</label>
+              <select x-model="selectedClassFilter" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
+                <option value="">-- Tất cả các lớp --</option>
+                <template x-for="c in availableClasses" :key="c">
+                  <option :value="c" x-text="`Lớp ${c}`"></option>
+                </template>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <!-- Xuất Excel -->
-        <a href="/api/exam/export/excel" class="mt-5 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors">
-          📥 Xuất bảng điểm Excel (.xlsx)
+        <a :href="excelExportUrl" class="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-md hover:scale-[1.01] active:scale-98">
+          <span>📥</span>
+          <span>Xuất bảng điểm Excel (.xlsx)</span>
+          <span x-show="selectedExamFilter || selectedClassFilter" class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-cloak>(Theo bộ lọc)</span>
         </a>
       </div>
     </div>
@@ -540,6 +572,47 @@
     </div>
   </div>
 
+  <!-- ======= SAO LƯU & KHÔI PHỤC CSDL (CHỐNG MẤT DỮ LIỆU RENDER) ======= -->
+  <div class="bg-gradient-to-r from-emerald-900 to-teal-900 rounded-3xl p-6 text-white shadow-xl border border-emerald-700/50">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-5">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-400 text-emerald-950 flex items-center justify-center text-3xl font-black shadow-lg flex-shrink-0">
+          💾
+        </div>
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 text-xs font-bold mb-1 border border-emerald-400/30">
+            <span>🛡️ BẢO VỆ DỮ LIỆU RENDER</span>
+          </div>
+          <h2 class="text-lg font-black tracking-tight">Sao lưu & Khôi phục CSDL Đề thi và Điểm số</h2>
+          <p class="text-emerald-200 text-xs sm:text-sm mt-1 max-w-2xl">
+            Để phòng tránh việc Render xóa bộ nhớ tạm khi biên dịch lại, Thầy/Cô có thể tải file sao lưu (.json) về máy tính để lưu trữ vĩnh viễn, hoặc tải lên file sao lưu để khôi phục toàn bộ đề thi và bài thi chỉ trong 1 giây.
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end flex-shrink-0">
+        <a href="/api/admin/backup/download" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black px-4 py-2.5 rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center gap-2 hover:scale-[1.02] active:scale-95 cursor-pointer">
+          <span>💾</span><span>Tải sao lưu về máy</span>
+        </a>
+        <input type="file" x-ref="backupFileInput" accept=".json" @change="restoreBackup($event)" class="hidden">
+        <button @click="$refs.backupFileInput.click()" :disabled="restoringBackup" class="bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm transition-all border border-white/20 flex items-center gap-2 cursor-pointer">
+          <span x-show="restoringBackup" class="animate-spin">⏳</span>
+          <span x-show="!restoringBackup">📥</span>
+          <span x-text="restoringBackup ? 'Đang khôi phục...' : 'Khôi phục từ file'"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Thông báo kết quả sao lưu/khôi phục -->
+    <div x-show="backupMsg" x-cloak class="mt-4 p-3 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-between gap-3"
+      :class="backupMsgOk ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-red-100 text-red-900 border border-red-300'">
+      <div class="flex items-center gap-2">
+        <span x-text="backupMsgOk ? '✅' : '❌'"></span>
+        <span x-text="backupMsg"></span>
+      </div>
+      <button @click="backupMsg=''" class="text-emerald-700 hover:text-emerald-900">✕</button>
+    </div>
+  </div>
+
   <!-- Cloudflare Tunnel Hướng dẫn -->
   <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5">
     <h3 class="font-bold text-indigo-900 mb-3 flex items-center gap-2"><span>🌐</span>Phát đường link internet cho học sinh (Cloudflare Tunnel)</h3>
@@ -561,6 +634,12 @@ function adminApp() {
     submissions: [],
     examList: [],
     userList: [],
+    selectedExamFilter: '',
+    selectedClassFilter: '',
+    availableClasses: [],
+    restoringBackup: false,
+    backupMsg: '',
+    backupMsgOk: true,
     showCreateTeacherModal: false,
     showChangePassModal: false,
     userActionMsg: '',
@@ -574,6 +653,17 @@ function adminApp() {
     uploading: false,
     uploadMsg: '',
     uploadMsgOk: true,
+
+    get excelExportUrl() {
+      const params = new URLSearchParams();
+      if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
+      if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
+      return '/api/exam/export/excel' + (params.toString() ? '?' + params.toString() : '');
+    },
+
+    async onFilterChange() {
+      await Promise.all([this.loadStats(), this.loadSubmissions()]);
+    },
 
     async init() {
       await Promise.all([this.loadCurrentUser(), this.loadStats(), this.loadKeyStatus(), this.loadSubmissions(), this.loadExamList(), this.loadUsers()]);
@@ -711,7 +801,11 @@ function adminApp() {
 
     async loadStats() {
       try {
-        const r = await fetch('/api/admin/stats');
+        const params = new URLSearchParams();
+        if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
+        if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
+        const url = '/api/admin/stats' + (params.toString() ? '?' + params.toString() : '');
+        const r = await fetch(url);
         if (r.ok) this.stats = await r.json();
       } catch(e) {}
     },
@@ -725,12 +819,61 @@ function adminApp() {
 
     async loadSubmissions() {
       try {
-        const r = await fetch('/api/admin/submissions');
+        const params = new URLSearchParams();
+        if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
+        if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
+        const url = '/api/admin/submissions' + (params.toString() ? '?' + params.toString() : '');
+        const r = await fetch(url);
         if (r.ok) {
           const data = await r.json();
           this.submissions = data.submissions || [];
+          this.updateAvailableClasses();
         }
       } catch(e) {}
+    },
+
+    updateAvailableClasses() {
+      // Luôn thu thập danh sách các lớp duy nhất (in hoa) từ bài nộp
+      const set = new Set(this.availableClasses);
+      for (const s of this.submissions) {
+        if (s.student_class) {
+          set.add(s.student_class.trim().toUpperCase());
+        }
+      }
+      this.availableClasses = Array.from(set).sort();
+    },
+
+    async restoreBackup(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (!confirm(`Bạn có chắc chắn muốn khôi phục CSDL từ file "${file.name}"?\nToàn bộ đề thi và bài thi sẽ được nạp lại vào hệ thống!`)) {
+        event.target.value = '';
+        return;
+      }
+      this.restoringBackup = true;
+      this.backupMsg = '';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const r = await fetch('/api/admin/backup/restore', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          this.backupMsg = data.message;
+          this.backupMsgOk = true;
+          await Promise.all([this.loadExamList(), this.loadSubmissions(), this.loadStats()]);
+        } else {
+          this.backupMsg = data.detail || 'Lỗi khi khôi phục CSDL!';
+          this.backupMsgOk = false;
+        }
+      } catch(e) {
+        this.backupMsg = 'Lỗi kết nối khi gửi file sao lưu!';
+        this.backupMsgOk = false;
+      }
+      this.restoringBackup = false;
+      event.target.value = '';
     },
 
     async loadExamList() {

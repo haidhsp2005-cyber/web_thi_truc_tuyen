@@ -275,16 +275,29 @@ async def get_grading_status(submission_id: str):
 
 
 @router.get("/export/excel")
-async def export_excel(exam_id: str = "exam_001"):
-    """Xuất bảng điểm toàn lớp ra Excel."""
-    submissions = get_all_submissions(exam_id)
-    exam = load_exam(exam_id)
-    title = exam.get("title", "Bảng điểm") if exam else "Bảng điểm"
+async def export_excel(exam_id: Optional[str] = None, student_class: Optional[str] = None):
+    """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Đề thi và theo Lớp."""
+    clean_class = student_class.strip().upper() if student_class and student_class.strip() else None
+    clean_exam_id = exam_id.strip() if exam_id and exam_id.strip() else None
+    
+    submissions = get_all_submissions(exam_id=clean_exam_id, student_class=clean_class)
+    
+    exam = load_exam(clean_exam_id) if clean_exam_id else None
+    title = exam.get("title", "BẢNG ĐIỂM KIỂM TRA TRỰC TUYẾN") if exam else "BẢNG ĐIỂM TỔNG HỢP KIỂM TRA TRỰC TUYẾN"
+    if clean_class:
+        title += f" - LỚP {clean_class}"
     
     excel_bytes = export_class_results_excel(submissions, title)
+    
+    fn_parts = ["bangdiem"]
+    if clean_exam_id:
+        fn_parts.append(clean_exam_id)
+    if clean_class:
+        fn_parts.append(clean_class)
+    filename = "_".join(fn_parts) + ".xlsx"
     
     return StreamingResponse(
         io.BytesIO(excel_bytes),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename=bangdiem_{exam_id}.xlsx"}
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
     )

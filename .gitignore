@@ -10,9 +10,10 @@ env/
 venv/
 ENV/
 
-# Database SQLite cục bộ (hệ thống sẽ tự khởi tạo trên server)
-data/exam_db.sqlite
+# Database SQLite journal temp files
 data/exam_db.sqlite-journal
+data/exam_db.sqlite-wal
+data/exam_db.sqlite-shm
 
 # Logs
 *.log

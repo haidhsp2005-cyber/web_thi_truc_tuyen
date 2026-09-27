@@ -7,8 +7,12 @@ from ..database import (
     get_all_submissions, get_submission, get_config, set_config, load_exam,
     delete_submission, delete_all_submissions,
     get_all_users, create_user, update_user_password, delete_user,
-    get_user_by_username, hash_password
+    get_user_by_username, hash_password, export_full_backup, import_full_backup
 )
+import io, json
+from datetime import datetime
+from fastapi import UploadFile, File
+from fastapi.responses import StreamingResponse
 from ..services.key_rotator import get_key_manager, init_key_manager
 from ..services.auth_service import (
     verify_admin_credentials, get_admin_token, get_user_token,
@@ -235,9 +239,11 @@ async def remove_api_key(key_suffix: str):
 
 
 @router.get("/submissions")
-async def get_submissions(exam_id: str = None):
-    """Lấy danh sách tất cả bài nộp."""
-    submissions = get_all_submissions(exam_id)
+async def get_submissions(exam_id: str = None, student_class: str = None):
+    """Lấy danh sách bài nộp có bộ lọc linh hoạt theo Đề thi và theo Lớp."""
+    clean_eid = exam_id.strip() if exam_id and exam_id.strip() else None
+    clean_cls = student_class.strip().upper() if student_class and student_class.strip() else None
+    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
     return {"submissions": submissions, "total": len(submissions)}
 
 
@@ -258,22 +264,28 @@ async def clear_all_submissions(exam_id: str = None):
 
 
 @router.get("/stats")
-async def get_stats(exam_id: str = "exam_001"):
-    """Thống kê nhanh cho dashboard admin."""
-    submissions = get_all_submissions(exam_id)
+async def get_stats(exam_id: str = None, student_class: str = None):
+    """Thống kê nhanh cho dashboard admin, hỗ trợ lọc theo đề thi và theo lớp."""
+    clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
+    clean_cls = student_class.strip().upper() if student_class and student_class.strip() and student_class.strip() != "all" else None
+    
+    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
     
     if not submissions:
         return {
             "total_submissions": 0,
             "graded": 0,
             "average_score": 0,
+            "max_score": 0,
+            "min_score": 0,
             "rank_distribution": {},
-            "exam_id": exam_id
+            "exam_id": clean_eid,
+            "student_class": clean_cls
         }
     
     graded = [s for s in submissions if s.get("scores")]
-    scores = [s["scores"].get("total_score", 0) for s in graded if s.get("scores")]
-    ranks = [s["scores"].get("rank", "Chưa chấm") for s in graded if s.get("scores")]
+    scores = [s["scores"].get("total_score", 0) for s in graded if s.get("scores") and "total_score" in s["scores"]]
+    ranks = [s["scores"].get("rank", "Chưa xếp loại") for s in graded if s.get("scores")]
     
     rank_dist = {}
     for r in ranks:
@@ -286,8 +298,49 @@ async def get_stats(exam_id: str = "exam_001"):
         "max_score": max(scores) if scores else 0,
         "min_score": min(scores) if scores else 0,
         "rank_distribution": rank_dist,
-        "exam_id": exam_id
+        "exam_id": clean_eid,
+        "student_class": clean_cls
     }
+
+
+# ===================== SAO LƯU & PHỤC HỒI CSDL TOÀN DIỆN =====================
+
+@router.get("/backup/download")
+async def download_full_backup(request: Request):
+    """Tải toàn bộ cơ sở dữ liệu hệ thống (Đề thi + Bài thi thí sinh + Tài khoản) về máy tính cá nhân."""
+    if not is_authenticated_admin(request):
+        raise HTTPException(401, "Yêu cầu đăng nhập tài khoản Quản trị / Giáo viên!")
+    
+    backup_data = export_full_backup()
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"sao_luu_toan_bo_he_thong_{timestamp}.json"
+    
+    content_bytes = json.dumps(backup_data, ensure_ascii=False, indent=2).encode("utf-8")
+    return StreamingResponse(
+        io.BytesIO(content_bytes),
+        media_type="application/json",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@router.post("/backup/restore")
+async def restore_full_backup(request: Request, file: UploadFile = File(...)):
+    """Khôi phục toàn bộ hệ thống từ file sao lưu JSON tải lên từ máy tính cá nhân."""
+    if not is_authenticated_admin(request):
+        raise HTTPException(401, "Yêu cầu đăng nhập tài khoản Quản trị / Giáo viên!")
+    
+    try:
+        content = await file.read()
+        backup_data = json.loads(content.decode("utf-8"))
+        res = import_full_backup(backup_data)
+        return {
+            "success": True,
+            "message": f"Khôi phục thành công! Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài làm học sinh.",
+            "details": res
+        }
+    except Exception as e:
+        logger.error(f"Lỗi khôi phục sao lưu: {e}")
+        raise HTTPException(400, f"File sao lưu không hợp lệ: {str(e)}")
 
 
 # ===================== CÁC ENDPOINT IN ẤN (GIÁO VIÊN & ADMIN) =====================

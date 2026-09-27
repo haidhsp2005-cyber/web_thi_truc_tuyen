@@ -12,8 +12,14 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-DB_PATH = Path(__file__).parent.parent / "data" / "exam_db.sqlite"
-EXAMS_DIR = Path(__file__).parent.parent / "data"
+DATA_DIR_ENV = os.getenv("DATA_DIR")
+if DATA_DIR_ENV:
+    EXAMS_DIR = Path(DATA_DIR_ENV)
+else:
+    EXAMS_DIR = Path(__file__).parent.parent / "data"
+
+EXAMS_DIR.mkdir(parents=True, exist_ok=True)
+DB_PATH = EXAMS_DIR / "exam_db.sqlite" 
 PASSWORD_SALT = "longcang_exam_salt_2026"
 
 
@@ -60,6 +66,17 @@ def init_db():
         )
     """)
     c.execute("""
+        CREATE TABLE IF NOT EXISTS exams (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            subject TEXT,
+            grade TEXT,
+            data_json TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    c.execute("""
         CREATE TABLE IF NOT EXISTS admin_users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
@@ -85,6 +102,31 @@ def init_db():
         # Đảm bảo tài khoản admin luôn có cờ is_protected = 1
         c.execute("UPDATE admin_users SET is_protected = 1, role = 'admin' WHERE LOWER(username) = 'admin'")
 
+    # Đồng bộ các file đề thi JSON sẵn có trong EXAMS_DIR vào bảng exams trong SQLite
+    try:
+        for f in sorted(EXAMS_DIR.glob("*.json")):
+            try:
+                with open(f, encoding="utf-8") as jf:
+                    data = json.load(jf)
+                    eid = data.get("id") or f.stem
+                    if eid:
+                        c.execute("SELECT id FROM exams WHERE id = ?", (eid,))
+                        if not c.fetchone():
+                            c.execute("""
+                                INSERT INTO exams (id, title, subject, grade, data_json, created_at, updated_at)
+                                VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+                            """, (
+                                eid,
+                                data.get("title", ""),
+                                data.get("subject", ""),
+                                str(data.get("grade", "")),
+                                json.dumps(data, ensure_ascii=False)
+                            ))
+            except Exception:
+                continue
+    except Exception as e:
+        logger.warning(f"Lỗi khi đồng bộ đề thi vào SQLite: {e}")
+
     conn.commit()
     conn.close()
     logger.info("Database initialized.")
@@ -109,8 +151,8 @@ def save_submission(submission_data: dict, result_data: dict = None):
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         submission_data["submission_id"],
-        submission_data["student_name"],
-        submission_data["student_class"],
+        submission_data["student_name"].strip(),
+        str(submission_data["student_class"]).strip().upper(),
         submission_data.get("exam_id", "exam_001"),
         submission_data.get("started_at", ""),
         submission_data.get("submitted_at", datetime.now().isoformat()),
@@ -161,20 +203,27 @@ def get_submission(submission_id: str) -> Optional[dict]:
     return result
 
 
-def get_all_submissions(exam_id: str = None) -> List[dict]:
-    """Lấy tất cả bài nộp (cho admin)."""
+def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[dict]:
+    """Lấy tất cả bài nộp (cho admin), hỗ trợ lọc linh hoạt theo Đề thi và theo Lớp."""
     conn = get_connection()
     c = conn.cursor()
     
-    if exam_id:
-        c.execute(
-            "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status FROM submissions WHERE exam_id = ? ORDER BY submitted_at DESC",
-            (exam_id,)
-        )
-    else:
-        c.execute(
-            "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status FROM submissions ORDER BY submitted_at DESC"
-        )
+    query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status FROM submissions"
+    conditions = []
+    params = []
+    
+    if exam_id and exam_id.strip():
+        conditions.append("exam_id = ?")
+        params.append(exam_id.strip())
+    if student_class and student_class.strip():
+        conditions.append("UPPER(student_class) = UPPER(?)")
+        params.append(student_class.strip())
+        
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+        
+    query += " ORDER BY submitted_at DESC"
+    c.execute(query, tuple(params))
     
     rows = c.fetchall()
     conn.close()
@@ -414,3 +463,181 @@ def delete_user(username: str) -> bool:
 
     logger.info(f"Đã xóa tài khoản: {username}")
     return True
+
+
+def save_exam_record(exam_data: dict):
+    """Lưu đề thi đồng thời vào cả file JSON và bảng exams trong SQLite."""
+    exam_id = exam_data.get("id")
+    if not exam_id:
+        return
+    # Lưu ra file JSON
+    try:
+        json_path = EXAMS_DIR / f"{exam_id}.json"
+        json_path.write_text(json.dumps(exam_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception as e:
+        logger.warning(f"Lỗi ghi file JSON đề thi: {e}")
+
+    # Lưu vào SQLite
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("""
+            INSERT OR REPLACE INTO exams (id, title, subject, grade, data_json, updated_at)
+            VALUES (?, ?, ?, ?, ?, datetime('now'))
+        """, (
+            exam_id,
+            exam_data.get("title", ""),
+            exam_data.get("subject", ""),
+            str(exam_data.get("grade", "")),
+            json.dumps(exam_data, ensure_ascii=False)
+        ))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logger.warning(f"Lỗi lưu đề thi vào SQLite: {e}")
+
+
+def export_full_backup() -> dict:
+    """
+    Xuất toàn bộ hệ thống (Đề thi + Bài thi thí sinh + Tài khoản + Cấu hình)
+    thành một file JSON sao lưu hoàn chỉnh để lưu trữ vĩnh viễn trên máy tính cá nhân.
+    """
+    conn = get_connection()
+    c = conn.cursor()
+
+    # 1. Lấy tất cả bài thi
+    c.execute("SELECT id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status FROM submissions")
+    sub_rows = c.fetchall()
+    submissions = []
+    for r in sub_rows:
+        submissions.append({
+            "id": r[0], "student_name": r[1], "student_class": r[2], "exam_id": r[3],
+            "started_at": r[4], "submitted_at": r[5], "duration_seconds": r[6],
+            "answers_json": r[7], "result_json": r[8], "status": r[9]
+        })
+
+    # 2. Lấy tất cả đề thi (từ SQLite + các file JSON trong EXAMS_DIR)
+    exams_map = {}
+    try:
+        c.execute("SELECT id, title, subject, grade, data_json FROM exams")
+        for r in c.fetchall():
+            try:
+                exams_map[r[0]] = json.loads(r[4])
+            except:
+                pass
+    except:
+        pass
+
+    for f in EXAMS_DIR.glob("*.json"):
+        try:
+            with open(f, encoding="utf-8") as jf:
+                d = json.load(jf)
+                eid = d.get("id") or f.stem
+                if eid and eid not in exams_map:
+                    exams_map[eid] = d
+        except:
+            pass
+
+    # 3. Lấy cấu hình
+    c.execute("SELECT key, value FROM config")
+    config = dict(c.fetchall())
+
+    # 4. Lấy tài khoản
+    c.execute("SELECT id, username, password_hash, full_name, role, is_protected, created_at, updated_at FROM admin_users")
+    users = []
+    for r in c.fetchall():
+        users.append({
+            "id": r[0], "username": r[1], "password_hash": r[2], "full_name": r[3],
+            "role": r[4], "is_protected": r[5], "created_at": r[6], "updated_at": r[7]
+        })
+
+    conn.close()
+
+    return {
+        "version": "2026.1",
+        "exported_at": datetime.now().isoformat(),
+        "exams": list(exams_map.values()),
+        "submissions": submissions,
+        "users": users,
+        "config": config
+    }
+
+
+def import_full_backup(backup: dict) -> dict:
+    """
+    Khôi phục toàn bộ dữ liệu hệ thống từ file JSON sao lưu.
+    """
+    conn = get_connection()
+    c = conn.cursor()
+
+    restored_exams = 0
+    restored_subs = 0
+    restored_users = 0
+
+    # 1. Khôi phục đề thi
+    exams = backup.get("exams", [])
+    for e in exams:
+        eid = e.get("id")
+        if not eid:
+            continue
+        try:
+            # Ghi ra file JSON
+            (EXAMS_DIR / f"{eid}.json").write_text(json.dumps(e, ensure_ascii=False, indent=2), encoding="utf-8")
+            # Ghi vào SQLite
+            c.execute("""
+                INSERT OR REPLACE INTO exams (id, title, subject, grade, data_json, updated_at)
+                VALUES (?, ?, ?, ?, ?, datetime('now'))
+            """, (
+                eid, e.get("title", ""), e.get("subject", ""), str(e.get("grade", "")),
+                json.dumps(e, ensure_ascii=False)
+            ))
+            restored_exams += 1
+        except Exception as ex:
+            logger.warning(f"Lỗi khôi phục đề {eid}: {ex}")
+
+    # 2. Khôi phục bài thi học sinh
+    submissions = backup.get("submissions", [])
+    for s in submissions:
+        try:
+            c.execute("""
+                INSERT OR REPLACE INTO submissions 
+                (id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                s["id"], s["student_name"], str(s["student_class"]).upper(), s["exam_id"],
+                s.get("started_at"), s.get("submitted_at"), s.get("duration_seconds", 0),
+                s.get("answers_json"), s.get("result_json"), s.get("status", "graded")
+            ))
+            restored_subs += 1
+        except Exception as ex:
+            logger.warning(f"Lỗi khôi phục bài thi {s.get('id')}: {ex}")
+
+    # 3. Khôi phục tài khoản (không đè tài khoản admin mặc định nếu đã tồn tại)
+    users = backup.get("users", [])
+    for u in users:
+        try:
+            c.execute("""
+                INSERT OR IGNORE INTO admin_users (username, password_hash, full_name, role, is_protected)
+                VALUES (?, ?, ?, ?, ?)
+            """, (u["username"], u["password_hash"], u.get("full_name", ""), u.get("role", "teacher"), u.get("is_protected", 0)))
+            restored_users += 1
+        except Exception:
+            pass
+
+    # 4. Khôi phục cấu hình
+    cfg = backup.get("config", {})
+    for k, v in cfg.items():
+        try:
+            c.execute("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)", (k, v))
+        except:
+            pass
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "success": True,
+        "restored_exams": restored_exams,
+        "restored_submissions": restored_subs,
+        "restored_users": restored_users
+    }
