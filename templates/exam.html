@@ -827,10 +827,15 @@ function examApp() {
       str = str.replace(/\{?([a-zA-Z0-9]+)\}\^\{?([a-zA-Z0-9_+-]+)\}?/g, '$1^{$2}');
 
       // Tự động sửa tập hợp ở các phương án bị mất ngoặc mở: $1;2;3}$ -> $\{1; 2; 3\}$
-      str = str.replace(/^\s*\$?\s*(?<!\\\{)(?<!\{)([a-zA-Z0-9_+\-,\s;]+)\}\s*\$?\s*$/, (m, inner) => {
-        const formatted = inner.trim().replace(/\s*([;,])\s*/g, '$1 ');
-        return `$\\left\\{ ${formatted} \\right\\}$`;
-      });
+      // Không dùng Regex lookbehind để tương thích 100% với Safari/iPadOS/iOS/WebViews
+      const trimmedStr = str.trim();
+      if (!trimmedStr.includes('\\{') && !trimmedStr.includes('\\left\\{') && !trimmedStr.startsWith('{') && !trimmedStr.startsWith('${')) {
+        str = str.replace(/^\s*\$?\s*([a-zA-Z0-9_+\-,\s;]+)\}\s*\$?\s*$/, (m, inner) => {
+          const formatted = inner.trim().replace(/\s*([;,])\s*/g, '$1 ');
+          return `$\\left\\{ ${formatted} \\right\\}$`;
+        });
+      }
+
 
       // Tự động sửa tập hợp trong công thức: $A = {x \in N ...}$ hay $B = {0; 2; 4; ...}$ -> $A = \{ x \in N ... \}$
       str = str.replace(/([A-Za-z]\s*=\s*)\{([\s\S]+?)\}(?=\s*(?:\$|$))/g, (m, prefix, content) => {
