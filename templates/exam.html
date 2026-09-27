@@ -911,6 +911,14 @@ function examApp() {
         return m;
       });
 
+      // 0b. Hệ phương trình không có dấu $ bao ngoài: {x+y=2 \\ x-y=0} → $\begin{cases}...\end{cases}$
+      str = str.replace(/\{([^{}]*?(?:\\\\|\n|&)[^{}]*?)\}/g, (match, body, offset, full) => {
+        const charBefore = offset > 0 ? full[offset - 1] : '';
+        const charAfter = offset + match.length < full.length ? full[offset + match.length] : '';
+        if (charBefore === '$' || charAfter === '$') return match;
+        return `$\\begin{cases} ${body.trim()} \\end{cases}$`;
+      });
+
       // 1. Auto-repair broken system braces from Word OMML: CHỈ bọc \begin{cases} nếu có xuống dòng, \\ hoặc &
       str = str.replace(/\$\{\s*([^$]*?(?:\\\\|\n|&)[^$]*?)\}\s*\$/g, (match, body) => {
         return `$\\begin{cases} ${body.trim()} \\end{cases}$`;
