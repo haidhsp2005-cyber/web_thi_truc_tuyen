@@ -69,14 +69,44 @@
           class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-lg uppercase font-semibold">
       </div>
 
+      <!-- Lọc đề theo Môn & Lớp -->
+      <div x-show="!loadingExams && examList.length > 1" x-cloak class="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-2">
+        <p class="text-xs font-bold text-blue-800 flex items-center gap-1.5">🔍 Lọc nhanh theo Môn & Lớp:</p>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Môn học:</label>
+            <select x-model="filterSubject" @change="onFilterChange()"
+              class="w-full text-sm border-2 border-gray-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:border-blue-500">
+              <option value="">-- Tất cả môn --</option>
+              <template x-for="s in subjectOptions" :key="s">
+                <option :value="s" x-text="s"></option>
+              </template>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Khối lớp:</label>
+            <select x-model="filterGrade" @change="onFilterChange()"
+              class="w-full text-sm border-2 border-gray-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:border-blue-500">
+              <option value="">-- Tất cả khối --</option>
+              <template x-for="g in gradeOptions" :key="g">
+                <option :value="g" x-text="`Khối ${g}`"></option>
+              </template>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <!-- Chọn đề thi -->
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1">📋 Chọn đề thi <span class="text-red-500">*</span></label>
         <div x-show="loadingExams" class="text-center py-3 text-gray-400 text-sm">⏳ Đang tải danh sách đề...</div>
-        <select x-show="!loadingExams" id="exam_id" x-model="selectedExamId" @change="updateExamInfo()"
+        <div x-show="!loadingExams && filteredExamList.length === 0 && examList.length > 0" x-cloak class="text-center py-3 text-yellow-600 text-sm bg-yellow-50 rounded-xl border border-yellow-200">
+          ⚠️ Không có đề thi nào khớp bộ lọc. Hãy thay đổi Môn hoặc Khối lớp.
+        </div>
+        <select x-show="!loadingExams && filteredExamList.length > 0" id="exam_id" x-model="selectedExamId" @change="updateExamInfo()"
           class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-base bg-white">
           <option value="">-- Chọn đề thi --</option>
-          <template x-for="e in examList" :key="e.id">
+          <template x-for="e in filteredExamList" :key="e.id">
             <option :value="e.id" x-text="`${e.title} (${e.subject}, Lớp ${e.grade})`"></option>
           </template>
         </select>
@@ -123,6 +153,26 @@ function loginApp() {
     loadingExams: true,
     selectedExamId: '',
     selectedExam: null,
+    filterSubject: '',
+    filterGrade: '',
+
+    get subjectOptions() {
+      const seen = new Set();
+      return this.examList.filter(e => { if (e.subject && !seen.has(e.subject)) { seen.add(e.subject); return true; } return false; }).map(e => e.subject);
+    },
+
+    get gradeOptions() {
+      const seen = new Set();
+      return this.examList.filter(e => { if (e.grade && !seen.has(e.grade)) { seen.add(e.grade); return true; } return false; }).map(e => e.grade);
+    },
+
+    get filteredExamList() {
+      return this.examList.filter(e => {
+        if (this.filterSubject && e.subject !== this.filterSubject) return false;
+        if (this.filterGrade && e.grade !== this.filterGrade) return false;
+        return true;
+      });
+    },
 
     async init() {
       try {
@@ -137,6 +187,18 @@ function loginApp() {
         }
       } catch(e) {}
       this.loadingExams = false;
+    },
+
+    onFilterChange() {
+      // Reset exam selection if current selection is no longer in filtered list
+      if (this.selectedExamId && !this.filteredExamList.find(e => e.id === this.selectedExamId)) {
+        this.selectedExamId = '';
+        this.selectedExam = null;
+      }
+      if (this.filteredExamList.length === 1) {
+        this.selectedExamId = this.filteredExamList[0].id;
+        this.selectedExam = this.filteredExamList[0];
+      }
     },
 
     updateExamInfo() {

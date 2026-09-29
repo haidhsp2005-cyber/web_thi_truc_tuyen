@@ -357,11 +357,45 @@
   <!-- ======= DANH SÁCH ĐỀ THI ======= -->
   <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
     <div class="bg-yellow-600 text-white px-5 py-4 flex items-center justify-between">
-      <h2 class="font-bold flex items-center gap-2"><span>📋</span>Quản lý đề thi (<span x-text="examList.length"></span> đề)</h2>
+      <h2 class="font-bold flex items-center gap-2"><span>📋</span>Quản lý đề thi (<span x-text="filteredAdminExamList.length"></span>/<span x-text="examList.length"></span> đề)</h2>
       <div class="flex gap-2">
         <button @click="loadExamList()" class="text-yellow-200 hover:text-white text-sm cursor-pointer">🔄 Làm mới</button>
       </div>
     </div>
+
+    <!-- Bộ lọc Môn & Lớp cho danh sách đề -->
+    <div x-show="examList.length > 1" class="px-4 pt-4 pb-0">
+      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-xs font-bold text-yellow-800 flex items-center gap-1">🔍 Lọc đề thi:</span>
+          <div class="flex flex-wrap gap-2 flex-1">
+            <div class="flex items-center gap-1.5">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Môn:</label>
+              <select x-model="adminExamFilterSubject"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-yellow-500 font-medium">
+                <option value="">-- Tất cả môn --</option>
+                <template x-for="s in adminExamSubjectOptions" :key="s">
+                  <option :value="s" x-text="s"></option>
+                </template>
+              </select>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Khối:</label>
+              <select x-model="adminExamFilterGrade"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-yellow-500 font-medium">
+                <option value="">-- Tất cả khối --</option>
+                <template x-for="g in adminExamGradeOptions" :key="g">
+                  <option :value="g" x-text="`Khối ${g}`"></option>
+                </template>
+              </select>
+            </div>
+            <button x-show="adminExamFilterSubject || adminExamFilterGrade" @click="adminExamFilterSubject=''; adminExamFilterGrade='';" x-cloak
+              class="text-xs text-yellow-700 hover:text-yellow-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="p-4">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -375,13 +409,19 @@
             </tr>
           </thead>
           <tbody class="divide-y">
-            <template x-if="examList.length === 0">
+            <template x-if="filteredAdminExamList.length === 0 && examList.length === 0">
               <tr><td colspan="5" class="text-center py-8 text-gray-400">
                 <p class="text-2xl mb-2">📭</p>
                 <p>Chưa có đề thi nào trong hệ thống. Hãy bấm <strong>"Nạp đề thi mẫu"</strong> ở trên hoặc chọn <strong>"Tải file Word / PDF"</strong> để nạp đề.</p>
               </td></tr>
             </template>
-            <template x-for="e in examList" :key="e.id">
+            <template x-if="filteredAdminExamList.length === 0 && examList.length > 0">
+              <tr><td colspan="5" class="text-center py-6 text-yellow-600">
+                <p class="text-2xl mb-2">🔍</p>
+                <p class="text-sm">Không có đề thi nào khớp bộ lọc. Hãy thay đổi Môn hoặc Khối lớp.</p>
+              </td></tr>
+            </template>
+            <template x-for="e in filteredAdminExamList" :key="e.id">
               <tr class="hover:bg-yellow-50 transition-colors">
                 <td class="px-3 py-2 font-medium text-gray-800">
                   <a :href="`/create-exam?edit=${e.id}`" class="hover:text-blue-600 hover:underline" x-text="e.title"></a>
@@ -637,6 +677,8 @@ function adminApp() {
     selectedExamFilter: '',
     selectedClassFilter: '',
     availableClasses: [],
+    adminExamFilterSubject: '',
+    adminExamFilterGrade: '',
     restoringBackup: false,
     backupMsg: '',
     backupMsgOk: true,
@@ -653,6 +695,24 @@ function adminApp() {
     uploading: false,
     uploadMsg: '',
     uploadMsgOk: true,
+
+    get adminExamSubjectOptions() {
+      const seen = new Set();
+      return this.examList.filter(e => { if (e.subject && !seen.has(e.subject)) { seen.add(e.subject); return true; } return false; }).map(e => e.subject);
+    },
+
+    get adminExamGradeOptions() {
+      const seen = new Set();
+      return this.examList.filter(e => { if (e.grade && !seen.has(e.grade)) { seen.add(e.grade); return true; } return false; }).map(e => e.grade);
+    },
+
+    get filteredAdminExamList() {
+      return this.examList.filter(e => {
+        if (this.adminExamFilterSubject && e.subject !== this.adminExamFilterSubject) return false;
+        if (this.adminExamFilterGrade && e.grade !== this.adminExamFilterGrade) return false;
+        return true;
+      });
+    },
 
     get excelExportUrl() {
       const params = new URLSearchParams();
