@@ -95,6 +95,32 @@
   .section-tab:not(.active):hover {
     background-color: #e5e7eb;
   }
+
+  /* ===== Safari / iPad fixes ===== */
+  /* Đảm bảo body chiếm full height trên Safari */
+  html { height: -webkit-fill-available; }
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Fix flex layout cho Safari iOS */
+  .flex { display: -webkit-box; display: -webkit-flex; display: flex; }
+  .flex-col { -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column; }
+  .flex-1 { -webkit-box-flex: 1; -webkit-flex: 1 1 0%; flex: 1 1 0%; }
+
+  /* Smooth scroll sidebar trên iPad */
+  aside {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+
+  /* Fix min-height cho main content trên Safari */
+  main {
+    min-height: calc(100vh - 72px);
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+  }
 </style>
 </head>
 <body class="bg-gray-50 min-h-screen" x-data="examApp()" x-init="init()">
@@ -244,7 +270,7 @@
     </div>
 
     <!-- ===================== PHẦN I: TNKQ ===================== -->
-    <div x-show="!loading && currentPart === 'p1'" x-cloak>
+    <div x-show="!loading && currentPart === 'p1'">
       <div class="bg-white rounded-2xl shadow-sm border p-6 mb-4">
         <div class="flex items-center justify-between mb-4">
           <div>
@@ -294,7 +320,7 @@
     </div>
 
     <!-- ===================== PHẦN II: ĐÚNG/SAI ===================== -->
-    <div x-show="!loading && currentPart === 'p2'" x-cloak>
+    <div x-show="!loading && currentPart === 'p2'">
       <div class="bg-white rounded-2xl shadow-sm border p-6 mb-4">
         <div class="flex items-center justify-between mb-4">
           <div>
@@ -366,7 +392,7 @@
     </div>
 
     <!-- ===================== PHẦN III: TRẢ LỜI NGẮN ===================== -->
-    <div x-show="!loading && currentPart === 'p3'" x-cloak>
+    <div x-show="!loading && currentPart === 'p3'">
       <div class="bg-white rounded-2xl shadow-sm border p-6 mb-4">
         <div class="flex items-center justify-between mb-4">
           <div>
@@ -415,7 +441,7 @@
     </div>
 
     <!-- ===================== PHẦN IV: TỰ LUẬN ===================== -->
-    <div x-show="!loading && currentPart === 'p4'" x-cloak>
+    <div x-show="!loading && currentPart === 'p4'">
       <div class="bg-white rounded-2xl shadow-sm border p-6 mb-4">
         <div class="flex items-center justify-between mb-4">
           <span class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">PHẦN IV - TỰ LUẬN TỰ CHỌN</span>
@@ -655,7 +681,7 @@
   </div>
 </div>
 
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 <script>
 function examApp() {
@@ -745,18 +771,25 @@ function examApp() {
         } catch(e) {}
       }
       
-      // Tải đề thi
-      try {
-        const resp = await fetch(`/api/exam/current?exam_id=${this.examId}`);
-        if (resp.ok) {
-          this.examData = await resp.json();
-          this.setupShuffledExam();
-          this.startCountdown();
+      // Tải đề thi — retry 1 lần nếu lỗi (Safari đôi khi timeout lần đầu)
+      let examLoaded = false;
+      for (let attempt = 0; attempt < 2 && !examLoaded; attempt++) {
+        try {
+          if (attempt > 0) await new Promise(r => setTimeout(r, 800));
+          const resp = await fetch(`/api/exam/current?exam_id=${this.examId}`);
+          if (resp.ok) {
+            this.examData = await resp.json();
+            this.setupShuffledExam();
+            this.startCountdown();
+            examLoaded = true;
+          }
+        } catch(e) {
+          if (attempt === 1) {
+            alert('Không thể tải đề thi! Kiểm tra kết nối mạng và thử lại.');
+          }
         }
-      } catch(e) {
-        alert('Không thể tải đề thi! Kiểm tra kết nối mạng.');
       }
-      
+
       this.loading = false;
       
       // Đồng bộ đồng hồ đếm ngược tức thì khi quay lại trang / chuyển tab / mở khóa điện thoại
@@ -1445,3 +1478,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
