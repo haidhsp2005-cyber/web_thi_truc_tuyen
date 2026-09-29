@@ -23,7 +23,7 @@ UPLOADS_DIR = STATIC_DIR / "uploads"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _list_exam_files() -> List[dict]:
+def _list_exam_files(current_user: dict = None) -> List[dict]:
     """Lấy danh sách tất cả đề thi từ bảng SQLite exams và thư mục data/ (không bao giờ mất đề)."""
     exams_map = {}
 
@@ -31,7 +31,7 @@ def _list_exam_files() -> List[dict]:
     try:
         conn = get_connection()
         c = conn.cursor()
-        c.execute("SELECT id, title, subject, grade, data_json FROM exams")
+        c.execute("SELECT id, title, subject, grade, data_json, created_by FROM exams")
         for r in c.fetchall():
             try:
                 data = json.loads(r[4])
@@ -47,6 +47,7 @@ def _list_exam_files() -> List[dict]:
                     "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
+                    "created_by": r[5] or "",
                 }
             except Exception:
                 pass
@@ -73,17 +74,31 @@ def _list_exam_files() -> List[dict]:
                     "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
+                    "created_by": data.get("created_by", ""),
                 }
         except Exception as e:
             logger.warning(f"Bỏ qua file {f.name}: {e}")
 
-    return list(exams_map.values())
+    exams_list = list(exams_map.values())
+
+    # RBAC: lọc theo môn / người tạo cho giáo viên (không áp dụng với admin)
+    if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
+        user_subject = (current_user.get('subject') or '').strip().lower()
+        user_username = current_user.get('username', '').lower()
+        if user_subject:
+            exams_list = [e for e in exams_list if (e.get('subject', '').lower() == user_subject) or (e.get('created_by', '').lower() == user_username)]
+        else:
+            exams_list = [e for e in exams_list if e.get('created_by', '').lower() == user_username]
+
+    return exams_list
 
 
 @router.get("/list")
-async def list_exams():
+async def list_exams(request: Request):
     """Danh sách tất cả đề thi có sẵn."""
-    return {"exams": _list_exam_files()}
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    return {"exams": _list_exam_files(current_user)}
 
 
 @router.get("/get/{exam_id}")
@@ -672,7 +687,7 @@ def _extract_pdf_pages_with_inline_images(content_bytes: bytes, exam_id: str) ->
 
 
 @router.post("/upload-file")
-async def upload_exam_file(file: UploadFile = File(...)):
+async def upload_exam_file(request: Request, file: UploadFile = File(...)):
     """
     Nhập đề thi từ file Word (.docx), PDF (.pdf), Text (.txt) hoặc JSON (.json).
     Tự động trích xuất văn bản, hình ảnh minh họa (đồ thị, bảng biến thiên, sơ đồ Lý/Hóa/Sinh) và lưu vào hệ thống.
@@ -713,6 +728,10 @@ async def upload_exam_file(file: UploadFile = File(...)):
             if not data.get("id"):
                 data["id"] = f"exam_{uuid.uuid4().hex[:8]}"
             heal_exam_data(data)
+            from ..services.auth_service import get_current_user_from_request
+            current_user = get_current_user_from_request(request)
+            if current_user and not data.get("created_by"):
+                data["created_by"] = current_user.get("username", "")
             save_exam_record(data)
             out_path = DATA_DIR / f"{data['id']}.json"
             out_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -754,7 +773,7 @@ async def upload_exam_file(file: UploadFile = File(...)):
 
 
 @router.post("/save")
-async def save_exam(exam_data: dict):
+async def save_exam(request: Request, exam_data: dict):
     """Lưu đề thi mới hoặc cập nhật đề thi hiện tại."""
     if not exam_data.get("title", "").strip():
         raise HTTPException(400, "Vui lòng nhập tiêu đề đề thi!")
@@ -775,6 +794,12 @@ async def save_exam(exam_data: dict):
     # Gán ID nếu chưa có
     if not exam_data.get("id"):
         exam_data["id"] = f"exam_{uuid.uuid4().hex[:8]}"
+
+    # Stamp created_by nếu chưa có
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    if current_user and not exam_data.get("created_by"):
+        exam_data["created_by"] = current_user.get("username", "")
 
     # Tính toán thang điểm linh hoạt
     p1_count = len(p1_qs)

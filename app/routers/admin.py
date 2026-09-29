@@ -59,7 +59,8 @@ async def admin_login(req: AdminLoginRequest, response: Response):
                 "username": user_data["username"],
                 "full_name": user_data.get("full_name", ""),
                 "role": user_data.get("role", "teacher"),
-                "is_protected": user_data.get("is_protected", False)
+                "is_protected": user_data.get("is_protected", False),
+                "subject": user_data.get("subject", "")
             }
         }
     
@@ -100,9 +101,10 @@ async def create_new_user(req: CreateUserRequest):
             username=req.username,
             password=req.password,
             full_name=req.full_name or "",
-            role=req.role or "teacher"
+            role=req.role or "teacher",
+            subject=req.subject or ""
         )
-        return {"success": True, "message": f"Tạo tài khoản giáo viên '{new_u['username']}' thành công!", "user": new_u}
+        return {"success": True, "message": f"Tạo tài khoản giáo viên '{new_u['username']}' thành công! Môn phụ trách: {new_u.get('subject','')}", "user": new_u}
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -239,11 +241,17 @@ async def remove_api_key(key_suffix: str):
 
 
 @router.get("/submissions")
-async def get_submissions(exam_id: str = None, student_class: str = None):
-    """Lấy danh sách bài nộp có bộ lọc linh hoạt theo Đề thi và theo Lớp."""
+async def get_submissions(request: Request, exam_id: str = None, student_class: str = None):
+    """Lấy danh sách bài nộp — admin thấy tất cả, giáo viên chỉ thấy bài nộp đề của môn mình."""
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
     clean_eid = exam_id.strip() if exam_id and exam_id.strip() else None
     clean_cls = student_class.strip().upper() if student_class and student_class.strip() else None
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
+    # Lọc theo quyền giáo viên
+    if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
+        accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
+        submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
     return {"submissions": submissions, "total": len(submissions)}
 
 
@@ -264,13 +272,20 @@ async def clear_all_submissions(exam_id: str = None):
 
 
 @router.get("/stats")
-async def get_stats(exam_id: str = None, student_class: str = None):
-    """Thống kê nhanh cho dashboard admin, hỗ trợ lọc theo đề thi và theo lớp."""
+async def get_stats(request: Request, exam_id: str = None, student_class: str = None):
+    """Thống kê nhanh cho dashboard — admin thấy tất cả, giáo viên chỉ thấy đề của môn mình."""
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
     clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
     clean_cls = student_class.strip().upper() if student_class and student_class.strip() and student_class.strip() != "all" else None
-    
+
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
-    
+
+    # Lọc theo quyền giáo viên
+    if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
+        accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
+        submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
+
     if not submissions:
         return {
             "total_submissions": 0,
@@ -282,15 +297,15 @@ async def get_stats(exam_id: str = None, student_class: str = None):
             "exam_id": clean_eid,
             "student_class": clean_cls
         }
-    
+
     graded = [s for s in submissions if s.get("scores")]
     scores = [s["scores"].get("total_score", 0) for s in graded if s.get("scores") and "total_score" in s["scores"]]
     ranks = [s["scores"].get("rank", "Chưa xếp loại") for s in graded if s.get("scores")]
-    
+
     rank_dist = {}
     for r in ranks:
         rank_dist[r] = rank_dist.get(r, 0) + 1
-    
+
     return {
         "total_submissions": len(submissions),
         "graded": len(graded),

@@ -56,6 +56,7 @@ class CreateUserRequest(BaseModel):
     password: str
     full_name: Optional[str] = ""
     role: str = "teacher"
+    subject: Optional[str] = ""
 
 
 class ChangePasswordRequest(BaseModel):

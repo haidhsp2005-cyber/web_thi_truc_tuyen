@@ -1,0 +1,296 @@
+{
+  "title": "ĐỀ KIỂM TRA 2 LẤY ĐIỂM TX TIN HỌC 12",
+  "subject": "Tin học",
+  "grade": "12",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "AI hỗ trợ gì trong lĩnh vực tài chính, ngân hàng?",
+          "options": {
+            "A": "Quản lý trực tiếp các kho tiền.",
+            "B": "Tự động in tiền.",
+            "C": "Ngăn chặn gian lận và hỗ trợ quyết định đầu tư.",
+            "D": "Thay thế hoàn toàn nhân viên ngân hàng."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Ứng dụng của AI trong giáo dục là gì?",
+          "options": {
+            "A": "Loại bỏ sách giáo khoa.",
+            "B": "Phát triển các nền tảng học tập cá nhân hóa.",
+            "C": "Thay thế giáo viên bằng robot hoàn toàn.",
+            "D": "Tự động cấp bằng tốt nghiệp."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Trí tuệ nhân tạo (AI) được định nghĩa là gì?",
+          "options": {
+            "A": "Khả năng của máy tính thực hiện các công việc mang tính trí tuệ của con người.",
+            "B": "Khả năng của máy tính tự động hóa hoàn toàn mọi quy trình sản xuất.",
+            "C": "Khả năng của máy tính thay thế hoàn toàn tư duy của con người.",
+            "D": "Khả năng của máy tính kết nối mạng Internet toàn cầu."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Các thành tựu hiện tại của AI chủ yếu thuộc phạm vi nào?",
+          "options": {
+            "A": "Trí tuệ nhân tạo siêu thông minh.",
+            "B": "Trí tuệ nhân tạo tự nhận thức.",
+            "C": "Trí tuệ nhân tạo tổng quát.",
+            "D": "Trí tuệ nhân tạo hẹp."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Trong nông nghiệp, AI giúp ích gì cho người nông dân?",
+          "options": {
+            "A": "Tự động tạo ra giống cây trồng mới mà không cần nghiên cứu.",
+            "B": "Thay thế hoàn toàn công việc của con người.",
+            "C": "Tối ưu hóa quy trình chăm sóc vật nuôi, cây trồng.",
+            "D": "Loại bỏ hoàn toàn nhu cầu về đất đai."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Đâu KHÔNG phải là một trong những đặc trưng cơ bản của AI?",
+          "options": {
+            "A": "Khả năng tự ý thức về bản thân như con người.",
+            "B": "Khả năng giải quyết vấn đề.",
+            "C": "Khả năng học.",
+            "D": "Khả năng suy luận."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Công nghệ nào sau đây là ứng dụng của AI trong giao thông vận tải?",
+          "options": {
+            "A": "Phương tiện tự lái.",
+            "B": "Biển báo giao thông bằng kim loại.",
+            "C": "Hệ thống đèn tín hiệu cố định.",
+            "D": "Đường cao tốc."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Khả năng nào của Google Dịch giúp nó cải thiện chất lượng dịch theo thời gian?",
+          "options": {
+            "A": "Khả năng suy luận logic phức tạp.",
+            "B": "Khả năng nhận thức môi trường.",
+            "C": "Khả năng học (Machine Learning).",
+            "D": "Khả năng tương tác vật lý."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Ứng dụng nào sau đây là một ví dụ về ứng dụng AI trong thực tế?",
+          "options": {
+            "A": "Máy tính bỏ túi thực hiện phép tính cộng.",
+            "B": "Đèn giao thông hoạt động theo thời gian cố định.",
+            "C": "Phần mềm soạn thảo văn bản đơn thuần.",
+            "D": "Trợ lý ảo như Siri hoặc Google Assistant."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Đâu là một trong những nguy cơ tiềm ẩn của AI?",
+          "options": {
+            "A": "Ảnh hưởng đến quyền riêng tư do thu thập dữ liệu lớn.",
+            "B": "Giảm thiểu chi phí sản xuất.",
+            "C": "Tăng tốc độ xử lý dữ liệu.",
+            "D": "Tăng cường khả năng sáng tạo của con người."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Hệ chuyên gia MYCIN được sử dụng trong lĩnh vực nào?",
+          "options": {
+            "A": "Sản xuất nông nghiệp.",
+            "B": "Tài chính ngân hàng.",
+            "C": "Y học.",
+            "D": "Giáo dục trực tuyến."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Loại AI được thiết kế để thực hiện một nhiệm vụ cụ thể được gọi là gì?",
+          "options": {
+            "A": "Trí tuệ nhân tạo siêu việt.",
+            "B": "Trí tuệ nhân tạo tổng quát.",
+            "C": "Trí tuệ nhân tạo hẹp.",
+            "D": "Trí tuệ nhân tạo tự thích nghi."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Về các ứng dụng của AI trong thực tế:",
+          "items": {
+            "a": {
+              "text": "Nhận dạng khuôn mặt được ứng dụng để mở khóa điện thoại.",
+              "answer": true
+            },
+            "b": {
+              "text": "Trợ lý ảo không thể thực hiện các tính năng như đặt báo thức hay gọi điện thoại.",
+              "answer": false
+            },
+            "c": {
+              "text": "Google Dịch có khả năng nhận thức môi trường xung quanh như con người.",
+              "answer": false
+            },
+            "d": {
+              "text": "Robot Asimo là một ví dụ về ứng dụng AI trong lĩnh vực điều khiển.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Về các đặc trưng cơ bản của AI:",
+          "items": {
+            "a": {
+              "text": "AI chỉ có khả năng suy luận mà không có khả năng nhận thức.",
+              "answer": false
+            },
+            "b": {
+              "text": "Khả năng học là khả năng nắm bắt thông tin từ dữ liệu và điều chỉnh hành vi.",
+              "answer": true
+            },
+            "c": {
+              "text": "AI không có khả năng giải quyết vấn đề phức tạp.",
+              "answer": false
+            },
+            "d": {
+              "text": "Khả năng hiểu ngôn ngữ bao gồm cả việc hiểu văn bản và tiếng nói.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Về các nguy cơ và cảnh báo liên quan đến AI:",
+          "items": {
+            "a": {
+              "text": "AI có thể gây ra áp lực thất nghiệp do tự động hóa công việc.",
+              "answer": true
+            },
+            "b": {
+              "text": "AI có thể bị sử dụng cho các mục đích xấu như tấn công mạng.",
+              "answer": true
+            },
+            "c": {
+              "text": "Việc sử dụng AI luôn đảm bảo tính minh bạch tuyệt đối.",
+              "answer": false
+            },
+            "d": {
+              "text": "AI không bao giờ đưa ra quyết định sai lầm.",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một MB (Megabyte) bằng bao nhiêu KB (Kilobyte)?",
+          "answer": "1024",
+          "accepted_answers": [
+            "1024"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Một GB (Gigabyte) bằng bao nhiêu MB (Megabyte)?",
+          "answer": "1024",
+          "accepted_answers": [
+            "1024"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Hệ chuyên gia MYCIN trong lĩnh vực y học có khoảng bao nhiêu luật suy diễn?",
+          "answer": "600",
+          "accepted_answers": [
+            "600"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Robot Asimo xuất hiện lần đầu tiên vào năm nào?",
+          "answer": "1986",
+          "accepted_answers": [
+            "1986"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_ef2cc220",
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.4167,
+    "part2_total": 4.0,
+    "part2_rubric": {
+      "1_correct": 0.13,
+      "2_correct": 0.33,
+      "3_correct": 0.67,
+      "4_correct": 1.33
+    },
+    "part3_total": 1.0,
+    "part3_per_question": 0.25,
+    "part4_total": 0.0
+  }
+}

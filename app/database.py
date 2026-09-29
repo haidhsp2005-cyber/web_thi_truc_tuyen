@@ -93,6 +93,19 @@ def init_db():
         )
     """)
 
+    # Migration: thêm cột subject cho admin_users
+    try:
+        c.execute("ALTER TABLE admin_users ADD COLUMN subject TEXT DEFAULT ''")
+        conn.commit()
+    except Exception:
+        pass
+    # Migration: thêm cột created_by cho exams
+    try:
+        c.execute("ALTER TABLE exams ADD COLUMN created_by TEXT DEFAULT ''")
+        conn.commit()
+    except Exception:
+        pass
+
     # Khởi tạo hoặc cập nhật tài khoản mặc định: admin / Longcang2026@ (bất khả xâm phạm)
     c.execute("SELECT id FROM admin_users WHERE LOWER(username) = 'admin'")
     row = c.fetchone()
@@ -602,7 +615,7 @@ def get_user_by_username(username: str) -> Optional[dict]:
     conn = get_connection()
     c = conn.cursor()
     c.execute("""
-        SELECT id, username, password_hash, full_name, role, is_protected, created_at, updated_at
+        SELECT id, username, password_hash, full_name, role, is_protected, created_at, updated_at, subject
         FROM admin_users WHERE LOWER(username) = LOWER(?)
     """, (username.strip(),))
     row = c.fetchone()
@@ -617,7 +630,8 @@ def get_user_by_username(username: str) -> Optional[dict]:
         "role": row[4] or "teacher",
         "is_protected": bool(row[5]),
         "created_at": row[6],
-        "updated_at": row[7]
+        "updated_at": row[7],
+        "subject": row[8] or ""
     }
 
 
@@ -626,7 +640,7 @@ def get_all_users() -> List[dict]:
     conn = get_connection()
     c = conn.cursor()
     c.execute("""
-        SELECT id, username, full_name, role, is_protected, created_at, updated_at
+        SELECT id, username, full_name, role, is_protected, created_at, updated_at, subject
         FROM admin_users ORDER BY is_protected DESC, created_at ASC
     """)
     rows = c.fetchall()
@@ -640,12 +654,13 @@ def get_all_users() -> List[dict]:
             "role": r[3] or "teacher",
             "is_protected": bool(r[4]),
             "created_at": r[5],
-            "updated_at": r[6]
+            "updated_at": r[6],
+            "subject": r[7] or ""
         })
     return users
 
 
-def create_user(username: str, password: str, full_name: str = "", role: str = "teacher") -> dict:
+def create_user(username: str, password: str, full_name: str = "", role: str = "teacher", subject: str = "") -> dict:
     """Tạo tài khoản giáo viên mới."""
     clean_username = username.strip()
     if not clean_username or len(clean_username) < 3:
@@ -666,9 +681,9 @@ def create_user(username: str, password: str, full_name: str = "", role: str = "
 
     p_hash = hash_password(password)
     c.execute("""
-        INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, created_at, updated_at)
-        VALUES (?, ?, ?, ?, 0, datetime('now'), datetime('now'))
-    """, (clean_username, p_hash, full_name.strip(), role.strip()))
+        INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
+        VALUES (?, ?, ?, ?, 0, ?, datetime('now'), datetime('now'))
+    """, (clean_username, p_hash, full_name.strip(), role.strip(), subject.strip()))
     user_id = c.lastrowid
     conn.commit()
     conn.close()
@@ -679,7 +694,8 @@ def create_user(username: str, password: str, full_name: str = "", role: str = "
         "username": clean_username,
         "full_name": full_name.strip(),
         "role": role,
-        "is_protected": False
+        "is_protected": False,
+        "subject": subject.strip()
     }
 
 
@@ -747,14 +763,15 @@ def save_exam_record(exam_data: dict):
         conn = get_connection()
         c = conn.cursor()
         c.execute("""
-            INSERT OR REPLACE INTO exams (id, title, subject, grade, data_json, updated_at)
-            VALUES (?, ?, ?, ?, ?, datetime('now'))
+            INSERT OR REPLACE INTO exams (id, title, subject, grade, data_json, created_by, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
         """, (
             exam_id,
             exam_data.get("title", ""),
             exam_data.get("subject", ""),
             str(exam_data.get("grade", "")),
-            json.dumps(exam_data, ensure_ascii=False)
+            json.dumps(exam_data, ensure_ascii=False),
+            exam_data.get("created_by", "")
         ))
         conn.commit()
         conn.close()
