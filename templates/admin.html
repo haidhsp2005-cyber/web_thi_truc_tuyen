@@ -281,7 +281,7 @@
   <!-- ======= DANH SÁCH BÀI NỘP ======= -->
   <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
     <div class="bg-gray-800 text-white px-5 py-4 flex items-center justify-between">
-      <h2 class="font-bold flex items-center gap-2"><span>📋</span>Danh sách bài nộp (<span x-text="submissions.length"></span>)</h2>
+      <h2 class="font-bold flex items-center gap-2"><span>📋</span>Danh sách bài nộp (<span x-text="filteredSubmissions.length"></span>/<span x-text="submissions.length"></span>)</h2>
       <div class="flex items-center gap-2">
         <button @click="clearAllSubmissions()" :disabled="submissions.length === 0" 
           class="bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
@@ -289,6 +289,39 @@
           <span>🗑️</span><span>Xóa toàn bộ bài nộp</span>
         </button>
         <button @click="loadSubmissions()" class="text-gray-300 hover:text-white text-sm cursor-pointer">🔄 Làm mới</button>
+      </div>
+    </div>
+
+    <!-- Bộ lọc Lớp & Đề thi cho bài nộp -->
+    <div x-show="submissions.length > 0" class="px-4 pt-4 pb-0">
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-xs font-bold text-gray-600 flex items-center gap-1">🔍 Lọc bài nộp:</span>
+          <div class="flex flex-wrap gap-2 flex-1">
+            <div class="flex items-center gap-1.5">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Đề thi:</label>
+              <select x-model="selectedExamFilter" @change="onFilterChange()"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-gray-500 font-medium">
+                <option value="">-- Tất cả đề --</option>
+                <template x-for="e in examList" :key="e.id">
+                  <option :value="e.id" x-text="`${e.title} (${e.subject || ''})`"></option>
+                </template>
+              </select>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Lớp:</label>
+              <select x-model="selectedClassFilter" @change="onFilterChange()"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-gray-500 font-medium">
+                <option value="">-- Tất cả lớp --</option>
+                <template x-for="c in availableClasses" :key="c">
+                  <option :value="c" x-text="`Lớp ${c}`"></option>
+                </template>
+              </select>
+            </div>
+            <button x-show="selectedExamFilter || selectedClassFilter" @click="selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
+              class="text-xs text-gray-600 hover:text-gray-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -314,7 +347,15 @@
               </td>
             </tr>
           </template>
-          <template x-for="sub in submissions" :key="sub.submission_id">
+          <template x-if="submissions.length > 0 && filteredSubmissions.length === 0">
+            <tr>
+              <td colspan="7" class="text-center py-8 text-gray-400">
+                <p class="text-2xl mb-2">🔍</p>
+                <p class="text-sm">Không có bài nộp nào khớp bộ lọc.</p>
+              </td>
+            </tr>
+          </template>
+          <template x-for="sub in filteredSubmissions" :key="sub.submission_id">
             <tr class="hover:bg-gray-50 transition-colors">
               <td class="px-4 py-3 font-medium text-gray-800" x-text="sub.student_name"></td>
               <td class="px-4 py-3 text-center text-gray-600" x-text="sub.student_class"></td>
@@ -353,6 +394,7 @@
       </table>
     </div>
   </div>
+
 
   <!-- ======= DANH SÁCH ĐỀ THI ======= -->
   <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
@@ -714,6 +756,14 @@ function adminApp() {
       });
     },
 
+    get filteredSubmissions() {
+      return this.submissions.filter(sub => {
+        if (this.selectedExamFilter && sub.exam_id !== this.selectedExamFilter) return false;
+        if (this.selectedClassFilter && (sub.student_class || '').trim().toUpperCase() !== this.selectedClassFilter.trim().toUpperCase()) return false;
+        return true;
+      });
+    },
+
     get excelExportUrl() {
       const params = new URLSearchParams();
       if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
@@ -722,7 +772,8 @@ function adminApp() {
     },
 
     async onFilterChange() {
-      await Promise.all([this.loadStats(), this.loadSubmissions()]);
+      // Lọc client-side tức thì, đồng thời cập nhật thống kê từ server
+      this.loadStats();
     },
 
     async init() {

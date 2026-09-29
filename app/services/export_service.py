@@ -98,10 +98,11 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
 
     ws.row_dimensions[4].height = 35
 
-    # Dữ liệu học sinh
+    # Dữ liệu học sinh — sắp xếp theo điểm từ thấp đến cao
+    submissions_sorted = sorted(submissions, key=lambda s: s.get("scores", {}).get("total_score", 0))
     rank_colors = {"Giỏi": "D1FAE5", "Khá": "DBEAFE", "Trung bình": "FEF9C3", "Yếu": "FEE2E2"}
 
-    for stt, sub in enumerate(submissions, 1):
+    for stt, sub in enumerate(submissions_sorted, 1):
         row = stt + 4
         scores = sub.get("scores", {})
         rank = scores.get("rank", "")
