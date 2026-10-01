@@ -485,6 +485,76 @@ def _omml_node_to_latex(node) -> str:
         return "".join(parts)
 
 
+_OMML_TRANSFORM = None
+try:
+    from lxml import etree
+    _xsl_candidates = [
+        Path(__file__).parent.parent / "resources" / "MML2OMML.XSL",
+        Path(r"C:\Program Files\Microsoft Office\root\Office16\MML2OMML.XSL"),
+        Path(r"C:\Program Files (x86)\Microsoft Office\root\Office16\MML2OMML.XSL"),
+    ]
+    for _p in _xsl_candidates:
+        if _p.exists():
+            _xslt_tree = etree.parse(str(_p))
+            _OMML_TRANSFORM = etree.XSLT(_xslt_tree)
+            break
+except Exception as _e:
+    logger.warning(f"Không thể khởi tạo bộ chuyển đổi MathML sang Word OMML: {_e}")
+
+
+def _latex_to_omml_element(latex_str: str, is_red: bool = False):
+    """Chuyển đổi công thức LaTeX sang phần tử XML Word OMML (Office Math) để Word hiển thị công thức chuẩn đẹp."""
+    if not _OMML_TRANSFORM:
+        return None
+    try:
+        from lxml import etree
+        import latex2mathml.converter
+        clean_latex = latex_str.strip()
+        mathml = latex2mathml.converter.convert(clean_latex)
+        tree = etree.fromstring(mathml.encode("utf-8"))
+        omml = _OMML_TRANSFORM(tree).getroot()
+        if is_red:
+            w_ns = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            for r_elem in omml.xpath('.//*[local-name()="r"]'):
+                rPr = etree.Element(f"{{{w_ns}}}rPr")
+                color = etree.Element(f"{{{w_ns}}}color", attrib={f"{{{w_ns}}}val": "FF0000"})
+                b = etree.Element(f"{{{w_ns}}}b")
+                rPr.append(color)
+                rPr.append(b)
+                r_elem.insert(0, rPr)
+        return omml
+    except Exception as e:
+        logger.debug(f"Lỗi chuyển latex sang OMML: {latex_str} -> {e}")
+        return None
+
+
+def _append_text_and_math_to_docx_p(p, text: str, is_red: bool = False, bold: bool = False):
+    """
+    Tách đoạn văn bản chứa công thức $...$ và chèn công thức Word Equation (OMML) trực tiếp vào đoạn văn.
+    Nhờ đó khi mở file Word (.docx), công thức hiển thị dạng toán học chuẩn như sách giáo khoa (phân số gạch ngang, căn bậc hai, logarit...).
+    """
+    from docx.shared import RGBColor
+    tokens = re.split(r'(\$[^$]+?\$)', text)
+    for tok in tokens:
+        if not tok:
+            continue
+        if tok.startswith('$') and tok.endswith('$') and len(tok) >= 2:
+            inner_math = tok[1:-1].strip()
+            omml = _latex_to_omml_element(inner_math, is_red=is_red)
+            if omml is not None:
+                p._element.append(omml)
+            else:
+                r = p.add_run(inner_math)
+                r.bold = bold
+                if is_red:
+                    r.font.color.rgb = RGBColor(255, 0, 0)
+        else:
+            r = p.add_run(tok)
+            r.bold = bold
+            if is_red:
+                r.font.color.rgb = RGBColor(255, 0, 0)
+
+
 def _extract_images_from_docx(doc, exam_id: str) -> dict:
     """Trích xuất tất cả ảnh nhúng trong tài liệu Word docx và lưu vào static/uploads/."""
     UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
@@ -1228,7 +1298,9 @@ def _parse_part3_block(q_block: str) -> dict:
     clean_q = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", clean_q, flags=re.IGNORECASE|re.MULTILINE)
     clean_q = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", clean_q, flags=re.IGNORECASE).strip()
 
-    ans_match = re.search(r"(?:Đáp án|KQ|Kết quả|Đ/A)[:\s]+([^\n]+)", clean_q, re.IGNORECASE)
+    ans_match = re.search(r"(?:^|\n)\s*(?:Đáp án|KQ|Kết quả|Đ/A)[:\s]+([^\n]+)", clean_q, re.IGNORECASE)
+    if not ans_match:
+        ans_match = re.search(r"(?:Đáp án|KQ|Đ/A)[:\s]+([^\n]+)", clean_q, re.IGNORECASE)
     answer = ""
     if ans_match:
         answer = ans_match.group(1).strip()
@@ -1791,29 +1863,35 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         # ================= PHẦN I (12 CÂU) =================
         doc.add_heading("PHẦN I (3,0 điểm). Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi thí sinh chỉ chọn một phương án.", level=2)
         for item in STANDARD_PART1:
-            doc.add_paragraph(item["q"])
+            p_q = doc.add_paragraph()
+            _append_text_and_math_to_docx_p(p_q, item["q"])
             for key, opt_text in item["options"]:
                 p_opt = doc.add_paragraph()
-                r_opt = p_opt.add_run(f"{key}. {opt_text}")
-                if key == item["correct"]:
-                    r_opt.bold = True
-                    r_opt.font.color.rgb = RGBColor(255, 0, 0)
+                is_correct = (key == item["correct"])
+                r_key = p_opt.add_run(f"{key}. ")
+                if is_correct:
+                    r_key.bold = True
+                    r_key.font.color.rgb = RGBColor(255, 0, 0)
+                _append_text_and_math_to_docx_p(p_opt, opt_text, is_red=is_correct, bold=is_correct)
         
         # ================= PHẦN II (4 CÂU) =================
         doc.add_heading("PHẦN II (4,0 điểm). Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.", level=2)
         for item in STANDARD_PART2:
-            doc.add_paragraph(item["q"])
+            p_q = doc.add_paragraph()
+            _append_text_and_math_to_docx_p(p_q, item["q"])
             for label, sub_text, is_true in item["items"]:
                 p_sub = doc.add_paragraph()
-                r_sub = p_sub.add_run(f"{label}) {sub_text}")
+                r_lbl = p_sub.add_run(f"{label}) ")
                 if is_true:
-                    r_sub.bold = True
-                    r_sub.font.color.rgb = RGBColor(255, 0, 0)
+                    r_lbl.bold = True
+                    r_lbl.font.color.rgb = RGBColor(255, 0, 0)
+                _append_text_and_math_to_docx_p(p_sub, sub_text, is_red=is_true, bold=is_true)
 
         # ================= PHẦN III (6 CÂU) =================
         doc.add_heading("PHẦN III (3,0 điểm). Thí sinh trả lời từ câu 1 đến câu 6. Điền kết quả ngắn.", level=2)
         for item in STANDARD_PART3:
-            doc.add_paragraph(item["q"])
+            p_q = doc.add_paragraph()
+            _append_text_and_math_to_docx_p(p_q, item["q"])
             p_ans = doc.add_paragraph()
             r_ans = p_ans.add_run(f"Đáp án: {item['ans']}")
             r_ans.bold = True
@@ -1822,10 +1900,12 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         doc.add_heading(STANDARD_PART4["title"], level=2)
         p_p4_inst = doc.add_paragraph(STANDARD_PART4["instruction"])
         p_p4_inst.runs[0].font.italic = True
-        doc.add_paragraph(STANDARD_PART4["q"])
+        p_q4 = doc.add_paragraph()
+        _append_text_and_math_to_docx_p(p_q4, STANDARD_PART4["q"])
         p_p4_guide = doc.add_paragraph()
-        r_p4_guide = p_p4_guide.add_run(STANDARD_PART4["guide"])
-        r_p4_guide.font.italic = True
+        _append_text_and_math_to_docx_p(p_p4_guide, STANDARD_PART4["guide"])
+        for r in p_p4_guide.runs:
+            r.font.italic = True
 
         buf = io.BytesIO()
         doc.save(buf)
