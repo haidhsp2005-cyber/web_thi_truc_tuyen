@@ -134,6 +134,7 @@ async def add_sample_exam_to_system():
     if not src.exists():
         raise HTTPException(404, "Không tìm thấy file mẫu đề thi Toán 12!")
     data = json.loads(src.read_text(encoding="utf-8"))
+    save_exam_record(data)
     src.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return {
         "success": True,
@@ -1466,125 +1467,155 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
     
     STANDARD_PART1 = [
         {
-            "q": "Câu 1: Cho hàm số y = f(x) có đạo hàm f'(x) = x(x - 1)^2(x + 2). Số điểm cực trị của hàm số đã cho là:",
+            "q": "Câu 1: Cho hàm số $y = f(x)$ có đạo hàm $f'(x) = x(x - 1)^2(x + 2)$. Số điểm cực trị của hàm số đã cho là:",
             "options": [("A", "1"), ("B", "2"), ("C", "3"), ("D", "4")],
             "correct": "B"
         },
         {
-            "q": "Câu 2: Tập xác định của hàm số y = log2(x - 3) là:",
-            "options": [("A", "(-∞; 3)"), ("B", "ℝ \\ {3}"), ("C", "[3; +∞)"), ("D", "(3; +∞)")],
+            "q": "Câu 2: Tập xác định của hàm số $y = \\log_2(x - 3)$ là:",
+            "options": [("A", "$(-\\infty; 3)$"), ("B", "$\\mathbb{R} \\setminus \\{3\\}$"), ("C", "$[3; +\\infty)$"), ("D", "$(3; +\\infty)$")],
             "correct": "D"
         },
         {
-            "q": "Câu 3: Tiệm cận đứng của đồ thị hàm số y = (2x - 1)/(x + 1) là đường thẳng có phương trình:",
-            "options": [("A", "x = 2"), ("B", "x = 1/2"), ("C", "x = -1"), ("D", "y = 2")],
+            "q": "Câu 3: Tiệm cận đứng của đồ thị hàm số $y = \\frac{2x - 1}{x + 1}$ là đường thẳng có phương trình:",
+            "options": [("A", "$x = 2$"), ("B", "$x = \\frac{1}{2}$"), ("C", "$x = -1$"), ("D", "$y = 2$")],
             "correct": "C"
         },
         {
-            "q": "Câu 4: Giá trị lớn nhất của hàm số f(x) = x^3 - 3x + 2 trên đoạn [0; 2] bằng:",
+            "q": "Câu 4: Giá trị lớn nhất của hàm số $f(x) = x^3 - 3x + 2$ trên đoạn $[0; 2]$ bằng:",
             "options": [("A", "0"), ("B", "2"), ("C", "4"), ("D", "6")],
             "correct": "C"
         },
         {
-            "q": "Câu 5: Họ tất cả các nguyên hàm của hàm số f(x) = e^(2x) + cos(x) là:",
-            "options": [("A", "1/2 * e^(2x) + sin(x) + C"), ("B", "2 * e^(2x) - sin(x) + C"), ("C", "1/2 * e^(2x) - sin(x) + C"), ("D", "2 * e^(2x) + sin(x) + C")],
+            "q": "Câu 5: Họ tất cả các nguyên hàm của hàm số $f(x) = e^{2x} + \\cos x$ là:",
+            "options": [
+                ("A", "$\\frac{1}{2}e^{2x} + \\sin x + C$"),
+                ("B", "$2e^{2x} - \\sin x + C$"),
+                ("C", "$\\frac{1}{2}e^{2x} - \\sin x + C$"),
+                ("D", "$2e^{2x} + \\sin x + C$")
+            ],
             "correct": "A"
         },
         {
-            "q": "Câu 6: Trong không gian Oxyz, cho mặt phẳng (P): 2x - 3y + z - 5 = 0. Một vectơ pháp tuyến của (P) là:",
-            "options": [("A", "n = (2; -3; -5)"), ("B", "n = (2; 3; 1)"), ("C", "n = (2; -3; 1)"), ("D", "n = (-2; 3; 1)")],
+            "q": "Câu 6: Trong không gian $Oxyz$, cho mặt phẳng $(P): 2x - 3y + z - 5 = 0$. Một vectơ pháp tuyến của $(P)$ là:",
+            "options": [
+                ("A", "$\\vec{n} = (2; -3; -5)$"),
+                ("B", "$\\vec{n} = (2; 3; 1)$"),
+                ("C", "$\\vec{n} = (2; -3; 1)$"),
+                ("D", "$\\vec{n} = (-2; 3; 1)$")
+            ],
             "correct": "C"
         },
         {
-            "q": "Câu 7: Trong không gian Oxyz, toạ độ tâm I và bán kính R của mặt cầu (S): (x - 1)^2 + (y + 2)^2 + (z - 3)^2 = 16 là:",
-            "options": [("A", "I(1; -2; 3), R = 4"), ("B", "I(-1; 2; -3), R = 4"), ("C", "I(1; -2; 3), R = 16"), ("D", "I(-1; 2; -3), R = 16")],
+            "q": "Câu 7: Trong không gian $Oxyz$, toạ độ tâm $I$ và bán kính $R$ của mặt cầu $(S): (x - 1)^2 + (y + 2)^2 + (z - 3)^2 = 16$ là:",
+            "options": [
+                ("A", "$I(1; -2; 3), R = 4$"),
+                ("B", "$I(-1; 2; -3), R = 4$"),
+                ("C", "$I(1; -2; 3), R = 16$"),
+                ("D", "$I(-1; 2; -3), R = 16$")
+            ],
             "correct": "A"
         },
         {
-            "q": "Câu 8: Cho khối chóp S.ABC có đáy ABC là tam giác vuông tại B, AB = a, BC = a*sqrt(3), SA vuông góc với mặt phẳng đáy và SA = 2a. Thể tích khối chóp đã cho bằng:",
-            "options": [("A", "a^3 * sqrt(3) / 3"), ("B", "a^3 * sqrt(3)"), ("C", "2 * a^3 * sqrt(3) / 3"), ("D", "a^3 / 3")],
+            "q": "Câu 8: Cho khối chóp $S.ABC$ có đáy $ABC$ là tam giác vuông tại $B$, $AB = a$, $BC = a\\sqrt{3}$, $SA$ vuông góc với mặt phẳng đáy và $SA = 2a$. Thể tích khối chóp đã cho bằng:",
+            "options": [
+                ("A", "$\\frac{a^3\\sqrt{3}}{3}$"),
+                ("B", "$a^3\\sqrt{3}$"),
+                ("C", "$\\frac{2a^3\\sqrt{3}}{3}$"),
+                ("D", "$\\frac{a^3}{3}$")
+            ],
             "correct": "A"
         },
         {
-            "q": "Câu 9: Trong không gian Oxyz, cho đường thẳng d: (x - 1)/2 = (y + 1)/-3 = z/1. Vectơ chỉ phương của đường thẳng d là:",
-            "options": [("A", "u = (1; -1; 0)"), ("B", "u = (2; -3; 1)"), ("C", "u = (2; 3; 1)"), ("D", "u = (-1; 1; 0)")],
+            "q": "Câu 9: Trong không gian $Oxyz$, cho đường thẳng $d: \\frac{x - 1}{2} = \\frac{y + 1}{-3} = \\frac{z}{1}$. Vectơ chỉ phương của đường thẳng $d$ là:",
+            "options": [
+                ("A", "$\\vec{u} = (1; -1; 0)$"),
+                ("B", "$\\vec{u} = (2; -3; 1)$"),
+                ("C", "$\\vec{u} = (2; 3; 1)$"),
+                ("D", "$\\vec{u} = (-1; 1; 0)$")
+            ],
             "correct": "B"
         },
         {
-            "q": "Câu 10: Cho hình lập phương ABCD.A'B'C'D'. Góc giữa hai đường thẳng A'B và B'C' bằng:",
-            "options": [("A", "30°"), ("B", "45°"), ("C", "60°"), ("D", "90°")],
+            "q": "Câu 10: Cho hình lập phương $ABCD.A'B'C'D'$. Góc giữa hai đường thẳng $A'B$ và $B'C'$ bằng:",
+            "options": [("A", "$30^\\circ$"), ("B", "$45^\\circ$"), ("C", "$60^\\circ$"), ("D", "$90^\\circ$")],
             "correct": "C"
         },
         {
-            "q": "Câu 11: Cho cấp số cộng (u_n) có u_1 = 3 và công sai d = 4. Giá trị của số hạng thứ năm u_5 bằng:",
+            "q": "Câu 11: Cho cấp số cộng $(u_n)$ có $u_1 = 3$ và công sai $d = 4$. Giá trị của số hạng thứ năm $u_5$ bằng:",
             "options": [("A", "15"), ("B", "19"), ("C", "23"), ("D", "12")],
             "correct": "B"
         },
         {
             "q": "Câu 12: Một hộp chứa 5 quả cầu màu xanh và 4 quả cầu màu đỏ. Chọn ngẫu nhiên đồng thời 2 quả cầu. Xác suất để chọn được 2 quả cầu cùng màu là:",
-            "options": [("A", "4/9"), ("B", "5/9"), ("C", "1/3"), ("D", "2/9")],
+            "options": [
+                ("A", "$\\frac{4}{9}$"),
+                ("B", "$\\frac{5}{9}$"),
+                ("C", "$\\frac{1}{3}$"),
+                ("D", "$\\frac{2}{9}$")
+            ],
             "correct": "A"
         }
     ]
 
     STANDARD_PART2 = [
         {
-            "q": "Câu 1: Cho hàm số y = f(x) = (2x - 1)/(x + 1).",
+            "q": "Câu 1: Cho hàm số $y = f(x) = \\frac{2x - 1}{x + 1}$.",
             "items": [
-                ("a", "Tập xác định của hàm số là D = ℝ \\ {-1}.", True),
-                ("b", "Đạo hàm của hàm số là f'(x) = 3/(x + 1)^2 với mọi x ≠ -1.", True),
+                ("a", "Tập xác định của hàm số là $D = \\mathbb{R} \\setminus \\{-1\\}$.", True),
+                ("b", "Đạo hàm của hàm số là $f'(x) = \\frac{3}{(x + 1)^2}$ với mọi $x \\neq -1$.", True),
                 ("c", "Hàm số nghịch biến trên từng khoảng xác định.", False),
-                ("d", "Đồ thị hàm số có tiệm cận đứng x = -1 và tiệm cận ngang y = 2.", True)
+                ("d", "Đồ thị hàm số có tiệm cận đứng $x = -1$ và tiệm cận ngang $y = 2$.", True)
             ]
         },
         {
-            "q": "Câu 2: Một chất điểm chuyển động theo phương trình vận tốc v(t) = 3t^2 - 6t + 4 (m/s), với t ≥ 0 tính bằng giây.",
+            "q": "Câu 2: Một chất điểm chuyển động theo phương trình vận tốc $v(t) = 3t^2 - 6t + 4\\text{ (m/s)}$, với $t \\ge 0$ tính bằng giây.",
             "items": [
-                ("a", "Vận tốc tức thời nhỏ nhất của chất điểm bằng 1 m/s.", True),
-                ("b", "Gia tốc tức thời của chất điểm tại thời điểm t là a(t) = 6t - 6 (m/s^2).", True),
-                ("c", "Tại thời điểm t = 2 giây, gia tốc của chất điểm bằng 12 m/s^2.", False),
-                ("d", "Quãng đường chất điểm đi được từ thời điểm t = 0 đến thời điểm t = 3 giây là 15 mét.", True)
+                ("a", "Vận tốc tức thời nhỏ nhất của chất điểm bằng $1\\text{ m/s}$.", True),
+                ("b", "Gia tốc tức thời của chất điểm tại thời điểm $t$ là $a(t) = 6t - 6\\text{ (m/s}^2\\text{)}$.", True),
+                ("c", "Tại thời điểm $t = 2\\text{ s}$, gia tốc của chất điểm bằng $12\\text{ m/s}^2$.", False),
+                ("d", "Quãng đường chất điểm đi được từ thời điểm $t = 0$ đến thời điểm $t = 3\\text{ s}$ là $15\\text{ m}$.", True)
             ]
         },
         {
-            "q": "Câu 3: Trong không gian Oxyz, cho ba điểm A(1; 0; 0), B(0; 2; 0), C(0; 0; 3) và mặt phẳng (P): 6x + 3y + 2z - 6 = 0.",
+            "q": "Câu 3: Trong không gian $Oxyz$, cho ba điểm $A(1; 0; 0), B(0; 2; 0), C(0; 0; 3)$ và mặt phẳng $(P): 6x + 3y + 2z - 6 = 0$.",
             "items": [
-                ("a", "Phương trình mặt phẳng (ABC) theo đoạn chắn là x/1 + y/2 + z/3 = 1.", True),
-                ("b", "Mặt phẳng (P) đi qua ba điểm A, B, C.", True),
-                ("c", "Một vectơ pháp tuyến của mặt phẳng (P) là n = (6; 3; 2).", True),
-                ("d", "Khoảng cách từ gốc tọa độ O đến mặt phẳng (P) bằng 6/7.", True)
+                ("a", "Phương trình mặt phẳng $(ABC)$ theo đoạn chắn là $\\frac{x}{1} + \\frac{y}{2} + \\frac{z}{3} = 1$.", True),
+                ("b", "Mặt phẳng $(P)$ đi qua ba điểm $A, B, C$.", True),
+                ("c", "Một vectơ pháp tuyến của mặt phẳng $(P)$ là $\\vec{n} = (6; 3; 2)$.", True),
+                ("d", "Khoảng cách từ gốc tọa độ $O$ đến mặt phẳng $(P)$ bằng $\\frac{6}{7}$.", True)
             ]
         },
         {
-            "q": "Câu 4: Cho hàm số bậc ba y = f(x) = ax^3 + bx^2 + cx + d có đồ thị đi qua hai điểm cực trị A(0; 2) và B(2; -2).",
+            "q": "Câu 4: Cho hàm số bậc ba $y = f(x) = ax^3 + bx^2 + cx + d$ có đồ thị đi qua hai điểm cực trị $A(0; 2)$ và $B(2; -2)$.",
             "items": [
-                ("a", "Đồ thị hàm số nhận điểm uốn I(1; 0) làm tâm đối xứng.", True),
-                ("b", "Hàm số đồng biến trên khoảng (0; 2).", False),
-                ("c", "Giá trị cực đại của hàm số đã cho bằng 2.", True),
-                ("d", "Phương trình f(x) = 0 có đúng 3 nghiệm thực phân biệt.", True)
+                ("a", "Đồ thị hàm số nhận điểm uốn $I(1; 0)$ làm tâm đối xứng.", True),
+                ("b", "Hàm số đồng biến trên khoảng $(0; 2)$.", False),
+                ("c", "Giá trị cực đại của hàm số đã cho bằng $2$.", True),
+                ("d", "Phương trình $f(x) = 0$ có đúng 3 nghiệm thực phân biệt.", True)
             ]
         }
     ]
 
     STANDARD_PART3 = [
         {
-            "q": "Câu 1: Tìm hệ số góc của tiếp tuyến của đồ thị hàm số y = x^3 - 3x^2 + 2 tại điểm có hoành độ x0 = 3.",
+            "q": "Câu 1: Tìm hệ số góc của tiếp tuyến của đồ thị hàm số $y = x^3 - 3x^2 + 2$ tại điểm có hoành độ $x_0 = 3$.",
             "ans": "9"
         },
         {
-            "q": "Câu 2: Cho hình hộp chữ nhật ABCD.A'B'C'D' có AB = 3, AD = 4, AA' = 5. Tính khoảng cách giữa hai đường thẳng chéo nhau AB và C'D'.",
+            "q": "Câu 2: Cho hình hộp chữ nhật $ABCD.A'B'C'D'$ có $AB = 3, AD = 4, AA' = 5$. Tính khoảng cách giữa hai đường thẳng chéo nhau $AB$ và $C'D'$.",
             "ans": "5"
         },
         {
-            "q": "Câu 3: Tìm giá trị nhỏ nhất của hàm số y = (x - 2)/(x + 1) trên đoạn [0; 2].",
+            "q": "Câu 3: Tìm giá trị nhỏ nhất của hàm số $y = \\frac{x - 2}{x + 1}$ trên đoạn $[0; 2]$.",
             "ans": "-2"
         },
         {
-            "q": "Câu 4: Cho hàm số y = f(x) có đạo hàm f'(x) = x^2 - 4x + 3. Điểm cực tiểu của hàm số đã cho là x bằng bao nhiêu?",
+            "q": "Câu 4: Cho hàm số $y = f(x)$ có đạo hàm $f'(x) = x^2 - 4x + 3$. Điểm cực tiểu của hàm số đã cho là $x$ bằng bao nhiêu?",
             "ans": "3"
         },
         {
-            "q": "Câu 5: Trong không gian Oxyz, cho mặt phẳng (P): 2x - 2y + z + 5 = 0 và điểm A(1; 2; 1). Tính khoảng cách từ điểm A đến mặt phẳng (P).",
+            "q": "Câu 5: Trong không gian $Oxyz$, cho mặt phẳng $(P): 2x - 2y + z + 5 = 0$ và điểm $A(1; 2; 1)$. Tính khoảng cách từ điểm $A$ đến mặt phẳng $(P)$.",
             "ans": "2"
         },
         {
@@ -1596,16 +1627,16 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
     STANDARD_PART4 = {
         "title": "PHẦN IV (1,0 điểm). TỰ LUẬN (Tùy chọn - Dành cho đề có phần tự luận)",
         "instruction": "Thí sinh trình bày lời giải chi tiết cho câu hỏi dưới đây:",
-        "q": "Câu 1: Cho phương trình bậc hai x^2 - (m + 3)x + 2m + 2 = 0 (với x là ẩn số, m là tham số thực).\n"
-             "a) Giải phương trình khi m = 1.\n"
-             "b) Tìm tất cả các giá trị của tham số m để phương trình có hai nghiệm phân biệt x1, x2 thỏa mãn điều kiện: x1^2 + x2^2 = 10.",
+        "q": "Câu 1: Cho phương trình bậc hai $x^2 - (m + 3)x + 2m + 2 = 0$ (với $x$ là ẩn số, $m$ là tham số thực).\n"
+             "a) Giải phương trình khi $m = 1$.\n"
+             "b) Tìm tất cả các giá trị của tham số $m$ để phương trình có hai nghiệm phân biệt $x_1, x_2$ thỏa mãn điều kiện: $x_1^2 + x_2^2 = 10$.",
         "guide": "HƯỚNG DẪN CHẤM & THANG ĐIỂM THAM KHẢO:\n"
-                 "• Ý a (0,4 điểm): Khi m = 1, phương trình trở thành x^2 - 4x + 4 = 0 <=> (x - 2)^2 = 0 <=> x = 2 (nghiệm kép).\n"
+                 "• Ý a (0,4 điểm): Khi $m = 1$, phương trình trở thành $x^2 - 4x + 4 = 0 \\Leftrightarrow (x - 2)^2 = 0 \\Leftrightarrow x = 2$ (nghiệm kép).\n"
                  "• Ý b (0,6 điểm):\n"
-                 "  - Biệt thức Δ = (m + 3)^2 - 4(2m + 2) = m^2 + 6m + 9 - 8m - 8 = (m - 1)^2. Để phương trình có hai nghiệm phân biệt thì Δ > 0 <=> m ≠ 1 (0,2 điểm).\n"
-                 "  - Theo định lý Viète: x1 + x2 = m + 3 và x1 * x2 = 2m + 2 (0,2 điểm).\n"
-                 "  - Ta có: x1^2 + x2^2 = (x1 + x2)^2 - 2*x1*x2 = (m + 3)^2 - 2(2m + 2) = m^2 + 2m + 5.\n"
-                 "    Theo giả thiết: m^2 + 2m + 5 = 10 <=> m^2 + 2m - 5 = 0 <=> m = -1 ± √6 (thỏa mãn điều kiện m ≠ 1) (0,2 điểm)."
+                 "  - Biệt thức $\\Delta = (m + 3)^2 - 4(2m + 2) = m^2 + 6m + 9 - 8m - 8 = (m - 1)^2$. Để phương trình có hai nghiệm phân biệt thì $\\Delta > 0 \\Leftrightarrow m \\neq 1$ (0,2 điểm).\n"
+                 "  - Theo định lý Viète: $x_1 + x_2 = m + 3$ và $x_1 x_2 = 2m + 2$ (0,2 điểm).\n"
+                 "  - Ta có: $x_1^2 + x_2^2 = (x_1 + x_2)^2 - 2x_1 x_2 = (m + 3)^2 - 2(2m + 2) = m^2 + 2m + 5$.\n"
+                 "    Theo giả thiết: $m^2 + 2m + 5 = 10 \\Leftrightarrow m^2 + 2m - 5 = 0 \\Leftrightarrow m = -1 \\pm \\sqrt{6}$ (thỏa mãn điều kiện $m \\neq 1$) (0,2 điểm)."
     }
 
     if format == "json":
