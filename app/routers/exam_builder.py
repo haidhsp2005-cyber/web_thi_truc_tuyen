@@ -933,12 +933,22 @@ async def update_exam_scoring(exam_id: str, body: dict):
     p3_per_q = float(body.get("part3_per_question", 0.0))
     p4_per_q = float(body.get("part4_per_question", 0.0))
 
-    p2_rubric = {
-        "1_correct": round(p2_per_q * 0.10, 3),
-        "2_correct": round(p2_per_q * 0.25, 3),
-        "3_correct": round(p2_per_q * 0.50, 3),
-        "4_correct": round(p2_per_q * 1.00, 3),
-    }
+    req_rubric = body.get("part2_rubric")
+    if isinstance(req_rubric, dict) and "1_correct" in req_rubric and "4_correct" in req_rubric:
+        p2_rubric = {
+            "1_correct": round(float(req_rubric.get("1_correct", 0.1)), 3),
+            "2_correct": round(float(req_rubric.get("2_correct", 0.25)), 3),
+            "3_correct": round(float(req_rubric.get("3_correct", 0.5)), 3),
+            "4_correct": round(float(req_rubric.get("4_correct", 1.0)), 3),
+        }
+        p2_per_q = p2_rubric["4_correct"]
+    else:
+        p2_rubric = {
+            "1_correct": round(p2_per_q * 0.10, 3),
+            "2_correct": round(p2_per_q * 0.25, 3),
+            "3_correct": round(p2_per_q * 0.50, 3),
+            "4_correct": round(p2_per_q * 1.00, 3),
+        }
 
     exam["scoring"] = {
         "part1_total":        round(p1_per_q * p1_count, 2),
