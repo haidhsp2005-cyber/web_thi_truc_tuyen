@@ -10,6 +10,9 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from typing import Optional
 import io
+import re
+import unicodedata
+import urllib.parse
 
 from ..models import StudentInfo, ExamSubmission
 from ..database import (
@@ -301,41 +304,66 @@ async def get_grading_status(submission_id: str):
     }
 
 
+def to_ascii_slug(text: str) -> str:
+    """Chuyển đổi chuỗi tiếng Việt có dấu thành chuỗi ASCII an toàn không dấu cho tên file."""
+    if not text:
+        return ""
+    text = text.replace("đ", "d").replace("Đ", "D")
+    nfkd = unicodedata.normalize("NFKD", text)
+    ascii_text = "".join(c for c in nfkd if not unicodedata.combining(c))
+    ascii_text = re.sub(r"[^\w\s-]", "", ascii_text).strip()
+    return re.sub(r"[-\s]+", "_", ascii_text)
+
+
 @router.get("/export/excel")
 async def export_excel(exam_id: Optional[str] = None, student_class: Optional[str] = None, subject: Optional[str] = None):
     """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Môn thi, Đề thi và theo Lớp."""
-    clean_class = student_class.strip().upper() if student_class and student_class.strip() else None
-    clean_exam_id = exam_id.strip() if exam_id and exam_id.strip() else None
-    clean_subject = subject.strip() if subject and subject.strip() and subject.strip() != "all" else None
-    
-    submissions = get_all_submissions(exam_id=clean_exam_id, student_class=clean_class)
-    
-    if clean_subject:
-        from .exam_builder import _list_exam_files
-        all_exams = _list_exam_files()
-        sub_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_subject.lower()}
-        submissions = [s for s in submissions if s.get('exam_id') in sub_exam_ids]
+    try:
+        clean_class = student_class.strip().upper() if student_class and student_class.strip() else None
+        clean_exam_id = exam_id.strip() if exam_id and exam_id.strip() else None
+        clean_subject = subject.strip() if subject and subject.strip() and subject.strip() != "all" else None
+        
+        submissions = get_all_submissions(exam_id=clean_exam_id, student_class=clean_class)
+        
+        if clean_subject:
+            from .exam_builder import _list_exam_files
+            all_exams = _list_exam_files()
+            sub_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_subject.lower()}
+            submissions = [s for s in submissions if s.get('exam_id') in sub_exam_ids]
 
-    exam = load_exam(clean_exam_id) if clean_exam_id else None
-    title = exam.get("title", "BẢNG ĐIỂM KIỂM TRA TRỰC TUYẾN") if exam else "BẢNG ĐIỂM TỔNG HỢP KIỂM TRA TRỰC TUYẾN"
-    if clean_subject and not clean_exam_id:
-        title += f" - MÔN {clean_subject.upper()}"
-    if clean_class:
-        title += f" - LỚP {clean_class}"
-    
-    excel_bytes = export_class_results_excel(submissions, title)
-    
-    fn_parts = ["bangdiem"]
-    if clean_subject:
-        fn_parts.append(clean_subject.lower().replace(" ", "_"))
-    if clean_exam_id:
-        fn_parts.append(clean_exam_id)
-    if clean_class:
-        fn_parts.append(clean_class)
-    filename = "_".join(fn_parts) + ".xlsx"
-    
-    return StreamingResponse(
-        io.BytesIO(excel_bytes),
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
-    )
+        exam = load_exam(clean_exam_id) if clean_exam_id else None
+        title = exam.get("title", "BẢNG ĐIỂM KIỂM TRA TRỰC TUYẾN") if exam else "BẢNG ĐIỂM TỔNG HỢP KIỂM TRA TRỰC TUYẾN"
+        if clean_subject and not clean_exam_id:
+            title += f" - MÔN {clean_subject.upper()}"
+        if clean_class:
+            title += f" - LỚP {clean_class}"
+        
+        excel_bytes = export_class_results_excel(submissions, title)
+        
+        # Tạo tên file an toàn chuẩn RFC 5987 (tránh lỗi Header Unicode latin-1 của Starlette/Uvicorn)
+        fn_ascii_parts = ["bangdiem"]
+        fn_utf8_parts = ["bangdiem"]
+        if clean_subject:
+            fn_ascii_parts.append(to_ascii_slug(clean_subject).lower())
+            fn_utf8_parts.append(clean_subject.replace(" ", "_"))
+        if clean_exam_id:
+            fn_ascii_parts.append(to_ascii_slug(clean_exam_id))
+            fn_utf8_parts.append(clean_exam_id)
+        if clean_class:
+            fn_ascii_parts.append(to_ascii_slug(clean_class))
+            fn_utf8_parts.append(clean_class)
+            
+        ascii_filename = "_".join(fn_ascii_parts) + ".xlsx"
+        utf8_filename = "_".join(fn_utf8_parts) + ".xlsx"
+        encoded_utf8 = urllib.parse.quote(utf8_filename)
+        
+        content_disposition = f'attachment; filename="{ascii_filename}"; filename*=UTF-8\'\'{encoded_utf8}'
+        
+        return StreamingResponse(
+            io.BytesIO(excel_bytes),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": content_disposition}
+        )
+    except Exception as e:
+        logger.error(f"Lỗi xuất bảng điểm Excel: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Lỗi khi xuất bảng điểm Excel: {str(e)}")

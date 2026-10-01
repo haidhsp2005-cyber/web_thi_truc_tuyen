@@ -99,24 +99,31 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
     ws.row_dimensions[4].height = 35
 
     # Dữ liệu học sinh — sắp xếp theo điểm từ thấp đến cao
-    submissions_sorted = sorted(submissions, key=lambda s: s.get("scores", {}).get("total_score", 0))
+    submissions_sorted = sorted(submissions, key=lambda s: float((s.get("scores") or {}).get("total_score") or 0))
     rank_colors = {"Giỏi": "D1FAE5", "Khá": "DBEAFE", "Trung bình": "FEF9C3", "Yếu": "FEE2E2"}
+
+    if not submissions_sorted:
+        ws.merge_cells("A5:I5")
+        empty_cell = ws["A5"]
+        empty_cell.value = "Chưa có bài thi nào phù hợp với bộ lọc đã chọn"
+        empty_cell.font = Font(italic=True, color="6B7280")
+        empty_cell.alignment = center
 
     for stt, sub in enumerate(submissions_sorted, 1):
         row = stt + 4
-        scores = sub.get("scores", {})
-        rank = scores.get("rank", "")
+        scores = sub.get("scores") or {}
+        rank = scores.get("rank", "") or ""
         fill_color = rank_colors.get(rank, "FFFFFF")
 
         values = [
             stt,
-            sub.get("student_name", ""),
-            sub.get("student_class", ""),
-            scores.get("part1_score", 0),
-            scores.get("part2_score", 0),
-            scores.get("part3_score", 0),
-            scores.get("part4_score", 0),
-            scores.get("total_score", 0),
+            sub.get("student_name", "") or "",
+            sub.get("student_class", "") or "",
+            float(scores.get("part1_score") or 0),
+            float(scores.get("part2_score") or 0),
+            float(scores.get("part3_score") or 0),
+            float(scores.get("part4_score") or 0),
+            float(scores.get("total_score") or 0),
             rank
         ]
 
@@ -130,18 +137,21 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
                 cell.font = Font(bold=True, size=12)
 
     # Thống kê cuối
-    stat_row = len(submissions) + 6
+    stat_row = max(len(submissions_sorted), 1) + 6
     ws.cell(row=stat_row, column=1, value="THỐNG KÊ").font = Font(bold=True)
-    if submissions:
-        all_scores = [s.get("scores", {}).get("total_score", 0) for s in submissions]
-        ws.cell(row=stat_row+1, column=1, value=f"Điểm TB: {sum(all_scores)/len(all_scores):.2f}")
-        ws.cell(row=stat_row+2, column=1, value=f"Điểm cao nhất: {max(all_scores):.2f}")
-        ws.cell(row=stat_row+3, column=1, value=f"Điểm thấp nhất: {min(all_scores):.2f}")
+    if submissions_sorted:
+        all_scores = [float((s.get("scores") or {}).get("total_score") or 0) for s in submissions_sorted]
+        avg_score = sum(all_scores) / len(all_scores) if all_scores else 0
+        max_score = max(all_scores) if all_scores else 0
+        min_score = min(all_scores) if all_scores else 0
+        ws.cell(row=stat_row+1, column=1, value=f"Điểm TB: {avg_score:.2f}")
+        ws.cell(row=stat_row+2, column=1, value=f"Điểm cao nhất: {max_score:.2f}")
+        ws.cell(row=stat_row+3, column=1, value=f"Điểm thấp nhất: {min_score:.2f}")
         
-        gioi = sum(1 for s in submissions if s.get("scores", {}).get("rank") == "Giỏi")
-        kha = sum(1 for s in submissions if s.get("scores", {}).get("rank") == "Khá")
-        tb = sum(1 for s in submissions if s.get("scores", {}).get("rank") == "Trung bình")
-        yeu = sum(1 for s in submissions if s.get("scores", {}).get("rank") == "Yếu")
+        gioi = sum(1 for s in submissions_sorted if (s.get("scores") or {}).get("rank") == "Giỏi")
+        kha = sum(1 for s in submissions_sorted if (s.get("scores") or {}).get("rank") == "Khá")
+        tb = sum(1 for s in submissions_sorted if (s.get("scores") or {}).get("rank") == "Trung bình")
+        yeu = sum(1 for s in submissions_sorted if (s.get("scores") or {}).get("rank") == "Yếu")
         ws.cell(row=stat_row+4, column=1, value=f"Giỏi: {gioi} | Khá: {kha} | Trung bình: {tb} | Yếu: {yeu}")
 
     output = io.BytesIO()

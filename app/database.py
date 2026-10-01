@@ -255,11 +255,12 @@ def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[
             "submitted_at": row[4],
             "duration_seconds": row[5],
             "status": row[7],
+            "scores": {},
         }
         if row[6]:
             try:
                 result_data = json.loads(row[6])
-                item["scores"] = result_data.get("scores", {})
+                item["scores"] = result_data.get("scores", {}) or {}
             except:
                 item["scores"] = {}
         results.append(item)
