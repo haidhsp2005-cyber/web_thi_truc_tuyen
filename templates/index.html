@@ -58,7 +58,8 @@
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1">👤 Họ và tên <span class="text-red-500">*</span></label>
         <input id="student_name" type="text" placeholder="Nhập họ và tên đầy đủ..."
-          class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-lg" autocomplete="name">
+          oninput="this.value = this.value.toUpperCase()"
+          class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-lg uppercase font-semibold" autocomplete="name">
       </div>
 
       <!-- Lớp -->
@@ -215,7 +216,7 @@ function showError(msg) {
 }
 
 function startExam() {
-  const name = document.getElementById('student_name').value.trim();
+  const name = document.getElementById('student_name').value.trim().toUpperCase();
   const cls = document.getElementById('student_class').value.trim().toUpperCase();
   const examId = document.getElementById('exam_id').value;
 

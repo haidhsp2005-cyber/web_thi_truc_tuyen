@@ -417,9 +417,9 @@
                 :id="'p3_input_' + currentIdx"
                 type="text"
                 x-model="p3Answers[p3Questions[currentIdx].id]"
-                @input="autoSave()"
+                @input="p3Answers[p3Questions[currentIdx].id] = ($event.target.value || '').toUpperCase(); autoSave()"
                 placeholder="Nhập đáp án..."
-                class="flex-1 border-2 border-teal-200 rounded-xl px-4 py-3 text-lg font-semibold focus:outline-none focus:border-teal-500 transition-colors"
+                class="flex-1 border-2 border-teal-200 rounded-xl px-4 py-3 text-lg font-semibold uppercase focus:outline-none focus:border-teal-500 transition-colors"
               >
             </div>
             <p class="text-xs text-gray-400 mt-2">💡 Ghi kết quả cuối cùng (số thập phân dùng dấu chấm, ví dụ: 3.14)</p>
@@ -740,8 +740,8 @@ function examApp() {
 
     async init() {
       // Lấy thông tin học sinh từ sessionStorage
-      this.studentName = sessionStorage.getItem('student_name') || '';
-      this.studentClass = sessionStorage.getItem('student_class') || '';
+      this.studentName = (sessionStorage.getItem('student_name') || '').trim().toUpperCase();
+      this.studentClass = (sessionStorage.getItem('student_class') || '').trim().toUpperCase();
       const urlParams = new URLSearchParams(window.location.search);
       this.examId = urlParams.get('exam_id') || sessionStorage.getItem('exam_id') || 'exam_001';
       this.startedAt = sessionStorage.getItem('started_at') || new Date().toISOString();
@@ -1080,17 +1080,14 @@ function examApp() {
       if (!rawExpr || !window.katex) return rawExpr || '';
       let expr = String(rawExpr).trim();
 
-      // Dọn dẹp ngoặc nhọn mồ côi trước chữ cái hoặc đơn vị: { m^{2} -> m^{2}
-      expr = expr.replace(/^\{\s*([a-zA-Z])/, '$1')
-                 .replace(/(^|[^\\])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+      // Chỉ dọn dẹp ngoặc nhọn mồ côi bao toàn bộ cụm: { x } -> x
+      if (/^\{[^{}]*\}$/.test(expr)) {
+        expr = expr.slice(1, -1).trim();
+      }
 
       // Tự động cân bằng ngoặc nhọn { và } nếu lệch
       let openBraces = (expr.match(/\{/g) || []).length;
       let closeBraces = (expr.match(/\}/g) || []).length;
-      if (openBraces > closeBraces) {
-        expr = expr.replace(/^\{\s*([a-zA-Z])/, '$1');
-        openBraces = (expr.match(/\{/g) || []).length;
-      }
       if (openBraces > closeBraces) {
         expr = expr + '}'.repeat(openBraces - closeBraces);
       } else if (closeBraces > openBraces) {
@@ -1098,14 +1095,9 @@ function examApp() {
       }
 
       try {
-        return katex.renderToString(expr, { displayMode: !!displayMode, throwOnError: true });
-      } catch (e1) {
-        try {
-          let stripped = expr.replace(/[\{\}]/g, '');
-          return katex.renderToString(stripped, { displayMode: !!displayMode, throwOnError: false });
-        } catch (e2) {
-          return `<span class="font-medium text-blue-700 italic">${rawExpr}</span>`;
-        }
+        return katex.renderToString(expr, { displayMode: !!displayMode, throwOnError: false });
+      } catch (e) {
+        return `<span class="font-medium text-blue-700 italic">${rawExpr}</span>`;
       }
     },
 
@@ -1397,8 +1389,15 @@ function examApp() {
       const startTime = new Date(this.startedAt).getTime();
       const durationSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
 
+      const p3CleanAnswers = {};
+      for (const [k, v] of Object.entries(this.p3Answers || {})) {
+        if (v !== undefined && v !== null) {
+          p3CleanAnswers[k] = String(v).trim().toUpperCase();
+        }
+      }
+
       const payload = {
-        student_name: (this.studentName || '').trim(),
+        student_name: (this.studentName || '').trim().toUpperCase(),
         student_class: (this.studentClass || '').trim().toUpperCase(),
         exam_id: this.examId,
         exam_title: this.examData?.title || '',
@@ -1408,7 +1407,7 @@ function examApp() {
         duration_seconds: durationSeconds,
         part1_answers: this.p1Answers,
         part2_answers: this.p2Answers,
-        part3_answers: this.p3Answers,
+        part3_answers: p3CleanAnswers,
         part4_question_id: this.p4QuestionId || null,
         part4_answer: this.p4Answer || '',
       };
@@ -1450,8 +1449,15 @@ function examApp() {
       const startTime = new Date(this.startedAt).getTime();
       const durationSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
       
+      const p3CleanAnswers = {};
+      for (const [k, v] of Object.entries(this.p3Answers || {})) {
+        if (v !== undefined && v !== null) {
+          p3CleanAnswers[k] = String(v).trim().toUpperCase();
+        }
+      }
+
       const payload = {
-        student_name: (this.studentName || '').trim(),
+        student_name: (this.studentName || '').trim().toUpperCase(),
         student_class: (this.studentClass || '').trim().toUpperCase(),
         exam_id: this.examId,
         exam_title: this.examData?.title || '',
@@ -1461,7 +1467,7 @@ function examApp() {
         duration_seconds: durationSeconds,
         part1_answers: this.p1Answers,
         part2_answers: this.p2Answers,
-        part3_answers: this.p3Answers,
+        part3_answers: p3CleanAnswers,
         part4_question_id: this.p4QuestionId || null,
         part4_answer: this.p4Answer || '',
       };

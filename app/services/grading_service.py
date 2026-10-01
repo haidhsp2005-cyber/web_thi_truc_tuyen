@@ -14,13 +14,16 @@ logger = logging.getLogger(__name__)
 
 
 def _normalize_answer(answer: str) -> str:
-    """Chuẩn hóa chuỗi đáp án: bỏ dấu cách thừa, chuyển thường, bỏ dấu tiếng Việt nếu là số."""
+    """Chuẩn hóa chuỗi đáp án: bỏ dấu cách thừa, chuyển IN HOA đồng nhất, xử lý dấu phẩy số thập phân."""
     if not answer:
         return ""
-    ans = answer.strip().lower()
-    # Nếu là số, loại bỏ khoảng trắng và dấu phẩy phân cách hàng nghìn
-    ans_no_space = ans.replace(" ", "").replace(",", ".")
-    return ans_no_space
+    ans = str(answer).strip().upper()
+    # Loại bỏ khoảng trắng thừa
+    ans = re.sub(r'\s+', '', ans)
+    # Xử lý số thập phân có dấu phẩy: 3,14 -> 3.14
+    if re.match(r'^[+-]?\d+,\d+$', ans):
+        ans = ans.replace(",", ".")
+    return ans
 
 
 def _is_numeric_close(student: str, correct: str, tolerance: float = 0.01) -> bool:
@@ -161,7 +164,7 @@ def grade_part3(exam_data: dict, student_answers: dict) -> dict:
 
     for q in questions:
         qid = q["id"]
-        student_raw = (student_answers.get(qid) or "").strip()
+        student_raw = (student_answers.get(qid) or "").strip().upper()
         student_norm = _normalize_answer(student_raw)
 
         correct_answers = [_normalize_answer(a) for a in q.get("accepted_answers", [q["answer"]])]

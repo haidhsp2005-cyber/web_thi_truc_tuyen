@@ -270,9 +270,8 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     for orig, rep in replacements:
         math_latex = math_latex.replace(orig, rep)
     
-    # Dọn dẹp lỗi ngoặc nhọn mồ côi: 200{ m^{2} -> 200 m^{2} hoặc { m^{2} -> m^{2}
+    # Dọn dẹp lỗi ngoặc nhọn mồ côi: 200{ m^{2} -> 200 m^{2}
     math_latex = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', math_latex)
-    math_latex = re.sub(r'(^|[^\\])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', math_latex)
 
     # Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị: { (m^{2}) -> (m^{2})
     math_latex = re.sub(r'\{(\s*\([^\)]+\))\}?', r'\1', math_latex)
@@ -368,9 +367,8 @@ def _sanitize_math_symbols(math_latex: str) -> str:
     if dollar_count % 2 != 0:
         math_latex = math_latex + "$"
 
-    # 7b. Tự động dọn ngoặc nhọn mồ côi trước chữ cái / đơn vị (như { m^{2} -> m^{2})
+    # 7b. Tự động dọn ngoặc nhọn mồ côi trước chữ cái / đơn vị (như 200{ m^{2} -> 200 m^{2})
     math_latex = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', math_latex)
-    math_latex = re.sub(r'(^|[^\\])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', math_latex)
 
     # 7c. Tự động cân bằng ngoặc nhọn { và } nếu lệch
     open_braces = math_latex.count("{")

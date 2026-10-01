@@ -1389,17 +1389,14 @@ function examBuilder() {
       if (!rawExpr || !window.katex) return rawExpr || '';
       let expr = String(rawExpr).trim();
 
-      // Dọn dẹp ngoặc nhọn mồ côi trước chữ cái hoặc đơn vị: { m^{2} -> m^{2}
-      expr = expr.replace(/^\{\s*([a-zA-Z])/, '$1')
-                 .replace(/(^|[^\\])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+      // Chỉ dọn dẹp ngoặc nhọn mồ côi bao toàn bộ cụm: { x } -> x
+      if (/^\{[^{}]*\}$/.test(expr)) {
+        expr = expr.slice(1, -1).trim();
+      }
 
       // Tự động cân bằng ngoặc nhọn { và } nếu lệch
       let openBraces = (expr.match(/\{/g) || []).length;
       let closeBraces = (expr.match(/\}/g) || []).length;
-      if (openBraces > closeBraces) {
-        expr = expr.replace(/^\{\s*([a-zA-Z])/, '$1');
-        openBraces = (expr.match(/\{/g) || []).length;
-      }
       if (openBraces > closeBraces) {
         expr = expr + '}'.repeat(openBraces - closeBraces);
       } else if (closeBraces > openBraces) {
@@ -1407,14 +1404,9 @@ function examBuilder() {
       }
 
       try {
-        return katex.renderToString(expr, { displayMode: !!displayMode, throwOnError: true });
-      } catch (e1) {
-        try {
-          let stripped = expr.replace(/[\{\}]/g, '');
-          return katex.renderToString(stripped, { displayMode: !!displayMode, throwOnError: false });
-        } catch (e2) {
-          return `<span class="font-medium text-blue-700 italic">${rawExpr}</span>`;
-        }
+        return katex.renderToString(expr, { displayMode: !!displayMode, throwOnError: false });
+      } catch (e) {
+        return `<span class="font-medium text-blue-700 italic">${rawExpr}</span>`;
       }
     },
 

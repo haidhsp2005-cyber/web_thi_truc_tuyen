@@ -140,15 +140,15 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi trên máy chủ!")
     
-    student_name = data.get("student_name", "").strip()
-    student_class = data.get("student_class", "").strip()
+    student_name = data.get("student_name", "").strip().upper()
+    student_class = data.get("student_class", "").strip().upper()
     if not student_name:
         raise HTTPException(status_code=400, detail="Vui lòng nhập họ tên!")
     
     # Chấm điểm tức thì
     p1_answers = data.get("part1_answers", {})
     p2_answers = data.get("part2_answers", {})
-    p3_answers = data.get("part3_answers", {})
+    p3_answers = {str(k): str(v).strip().upper() for k, v in (data.get("part3_answers") or {}).items() if v is not None}
     p4_question_id = data.get("part4_question_id")
     p4_answer = data.get("part4_answer", "")
     
