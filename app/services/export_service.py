@@ -98,8 +98,14 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
 
     ws.row_dimensions[4].height = 35
 
-    # Dữ liệu học sinh — sắp xếp theo điểm từ thấp đến cao
-    submissions_sorted = sorted(submissions, key=lambda s: float((s.get("scores") or {}).get("total_score") or 0))
+    # Dữ liệu học sinh — sắp xếp theo tổng điểm giảm dần (từ cao xuống thấp)
+    submissions_sorted = sorted(
+        submissions,
+        key=lambda s: (
+            -float((s.get("scores") or {}).get("total_score") or 0),
+            (s.get("student_name") or "").strip().lower()
+        )
+    )
     rank_colors = {"Giỏi": "D1FAE5", "Khá": "DBEAFE", "Trung bình": "FEF9C3", "Yếu": "FEE2E2"}
 
     if not submissions_sorted:
