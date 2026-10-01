@@ -139,6 +139,17 @@
 
     <!-- Actions -->
     <div class="flex items-center gap-2 flex-shrink-0">
+      <!-- Nút Toàn màn hình (dành cho Máy tính & Laptop) -->
+      <button 
+        type="button"
+        @click="toggleFullscreen()" 
+        class="hidden sm:inline-flex bg-blue-800 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl items-center gap-1.5 border border-blue-700 shadow-sm transition-all cursor-pointer"
+        :title="isFullscreen ? 'Thu nhỏ cửa sổ' : 'Bật chế độ toàn màn hình để tập trung làm bài'"
+      >
+        <span x-text="isFullscreen ? '🗗' : '⛶'"></span>
+        <span x-text="isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'"></span>
+      </button>
+
       <button 
         @click="showMobilePalette = true" 
         class="lg:hidden bg-blue-800 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-2.5 py-2 rounded-xl flex items-center gap-1.5 border border-blue-700 shadow-sm transition-all cursor-pointer"
@@ -653,19 +664,19 @@
     <div>
       <h3 class="text-lg sm:text-xl font-black text-red-700 uppercase tracking-wide">CẢNH BÁO VI PHẠM QUY CHẾ</h3>
       <p class="text-gray-700 text-xs sm:text-sm mt-2 leading-relaxed">
-        Hệ thống phát hiện bạn vừa <strong>rời khỏi màn hình làm bài</strong> hoặc chuyển ứng dụng khác!
+        Hệ thống phát hiện bạn vừa <strong>rời khỏi màn hình làm bài, chuyển tab hoặc mở ứng dụng khác</strong>!
       </p>
     </div>
     
     <div class="bg-red-50 rounded-2xl p-4 border border-red-200 text-left">
       <div class="flex items-center justify-between mb-1">
-        <span class="text-xs font-bold text-gray-700">Số lần rời màn hình:</span>
+        <span class="text-xs font-bold text-gray-700">Số lần rời màn hình / chuyển tab:</span>
         <span class="text-sm font-black px-2.5 py-0.5 rounded-full"
               :class="screenSwitchCount >= 2 ? 'bg-red-600 text-white' : 'bg-amber-500 text-white'"
               x-text="`${screenSwitchCount} / ${maxSwitchesAllowed} lần`"></span>
       </div>
       <p class="text-[11px] text-red-600 leading-normal mt-1">
-        Nghiêm cấm chuyển màn hình điện thoại, đổi ứng dụng hoặc mở tab mới khi chưa bấm nút Nộp bài. Nếu vi phạm đủ <strong>3 lần</strong>, hệ thống sẽ <strong>TỰ ĐỘNG THU VÀ NỘP BÀI THI</strong> ngay lập tức!
+        Nghiêm cấm chuyển tab, thu nhỏ trình duyệt, mở ứng dụng khác hoặc tra cứu tài liệu khi chưa bấm nút Nộp bài. Nếu vi phạm đủ <strong>3 lần</strong>, hệ thống sẽ <strong>TỰ ĐỘNG THU VÀ NỘP BÀI THI</strong> ngay lập tức!
       </p>
     </div>
 
@@ -674,12 +685,12 @@
       @click="showScreenSwitchModal = false" 
       class="w-full py-3.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg transition-all text-sm uppercase tracking-wide cursor-pointer"
     >
-      Tôi đã hiểu và cam kết không vi phạm
+      Tôi đã hiểu và cam kết quay lại làm bài
     </button>
   </div>
 </div>
 
-<!-- Modal Cảnh Báo Bấm Nút Back Điện Thoại -->
+<!-- Modal Cảnh Báo Bấm Nút Back Trình Duyệt / Điện Thoại -->
 <div x-show="showBackWarningModal" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-4" style="background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px);">
   <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-sm w-full text-center shadow-2xl space-y-4 border border-amber-300">
     <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl">
@@ -688,7 +699,7 @@
     <div>
       <h3 class="text-base sm:text-lg font-black text-gray-900 uppercase">KHÔNG THỂ QUAY LẠI</h3>
       <p class="text-gray-600 text-xs sm:text-sm mt-2 leading-relaxed">
-        Bạn đang trong phiên làm bài thi. Không thể dùng phím Quay lại trên điện thoại. Hãy hoàn thành các câu hỏi và bấm nút <strong>"Nộp bài"</strong> để nộp bài.
+        Bạn đang trong phiên làm bài thi. Không thể dùng phím Quay lại (Back) của trình duyệt hoặc điện thoại. Hãy hoàn thành các câu hỏi và bấm nút <strong>"Nộp bài"</strong> để nộp bài.
       </p>
     </div>
     <button 
@@ -784,6 +795,17 @@ function examApp() {
     showScreenSwitchModal: false,
     showBackWarningModal: false,
     maxSwitchesAllowed: 3,
+    isFullscreen: false,
+
+    toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    },
 
     // Questions
     get p1Questions() { return this.examData?.parts?.part1?.questions || []; },
@@ -858,6 +880,56 @@ function examApp() {
           e.returnValue = 'Bạn đang làm bài kiểm tra!';
         }
       });
+
+      // 1. Chống chuột phải (Context Menu) trên máy tính để tránh tra cứu Google / Inspect
+      document.addEventListener('contextmenu', (e) => {
+        if (!this.submitted && !this.submitting) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // 2. Chống copy câu hỏi ra ngoài tra cứu (vẫn cho phép copy/paste trong ô nhập trả lời ngắn/tự luận)
+      document.addEventListener('copy', (e) => {
+        const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+        if (tag === 'input' || tag === 'textarea') return true;
+        if (!this.submitted && !this.submitting) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // 3. Chống các phím tắt gian lận trên máy tính: F12, Ctrl+Shift+I/J/C, Ctrl+U, Alt+Left
+      document.addEventListener('keydown', (e) => {
+        if (this.submitted || this.submitting) return;
+
+        // F12 (Inspect DevTools)
+        if (e.key === 'F12' || e.keyCode === 123) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C (DevTools)
+        if (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+U (View source)
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+          e.preventDefault();
+          return false;
+        }
+        // Alt + ArrowLeft (Browser Back trên máy tính)
+        if (e.altKey && (e.key === 'ArrowLeft' || e.keyCode === 37)) {
+          e.preventDefault();
+          this.showBackWarningModal = true;
+          return false;
+        }
+      });
+
+      // 4. Theo dõi trạng thái toàn màn hình trên máy tính
+      document.addEventListener('fullscreenchange', () => {
+        this.isFullscreen = !!document.fullscreenElement;
+      });
       
       window.zoomExamImage = (url) => { this.zoomImage(url); };
       
@@ -920,7 +992,8 @@ function examApp() {
 
       this.loading = false;
       
-      // Giám sát chuyển màn hình điện thoại / đổi ứng dụng / chuyển tab
+      // Giám sát chuyển màn hình điện thoại / đổi ứng dụng / chuyển tab máy tính
+      let origDocTitle = document.title;
       let lastLeaveTime = 0;
       const onScreenLeave = () => {
         if (this.loading || this.submitting || this.submitted) return;
@@ -933,16 +1006,29 @@ function examApp() {
         const timeStr = new Date().toLocaleTimeString('vi-VN');
         this.switchViolations.push(timeStr);
         this.autoSave();
+
+        // Nhấp nháy cảnh báo đỏ trên tab trình duyệt máy tính
+        document.title = '🚨 [CẢNH BÁO VI PHẠM] Quay lại làm bài ngay! 🚨';
+
+        // Lập tức kích hoạt trạng thái cảnh báo ngay
+        if (this.screenSwitchCount >= this.maxSwitchesAllowed) {
+          this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Chuyển tab / rời màn hình làm bài ${this.screenSwitchCount} lần (vượt quá giới hạn cho phép). Hệ thống tự động thu và nộp bài!`;
+          this.showTimeUpModal = true;
+          this.isAutoSubmitting = true;
+        } else {
+          this.showScreenSwitchModal = true;
+        }
       };
 
       const onScreenReturn = () => {
         if (this.loading || this.submitting || this.submitted) return;
+        document.title = origDocTitle;
         this.updateTimerTick();
 
         if (this.screenSwitchCount > 0) {
           if (this.screenSwitchCount >= this.maxSwitchesAllowed) {
             // Đã chuyển màn hình quá 3 lần -> Tự động thu và nộp bài
-            this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Rời màn hình / chuyển ứng dụng ${this.screenSwitchCount} lần (vượt quá giới hạn cho phép). Hệ thống tự động thu và nộp bài!`;
+            this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Chuyển tab / rời màn hình làm bài ${this.screenSwitchCount} lần (vượt quá giới hạn cho phép). Hệ thống tự động thu và nộp bài!`;
             this.showTimeUpModal = true;
             this.isAutoSubmitting = true;
             setTimeout(() => {
