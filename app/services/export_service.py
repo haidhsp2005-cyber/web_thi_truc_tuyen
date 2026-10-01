@@ -858,7 +858,7 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
   <!-- PHẦN II -->
   <div class="mb-5">
     <h2 class="font-bold text-sm uppercase text-gray-900 mb-2.5 pb-1 border-b">
-      PHẦN II (4,0 điểm). Thí sinh trả lời từ câu 1 đến câu {len(p2_qs)}. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn Đúng hoặc Sai.
+      PHẦN II (4,0 điểm). Thí sinh trả lời từ câu 1 đến câu {len(p2_qs)}. Trong mỗi ý A), B), C), D) ở mỗi câu, thí sinh chọn Đúng hoặc Sai.
     </h2>
     {p2_html}
   </div>

@@ -67,7 +67,7 @@ async def get_current_exam(exam_id: str = "exam_001"):
     p2 = exam.get("parts", {}).get("part2", {})
     safe_exam["parts"]["part2"] = {
         "name": p2.get("name", "Phần II: Trắc nghiệm Đúng / Sai"),
-        "instruction": p2.get("instruction", "Trong mỗi câu, xét tính Đúng (Đ) hoặc Sai (S) của mỗi ý (a), (b), (c), (d)."),
+        "instruction": p2.get("instruction", "Trong mỗi câu, xét tính Đúng (Đ) hoặc Sai (S) của mỗi ý (A), (B), (C), (D)."),
         "questions": [
             {
                 "id": q.get("id"),
@@ -173,6 +173,8 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         "started_at": data.get("started_at", ""),
         "submitted_at": client_submitted,
         "duration_seconds": data.get("duration_seconds", 0),
+        "screen_switch_count": int(data.get("screen_switch_count", 0)),
+        "switch_violations": data.get("switch_violations", []),
         "part1_answers": p1_answers,
         "part2_answers": p2_answers,
         "part3_answers": p3_answers,
@@ -186,6 +188,8 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         "part2_result": p2_result,
         "part3_result": p3_result,
         "part4_result": p4_result,
+        "screen_switch_count": submission_data["screen_switch_count"],
+        "switch_violations": submission_data["switch_violations"],
         "submitted_at": submission_data["submitted_at"],
         "duration_seconds": submission_data["duration_seconds"],
     }

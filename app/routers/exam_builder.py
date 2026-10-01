@@ -1654,7 +1654,7 @@ def _ensure_part_structure(exam_data: dict):
 
     p2 = parts.setdefault("part2", {})
     p2.setdefault("name", "Phần II: Trắc nghiệm Đúng / Sai")
-    p2.setdefault("instruction", "Trong mỗi câu, xét tính Đúng (Đ) hoặc Sai (S) của mỗi ý (a), (b), (c), (d).")
+    p2.setdefault("instruction", "Trong mỗi câu, xét tính Đúng (Đ) hoặc Sai (S) của mỗi ý (A), (B), (C), (D).")
     p2.setdefault("questions", [])
 
     p3 = parts.setdefault("part3", {})

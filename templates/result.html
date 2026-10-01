@@ -233,7 +233,7 @@
             </span>
             <div>
               <h4 class="font-bold text-gray-900 text-sm">Trắc nghiệm Đúng / Sai</h4>
-              <p class="text-xs text-gray-500 mt-0.5">Xét tính Đúng / Sai của từng mệnh đề a, b, c, d</p>
+              <p class="text-xs text-gray-500 mt-0.5">Xét tính Đúng / Sai của từng mệnh đề A, B, C, D</p>
             </div>
           </div>
           <div class="flex items-center gap-4 self-end sm:self-center">
@@ -497,6 +497,14 @@ function resultApp() {
     }
   };
 }
+
+// Chặn phím Back của điện thoại quay về bài thi đã nộp: chuyển thẳng về trang chủ (/) để vào thi mới
+try {
+  history.pushState(null, document.title, location.href);
+  window.addEventListener('popstate', function() {
+    window.location.replace('/');
+  });
+} catch(e) {}
 </script>
 </body>
 </html>

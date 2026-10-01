@@ -226,6 +226,9 @@ function startExam() {
 
   sessionStorage.removeItem('exam_answers');
   sessionStorage.removeItem('exam_shuffled_' + examId);
+  sessionStorage.removeItem('exam_submitted_' + examId);
+  localStorage.removeItem('exam_submitted_' + examId);
+  sessionStorage.removeItem('screen_switch_' + examId);
   sessionStorage.setItem('student_name', name);
   sessionStorage.setItem('student_class', cls);
   sessionStorage.setItem('exam_id', examId);

@@ -345,7 +345,7 @@
                   <!-- Mệnh đề: chiếm trọn độ rộng trên điện thoại, không bị co ép hẹp dòng -->
                   <div class="flex items-start sm:items-center gap-2.5 flex-1 min-w-0">
                     <span class="font-bold text-gray-700 w-6 text-base flex-shrink-0 pt-0.5 sm:pt-0">(<span x-text="(item.displayLabel || '').toUpperCase()"></span>)</span>
-                    <span class="flex-1 text-gray-800 text-sm sm:text-base leading-relaxed break-words" x-html="renderLatex(item.text)"></span>
+                    <span class="flex-1 text-gray-800 text-sm sm:text-base leading-relaxed break-words" x-html="renderLatex(item.cleanText || item.text)"></span>
                   </div>
                   <!-- 2 nút Đúng / Sai: xếp ngang dưới câu hỏi trên mobile, dễ bấm không bị đè chữ -->
                   <div class="flex items-center justify-end sm:justify-center gap-2 flex-shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60">
@@ -644,6 +644,63 @@
   </div>
 </div>
 
+<!-- Modal Cảnh Báo Rời Khỏi Màn Hình / Chuyển Ứng Dụng -->
+<div x-show="showScreenSwitchModal" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-4" style="background-color: rgba(15, 23, 42, 0.90); backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full text-center shadow-2xl space-y-4 border-2 border-red-500">
+    <div class="w-16 h-16 mx-auto rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-3xl">
+      🚨
+    </div>
+    <div>
+      <h3 class="text-lg sm:text-xl font-black text-red-700 uppercase tracking-wide">CẢNH BÁO VI PHẠM QUY CHẾ</h3>
+      <p class="text-gray-700 text-xs sm:text-sm mt-2 leading-relaxed">
+        Hệ thống phát hiện bạn vừa <strong>rời khỏi màn hình làm bài</strong> hoặc chuyển ứng dụng khác!
+      </p>
+    </div>
+    
+    <div class="bg-red-50 rounded-2xl p-4 border border-red-200 text-left">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs font-bold text-gray-700">Số lần rời màn hình:</span>
+        <span class="text-sm font-black px-2.5 py-0.5 rounded-full"
+              :class="screenSwitchCount >= 2 ? 'bg-red-600 text-white' : 'bg-amber-500 text-white'"
+              x-text="`${screenSwitchCount} / ${maxSwitchesAllowed} lần`"></span>
+      </div>
+      <p class="text-[11px] text-red-600 leading-normal mt-1">
+        Nghiêm cấm chuyển màn hình điện thoại, đổi ứng dụng hoặc mở tab mới khi chưa bấm nút Nộp bài. Nếu vi phạm đủ <strong>3 lần</strong>, hệ thống sẽ <strong>TỰ ĐỘNG THU VÀ NỘP BÀI THI</strong> ngay lập tức!
+      </p>
+    </div>
+
+    <button 
+      type="button" 
+      @click="showScreenSwitchModal = false" 
+      class="w-full py-3.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg transition-all text-sm uppercase tracking-wide cursor-pointer"
+    >
+      Tôi đã hiểu và cam kết không vi phạm
+    </button>
+  </div>
+</div>
+
+<!-- Modal Cảnh Báo Bấm Nút Back Điện Thoại -->
+<div x-show="showBackWarningModal" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-4" style="background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px);">
+  <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-sm w-full text-center shadow-2xl space-y-4 border border-amber-300">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl">
+      ⚠️
+    </div>
+    <div>
+      <h3 class="text-base sm:text-lg font-black text-gray-900 uppercase">KHÔNG THỂ QUAY LẠI</h3>
+      <p class="text-gray-600 text-xs sm:text-sm mt-2 leading-relaxed">
+        Bạn đang trong phiên làm bài thi. Không thể dùng phím Quay lại trên điện thoại. Hãy hoàn thành các câu hỏi và bấm nút <strong>"Nộp bài"</strong> để nộp bài.
+      </p>
+    </div>
+    <button 
+      type="button" 
+      @click="showBackWarningModal = false" 
+      class="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl text-sm transition-all shadow-md cursor-pointer"
+    >
+      Tiếp tục làm bài
+    </button>
+  </div>
+</div>
+
 <!-- Overlay toàn màn hình khi đang nộp bài thủ công -->
 <div x-show="submitting && !showTimeUpModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(15, 23, 42, 0.88); backdrop-filter: blur(4px);">
   <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl space-y-4">
@@ -713,12 +770,20 @@ function examApp() {
       this.zoomedImage = url;
     },
     submitting: false,
+    submitted: false,
     showTimeUpModal: false,
     timeUpMsg: '',
     isAutoSubmitting: false,
     timeLeft: 45 * 60,
     targetEndTime: null,
     timerInterval: null,
+
+    // Giám sát chống gian lận & chuyển màn hình
+    screenSwitchCount: 0,
+    switchViolations: [],
+    showScreenSwitchModal: false,
+    showBackWarningModal: false,
+    maxSwitchesAllowed: 3,
 
     // Questions
     get p1Questions() { return this.examData?.parts?.part1?.questions || []; },
@@ -743,17 +808,56 @@ function examApp() {
     },
 
     async init() {
+      const urlParams = new URLSearchParams(window.location.search);
+      this.examId = urlParams.get('exam_id') || sessionStorage.getItem('exam_id') || 'exam_001';
+      
+      // 1. Kiểm tra nếu thí sinh đã nộp bài rồi -> Tuyệt đối không cho quay lại làm bài, chuyển về trang chủ để vào thi mới
+      const isAlreadySubmitted = sessionStorage.getItem('exam_submitted_' + this.examId) || localStorage.getItem('exam_submitted_' + this.examId);
+      if (isAlreadySubmitted) {
+        window.location.replace('/');
+        return;
+      }
+
+      window.addEventListener('pageshow', (event) => {
+        if (sessionStorage.getItem('exam_submitted_' + this.examId) || localStorage.getItem('exam_submitted_' + this.examId)) {
+          window.location.replace('/');
+        }
+      });
+
       // Lấy thông tin học sinh từ sessionStorage
       this.studentName = (sessionStorage.getItem('student_name') || '').trim().toUpperCase();
       this.studentClass = (sessionStorage.getItem('student_class') || '').trim().toUpperCase();
-      const urlParams = new URLSearchParams(window.location.search);
-      this.examId = urlParams.get('exam_id') || sessionStorage.getItem('exam_id') || 'exam_001';
       this.startedAt = sessionStorage.getItem('started_at') || new Date().toISOString();
       
       if (!this.studentName) {
-        window.location.href = '/';
+        window.location.replace('/');
         return;
       }
+
+      // Khôi phục số lần chuyển màn hình nếu có
+      const savedSwitches = sessionStorage.getItem('screen_switch_' + this.examId);
+      if (savedSwitches) {
+        this.screenSwitchCount = parseInt(savedSwitches, 10) || 0;
+      }
+
+      // Chặn phím Back điện thoại khi đang làm bài
+      try {
+        history.pushState({ page: 'exam' }, document.title, location.href);
+        window.addEventListener('popstate', (e) => {
+          if (!this.submitted && !this.submitting) {
+            history.pushState({ page: 'exam' }, document.title, location.href);
+            this.showBackWarningModal = true;
+          }
+        });
+      } catch(e) {}
+
+      // Cảnh báo người dùng trước khi thoát / đóng tab
+      window.addEventListener('beforeunload', (e) => {
+        if (!this.submitted && !this.submitting && this.answeredCount > 0) {
+          e.preventDefault();
+          e.returnValue = 'Bạn đang làm bài kiểm tra!';
+        }
+      });
       
       window.zoomExamImage = (url) => { this.zoomImage(url); };
       
@@ -816,14 +920,53 @@ function examApp() {
 
       this.loading = false;
       
-      // Đồng bộ đồng hồ đếm ngược tức thì khi quay lại trang / chuyển tab / mở khóa điện thoại
+      // Giám sát chuyển màn hình điện thoại / đổi ứng dụng / chuyển tab
+      let lastLeaveTime = 0;
+      const onScreenLeave = () => {
+        if (this.loading || this.submitting || this.submitted) return;
+        const now = Date.now();
+        if (now - lastLeaveTime < 1500) return; // Tránh tính đúp sự kiện blur & visibilitychange
+        lastLeaveTime = now;
+
+        this.screenSwitchCount++;
+        sessionStorage.setItem('screen_switch_' + this.examId, this.screenSwitchCount);
+        const timeStr = new Date().toLocaleTimeString('vi-VN');
+        this.switchViolations.push(timeStr);
+        this.autoSave();
+      };
+
+      const onScreenReturn = () => {
+        if (this.loading || this.submitting || this.submitted) return;
+        this.updateTimerTick();
+
+        if (this.screenSwitchCount > 0) {
+          if (this.screenSwitchCount >= this.maxSwitchesAllowed) {
+            // Đã chuyển màn hình quá 3 lần -> Tự động thu và nộp bài
+            this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Rời màn hình / chuyển ứng dụng ${this.screenSwitchCount} lần (vượt quá giới hạn cho phép). Hệ thống tự động thu và nộp bài!`;
+            this.showTimeUpModal = true;
+            this.isAutoSubmitting = true;
+            setTimeout(() => {
+              this.submitExam();
+            }, 3000);
+          } else {
+            // Hiện cảnh báo lần 1, lần 2
+            this.showScreenSwitchModal = true;
+          }
+        }
+      };
+
       document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          this.updateTimerTick();
+        if (document.visibilityState === 'hidden') {
+          onScreenLeave();
+        } else if (document.visibilityState === 'visible') {
+          onScreenReturn();
         }
       });
+      window.addEventListener('blur', () => {
+        onScreenLeave();
+      });
       window.addEventListener('focus', () => {
-        this.updateTimerTick();
+        onScreenReturn();
       });
       
       // Render LaTeX sau khi tải xong
@@ -877,11 +1020,14 @@ function examApp() {
       if (savedShuffled) {
         try {
           const parsed = JSON.parse(savedShuffled);
-          // Kiểm tra xem dữ liệu đã lưu có bị lỗi phương án rỗng không
+          // Kiểm tra xem dữ liệu đã lưu có bị lỗi phương án rỗng hoặc nhãn chữ thường không
           const hasBrokenOptions = parsed?.parts?.part1?.questions?.some(q => 
             !q.options || (!q.options.A && !q.options.B && !q.options.C && !q.options.D)
           );
-          if (!hasBrokenOptions) {
+          const hasLowerP2 = parsed?.parts?.part2?.questions?.some(q => 
+            q.displayItems?.some(it => ['a','b','c','d'].includes(it.displayLabel))
+          );
+          if (!hasBrokenOptions && !hasLowerP2) {
             this.examData = parsed;
             this.healExamData(this.examData);
             return;
@@ -914,18 +1060,18 @@ function examApp() {
         });
       }
       
-      // 2. Phần II: Trộn thứ tự câu hỏi & Trộn thứ tự các mệnh đề (a, b, c, d)
+      // 2. Phần II: Trộn thứ tự câu hỏi & Trộn thứ tự các mệnh đề (A, B, C, D)
       if (data.parts.part2 && Array.isArray(data.parts.part2.questions)) {
         data.parts.part2.questions.forEach((q, idx) => { if (!q.id) q.id = 'p2_q' + (idx + 1); });
         data.parts.part2.questions = this.shuffleArray(data.parts.part2.questions);
-        const itemLabels = ['a', 'b', 'c', 'd'];
+        const itemLabels = ['A', 'B', 'C', 'D'];
         data.parts.part2.questions.forEach(q => {
           if (q.items) {
             const keys = Object.keys(q.items);
             const shuffledKeys = this.shuffleArray(keys);
             q.displayItems = shuffledKeys.map((origKey, idx) => ({
               origKey: origKey,
-              displayLabel: itemLabels[idx] || origKey,
+              displayLabel: itemLabels[idx] || origKey.toUpperCase(),
               text: q.items[origKey]?.text !== undefined ? q.items[origKey].text : q.items[origKey]
             }));
           }
@@ -1070,14 +1216,19 @@ function examApp() {
           q.text = clean.substring(0, matches[0].index).trim();
         }
 
-        const itemLabels = ['a', 'b', 'c', 'd'];
+        const itemLabels = ['A', 'B', 'C', 'D'];
         const keys = Object.keys(newItems);
         q.displayItems = keys.map((k, idx) => ({
           origKey: k,
-          displayLabel: itemLabels[idx] || k,
+          displayLabel: itemLabels[idx] || k.toUpperCase(),
           text: newItems[k].text
         }));
       }
+    },
+
+    cleanItemText(txt) {
+      if (!txt) return '';
+      return String(txt).replace(/^\s*(?:[\(\[][a-dA-D][\)\]]|[a-dA-D][\)\.\:\/\-])\s*/, '');
     },
 
     safeKatex(rawExpr, displayMode) {
@@ -1313,16 +1464,25 @@ function examApp() {
     getP2DisplayItems(q) {
       if (!q) return [];
       this.healPart2Question(q);
+      const upperLabels = ['A', 'B', 'C', 'D'];
       if (q.displayItems && q.displayItems.length > 0) {
-        return q.displayItems;
+        return q.displayItems.map((item, idx) => ({
+          ...item,
+          displayLabel: upperLabels[idx] || (item.displayLabel || item.origKey || '').toUpperCase(),
+          cleanText: this.cleanItemText(item.text !== undefined ? item.text : item)
+        }));
       }
       if (q.items) {
         const keys = Object.keys(q.items);
-        return keys.map((k) => ({
-          origKey: k,
-          displayLabel: k,
-          text: q.items[k]?.text !== undefined ? q.items[k].text : q.items[k]
-        }));
+        return keys.map((k, idx) => {
+          const rawText = q.items[k]?.text !== undefined ? q.items[k].text : q.items[k];
+          return {
+            origKey: k,
+            displayLabel: upperLabels[idx] || k.toUpperCase(),
+            text: rawText,
+            cleanText: this.cleanItemText(rawText)
+          };
+        });
       }
       return [];
     },
@@ -1412,6 +1572,8 @@ function examApp() {
         part1_answers: this.p1Answers,
         part2_answers: this.p2Answers,
         part3_answers: p3CleanAnswers,
+        screen_switch_count: this.screenSwitchCount,
+        switch_violations: this.switchViolations,
         part4_question_id: this.p4QuestionId || null,
         part4_answer: this.p4Answer || '',
       };
@@ -1427,6 +1589,9 @@ function examApp() {
         sessionStorage.removeItem('exam_answers');
         sessionStorage.removeItem('exam_end_time_' + this.examId);
         sessionStorage.removeItem('exam_shuffled_' + this.examId);
+        sessionStorage.removeItem('screen_switch_' + this.examId);
+        sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
+        localStorage.setItem('exam_submitted_' + this.examId, 'true');
         sessionStorage.removeItem('student_name');
         sessionStorage.removeItem('student_class');
 
@@ -1441,13 +1606,14 @@ function examApp() {
 
       // Đợi 2 giây để học sinh xem thông báo rồi tắt và chuyển về màn hình đăng nhập /
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.replace('/');
       }, 2000);
     },
     
     async submitExam() {
       this.showConfirm = false;
       this.submitting = true;
+      this.submitted = true;
       
       const submittedAt = new Date().toISOString();
       const startTime = new Date(this.startedAt).getTime();
@@ -1469,6 +1635,8 @@ function examApp() {
         started_at: this.startedAt,
         submitted_at: submittedAt,
         duration_seconds: durationSeconds,
+        screen_switch_count: this.screenSwitchCount,
+        switch_violations: this.switchViolations,
         part1_answers: this.p1Answers,
         part2_answers: this.p2Answers,
         part3_answers: p3CleanAnswers,
@@ -1489,17 +1657,24 @@ function examApp() {
           sessionStorage.removeItem('exam_answers');
           sessionStorage.removeItem('exam_end_time_' + this.examId);
           sessionStorage.removeItem('exam_shuffled_' + this.examId);
+          sessionStorage.removeItem('screen_switch_' + this.examId);
+          sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
+          localStorage.setItem('exam_submitted_' + this.examId, result.submission_id);
           sessionStorage.setItem('submission_id', result.submission_id);
           sessionStorage.setItem('cached_result_' + result.submission_id, JSON.stringify(result));
-          window.location.href = `/result?id=${result.submission_id}`;
+          
+          // Sử dụng replace để không lưu trang làm bài vào lịch sử back của điện thoại
+          window.location.replace(`/result?id=${result.submission_id}`);
         } else {
           const err = await resp.json();
           alert(`Lỗi nộp bài: ${err.detail || 'Không xác định'}`);
           this.submitting = false;
+          this.submitted = false;
         }
       } catch(e) {
         alert('Không thể nộp bài! Kiểm tra kết nối mạng.');
         this.submitting = false;
+        this.submitted = false;
       }
     }
   };
