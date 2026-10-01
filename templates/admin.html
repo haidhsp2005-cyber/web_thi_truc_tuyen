@@ -373,30 +373,39 @@
           </div>
         </div>
 
-        <!-- BỘ LỌC ĐỀ THI & LỚP CHO THỐNG KÊ & EXCEL -->
+        <!-- BỘ LỌC MÔN, LỚP & ĐỀ THI CHO THỐNG KÊ & EXCEL -->
         <div class="mt-4 pt-4 border-t space-y-2.5">
           <div class="text-xs font-bold uppercase text-gray-700 flex items-center justify-between">
-            <span class="flex items-center gap-1.5"><span>🎯</span><span>Lọc theo Đề & Lớp:</span></span>
-            <button x-show="selectedExamFilter || selectedClassFilter" @click="selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" class="text-blue-600 hover:underline font-bold text-[11px] cursor-pointer" x-cloak>
+            <span class="flex items-center gap-1.5"><span>🎯</span><span>Lọc thống kê & Excel:</span></span>
+            <button x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter" @click="selectedSubjectFilter=''; selectedClassFilter=''; selectedExamFilter=''; onFilterChange();" class="text-blue-600 hover:underline font-bold text-[11px] cursor-pointer" x-cloak>
               ✕ Bỏ lọc
             </button>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div>
-              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Chọn Đề thi:</label>
-              <select x-model="selectedExamFilter" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
-                <option value="">-- Tất cả đề thi --</option>
-                <template x-for="e in examList" :key="e.id">
-                  <option :value="e.id" x-text="`${e.title} (${e.subject || ''})`"></option>
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">📚 Môn thi:</label>
+              <select x-model="selectedSubjectFilter" @change="onSubjectFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
+                <option value="">-- Tất cả môn --</option>
+                <template x-for="s in availableSubjects" :key="s">
+                  <option :value="s" x-text="s"></option>
                 </template>
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Chọn Lớp:</label>
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">🏫 Lớp:</label>
               <select x-model="selectedClassFilter" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
                 <option value="">-- Tất cả các lớp --</option>
                 <template x-for="c in availableClasses" :key="c">
                   <option :value="c" x-text="`Lớp ${c}`"></option>
+                </template>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">📝 Đề thi:</label>
+              <select x-model="selectedExamFilter" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
+                <option value="">-- Tất cả đề thi --</option>
+                <template x-for="e in filteredExamsForFilter" :key="e.id">
+                  <option :value="e.id" x-text="`${e.title} (${e.subject || ''})`"></option>
                 </template>
               </select>
             </div>
@@ -407,7 +416,7 @@
         <a :href="excelExportUrl" class="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-md hover:scale-[1.01] active:scale-98">
           <span>📥</span>
           <span>Xuất bảng điểm Excel (.xlsx)</span>
-          <span x-show="selectedExamFilter || selectedClassFilter" class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-cloak>(Theo bộ lọc)</span>
+          <span x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter" class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-cloak>(Theo bộ lọc)</span>
         </a>
       </div>
     </div>
@@ -427,19 +436,19 @@
       </div>
     </div>
 
-    <!-- Bộ lọc Lớp & Đề thi cho bài nộp -->
+    <!-- Bộ lọc Môn, Lớp & Đề thi cho bài nộp -->
     <div x-show="submissions.length > 0" class="px-4 pt-4 pb-0">
       <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
         <div class="flex flex-wrap items-center gap-3">
           <span class="text-xs font-bold text-gray-600 flex items-center gap-1">🔍 Lọc bài nộp:</span>
           <div class="flex flex-wrap gap-2 flex-1">
             <div class="flex items-center gap-1.5">
-              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Đề thi:</label>
-              <select x-model="selectedExamFilter" @change="onFilterChange()"
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Môn:</label>
+              <select x-model="selectedSubjectFilter" @change="onSubjectFilterChange()"
                 class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-gray-500 font-medium">
-                <option value="">-- Tất cả đề --</option>
-                <template x-for="e in examList" :key="e.id">
-                  <option :value="e.id" x-text="`${e.title} (${e.subject || ''})`"></option>
+                <option value="">-- Tất cả môn --</option>
+                <template x-for="s in availableSubjects" :key="s">
+                  <option :value="s" x-text="s"></option>
                 </template>
               </select>
             </div>
@@ -453,16 +462,26 @@
                 </template>
               </select>
             </div>
-            <button x-show="selectedExamFilter || selectedClassFilter" @click="selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
+            <div class="flex items-center gap-1.5">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Đề thi:</label>
+              <select x-model="selectedExamFilter" @change="onFilterChange()"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-gray-500 font-medium">
+                <option value="">-- Tất cả đề --</option>
+                <template x-for="e in filteredExamsForFilter" :key="e.id">
+                  <option :value="e.id" x-text="`${e.title} (${e.subject || ''})`"></option>
+                </template>
+              </select>
+            </div>
+            <button x-show="selectedSubjectFilter || selectedExamFilter || selectedClassFilter" @click="selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
               class="text-xs text-gray-600 hover:text-gray-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
           </div>
         </div>
       </div>
     </div>
     
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto overflow-y-auto max-h-[560px] rounded-b-2xl border-t border-gray-100">
       <table class="w-full text-sm">
-        <thead class="bg-gray-100 text-gray-600">
+        <thead class="bg-gray-100 text-gray-700 sticky top-0 z-10 shadow-xs">
           <tr>
             <th class="text-left px-4 py-3 font-semibold">Họ và tên</th>
             <th class="text-center px-4 py-3 font-semibold">Lớp</th>
@@ -574,11 +593,11 @@
     </div>
 
     <div class="p-4">
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto overflow-y-auto max-h-[500px] rounded-xl border border-yellow-200/70 shadow-2xs">
         <table class="w-full text-sm">
-          <thead class="bg-yellow-50 text-yellow-800">
+          <thead class="bg-yellow-100 text-yellow-900 sticky top-0 z-10 shadow-xs">
             <tr>
-              <th class="text-left px-3 py-2">Tiêu đề đề thi</th>
+              <th class="text-left px-3 py-2.5">Tiêu đề đề thi</th>
               <th class="text-center px-3 py-2">Môn / Lớp</th>
               <th class="text-center px-3 py-2">Số câu</th>
               <th class="text-center px-3 py-2">Thời gian</th>
@@ -870,6 +889,7 @@ function adminApp() {
     submissions: [],
     examList: [],
     userList: [],
+    selectedSubjectFilter: '',
     selectedExamFilter: '',
     selectedClassFilter: '',
     availableClasses: [],
@@ -900,6 +920,23 @@ function adminApp() {
     scoringMsg: '',
     scoringMsgOk: true,
 
+    get availableSubjects() {
+      const seen = new Set();
+      for (const e of this.examList) {
+        if (e.subject) {
+          const s = e.subject.trim();
+          if (s && !seen.has(s)) seen.add(s);
+        }
+      }
+      return Array.from(seen).sort();
+    },
+
+    get filteredExamsForFilter() {
+      if (!this.selectedSubjectFilter) return this.examList;
+      const sub = this.selectedSubjectFilter.trim().toLowerCase();
+      return this.examList.filter(e => (e.subject || '').trim().toLowerCase() === sub);
+    },
+
     get adminExamSubjectOptions() {
       const seen = new Set();
       return this.examList.filter(e => { if (e.subject && !seen.has(e.subject)) { seen.add(e.subject); return true; } return false; }).map(e => e.subject);
@@ -919,23 +956,45 @@ function adminApp() {
     },
 
     get filteredSubmissions() {
+      const examMap = {};
+      for (const e of this.examList) {
+        examMap[e.id] = e;
+      }
+      const subFilter = this.selectedSubjectFilter ? this.selectedSubjectFilter.trim().toLowerCase() : '';
+      const clsFilter = this.selectedClassFilter ? this.selectedClassFilter.trim().toUpperCase() : '';
+
       return this.submissions.filter(sub => {
         if (this.selectedExamFilter && sub.exam_id !== this.selectedExamFilter) return false;
-        if (this.selectedClassFilter && (sub.student_class || '').trim().toUpperCase() !== this.selectedClassFilter.trim().toUpperCase()) return false;
+        if (clsFilter && (sub.student_class || '').trim().toUpperCase() !== clsFilter) return false;
+        if (subFilter) {
+          const ex = examMap[sub.exam_id];
+          const subSubject = (ex?.subject || '').trim().toLowerCase();
+          if (subSubject !== subFilter) return false;
+        }
         return true;
       });
     },
 
     get excelExportUrl() {
       const params = new URLSearchParams();
+      if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
       if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
       if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
       return '/api/exam/export/excel' + (params.toString() ? '?' + params.toString() : '');
     },
 
+    onSubjectFilterChange() {
+      if (this.selectedSubjectFilter && this.selectedExamFilter) {
+        const subFilter = this.selectedSubjectFilter.trim().toLowerCase();
+        const match = this.examList.find(e => e.id === this.selectedExamFilter && (e.subject || '').trim().toLowerCase() === subFilter);
+        if (!match) this.selectedExamFilter = '';
+      }
+      this.onFilterChange();
+    },
+
     async onFilterChange() {
-      // Lọc client-side tức thì, đồng thời cập nhật thống kê từ server
-      this.loadStats();
+      // Lọc client-side tức thì, đồng thời cập nhật thống kê và danh sách bài nộp từ server
+      await Promise.all([this.loadStats(), this.loadSubmissions()]);
     },
 
     async init() {
@@ -1080,6 +1139,7 @@ function adminApp() {
     async loadStats() {
       try {
         const params = new URLSearchParams();
+        if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
         if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
         if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
         const url = '/api/admin/stats' + (params.toString() ? '?' + params.toString() : '');
@@ -1098,6 +1158,7 @@ function adminApp() {
     async loadSubmissions() {
       try {
         const params = new URLSearchParams();
+        if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
         if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
         if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
         const url = '/api/admin/submissions' + (params.toString() ? '?' + params.toString() : '');

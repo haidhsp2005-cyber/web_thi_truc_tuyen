@@ -287,21 +287,32 @@ async def get_grading_status(submission_id: str):
 
 
 @router.get("/export/excel")
-async def export_excel(exam_id: Optional[str] = None, student_class: Optional[str] = None):
-    """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Đề thi và theo Lớp."""
+async def export_excel(exam_id: Optional[str] = None, student_class: Optional[str] = None, subject: Optional[str] = None):
+    """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Môn thi, Đề thi và theo Lớp."""
     clean_class = student_class.strip().upper() if student_class and student_class.strip() else None
     clean_exam_id = exam_id.strip() if exam_id and exam_id.strip() else None
+    clean_subject = subject.strip() if subject and subject.strip() and subject.strip() != "all" else None
     
     submissions = get_all_submissions(exam_id=clean_exam_id, student_class=clean_class)
     
+    if clean_subject:
+        from .exam_builder import _list_exam_files
+        all_exams = _list_exam_files()
+        sub_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_subject.lower()}
+        submissions = [s for s in submissions if s.get('exam_id') in sub_exam_ids]
+
     exam = load_exam(clean_exam_id) if clean_exam_id else None
     title = exam.get("title", "BẢNG ĐIỂM KIỂM TRA TRỰC TUYẾN") if exam else "BẢNG ĐIỂM TỔNG HỢP KIỂM TRA TRỰC TUYẾN"
+    if clean_subject and not clean_exam_id:
+        title += f" - MÔN {clean_subject.upper()}"
     if clean_class:
         title += f" - LỚP {clean_class}"
     
     excel_bytes = export_class_results_excel(submissions, title)
     
     fn_parts = ["bangdiem"]
+    if clean_subject:
+        fn_parts.append(clean_subject.lower().replace(" ", "_"))
     if clean_exam_id:
         fn_parts.append(clean_exam_id)
     if clean_class:

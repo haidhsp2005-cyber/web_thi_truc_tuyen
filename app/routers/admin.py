@@ -241,17 +241,27 @@ async def remove_api_key(key_suffix: str):
 
 
 @router.get("/submissions")
-async def get_submissions(request: Request, exam_id: str = None, student_class: str = None):
-    """Lấy danh sách bài nộp — admin thấy tất cả, giáo viên chỉ thấy bài nộp đề của môn mình."""
+async def get_submissions(request: Request, exam_id: str = None, student_class: str = None, subject: str = None):
+    """Lấy danh sách bài nộp — admin thấy tất cả, giáo viên chỉ thấy bài nộp đề của môn mình. Hỗ trợ lọc theo môn, đề thi và lớp."""
     from ..routers.exam_builder import _list_exam_files
     current_user = get_current_user_from_request(request)
-    clean_eid = exam_id.strip() if exam_id and exam_id.strip() else None
-    clean_cls = student_class.strip().upper() if student_class and student_class.strip() else None
+    clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
+    clean_cls = student_class.strip().upper() if student_class and student_class.strip() and student_class.strip() != "all" else None
+    clean_sub = subject.strip().lower() if subject and subject.strip() and subject.strip() != "all" else None
+
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
+    all_exams = _list_exam_files()
+
     # Lọc theo quyền giáo viên
     if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
         accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
         submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
+
+    # Lọc theo môn học nếu có tham số subject
+    if clean_sub:
+        subject_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub}
+        submissions = [s for s in submissions if s.get('exam_id') in subject_exam_ids]
+
     return {"submissions": submissions, "total": len(submissions)}
 
 
@@ -272,19 +282,26 @@ async def clear_all_submissions(exam_id: str = None):
 
 
 @router.get("/stats")
-async def get_stats(request: Request, exam_id: str = None, student_class: str = None):
-    """Thống kê nhanh cho dashboard — admin thấy tất cả, giáo viên chỉ thấy đề của môn mình."""
+async def get_stats(request: Request, exam_id: str = None, student_class: str = None, subject: str = None):
+    """Thống kê nhanh cho dashboard — admin thấy tất cả, giáo viên chỉ thấy đề của môn mình. Hỗ trợ lọc theo môn, đề thi và lớp."""
     from ..routers.exam_builder import _list_exam_files
     current_user = get_current_user_from_request(request)
     clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
     clean_cls = student_class.strip().upper() if student_class and student_class.strip() and student_class.strip() != "all" else None
+    clean_sub = subject.strip().lower() if subject and subject.strip() and subject.strip() != "all" else None
 
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
+    all_exams = _list_exam_files()
 
     # Lọc theo quyền giáo viên
     if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
         accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
         submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
+
+    # Lọc theo môn học nếu có tham số subject
+    if clean_sub:
+        subject_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub}
+        submissions = [s for s in submissions if s.get('exam_id') in subject_exam_ids]
 
     if not submissions:
         return {
@@ -295,7 +312,8 @@ async def get_stats(request: Request, exam_id: str = None, student_class: str = 
             "min_score": 0,
             "rank_distribution": {},
             "exam_id": clean_eid,
-            "student_class": clean_cls
+            "student_class": clean_cls,
+            "subject": clean_sub
         }
 
     graded = [s for s in submissions if s.get("scores")]
