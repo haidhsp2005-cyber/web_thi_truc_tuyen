@@ -418,17 +418,20 @@
   },
   "id": "exam_31ec9cff",
   "scoring": {
-    "part1_total": 5,
+    "part1_total": 5.0,
     "part1_per_question": 0.25,
-    "part2_total": 4,
+    "part2_total": 4.0,
+    "part2_per_question": 1.0,
     "part2_rubric": {
       "1_correct": 0.1,
       "2_correct": 0.25,
       "3_correct": 0.5,
-      "4_correct": 1
+      "4_correct": 1.0
     },
-    "part3_total": 1,
+    "part3_total": 1.0,
     "part3_per_question": 0.1667,
-    "part4_total": 0
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
   }
 }

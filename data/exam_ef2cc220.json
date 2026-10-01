@@ -280,17 +280,20 @@
   },
   "id": "exam_ef2cc220",
   "scoring": {
-    "part1_total": 5.0,
-    "part1_per_question": 0.4167,
-    "part2_total": 4.0,
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 3.0,
+    "part2_per_question": 1.0,
     "part2_rubric": {
-      "1_correct": 0.13,
-      "2_correct": 0.33,
-      "3_correct": 0.67,
-      "4_correct": 1.33
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
     },
-    "part3_total": 1.0,
-    "part3_per_question": 0.25,
-    "part4_total": 0.0
+    "part3_total": 4.0,
+    "part3_per_question": 1.0,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
   }
 }

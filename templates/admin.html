@@ -204,6 +204,135 @@
       </div>
     </div>
 
+    <!-- ======= CẤU HÌNH THANG ĐIỂM ======= -->
+    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+      <div class="bg-amber-700 text-white px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span>⚖️</span>
+          <h2 class="font-bold">Cấu Hình Thang Điểm Đề Thi</h2>
+        </div>
+        <span class="text-amber-200 text-xs">Mặc định: TNKQ 0.25đ/câu • Đ/S 1.0đ/câu • Còn lại chia đều</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <!-- Chọn đề -->
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Chọn đề thi cần chỉnh điểm</label>
+          <select x-model="scoringExamId" @change="loadScoringInfo()" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-500 bg-white">
+            <option value="">-- Chọn đề thi --</option>
+            <template x-for="e in examList" :key="e.id">
+              <option :value="e.id" x-text="`[${e.subject || '?'}] ${e.title}`"></option>
+            </template>
+          </select>
+        </div>
+
+        <!-- Form điểm -->
+        <div x-show="scoringExamId" class="space-y-4">
+          <!-- Thông tin câu hỏi -->
+          <div x-show="scoringInfo.loaded" class="grid grid-cols-4 gap-2 text-center text-xs">
+            <div class="bg-indigo-50 rounded-xl p-2 border border-indigo-200">
+              <div class="font-black text-indigo-700 text-lg" x-text="scoringInfo.p1_count"></div>
+              <div class="text-gray-500">câu TNKQ</div>
+            </div>
+            <div class="bg-purple-50 rounded-xl p-2 border border-purple-200">
+              <div class="font-black text-purple-700 text-lg" x-text="scoringInfo.p2_count"></div>
+              <div class="text-gray-500">câu Đúng/Sai</div>
+            </div>
+            <div class="bg-teal-50 rounded-xl p-2 border border-teal-200">
+              <div class="font-black text-teal-700 text-lg" x-text="scoringInfo.p3_count"></div>
+              <div class="text-gray-500">câu TL ngắn</div>
+            </div>
+            <div class="bg-orange-50 rounded-xl p-2 border border-orange-200">
+              <div class="font-black text-orange-700 text-lg" x-text="scoringInfo.p4_count"></div>
+              <div class="text-gray-500">câu Tự luận</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- P1 -->
+            <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-200 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="bg-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">Phần I</span>
+                <span class="text-xs font-semibold text-gray-600">Trắc nghiệm khách quan</span>
+              </div>
+              <label class="block text-xs text-gray-600">Điểm mỗi câu TNKQ</label>
+              <input type="number" x-model.number="scoringForm.p1_per_q" step="0.05" min="0" max="5"
+                @input="updateScoringPreview()"
+                class="w-full border-2 border-indigo-200 rounded-lg px-3 py-1.5 text-sm font-bold text-indigo-700 focus:outline-none focus:border-indigo-500">
+              <div class="text-xs text-gray-500">Tổng: <span class="font-bold text-indigo-700" x-text="(scoringForm.p1_per_q * scoringInfo.p1_count).toFixed(2) + 'đ'"></span></div>
+            </div>
+
+            <!-- P2 -->
+            <div class="bg-purple-50 rounded-xl p-4 border border-purple-200 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">Phần II</span>
+                <span class="text-xs font-semibold text-gray-600">Đúng / Sai (tối đa / câu)</span>
+              </div>
+              <label class="block text-xs text-gray-600">Điểm tối đa mỗi câu Đ/S</label>
+              <input type="number" x-model.number="scoringForm.p2_per_q" step="0.25" min="0" max="5"
+                @input="updateScoringPreview()"
+                class="w-full border-2 border-purple-200 rounded-lg px-3 py-1.5 text-sm font-bold text-purple-700 focus:outline-none focus:border-purple-500">
+              <div class="text-xs text-gray-500 space-y-0.5">
+                <div>Barem: <span class="font-mono font-bold text-purple-700"
+                  x-text="`1đ: ${(scoringForm.p2_per_q*0.1).toFixed(2)} | 2đ: ${(scoringForm.p2_per_q*0.25).toFixed(2)} | 3đ: ${(scoringForm.p2_per_q*0.5).toFixed(2)} | 4đ: ${(scoringForm.p2_per_q*1).toFixed(2)}`"></span></div>
+                <div>Tổng: <span class="font-bold text-purple-700" x-text="(scoringForm.p2_per_q * scoringInfo.p2_count).toFixed(2) + 'đ'"></span></div>
+              </div>
+            </div>
+
+            <!-- P3 -->
+            <div class="bg-teal-50 rounded-xl p-4 border border-teal-200 space-y-2" x-show="scoringInfo.p3_count > 0">
+              <div class="flex items-center gap-2">
+                <span class="bg-teal-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">Phần III</span>
+                <span class="text-xs font-semibold text-gray-600">Trả lời ngắn</span>
+              </div>
+              <label class="block text-xs text-gray-600">Điểm mỗi câu TL ngắn</label>
+              <input type="number" x-model.number="scoringForm.p3_per_q" step="0.1" min="0" max="10"
+                @input="updateScoringPreview()"
+                class="w-full border-2 border-teal-200 rounded-lg px-3 py-1.5 text-sm font-bold text-teal-700 focus:outline-none focus:border-teal-500">
+              <div class="text-xs text-gray-500">Tổng: <span class="font-bold text-teal-700" x-text="(scoringForm.p3_per_q * scoringInfo.p3_count).toFixed(2) + 'đ'"></span></div>
+            </div>
+
+            <!-- P4 -->
+            <div class="bg-orange-50 rounded-xl p-4 border border-orange-200 space-y-2" x-show="scoringInfo.p4_count > 0">
+              <div class="flex items-center gap-2">
+                <span class="bg-orange-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">Phần IV</span>
+                <span class="text-xs font-semibold text-gray-600">Tự luận</span>
+              </div>
+              <label class="block text-xs text-gray-600">Điểm mỗi câu Tự luận</label>
+              <input type="number" x-model.number="scoringForm.p4_per_q" step="0.25" min="0" max="10"
+                @input="updateScoringPreview()"
+                class="w-full border-2 border-orange-200 rounded-lg px-3 py-1.5 text-sm font-bold text-orange-700 focus:outline-none focus:border-orange-500">
+              <div class="text-xs text-gray-500">Tổng: <span class="font-bold text-orange-700" x-text="(scoringForm.p4_per_q * scoringInfo.p4_count).toFixed(2) + 'đ'"></span></div>
+            </div>
+          </div>
+
+          <!-- Tổng điểm preview -->
+          <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3 border">
+            <span class="text-sm font-semibold text-gray-700">Tổng điểm toàn bài:</span>
+            <span class="text-xl font-black"
+              :class="Math.abs(scoringPreviewTotal - 10) < 0.01 ? 'text-green-600' : 'text-red-600'"
+              x-text="scoringPreviewTotal.toFixed(2) + 'đ / 10đ'"></span>
+          </div>
+          <div x-show="Math.abs(scoringPreviewTotal - 10) > 0.01" class="text-xs text-red-600 font-semibold">
+            ⚠️ Tổng điểm không đúng 10đ — hệ thống vẫn lưu nhưng bạn nên kiểm tra lại.
+          </div>
+
+          <!-- Nút lưu -->
+          <div class="flex gap-3">
+            <button @click="resetScoringToDefault()" class="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-sm font-semibold hover:border-gray-400 transition-colors cursor-pointer">
+              🔄 Về mặc định GDPT 2025
+            </button>
+            <button @click="saveScoringConfig()" class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition-colors cursor-pointer">
+              💾 Lưu cấu hình điểm
+            </button>
+          </div>
+
+          <!-- Result msg -->
+          <div x-show="scoringMsg" :class="scoringMsgOk ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'"
+            class="p-3 rounded-lg border text-sm font-semibold" x-text="scoringMsg"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ======= THỐNG KÊ XẾP LOẠI ======= -->
     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
       <div class="bg-green-900 text-white px-5 py-4">
@@ -763,6 +892,14 @@ function adminApp() {
     uploadMsg: '',
     uploadMsgOk: true,
 
+    // ===== SCORING CONFIG =====
+    scoringExamId: '',
+    scoringInfo: { loaded: false, p1_count: 0, p2_count: 0, p3_count: 0, p4_count: 0 },
+    scoringForm: { p1_per_q: 0.25, p2_per_q: 1.0, p3_per_q: 0, p4_per_q: 0 },
+    scoringPreviewTotal: 0,
+    scoringMsg: '',
+    scoringMsgOk: true,
+
     get adminExamSubjectOptions() {
       const seen = new Set();
       return this.examList.filter(e => { if (e.subject && !seen.has(e.subject)) { seen.add(e.subject); return true; } return false; }).map(e => e.subject);
@@ -1058,17 +1195,23 @@ function adminApp() {
           method: 'POST',
           body: formData
         });
-        const data = await r.json();
+        let data = {};
+        try {
+          data = await r.json();
+        } catch(jsonErr) {
+          const text = await r.text().catch(() => '');
+          data = { detail: text || `Máy chủ phản hồi mã lỗi ${r.status}` };
+        }
         if (r.ok) {
-          this.uploadMsg = data.message;
+          this.uploadMsg = data.message || 'Tải file và nạp đề thành công!';
           this.uploadMsgOk = true;
           await this.loadExamList();
         } else {
-          this.uploadMsg = data.detail || 'Lỗi khi xử lý file đề thi!';
+          this.uploadMsg = data.detail || `Lỗi máy chủ (${r.status}) khi xử lý đề!`;
           this.uploadMsgOk = false;
         }
       } catch(e) {
-        this.uploadMsg = 'Lỗi kết nối khi tải file lên máy chủ!';
+        this.uploadMsg = 'Lỗi kết nối khi tải file lên máy chủ: ' + (e?.message || e);
         this.uploadMsgOk = false;
       }
       this.uploading = false;
@@ -1149,6 +1292,109 @@ function adminApp() {
         this.keyMsgOk = false;
       }
       setTimeout(() => this.keyMsg = '', 4000);
+    },
+
+    // ===== PHẦN CẤU HÌNH THANG ĐIỂM =====
+    async loadScoringInfo() {
+      if (!this.scoringExamId) {
+        this.scoringInfo = { loaded: false, p1_count: 0, p2_count: 0, p3_count: 0, p4_count: 0 };
+        this.scoringMsg = '';
+        return;
+      }
+      try {
+        const r = await fetch(`/api/exam-builder/get/${encodeURIComponent(this.scoringExamId)}`);
+        if (!r.ok) throw new Error('Không tải được thông tin đề thi');
+        const exam = await r.json();
+        const p1_count = exam.parts?.part1?.questions?.length || 0;
+        const p2_count = exam.parts?.part2?.questions?.length || 0;
+        const p3_count = exam.parts?.part3?.questions?.length || 0;
+        const p4_count = exam.parts?.part4?.questions?.length || 0;
+        this.scoringInfo = { loaded: true, p1_count, p2_count, p3_count, p4_count };
+
+        const s = exam.scoring || {};
+        let p1_per_q = s.part1_per_question != null ? s.part1_per_question : 0.25;
+        let p2_per_q = s.part2_per_question != null ? s.part2_per_question : 1.0;
+        let p3_per_q = s.part3_per_question != null ? s.part3_per_question : 0;
+        let p4_per_q = s.part4_per_question != null ? s.part4_per_question : 0;
+
+        // Nếu P3/P4 chưa có điểm và có câu hỏi, tự động chia đều phần còn lại
+        if (p3_per_q === 0 && p4_per_q === 0 && (p3_count > 0 || p4_count > 0)) {
+          const rem = Math.max(0, 10.0 - (p1_count * p1_per_q + p2_count * p2_per_q));
+          const p34 = p3_count + p4_count;
+          if (p34 > 0) {
+            const each = +(rem / p34).toFixed(4);
+            if (p3_count > 0) p3_per_q = each;
+            if (p4_count > 0) p4_per_q = each;
+          }
+        }
+
+        this.scoringForm = {
+          p1_per_q: p1_per_q,
+          p2_per_q: p2_per_q,
+          p3_per_q: p3_per_q,
+          p4_per_q: p4_per_q
+        };
+        this.updateScoringPreview();
+        this.scoringMsg = '';
+      } catch(e) {
+        this.scoringMsg = 'Lỗi khi tải thông tin đề thi: ' + (e.message || e);
+        this.scoringMsgOk = false;
+      }
+    },
+
+    updateScoringPreview() {
+      const p1 = (Number(this.scoringForm.p1_per_q) || 0) * (this.scoringInfo.p1_count || 0);
+      const p2 = (Number(this.scoringForm.p2_per_q) || 0) * (this.scoringInfo.p2_count || 0);
+      const p3 = (Number(this.scoringForm.p3_per_q) || 0) * (this.scoringInfo.p3_count || 0);
+      const p4 = (Number(this.scoringForm.p4_per_q) || 0) * (this.scoringInfo.p4_count || 0);
+      this.scoringPreviewTotal = +(p1 + p2 + p3 + p4).toFixed(2);
+    },
+
+    resetScoringToDefault() {
+      if (!this.scoringInfo.loaded) return;
+      const p1_per_q = 0.25;
+      const p2_per_q = 1.0;
+      const rem = Math.max(0, 10.0 - (this.scoringInfo.p1_count * p1_per_q + this.scoringInfo.p2_count * p2_per_q));
+      const p34 = (this.scoringInfo.p3_count || 0) + (this.scoringInfo.p4_count || 0);
+      const each = p34 > 0 ? +(rem / p34).toFixed(4) : 0;
+
+      this.scoringForm = {
+        p1_per_q: p1_per_q,
+        p2_per_q: p2_per_q,
+        p3_per_q: this.scoringInfo.p3_count > 0 ? each : 0,
+        p4_per_q: this.scoringInfo.p4_count > 0 ? each : 0
+      };
+      this.updateScoringPreview();
+      this.scoringMsg = 'Đã đặt lại về thang điểm chuẩn GDPT 2025 (TNKQ 0.25đ/câu, Đ/S 1.0đ/câu, còn lại chia đều). Vui lòng bấm "Lưu cấu hình điểm".';
+      this.scoringMsgOk = true;
+    },
+
+    async saveScoringConfig() {
+      if (!this.scoringExamId) return;
+      try {
+        const r = await fetch(`/api/exam-builder/scoring/${encodeURIComponent(this.scoringExamId)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            part1_per_question: Number(this.scoringForm.p1_per_q) || 0,
+            part2_per_question: Number(this.scoringForm.p2_per_q) || 0,
+            part3_per_question: Number(this.scoringForm.p3_per_q) || 0,
+            part4_per_question: Number(this.scoringForm.p4_per_q) || 0
+          })
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          this.scoringMsg = data.message || 'Lưu cấu hình điểm thành công!';
+          this.scoringMsgOk = true;
+          await this.loadExamList();
+        } else {
+          this.scoringMsg = data.detail || 'Lỗi khi lưu cấu hình điểm!';
+          this.scoringMsgOk = false;
+        }
+      } catch(e) {
+        this.scoringMsg = 'Lỗi kết nối khi lưu cấu hình điểm: ' + (e.message || e);
+        this.scoringMsgOk = false;
+      }
     }
   };
 }

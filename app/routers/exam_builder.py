@@ -761,7 +761,7 @@ async def upload_exam_file(request: Request, file: UploadFile = File(...)):
     parsed["id"] = f"exam_{uuid.uuid4().hex[:8]}"
 
     # Lưu vào hệ thống
-    await save_exam(parsed)
+    await save_exam(request, parsed)
 
     return {
         "success": True,
@@ -773,8 +773,14 @@ async def upload_exam_file(request: Request, file: UploadFile = File(...)):
 
 
 @router.post("/save")
-async def save_exam(request: Request, exam_data: dict):
+async def save_exam(request: Request = None, exam_data: dict = None):
     """Lưu đề thi mới hoặc cập nhật đề thi hiện tại."""
+    if exam_data is None and isinstance(request, dict):
+        exam_data = request
+        request = None
+    elif exam_data is None:
+        raise HTTPException(400, "Dữ liệu đề thi không hợp lệ!")
+
     if not exam_data.get("title", "").strip():
         raise HTTPException(400, "Vui lòng nhập tiêu đề đề thi!")
     
@@ -796,10 +802,14 @@ async def save_exam(request: Request, exam_data: dict):
         exam_data["id"] = f"exam_{uuid.uuid4().hex[:8]}"
 
     # Stamp created_by nếu chưa có
-    from ..services.auth_service import get_current_user_from_request
-    current_user = get_current_user_from_request(request)
-    if current_user and not exam_data.get("created_by"):
-        exam_data["created_by"] = current_user.get("username", "")
+    if request:
+        try:
+            from ..services.auth_service import get_current_user_from_request
+            current_user = get_current_user_from_request(request)
+            if current_user and not exam_data.get("created_by"):
+                exam_data["created_by"] = current_user.get("username", "")
+        except Exception:
+            pass
 
     # Tính toán thang điểm linh hoạt
     p1_count = len(p1_qs)
@@ -808,68 +818,56 @@ async def save_exam(request: Request, exam_data: dict):
     p4_count = len(p4_qs)
 
     existing_scoring = exam_data.get("scoring")
-    if existing_scoring and isinstance(existing_scoring, dict) and "part1_total" in existing_scoring:
+    if existing_scoring and isinstance(existing_scoring, dict) and existing_scoring.get("custom_scoring"):
+        # Giữ nguyên cấu hình điểm do người dùng tự chỉnh
         pass
     else:
-        # Tự động tính thang điểm 10 theo các phần thực tế có trong đề
-        if p4_count > 0:
-            p4_total = 1.0
-            remaining = 9.0
-        else:
-            p4_total = 0.0
-            remaining = 10.0
+        # ============================================================
+        # THANG ĐIỂM CHUẨN GDPT 2025 (hoặc theo cấu hình tùy chỉnh)
+        # - Phần I  TNKQ    : 0.25đ/câu
+        # - Phần II Đ/S     : 1.0đ/câu (barem 0.1 - 0.25 - 0.5 - 1.0)
+        # - Phần III + IV   : phần còn lại chia đều
+        # ============================================================
+        cfg = existing_scoring or {}  # Dùng cấu hình cũ nếu có các trường tùy chỉnh
 
-        if p1_count > 0 and p2_count > 0 and p3_count > 0:
-            p1_total = 5.0 if p4_count == 0 else 4.0
-            p2_total = 4.0 if p4_count == 0 else 3.0
-            p3_total = 1.0 if p4_count == 0 else 2.0
-        elif p1_count > 0 and p2_count > 0:
-            p1_total = 6.0
-            p2_total = 4.0
-            p3_total = 0.0
-        elif p1_count > 0 and p3_count > 0:
-            p1_total = 7.0
-            p2_total = 0.0
-            p3_total = 3.0
-        elif p1_count > 0:
-            p1_total = remaining
-            p2_total = 0.0
-            p3_total = 0.0
-        elif p2_count > 0 and p3_count > 0:
-            p1_total = 0.0
-            p2_total = 7.0
-            p3_total = 3.0
-        elif p2_count > 0:
-            p1_total = 0.0
-            p2_total = remaining
-            p3_total = 0.0
-        elif p3_count > 0:
-            p1_total = 0.0
-            p2_total = 0.0
-            p3_total = remaining
-        else:
-            p1_total = 0.0
-            p2_total = 0.0
-            p3_total = 0.0
-
-        p1_per_q = round(p1_total / p1_count, 4) if p1_count > 0 else 0.0
-        p3_per_q = round(p3_total / p3_count, 4) if p3_count > 0 else 0.0
-        p2_item_pts = round(p2_total / p2_count, 2) if p2_count > 0 else 1.0
-        p2_rubric = {
-            "1_correct": round(p2_item_pts * 0.1, 2),
-            "2_correct": round(p2_item_pts * 0.25, 2),
-            "3_correct": round(p2_item_pts * 0.5, 2),
-            "4_correct": p2_item_pts
+        p1_per_q   = cfg.get("part1_per_question", 0.25)
+        p2_per_q   = cfg.get("part2_per_question", 1.0)   # điểm tối đa mỗi câu Đ/S
+        p2_rubric  = cfg.get("part2_rubric") or {
+            "1_correct": round(p2_per_q * 0.10, 3),
+            "2_correct": round(p2_per_q * 0.25, 3),
+            "3_correct": round(p2_per_q * 0.50, 3),
+            "4_correct": round(p2_per_q * 1.00, 3),
         }
 
+        p1_total = round(p1_per_q * p1_count, 3)
+        p2_total = round(p2_per_q * p2_count, 3)
+
+        remaining = max(0.0, round(10.0 - p1_total - p2_total, 3))
+        p34_count = p3_count + p4_count
+
+        if p34_count > 0:
+            p34_per_q  = round(remaining / p34_count, 4)
+            p3_total   = round(p34_per_q * p3_count, 3)
+            p4_total   = round(p34_per_q * p4_count, 3)
+            p3_per_q   = p34_per_q if p3_count > 0 else 0.0
+            p4_per_q   = p34_per_q if p4_count > 0 else 0.0
+        else:
+            p3_total = 0.0
+            p4_total = 0.0
+            p3_per_q = 0.0
+            p4_per_q = 0.0
+
         exam_data["scoring"] = {
-            "part1_total": p1_total,
-            "part1_per_question": p1_per_q,
-            "part2_total": p2_total,
-            "part2_rubric": p2_rubric,
-            "part3_total": p3_total,
-            "part3_per_question": p3_per_q,
-            "part4_total": p4_total,
+            "part1_total":        round(p1_total, 2),
+            "part1_per_question": round(p1_per_q, 4),
+            "part2_total":        round(p2_total, 2),
+            "part2_per_question": round(p2_per_q, 4),
+            "part2_rubric":       p2_rubric,
+            "part3_total":        round(p3_total, 2),
+            "part3_per_question": round(p3_per_q, 4),
+            "part4_total":        round(p4_total, 2),
+            "part4_per_question": round(p4_per_q, 4),
+            "custom_scoring":     False,
         }
 
     # Đảm bảo cấu trúc đầy đủ cho các phần còn thiếu
@@ -904,6 +902,66 @@ async def delete_exam(exam_id: str):
         raise HTTPException(400, "Không thể xóa đề thi mẫu chuẩn của hệ thống!")
     delete_exam_record(exam_id)
     return {"success": True, "message": "Đã xóa đề thi thành công!"}
+
+
+@router.post("/scoring/{exam_id}")
+async def update_exam_scoring(exam_id: str, body: dict):
+    """
+    Cập nhật cấu hình điểm tùy chỉnh cho đề thi.
+    body: {
+      part1_per_question: float,   # điểm mỗi câu TNKQ
+      part2_per_question: float,   # điểm tối đa mỗi câu Đúng/Sai (rubric tỷ lệ giữ nguyên)
+      part3_per_question: float,   # điểm mỗi câu Trả lời ngắn
+      part4_per_question: float,   # điểm mỗi câu Tự luận
+    }
+    """
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+
+    p1_qs = exam.get("parts", {}).get("part1", {}).get("questions", [])
+    p2_qs = exam.get("parts", {}).get("part2", {}).get("questions", [])
+    p3_qs = exam.get("parts", {}).get("part3", {}).get("questions", [])
+    p4_qs = exam.get("parts", {}).get("part4", {}).get("questions", [])
+    p1_count = len(p1_qs)
+    p2_count = len(p2_qs)
+    p3_count = len(p3_qs)
+    p4_count = len(p4_qs)
+
+    p1_per_q = float(body.get("part1_per_question", 0.25))
+    p2_per_q = float(body.get("part2_per_question", 1.0))
+    p3_per_q = float(body.get("part3_per_question", 0.0))
+    p4_per_q = float(body.get("part4_per_question", 0.0))
+
+    p2_rubric = {
+        "1_correct": round(p2_per_q * 0.10, 3),
+        "2_correct": round(p2_per_q * 0.25, 3),
+        "3_correct": round(p2_per_q * 0.50, 3),
+        "4_correct": round(p2_per_q * 1.00, 3),
+    }
+
+    exam["scoring"] = {
+        "part1_total":        round(p1_per_q * p1_count, 2),
+        "part1_per_question": round(p1_per_q, 4),
+        "part2_total":        round(p2_per_q * p2_count, 2),
+        "part2_per_question": round(p2_per_q, 4),
+        "part2_rubric":       p2_rubric,
+        "part3_total":        round(p3_per_q * p3_count, 2),
+        "part3_per_question": round(p3_per_q, 4),
+        "part4_total":        round(p4_per_q * p4_count, 2),
+        "part4_per_question": round(p4_per_q, 4),
+        "custom_scoring":     True,
+    }
+
+    save_exam_record(exam)
+    s = exam["scoring"]
+    total = round(s["part1_total"] + s["part2_total"] + s["part3_total"] + s["part4_total"], 2)
+    return {
+        "success": True,
+        "message": f"Đã cập nhật thang điểm cho đề '{exam.get('title','')}'. Tổng: {total}đ",
+        "scoring": exam["scoring"],
+        "total": total,
+    }
 
 
 # ===================== PARSER NHẬP ĐỀ TỰ ĐỘNG =====================
