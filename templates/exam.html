@@ -341,29 +341,33 @@
             
             <div class="space-y-4">
               <template x-for="item in getP2DisplayItems(p2Questions[currentIdx])" :key="item.origKey">
-                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border transition-all hover:bg-gray-100/60">
-                  <span class="font-bold text-gray-700 w-6 text-base flex-shrink-0">(<span x-text="item.displayLabel"></span>)</span>
-                  <span class="flex-1 text-gray-800 text-sm sm:text-base leading-relaxed" x-html="renderLatex(item.text)"></span>
-                  <div class="flex gap-2 flex-shrink-0">
+                <div class="p-3.5 sm:p-4 bg-gray-50 rounded-2xl border transition-all hover:bg-gray-100/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <!-- Mệnh đề: chiếm trọn độ rộng trên điện thoại, không bị co ép hẹp dòng -->
+                  <div class="flex items-start sm:items-center gap-2.5 flex-1 min-w-0">
+                    <span class="font-bold text-gray-700 w-6 text-base flex-shrink-0 pt-0.5 sm:pt-0">(<span x-text="(item.displayLabel || '').toUpperCase()"></span>)</span>
+                    <span class="flex-1 text-gray-800 text-sm sm:text-base leading-relaxed break-words" x-html="renderLatex(item.text)"></span>
+                  </div>
+                  <!-- 2 nút Đúng / Sai: xếp ngang dưới câu hỏi trên mobile, dễ bấm không bị đè chữ -->
+                  <div class="flex items-center justify-end sm:justify-center gap-2 flex-shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60">
                     <button
                       type="button"
                       @click="setP2Answer(p2Questions[currentIdx].id, item.origKey, true)"
                       :class="p2Answers[p2Questions[currentIdx].id + '_' + item.origKey] === true
-                        ? 'bg-green-600 text-white border-green-600 shadow-md ring-2 ring-green-300 font-bold scale-105'
+                        ? 'bg-green-600 text-white border-green-600 shadow-md ring-2 ring-green-300 font-bold scale-102'
                         : 'bg-white text-gray-700 border-gray-300 hover:border-green-500 hover:bg-green-50 font-medium'"
-                      class="px-4 py-2.5 rounded-xl border-2 text-sm transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      class="flex-1 sm:flex-none px-4 py-2 sm:py-2.5 rounded-xl border-2 text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
-                      <span>✅</span> <span>Đúng</span>
+                      <span>✅</span> <span>ĐÚNG</span>
                     </button>
                     <button
                       type="button"
                       @click="setP2Answer(p2Questions[currentIdx].id, item.origKey, false)"
                       :class="p2Answers[p2Questions[currentIdx].id + '_' + item.origKey] === false
-                        ? 'bg-red-600 text-white border-red-600 shadow-md ring-2 ring-red-300 font-bold scale-105'
+                        ? 'bg-red-600 text-white border-red-600 shadow-md ring-2 ring-red-300 font-bold scale-102'
                         : 'bg-white text-gray-700 border-gray-300 hover:border-red-500 hover:bg-red-50 font-medium'"
-                      class="px-4 py-2.5 rounded-xl border-2 text-sm transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      class="flex-1 sm:flex-none px-4 py-2 sm:py-2.5 rounded-xl border-2 text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
-                      <span>❌</span> <span>Sai</span>
+                      <span>❌</span> <span>SAI</span>
                     </button>
                   </div>
                 </div>

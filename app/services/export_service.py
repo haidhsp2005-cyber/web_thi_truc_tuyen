@@ -493,14 +493,14 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
             cr_val = item.get("correct_answer")
             is_cor = item.get("is_correct", False)
             
-            st_str = "Đúng" if st_val is True else ("Sai" if st_val is False else "—")
-            cr_str = "Đúng" if cr_val is True else "Sai"
+            st_str = "ĐÚNG" if st_val is True else ("SAI" if st_val is False else "—")
+            cr_str = "ĐÚNG" if cr_val is True else "SAI"
             it_bg = "bg-green-50" if is_cor else "bg-red-50"
             it_icon = "✅" if is_cor else "❌"
 
             items_html += f"""
             <tr class="{it_bg}">
-              <td class="border px-2 py-1 text-center font-bold w-8">({k})</td>
+              <td class="border px-2 py-1 text-center font-bold w-8">({str(k).upper()})</td>
               <td class="border px-3 py-1 text-xs sm:text-sm">{txt}</td>
               <td class="border px-2 py-1 text-center font-bold">{st_str}</td>
               <td class="border px-2 py-1 text-center font-bold text-green-700">{cr_str}</td>
@@ -741,7 +741,7 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
                     txt = v.get("text", "") if isinstance(v, dict) else str(v)
                     items_list.append({"key": k, "text": clean_math_for_print(txt)})
                     
-        items_rendered = "".join([f"<p class='pl-4 text-sm mt-0.5'><b>{it.get('key')})</b> {it.get('text')}</p>" for it in items_list])
+        items_rendered = "".join([f"<p class='pl-4 text-sm mt-0.5'><b>{str(it.get('key', '')).upper()})</b> {it.get('text')}</p>" for it in items_list])
         img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
 
         p2_html += f"""
@@ -940,13 +940,17 @@ def export_exam_answers_print_html(exam_data: dict) -> str:
                 return "<span class='text-gray-800 font-bold'>S</span>"
             return "—"
 
+        def _get_val(k):
+            val = items_dict.get(k.lower())
+            return val if val is not None else items_dict.get(k.upper())
+
         p2_rows += f"""
         <tr>
           <td class="border px-3 py-2 text-center font-bold">Câu {idx}</td>
-          <td class="border px-3 py-2 text-center text-sm">{_fmt_ds(items_dict.get('a'))}</td>
-          <td class="border px-3 py-2 text-center text-sm">{_fmt_ds(items_dict.get('b'))}</td>
-          <td class="border px-3 py-2 text-center text-sm">{_fmt_ds(items_dict.get('c'))}</td>
-          <td class="border px-3 py-2 text-center text-sm">{_fmt_ds(items_dict.get('d'))}</td>
+          <td class="border px-3 py-2 text-center text-sm">{_fmt_ds(_get_val('a'))}</td>
+          <td class="border px-3 py-2 text-center text-sm">{_fmt_ds(_get_val('b'))}</td>
+          <td class="border px-3 py-2 text-center text-sm">{_fmt_ds(_get_val('c'))}</td>
+          <td class="border px-3 py-2 text-center text-sm">{_fmt_ds(_get_val('d'))}</td>
           <td class="border px-3 py-2 text-center text-xs text-gray-500">1 ý: 0.1đ · 2 ý: 0.25đ · 3 ý: 0.5đ · 4 ý: 1.0đ</td>
         </tr>"""
 
@@ -1032,10 +1036,10 @@ def export_exam_answers_print_html(exam_data: dict) -> str:
       <thead class="bg-purple-900 text-white text-xs">
         <tr>
           <th class="border border-gray-300 px-3 py-2 w-20">Câu hỏi</th>
-          <th class="border border-gray-300 px-3 py-2 w-24">Ý (a)</th>
-          <th class="border border-gray-300 px-3 py-2 w-24">Ý (b)</th>
-          <th class="border border-gray-300 px-3 py-2 w-24">Ý (c)</th>
-          <th class="border border-gray-300 px-3 py-2 w-24">Ý (d)</th>
+          <th class="border border-gray-300 px-3 py-2 w-24">Ý (A)</th>
+          <th class="border border-gray-300 px-3 py-2 w-24">Ý (B)</th>
+          <th class="border border-gray-300 px-3 py-2 w-24">Ý (C)</th>
+          <th class="border border-gray-300 px-3 py-2 w-24">Ý (D)</th>
           <th class="border border-gray-300 px-3 py-2 text-left">Quy định tính điểm</th>
         </tr>
       </thead>

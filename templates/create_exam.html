@@ -472,31 +472,33 @@
         <!-- 4 ý a, b, c, d -->
         <div class="space-y-3">
           <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
-            <div class="p-3 bg-gray-50 rounded-2xl border border-gray-200 w-full transition-all">
-              <div class="flex items-center gap-3 w-full">
-                <span class="font-black text-gray-700 w-8 text-base flex-shrink-0">(<span x-text="itemKey"></span>)</span>
-                
-                <!-- Chế độ xem: KaTeX trực tiếp -->
-                <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
-                  class="flex-1 text-sm sm:text-base font-semibold text-gray-900 cursor-pointer py-1 px-1 min-h-[36px] flex items-center"
-                  x-html="renderMathHtml(q.items[itemKey]?.text) || '<span class=\'text-gray-300 font-normal italic text-xs\'>Trống...</span>'"></div>
+            <div class="p-3 sm:p-3.5 bg-gray-50 rounded-2xl border border-gray-200 w-full transition-all">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full">
+                <div class="flex items-start sm:items-center gap-2.5 flex-1 min-w-0">
+                  <span class="font-black text-gray-700 w-8 text-base flex-shrink-0 pt-0.5 sm:pt-0">(<span x-text="itemKey.toUpperCase()"></span>)</span>
+                  
+                  <!-- Chế độ xem: KaTeX trực tiếp -->
+                  <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
+                    class="flex-1 text-sm sm:text-base font-semibold text-gray-900 cursor-pointer py-1 px-1 min-h-[36px] flex items-center break-words"
+                    x-html="renderMathHtml(q.items[itemKey]?.text) || '<span class=\'text-gray-300 font-normal italic text-xs\'>Trống...</span>'"></div>
 
-                <!-- Chế độ sửa & Xem trước trực tiếp KaTeX -->
-                <div x-show="isEditing(q)" class="flex-1 w-full space-y-1.5">
-                  <input x-model="q.items[itemKey].text" type="text"
-                    :placeholder="`Nội dung mệnh đề ${itemKey}...`"
-                    class="w-full border-2 border-gray-200 rounded-xl px-4 py-2 text-sm sm:text-base focus:outline-none focus:border-purple-500 bg-white transition-colors font-medium">
-                  <div x-show="hasMath(q.items[itemKey]?.text)" class="p-2 bg-purple-50/70 border border-purple-100 rounded-xl text-sm font-semibold text-gray-900 shadow-sm"
-                    x-html="renderMathHtml(q.items[itemKey]?.text)"></div>
+                  <!-- Chế độ sửa & Xem trước trực tiếp KaTeX -->
+                  <div x-show="isEditing(q)" class="flex-1 w-full space-y-1.5">
+                    <input x-model="q.items[itemKey].text" type="text"
+                      :placeholder="`Nội dung mệnh đề ${itemKey.toUpperCase()}...`"
+                      class="w-full border-2 border-gray-200 rounded-xl px-4 py-2 text-sm sm:text-base focus:outline-none focus:border-purple-500 bg-white transition-colors font-medium">
+                    <div x-show="hasMath(q.items[itemKey]?.text)" class="p-2 bg-purple-50/70 border border-purple-100 rounded-xl text-sm font-semibold text-gray-900 shadow-sm"
+                      x-html="renderMathHtml(q.items[itemKey]?.text)"></div>
+                  </div>
                 </div>
                 
-                <div class="flex gap-2 flex-shrink-0">
+                <div class="flex items-center justify-end sm:justify-center gap-2 flex-shrink-0 w-full sm:w-auto pt-1.5 sm:pt-0 border-t sm:border-t-0 border-gray-200/60">
                   <button type="button" @click="q.items[itemKey].answer = true"
                     :class="q.items[itemKey]?.answer === true ? 'bg-green-600 text-white border-green-600 shadow-md ring-2 ring-green-300' : 'bg-white border-gray-300 text-gray-700 hover:border-green-400'"
-                    class="px-4 py-2 rounded-xl border-2 text-xs sm:text-sm font-black transition-all cursor-pointer">Đúng</button>
+                    class="flex-1 sm:flex-none px-4 py-2 rounded-xl border-2 text-xs sm:text-sm font-black transition-all cursor-pointer">ĐÚNG</button>
                   <button type="button" @click="q.items[itemKey].answer = false"
                     :class="q.items[itemKey]?.answer === false ? 'bg-red-600 text-white border-red-600 shadow-md ring-2 ring-red-300' : 'bg-white border-gray-300 text-gray-700 hover:border-red-400'"
-                    class="px-4 py-2 rounded-xl border-2 text-xs sm:text-sm font-black transition-all cursor-pointer">Sai</button>
+                    class="flex-1 sm:flex-none px-4 py-2 rounded-xl border-2 text-xs sm:text-sm font-black transition-all cursor-pointer">SAI</button>
                 </div>
               </div>
             </div>
@@ -845,7 +847,7 @@
                 <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
                   <div class="p-2.5 rounded-xl border border-gray-200 flex items-center justify-between gap-3 bg-gray-50/60">
                     <div class="flex items-start gap-2 flex-1">
-                      <span class="font-bold text-gray-600 w-5 flex-shrink-0" x-text="`${itemKey})`"></span>
+                      <span class="font-bold text-gray-600 w-6 flex-shrink-0" x-text="`(${itemKey.toUpperCase()})`"></span>
                       <span class="text-gray-800" x-html="renderMathHtml(q.items[itemKey]?.text)"></span>
                     </div>
                     <span :class="q.items[itemKey]?.answer ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'"
