@@ -45,6 +45,7 @@ async def get_current_exam(exam_id: str = "exam_001"):
         "grade": exam["grade"],
         "duration_minutes": exam["duration_minutes"],
         "scoring": exam["scoring"],
+        "is_online_exam": exam.get("is_online_exam", True),
         "parts": {}
     }
     
@@ -165,16 +166,19 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     if not client_submitted or not isinstance(client_submitted, str):
         client_submitted = datetime.now(VIETNAM_TZ).isoformat()
     
+    is_online_exam = exam.get("is_online_exam", True)
+    
     submission_data = {
         "submission_id": submission_id,
         "student_name": student_name,
         "student_class": student_class,
         "exam_id": exam_id,
+        "is_online_exam": is_online_exam,
         "started_at": data.get("started_at", ""),
         "submitted_at": client_submitted,
         "duration_seconds": data.get("duration_seconds", 0),
-        "screen_switch_count": int(data.get("screen_switch_count", 0)),
-        "switch_violations": data.get("switch_violations", []),
+        "screen_switch_count": int(data.get("screen_switch_count", 0)) if is_online_exam else 0,
+        "switch_violations": data.get("switch_violations", []) if is_online_exam else [],
         "part1_answers": p1_answers,
         "part2_answers": p2_answers,
         "part3_answers": p3_answers,

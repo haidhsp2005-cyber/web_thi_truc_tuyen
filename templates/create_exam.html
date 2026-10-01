@@ -175,6 +175,9 @@
             <option value="Địa lí">Địa lí</option>
             <option value="Tiếng Anh">Tiếng Anh</option>
             <option value="Giáo dục kinh tế và pháp luật">GDKT & Pháp luật</option>
+            <option value="Giáo dục quốc phòng">GD Quốc phòng & An ninh</option>
+            <option value="Mỹ thuật">Mỹ thuật</option>
+            <option value="Âm nhạc">Âm nhạc</option>
             <option value="Tin học">Tin học</option>
             <option value="Công nghệ">Công nghệ</option>
             <option value="Khoa học tự nhiên">Khoa học tự nhiên (THCS)</option>
@@ -213,6 +216,45 @@
           ⏱️ Thời gian thi (phút)
         </label>
         <input x-model.number="exam.duration_minutes" type="number" min="5" max="180" class="input-base font-semibold">
+      </div>
+
+      <!-- Tùy chọn Thi trực tuyến (Giám sát chống gian lận) hay Đề luyện tập -->
+      <div class="md:col-span-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xl">🛡️</span>
+              <label for="is_online_exam_cb" class="font-black text-gray-900 text-sm sm:text-base cursor-pointer">
+                Hình thức thi: <span x-text="exam.is_online_exam ? 'Thi trực tuyến (Có giám sát)' : 'Đề luyện tập tự do'"></span>
+              </label>
+              <span x-show="exam.is_online_exam" class="bg-blue-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                ✓ Giám sát chống gian lận
+              </span>
+              <span x-show="!exam.is_online_exam" class="bg-amber-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                📖 Ôn luyện tự do
+              </span>
+            </div>
+            <p class="text-xs text-gray-600 leading-relaxed">
+              <template x-if="exam.is_online_exam">
+                <span>
+                  Áp dụng đầy đủ quy định chống gian lận: <strong>Cảnh báo pop-up & tự động thu bài sau 5 lần chuyển tab/rời màn hình</strong>, chặn phím tắt DevTools, cấm chuột phải, chặn sao chép câu hỏi.
+                </span>
+              </template>
+              <template x-if="!exam.is_online_exam">
+                <span class="text-amber-800 font-medium">
+                  Đề luyện tập tự do: <strong>Bỏ toàn bộ các quy định chống gian lận</strong>, học sinh được phép chuyển tab, mở tài liệu ôn tập, làm lại bài nhiều lần mà không bị tính lỗi hay tự động thu bài.
+                </span>
+              </template>
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0">
+            <label class="flex items-center gap-2 cursor-pointer bg-white px-3.5 py-2 rounded-xl border border-blue-200 shadow-xs hover:border-blue-400 transition-all">
+              <input type="checkbox" id="is_online_exam_cb" x-model="exam.is_online_exam" class="w-5 h-5 text-blue-600 rounded-md focus:ring-blue-500 cursor-pointer">
+              <span class="text-xs font-bold text-gray-800 select-none">Tích chọn thi trực tuyến</span>
+            </label>
+          </div>
+        </div>
       </div>
 
       <!-- Khung cấu trúc thang điểm -->
@@ -1058,6 +1100,7 @@ function examBuilder() {
       subject: 'Toán học',
       grade: '12',
       duration_minutes: 50,
+      is_online_exam: true,
       scoring: {},
       parts: {
         part1: {
@@ -1190,6 +1233,7 @@ function examBuilder() {
         });
       });
       this.exam = data;
+      this.exam.is_online_exam = data.is_online_exam !== undefined ? data.is_online_exam : true;
       if (isClone) {
         this.exam.id = ''; // Xoá id để khi bấm Lưu sẽ tạo thành đề mới độc lập
         this.exam.title = (data.title || '').replace(' (Bản sao)', '') + ' (Bản sao)';
@@ -1200,7 +1244,7 @@ function examBuilder() {
         this.exam.title = data.title || '';
       }
       
-      if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Tin học','Công nghệ'].includes(data.subject)) {
+      if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Giáo dục kinh tế và pháp luật','Giáo dục quốc phòng','Mỹ thuật','Âm nhạc','Tin học','Công nghệ','Khoa học tự nhiên','Lịch sử và Địa lí'].includes(data.subject)) {
         this.subjectSelect = data.subject;
       } else {
         this.subjectSelect = 'custom';

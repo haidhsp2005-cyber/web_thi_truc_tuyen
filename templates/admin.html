@@ -54,7 +54,7 @@
         </div>
         <h2 class="text-xl font-black tracking-tight">Cấu trúc Đề thi Mẫu: Toán 12 - Mã 101</h2>
         <p class="text-indigo-200 text-sm mt-1 max-w-2xl">
-          Đầy đủ 30 câu hỏi cấu trúc mới: <strong>Phần I</strong> (12 câu TNKQ 4 lựa chọn), <strong>Phần II</strong> (4 câu Đúng/Sai), <strong>Phần III</strong> (6 câu Trả lời ngắn) với công thức LaTeX chuẩn. Thầy/Cô bấm nút để nạp đề vào hệ thống cho học sinh thi ngay hoặc xem mẫu.
+          Đầy đủ 22 câu hỏi cấu trúc mới: <strong>Phần I</strong> (12 câu TNKQ 4 lựa chọn), <strong>Phần II</strong> (4 câu Đúng/Sai), <strong>Phần III</strong> (6 câu Trả lời ngắn) với công thức LaTeX chuẩn. Thầy/Cô bấm nút để nạp đề vào hệ thống cho học sinh thi ngay hoặc xem mẫu.
         </p>
       </div>
     </div>
@@ -486,7 +486,11 @@
               <td class="px-4 py-3 font-medium text-gray-800">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span x-text="sub.student_name"></span>
-                  <span x-show="sub.screen_switch_count > 0" 
+                  <span x-show="sub.is_online_exam === false"
+                        class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
+                    📖 Luyện tập
+                  </span>
+                  <span x-show="sub.is_online_exam !== false && sub.screen_switch_count > 0" 
                         :title="`Học sinh đã rời màn hình làm bài ${sub.screen_switch_count} lần`"
                         class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 shadow-2xs cursor-help"
                         x-text="`⚠️ ${sub.screen_switch_count} lần rời MH`"></span>
@@ -600,7 +604,19 @@
             <template x-for="e in filteredAdminExamList" :key="e.id">
               <tr class="hover:bg-yellow-50 transition-colors">
                 <td class="px-3 py-2 font-medium text-gray-800">
-                  <a :href="`/create-exam?edit=${e.id}`" class="hover:text-blue-600 hover:underline" x-text="e.title"></a>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <a :href="`/create-exam?edit=${e.id}`" class="hover:text-blue-600 hover:underline font-bold" x-text="e.title"></a>
+                    <button 
+                      @click="toggleOnlineMode(e.id)" 
+                      type="button"
+                      :class="e.is_online_exam !== false ? 'bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300' : 'bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300'"
+                      class="px-2 py-0.5 rounded-full text-[11px] font-black border transition-all cursor-pointer inline-flex items-center gap-1 shadow-2xs"
+                      :title="e.is_online_exam !== false ? 'Đang bật giám sát chống gian lận (bấm để chuyển sang đề luyện tập)' : 'Đang là đề luyện tập tự do (bấm để chuyển sang thi trực tuyến)'"
+                    >
+                      <span x-text="e.is_online_exam !== false ? '🛡️ Thi trực tuyến' : '📖 Luyện tập'"></span>
+                      <span class="text-[10px] text-gray-500">⇄</span>
+                    </button>
+                  </div>
                 </td>
                 <td class="px-3 py-2 text-center text-gray-500 text-xs" x-text="`${e.subject} / Lớp ${e.grade}`"></td>
                 <td class="px-3 py-2 text-center text-xs text-gray-600">
@@ -749,18 +765,22 @@
           <label class="block text-xs font-bold text-gray-700 uppercase mb-1">📚 Môn phụ trách <span class="text-red-500">*</span></label>
           <select x-model="newTeacherForm.subject" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600 bg-white">
             <option value="">-- Chọn môn --</option>
-            <option value="Toán">Toán</option>
-            <option value="Vật lý">Vật lý</option>
+            <option value="Toán">Toán học</option>
+            <option value="Vật lý">Vật lí</option>
             <option value="Hóa học">Hóa học</option>
             <option value="Sinh học">Sinh học</option>
             <option value="Ngữ văn">Ngữ văn</option>
             <option value="Tiếng Anh">Tiếng Anh</option>
             <option value="Lịch sử">Lịch sử</option>
-            <option value="Địa lý">Địa lý</option>
-            <option value="GDCD">GDCD</option>
+            <option value="Địa lý">Địa lí</option>
+            <option value="Giáo dục kinh tế và pháp luật">Giáo dục kinh tế và pháp luật</option>
+            <option value="Giáo dục quốc phòng">Giáo dục quốc phòng</option>
+            <option value="Mỹ thuật">Mỹ thuật</option>
+            <option value="Âm nhạc">Âm nhạc</option>
             <option value="Tin học">Tin học</option>
             <option value="Công nghệ">Công nghệ</option>
-            <option value="Thể dục">Thể dục</option>
+            <option value="Thể dục">Thể dục (Giáo dục thể chất)</option>
+            <option value="GDCD">GDCD</option>
             <option value="Khác">Khác</option>
           </select>
           <p class="text-[11px] text-blue-600 mt-1">⚠️ Giáo viên chỉ được xem và quản lý đề thi thuộc môn của mình.</p>
@@ -1279,6 +1299,20 @@ function adminApp() {
           this.examList = data.exams || [];
         }
       } catch(e) {}
+    },
+
+    async toggleOnlineMode(examId) {
+      try {
+        const resp = await fetch(`/api/exam-builder/toggle-online/${examId}`, { method: 'POST' });
+        const res = await resp.json();
+        if (resp.ok) {
+          await this.loadExamList();
+        } else {
+          alert(res.detail || 'Lỗi khi chuyển đổi chế độ thi!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
     },
 
     async addSampleExam() {

@@ -48,6 +48,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": r[5] or "",
+                    "is_online_exam": data.get("is_online_exam", True),
                 }
             except Exception:
                 pass
@@ -75,6 +76,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": data.get("created_by", ""),
+                    "is_online_exam": data.get("is_online_exam", True),
                 }
         except Exception as e:
             logger.warning(f"Bỏ qua file {f.name}: {e}")
@@ -86,7 +88,13 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
         user_subject = (current_user.get('subject') or '').strip().lower()
         user_username = current_user.get('username', '').lower()
         if user_subject:
-            exams_list = [e for e in exams_list if (e.get('subject', '').lower() == user_subject) or (e.get('created_by', '').lower() == user_username)]
+            exams_list = [
+                e for e in exams_list 
+                if (e.get('subject', '').lower() == user_subject 
+                    or (user_subject in e.get('subject', '').lower() and len(user_subject) >= 3)
+                    or (e.get('subject', '').lower() in user_subject and len(e.get('subject', '')) >= 3)) 
+                or (e.get('created_by', '').lower() == user_username)
+            ]
         else:
             exams_list = [e for e in exams_list if e.get('created_by', '').lower() == user_username]
 
@@ -871,10 +879,30 @@ async def save_exam(request: Request = None, exam_data: dict = None):
     # Đảm bảo cấu trúc đầy đủ cho các phần còn thiếu
     _ensure_part_structure(exam_data)
 
+    if exam_data.get("is_online_exam") is None:
+        exam_data["is_online_exam"] = True
+
     exam_id = exam_data["id"]
     save_exam_record(exam_data)
-    logger.info(f"Đã lưu đề thi vào CSDL và file: {exam_id} - {exam_data['title']}")
+    logger.info(f"Đã lưu đề thi vào CSDL và file: {exam_id} - {exam_data['title']} (Thi trực tuyến: {exam_data['is_online_exam']})")
     return {"success": True, "exam_id": exam_id, "message": f"Đã lưu đề thi '{exam_data['title']}' thành công!"}
+
+
+@router.post("/toggle-online/{exam_id}")
+async def toggle_exam_online_mode(exam_id: str):
+    """Bật/tắt chế độ thi trực tuyến (có giám sát chống gian lận) hoặc đề luyện tập tự do."""
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+    current_val = exam.get("is_online_exam", True)
+    exam["is_online_exam"] = not current_val
+    save_exam_record(exam)
+    status_str = "Thi trực tuyến (Có giám sát chống gian lận)" if exam["is_online_exam"] else "Đề luyện tập tự do"
+    return {
+        "success": True,
+        "is_online_exam": exam["is_online_exam"],
+        "message": f"Đã chuyển chế độ đề thi sang: {status_str}"
+    }
 
 
 @router.get("/export/json/{exam_id}")
@@ -1436,14 +1464,222 @@ async def parse_exam_text(payload: dict):
 async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|docx)$")):
     """Tải file mẫu soạn đề thi (.txt, .json hoặc .docx) để giáo viên nhập nội dung."""
     
+    STANDARD_PART1 = [
+        {
+            "q": "Câu 1: Cho hàm số y = f(x) có đạo hàm f'(x) = x(x - 1)^2(x + 2). Số điểm cực trị của hàm số đã cho là:",
+            "options": [("A", "1"), ("B", "2"), ("C", "3"), ("D", "4")],
+            "correct": "B"
+        },
+        {
+            "q": "Câu 2: Tập xác định của hàm số y = log2(x - 3) là:",
+            "options": [("A", "(-∞; 3)"), ("B", "ℝ \\ {3}"), ("C", "[3; +∞)"), ("D", "(3; +∞)")],
+            "correct": "D"
+        },
+        {
+            "q": "Câu 3: Tiệm cận đứng của đồ thị hàm số y = (2x - 1)/(x + 1) là đường thẳng có phương trình:",
+            "options": [("A", "x = 2"), ("B", "x = 1/2"), ("C", "x = -1"), ("D", "y = 2")],
+            "correct": "C"
+        },
+        {
+            "q": "Câu 4: Giá trị lớn nhất của hàm số f(x) = x^3 - 3x + 2 trên đoạn [0; 2] bằng:",
+            "options": [("A", "0"), ("B", "2"), ("C", "4"), ("D", "6")],
+            "correct": "C"
+        },
+        {
+            "q": "Câu 5: Họ tất cả các nguyên hàm của hàm số f(x) = e^(2x) + cos(x) là:",
+            "options": [("A", "1/2 * e^(2x) + sin(x) + C"), ("B", "2 * e^(2x) - sin(x) + C"), ("C", "1/2 * e^(2x) - sin(x) + C"), ("D", "2 * e^(2x) + sin(x) + C")],
+            "correct": "A"
+        },
+        {
+            "q": "Câu 6: Trong không gian Oxyz, cho mặt phẳng (P): 2x - 3y + z - 5 = 0. Một vectơ pháp tuyến của (P) là:",
+            "options": [("A", "n = (2; -3; -5)"), ("B", "n = (2; 3; 1)"), ("C", "n = (2; -3; 1)"), ("D", "n = (-2; 3; 1)")],
+            "correct": "C"
+        },
+        {
+            "q": "Câu 7: Trong không gian Oxyz, toạ độ tâm I và bán kính R của mặt cầu (S): (x - 1)^2 + (y + 2)^2 + (z - 3)^2 = 16 là:",
+            "options": [("A", "I(1; -2; 3), R = 4"), ("B", "I(-1; 2; -3), R = 4"), ("C", "I(1; -2; 3), R = 16"), ("D", "I(-1; 2; -3), R = 16")],
+            "correct": "A"
+        },
+        {
+            "q": "Câu 8: Cho khối chóp S.ABC có đáy ABC là tam giác vuông tại B, AB = a, BC = a*sqrt(3), SA vuông góc với mặt phẳng đáy và SA = 2a. Thể tích khối chóp đã cho bằng:",
+            "options": [("A", "a^3 * sqrt(3) / 3"), ("B", "a^3 * sqrt(3)"), ("C", "2 * a^3 * sqrt(3) / 3"), ("D", "a^3 / 3")],
+            "correct": "A"
+        },
+        {
+            "q": "Câu 9: Trong không gian Oxyz, cho đường thẳng d: (x - 1)/2 = (y + 1)/-3 = z/1. Vectơ chỉ phương của đường thẳng d là:",
+            "options": [("A", "u = (1; -1; 0)"), ("B", "u = (2; -3; 1)"), ("C", "u = (2; 3; 1)"), ("D", "u = (-1; 1; 0)")],
+            "correct": "B"
+        },
+        {
+            "q": "Câu 10: Cho hình lập phương ABCD.A'B'C'D'. Góc giữa hai đường thẳng A'B và B'C' bằng:",
+            "options": [("A", "30°"), ("B", "45°"), ("C", "60°"), ("D", "90°")],
+            "correct": "C"
+        },
+        {
+            "q": "Câu 11: Cho cấp số cộng (u_n) có u_1 = 3 và công sai d = 4. Giá trị của số hạng thứ năm u_5 bằng:",
+            "options": [("A", "15"), ("B", "19"), ("C", "23"), ("D", "12")],
+            "correct": "B"
+        },
+        {
+            "q": "Câu 12: Một hộp chứa 5 quả cầu màu xanh và 4 quả cầu màu đỏ. Chọn ngẫu nhiên đồng thời 2 quả cầu. Xác suất để chọn được 2 quả cầu cùng màu là:",
+            "options": [("A", "4/9"), ("B", "5/9"), ("C", "1/3"), ("D", "2/9")],
+            "correct": "A"
+        }
+    ]
+
+    STANDARD_PART2 = [
+        {
+            "q": "Câu 1: Cho hàm số y = f(x) = (2x - 1)/(x + 1).",
+            "items": [
+                ("a", "Tập xác định của hàm số là D = ℝ \\ {-1}.", True),
+                ("b", "Đạo hàm của hàm số là f'(x) = 3/(x + 1)^2 với mọi x ≠ -1.", True),
+                ("c", "Hàm số nghịch biến trên từng khoảng xác định.", False),
+                ("d", "Đồ thị hàm số có tiệm cận đứng x = -1 và tiệm cận ngang y = 2.", True)
+            ]
+        },
+        {
+            "q": "Câu 2: Một chất điểm chuyển động theo phương trình vận tốc v(t) = 3t^2 - 6t + 4 (m/s), với t ≥ 0 tính bằng giây.",
+            "items": [
+                ("a", "Vận tốc tức thời nhỏ nhất của chất điểm bằng 1 m/s.", True),
+                ("b", "Gia tốc tức thời của chất điểm tại thời điểm t là a(t) = 6t - 6 (m/s^2).", True),
+                ("c", "Tại thời điểm t = 2 giây, gia tốc của chất điểm bằng 12 m/s^2.", False),
+                ("d", "Quãng đường chất điểm đi được từ thời điểm t = 0 đến thời điểm t = 3 giây là 15 mét.", True)
+            ]
+        },
+        {
+            "q": "Câu 3: Trong không gian Oxyz, cho ba điểm A(1; 0; 0), B(0; 2; 0), C(0; 0; 3) và mặt phẳng (P): 6x + 3y + 2z - 6 = 0.",
+            "items": [
+                ("a", "Phương trình mặt phẳng (ABC) theo đoạn chắn là x/1 + y/2 + z/3 = 1.", True),
+                ("b", "Mặt phẳng (P) đi qua ba điểm A, B, C.", True),
+                ("c", "Một vectơ pháp tuyến của mặt phẳng (P) là n = (6; 3; 2).", True),
+                ("d", "Khoảng cách từ gốc tọa độ O đến mặt phẳng (P) bằng 6/7.", True)
+            ]
+        },
+        {
+            "q": "Câu 4: Cho hàm số bậc ba y = f(x) = ax^3 + bx^2 + cx + d có đồ thị đi qua hai điểm cực trị A(0; 2) và B(2; -2).",
+            "items": [
+                ("a", "Đồ thị hàm số nhận điểm uốn I(1; 0) làm tâm đối xứng.", True),
+                ("b", "Hàm số đồng biến trên khoảng (0; 2).", False),
+                ("c", "Giá trị cực đại của hàm số đã cho bằng 2.", True),
+                ("d", "Phương trình f(x) = 0 có đúng 3 nghiệm thực phân biệt.", True)
+            ]
+        }
+    ]
+
+    STANDARD_PART3 = [
+        {
+            "q": "Câu 1: Tìm hệ số góc của tiếp tuyến của đồ thị hàm số y = x^3 - 3x^2 + 2 tại điểm có hoành độ x0 = 3.",
+            "ans": "9"
+        },
+        {
+            "q": "Câu 2: Cho hình hộp chữ nhật ABCD.A'B'C'D' có AB = 3, AD = 4, AA' = 5. Tính khoảng cách giữa hai đường thẳng chéo nhau AB và C'D'.",
+            "ans": "5"
+        },
+        {
+            "q": "Câu 3: Tìm giá trị nhỏ nhất của hàm số y = (x - 2)/(x + 1) trên đoạn [0; 2].",
+            "ans": "-2"
+        },
+        {
+            "q": "Câu 4: Cho hàm số y = f(x) có đạo hàm f'(x) = x^2 - 4x + 3. Điểm cực tiểu của hàm số đã cho là x bằng bao nhiêu?",
+            "ans": "3"
+        },
+        {
+            "q": "Câu 5: Trong không gian Oxyz, cho mặt phẳng (P): 2x - 2y + z + 5 = 0 và điểm A(1; 2; 1). Tính khoảng cách từ điểm A đến mặt phẳng (P).",
+            "ans": "2"
+        },
+        {
+            "q": "Câu 6: Một đội tuyển học sinh giỏi gồm 20 học sinh nam và 15 học sinh nữ. Chọn ngẫu nhiên 3 học sinh để thành lập ban đại diện. Tính xác suất để trong 3 học sinh được chọn có ít nhất 1 học sinh nữ. (Làm tròn kết quả đến chữ số thập phân thứ hai).",
+            "ans": "0.82"
+        }
+    ]
+
+    STANDARD_PART4 = {
+        "title": "PHẦN IV (1,0 điểm). TỰ LUẬN (Tùy chọn - Dành cho đề có phần tự luận)",
+        "instruction": "Thí sinh trình bày lời giải chi tiết cho câu hỏi dưới đây:",
+        "q": "Câu 1: Cho phương trình bậc hai x^2 - (m + 3)x + 2m + 2 = 0 (với x là ẩn số, m là tham số thực).\n"
+             "a) Giải phương trình khi m = 1.\n"
+             "b) Tìm tất cả các giá trị của tham số m để phương trình có hai nghiệm phân biệt x1, x2 thỏa mãn điều kiện: x1^2 + x2^2 = 10.",
+        "guide": "HƯỚNG DẪN CHẤM & THANG ĐIỂM THAM KHẢO:\n"
+                 "• Ý a (0,4 điểm): Khi m = 1, phương trình trở thành x^2 - 4x + 4 = 0 <=> (x - 2)^2 = 0 <=> x = 2 (nghiệm kép).\n"
+                 "• Ý b (0,6 điểm):\n"
+                 "  - Biệt thức Δ = (m + 3)^2 - 4(2m + 2) = m^2 + 6m + 9 - 8m - 8 = (m - 1)^2. Để phương trình có hai nghiệm phân biệt thì Δ > 0 <=> m ≠ 1 (0,2 điểm).\n"
+                 "  - Theo định lý Viète: x1 + x2 = m + 3 và x1 * x2 = 2m + 2 (0,2 điểm).\n"
+                 "  - Ta có: x1^2 + x2^2 = (x1 + x2)^2 - 2*x1*x2 = (m + 3)^2 - 2(2m + 2) = m^2 + 2m + 5.\n"
+                 "    Theo giả thiết: m^2 + 2m + 5 = 10 <=> m^2 + 2m - 5 = 0 <=> m = -1 ± √6 (thỏa mãn điều kiện m ≠ 1) (0,2 điểm)."
+    }
+
     if format == "json":
-        # Mẫu JSON
-        sample_path = DATA_DIR / "exam_toan_12_101.json"
-        if sample_path.exists():
-            content = sample_path.read_text(encoding="utf-8")
-        else:
-            content = json.dumps({"title": "Đề thi mẫu", "parts": {}}, ensure_ascii=False, indent=2)
-            
+        # Mẫu JSON chuẩn 22 câu + tự luận
+        json_obj = {
+            "title": "ĐỀ KIỂM TRA ĐỊNH KỲ CHUẨN BỘ GD&ĐT 2026",
+            "subject": "Toán học",
+            "grade": "12",
+            "duration_minutes": 50,
+            "parts": {
+                "part1": {
+                    "name": "PHẦN I (3,0 điểm). Trắc nghiệm nhiều lựa chọn",
+                    "instruction": "Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu chỉ chọn một phương án.",
+                    "questions": [
+                        {
+                            "id": f"p1_q{idx+1}",
+                            "text": item["q"],
+                            "options": {k: v for k, v in item["options"]},
+                            "answer": item["correct"]
+                        }
+                        for idx, item in enumerate(STANDARD_PART1)
+                    ]
+                },
+                "part2": {
+                    "name": "PHẦN II (4,0 điểm). Trắc nghiệm Đúng / Sai",
+                    "instruction": "Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a, b, c, d, chọn Đúng hoặc Sai.",
+                    "questions": [
+                        {
+                            "id": f"p2_q{idx+1}",
+                            "text": item["q"],
+                            "items": {
+                                lbl: {"text": txt, "answer": is_true}
+                                for lbl, txt, is_true in item["items"]
+                            }
+                        }
+                        for idx, item in enumerate(STANDARD_PART2)
+                    ]
+                },
+                "part3": {
+                    "name": "PHẦN III (3,0 điểm). Trả lời ngắn",
+                    "instruction": "Thí sinh trả lời từ câu 1 đến câu 6. Điền kết quả ngắn.",
+                    "questions": [
+                        {
+                            "id": f"p3_q{idx+1}",
+                            "text": item["q"],
+                            "answer": item["ans"],
+                            "accepted_answers": [item["ans"]]
+                        }
+                        for idx, item in enumerate(STANDARD_PART3)
+                    ]
+                },
+                "part4": {
+                    "name": "PHẦN IV (1,0 điểm). Tự luận",
+                    "instruction": STANDARD_PART4["instruction"],
+                    "questions": [
+                        {
+                            "id": "p4_q1",
+                            "title": "Câu 1. Giải phương trình và hệ thức Viète",
+                            "text": STANDARD_PART4["q"],
+                            "rubric": {
+                                "max_score": 1.0,
+                                "criteria": [
+                                    {"name": "Ý a: Giải phương trình khi m = 1", "points": 0.4},
+                                    {"name": "Ý b: Tìm điều kiện Δ và định lý Viète", "points": 0.4},
+                                    {"name": "Ý b: Giải phương trình tìm m và kết luận", "points": 0.2}
+                                ],
+                                "sample_answer": STANDARD_PART4["guide"]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        content = json.dumps(json_obj, ensure_ascii=False, indent=2)
         return Response(
             content=content.encode("utf-8"),
             media_type="application/json",
@@ -1451,9 +1687,9 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         )
 
     elif format == "docx":
-        # Mẫu Word (.docx)
+        # Mẫu Word (.docx) chuẩn 22 câu + tự luận
         import docx
-        from docx.shared import Inches, Pt, RGBColor
+        from docx.shared import Pt, RGBColor
         from docx.enum.text import WD_ALIGN_PARAGRAPH
         
         doc = docx.Document()
@@ -1464,7 +1700,7 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         run_h1 = p_head.add_run("SỞ GD&ĐT ... - TRƯỜNG THPT ...\n")
         run_h1.bold = True
         run_h1.font.size = Pt(13)
-        run_h2 = p_head.add_run("ĐỀ KIỂM TRA ĐỊNH KỲ CHUẨN BỘ GD&ĐT 2026\n")
+        run_h2 = p_head.add_run("ĐỀ KIỂM TRA ĐỊNH KỲ (CHUẨN CẤU TRÚC BỘ GD&ĐT 2026)\n")
         run_h2.bold = True
         run_h2.font.size = Pt(15)
         run_h3 = p_head.add_run("Môn: TOÁN HỌC - Lớp: 12 (Thời gian làm bài: 50 phút)\n")
@@ -1483,7 +1719,7 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         r_g_title.font.size = Pt(11)
         
         p_guide.add_run("• ")
-        r_p1_lbl = p_guide.add_run("Phần I (Trắc nghiệm nhiều lựa chọn): ")
+        r_p1_lbl = p_guide.add_run("Phần I (12 câu Trắc nghiệm nhiều lựa chọn): ")
         r_p1_lbl.bold = True
         p_guide.add_run("Phương án đúng được ")
         r_p1_red = p_guide.add_run("TÔ MÀU ĐỎ")
@@ -1492,7 +1728,7 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         p_guide.add_run(". Tuyệt đối KHÔNG đánh chữ [Đúng] vào các đáp án.\n")
 
         p_guide.add_run("• ")
-        r_p2_lbl = p_guide.add_run("Phần II (Trắc nghiệm Đúng / Sai): ")
+        r_p2_lbl = p_guide.add_run("Phần II (4 câu Trắc nghiệm Đúng / Sai): ")
         r_p2_lbl.bold = True
         p_guide.add_run("Ý nào ")
         r_p2_d = p_guide.add_run("ĐÚNG thì TÔ MÀU ĐỎ")
@@ -1504,90 +1740,61 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         p_guide.add_run(". Tuyệt đối KHÔNG đánh chữ (Đúng) hoặc (Sai) vào các đáp án.\n")
 
         p_guide.add_run("• ")
-        r_p3_lbl = p_guide.add_run("Phần III (Trả lời ngắn): ")
+        r_p3_lbl = p_guide.add_run("Phần III (6 câu Trả lời ngắn): ")
         r_p3_lbl.bold = True
-        p_guide.add_run("Ghi dòng ")
+        p_guide.add_run("Dưới mỗi câu ghi dòng ")
         r_p3_box = p_guide.add_run("Đáp án: <kết quả>")
         r_p3_box.bold = True
         p_guide.add_run(" bằng chữ màu đen bình thường (")
         r_p3_note = p_guide.add_run("KHÔNG CẦN TÔ ĐỎ ĐÁP ÁN")
         r_p3_note.bold = True
-        p_guide.add_run(").")
+        p_guide.add_run(").\n")
+
+        p_guide.add_run("• ")
+        r_p4_lbl = p_guide.add_run("Phần IV (Tự luận tùy chọn): ")
+        r_p4_lbl.bold = True
+        p_guide.add_run("Ghi đề bài tự luận và lời giải/thang điểm tham khảo ở cuối đề (nếu đề thi có phần tự luận).")
 
         doc.add_paragraph()
 
-        # ================= PHẦN I =================
-        p1_h = doc.add_heading("PHẦN I (5,0 điểm). Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu chọn 1 phương án đúng.", level=2)
+        # ================= PHẦN I (12 CÂU) =================
+        doc.add_heading("PHẦN I (3,0 điểm). Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi thí sinh chỉ chọn một phương án.", level=2)
+        for item in STANDARD_PART1:
+            doc.add_paragraph(item["q"])
+            for key, opt_text in item["options"]:
+                p_opt = doc.add_paragraph()
+                r_opt = p_opt.add_run(f"{key}. {opt_text}")
+                if key == item["correct"]:
+                    r_opt.bold = True
+                    r_opt.font.color.rgb = RGBColor(255, 0, 0)
         
-        # Câu 1: B đúng -> tô đỏ, không ghi [Đúng]
-        doc.add_paragraph("Câu 1: Trong không gian Oxyz, cho đường thẳng d: (x-1)/2 = (y+1)/-3 = z/1. Vectơ chỉ phương của d là:")
-        p_opt1 = doc.add_paragraph()
-        p_opt1.add_run("A. u = (1; -1; 0)        ")
-        r1_b = p_opt1.add_run("B. u = (2; -3; 1)")
-        r1_b.bold = True
-        r1_b.font.color.rgb = RGBColor(255, 0, 0)
-        p_opt1.add_run("        C. u = (2; 3; 1)        D. u = (-1; 1; 0)")
-        
-        # Câu 2: D đúng -> tô đỏ, không ghi [Đúng]
-        doc.add_paragraph("Câu 2: Tập xác định của hàm số y = log2(x - 3) là:")
-        p_opt2 = doc.add_paragraph()
-        p_opt2.add_run("A. (-∞; 3)        B. ℝ \\ {3}        C. [3; +∞)        ")
-        r2_d = p_opt2.add_run("D. (3; +∞)")
-        r2_d.bold = True
-        r2_d.font.color.rgb = RGBColor(255, 0, 0)
+        # ================= PHẦN II (4 CÂU) =================
+        doc.add_heading("PHẦN II (4,0 điểm). Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.", level=2)
+        for item in STANDARD_PART2:
+            doc.add_paragraph(item["q"])
+            for label, sub_text, is_true in item["items"]:
+                p_sub = doc.add_paragraph()
+                r_sub = p_sub.add_run(f"{label}) {sub_text}")
+                if is_true:
+                    r_sub.bold = True
+                    r_sub.font.color.rgb = RGBColor(255, 0, 0)
 
-        p_note1 = doc.add_paragraph("(Thầy/Cô tiếp tục soạn các câu 3, 4, ... theo định dạng trên, đáp án đúng tô màu đỏ)")
-        p_note1.runs[0].font.italic = True
-        p_note1.runs[0].font.color.rgb = RGBColor(128, 128, 128)
-        
-        # ================= PHẦN II =================
-        doc.add_heading("PHẦN II (4,0 điểm). Thí sinh trả lời từ câu 1 đến câu 4. Mỗi ý a, b, c, d chọn Đúng hoặc Sai.", level=2)
-        doc.add_paragraph("Câu 1: Một chất điểm chuyển động với vận tốc v(t) = 3t^2 - 6t + 4 (m/s), với t >= 0.")
-        
-        # Ý a (Đúng) -> Tô đỏ, không ghi (Đúng)
-        p2_a = doc.add_paragraph()
-        r2_a = p2_a.add_run("a) Vận tốc tức thời nhỏ nhất của chất điểm bằng 1 m/s.")
-        r2_a.bold = True
-        r2_a.font.color.rgb = RGBColor(255, 0, 0)
+        # ================= PHẦN III (6 CÂU) =================
+        doc.add_heading("PHẦN III (3,0 điểm). Thí sinh trả lời từ câu 1 đến câu 6. Điền kết quả ngắn.", level=2)
+        for item in STANDARD_PART3:
+            doc.add_paragraph(item["q"])
+            p_ans = doc.add_paragraph()
+            r_ans = p_ans.add_run(f"Đáp án: {item['ans']}")
+            r_ans.bold = True
 
-        # Ý b (Đúng) -> Tô đỏ, không ghi (Đúng)
-        p2_b = doc.add_paragraph()
-        r2_b = p2_b.add_run("b) Gia tốc của chất điểm tại thời điểm t là a(t) = 6t - 6 (m/s^2).")
-        r2_b.bold = True
-        r2_b.font.color.rgb = RGBColor(255, 0, 0)
-
-        # Ý c (Sai) -> Màu đen bình thường, không ghi (Sai)
-        p2_c = doc.add_paragraph()
-        p2_c.add_run("c) Tại thời điểm t = 2 (s), gia tốc của chất điểm bằng 12 m/s^2.")
-
-        # Ý d (Đúng) -> Tô đỏ, không ghi (Đúng)
-        p2_d = doc.add_paragraph()
-        r2_d = p2_d.add_run("d) Quãng đường chất điểm đi được từ t = 0 đến t = 3 là 15 m.")
-        r2_d.bold = True
-        r2_d.font.color.rgb = RGBColor(255, 0, 0)
-
-        p_note2 = doc.add_paragraph("(Thầy/Cô tiếp tục soạn các câu 2, 3, 4 theo định dạng trên: Ý đúng tô màu đỏ, ý sai để màu đen bình thường)")
-        p_note2.runs[0].font.italic = True
-        p_note2.runs[0].font.color.rgb = RGBColor(128, 128, 128)
-
-        # ================= PHẦN III =================
-        doc.add_heading("PHẦN III (1,0 điểm). Thí sinh trả lời từ câu 1 đến câu 6. Điền kết quả ngắn.", level=2)
-        
-        # Câu 1: Màu đen bình thường, Đáp án: 9 (màu đen bình thường, ko cần tô đỏ)
-        doc.add_paragraph("Câu 1: Tìm hệ số góc của tiếp tuyến của đồ thị hàm số y = x^3 - 3x^2 + 2 tại x0 = 3.")
-        p3_ans1 = doc.add_paragraph()
-        r3_ans1 = p3_ans1.add_run("Đáp án: 9")
-        r3_ans1.bold = True
-
-        # Câu 2: Màu đen bình thường, Đáp án: 5 (màu đen bình thường, ko cần tô đỏ)
-        doc.add_paragraph("Câu 2: Cho hình hộp chữ nhật ABCD.A'B'C'D' có AB = 3, AD = 4, AA' = 5. Khoảng cách giữa AB và C'D' là bao nhiêu?")
-        p3_ans2 = doc.add_paragraph()
-        r3_ans2 = p3_ans2.add_run("Đáp án: 5")
-        r3_ans2.bold = True
-
-        p_note3 = doc.add_paragraph("(Thầy/Cô tiếp tục soạn các câu 3, 4, 5, 6 theo định dạng trên: Dòng 'Đáp án: <kết quả>' để chữ màu đen bình thường, không cần tô đỏ)")
-        p_note3.runs[0].font.italic = True
-        p_note3.runs[0].font.color.rgb = RGBColor(128, 128, 128)
+        # ================= PHẦN IV (TỰ LUẬN TÙY CHỌN) =================
+        doc.add_heading(STANDARD_PART4["title"], level=2)
+        p_p4_inst = doc.add_paragraph(STANDARD_PART4["instruction"])
+        p_p4_inst.runs[0].font.italic = True
+        doc.add_paragraph(STANDARD_PART4["q"])
+        p_p4_guide = doc.add_paragraph()
+        r_p4_guide = p_p4_guide.add_run(STANDARD_PART4["guide"])
+        r_p4_guide.font.italic = True
 
         buf = io.BytesIO()
         doc.save(buf)
@@ -1600,42 +1807,47 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         )
 
     else:
-        # Mẫu TXT
-        txt_content = """SỞ GD&ĐT ... - TRƯỜNG THPT ...
-ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 12 (CHUẨN BỘ GD&ĐT 2026)
-Môn: TOÁN HỌC - Lớp: 12 - Thời gian: 50 phút
+        # Mẫu TXT chuẩn 22 câu + tự luận
+        txt_lines = [
+            "SỞ GD&ĐT ... - TRƯỜNG THPT ...",
+            "ĐỀ KIỂM TRA ĐỊNH KỲ (CHUẨN CẤU TRÚC BỘ GD&ĐT 2026)",
+            "Môn: TOÁN HỌC - Lớp: 12 - Thời gian làm bài: 50 phút",
+            "",
+            "📌 QUY ƯỚC SOẠN ĐỀ CHO HỆ THỐNG:",
+            "- File Word (.docx): Đáp án đúng chỉ cần TÔ MÀU ĐỎ (không ghi chữ Đúng hay Sai). Phần III ghi 'Đáp án: <số>' màu đen bình thường.",
+            "- File Text (.txt): Đánh dấu * sau phương án đúng của Phần I; ghi (Đúng) hoặc (Sai) ở Phần II; Phần III ghi 'Đáp án: <số>'.",
+            "",
+            "PHẦN I (3.0 điểm). Trắc nghiệm nhiều lựa chọn (Câu 1 đến Câu 12)."
+        ]
 
-📌 QUY ƯỚC SOẠN ĐỀ:
-- Nếu dùng file Word (.docx): Đáp án đúng chỉ cần TÔ MÀU ĐỎ (không đánh chữ Đúng hay Sai). Phần III ghi "Đáp án: <số>" chữ đen bình thường.
-- Nếu dùng file Text (.txt): Đánh dấu * sau đáp án đúng của Phần I, hoặc ghi (Đúng)/(Sai) ở Phần II.
+        for item in STANDARD_PART1:
+            txt_lines.append(item["q"])
+            for key, opt_text in item["options"]:
+                star = " *" if key == item["correct"] else ""
+                txt_lines.append(f"{key}. {opt_text}{star}")
+            txt_lines.append("")
 
-PHẦN I (5.0 điểm). Trắc nghiệm nhiều lựa chọn (Câu 1 đến Câu 12).
-Câu 1: Trong không gian Oxyz, cho đường thẳng d: (x-1)/2 = (y+1)/-3 = z/1. Vectơ chỉ phương của d là
-A. u = (1; -1; 0)
-B. u = (2; -3; 1) *
-C. u = (2; 3; 1)
-D. u = (-1; 1; 0)
+        txt_lines.append("PHẦN II (4.0 điểm). Trắc nghiệm Đúng / Sai (Câu 1 đến Câu 4).")
+        for item in STANDARD_PART2:
+            txt_lines.append(item["q"])
+            for label, sub_text, is_true in item["items"]:
+                status = "(Đúng)" if is_true else "(Sai)"
+                txt_lines.append(f"{label}) {sub_text} {status}")
+            txt_lines.append("")
 
-Câu 2: Tập xác định của hàm số y = log2(x - 3) là
-A. (-inf; 3)
-B. R \\ {3}
-C. [3; +inf)
-D. (3; +inf) *
+        txt_lines.append("PHẦN III (3.0 điểm). Trả lời ngắn (Câu 1 đến Câu 6).")
+        for item in STANDARD_PART3:
+            txt_lines.append(item["q"])
+            txt_lines.append(f"Đáp án: {item['ans']}")
+            txt_lines.append("")
 
-PHẦN II (4.0 điểm). Trắc nghiệm Đúng / Sai (Câu 1 đến Câu 4).
-Câu 1: Một chất điểm chuyển động với vận tốc v(t) = 3t^2 - 6t + 4 (m/s), với t >= 0.
-a) Vận tốc tức thời nhỏ nhất của chất điểm bằng 1 m/s. (Đúng)
-b) Gia tốc của chất điểm tại thời điểm t là a(t) = 6t - 6. (Đúng)
-c) Tại thời điểm t = 2 (s), gia tốc của chất điểm bằng 12 m/s^2. (Sai)
-d) Quãng đường chất điểm đi được từ t = 0 đến t = 3 là 15 m. (Đúng)
+        txt_lines.append(STANDARD_PART4["title"])
+        txt_lines.append(STANDARD_PART4["instruction"])
+        txt_lines.append(STANDARD_PART4["q"])
+        txt_lines.append("")
+        txt_lines.append(STANDARD_PART4["guide"])
 
-PHẦN III (1.0 điểm). Trả lời ngắn (Câu 1 đến Câu 6).
-Câu 1: Tìm hệ số góc của tiếp tuyến của đồ thị hàm số y = x^3 - 3x^2 + 2 tại điểm có hoành độ x0 = 3.
-Đáp án: 9
-
-Câu 2: Cho hình hộp chữ nhật ABCD.A'B'C'D' có AB = 3, AD = 4, AA' = 5. Tính khoảng cách giữa hai đường thẳng AB và C'D'.
-Đáp án: 5
-"""
+        txt_content = "\n".join(txt_lines)
         return Response(
             content=txt_content.encode("utf-8"),
             media_type="text/plain; charset=utf-8",
