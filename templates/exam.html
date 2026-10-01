@@ -104,11 +104,6 @@
     min-height: -webkit-fill-available;
   }
 
-  /* Fix flex layout cho Safari iOS */
-  .flex { display: -webkit-box; display: -webkit-flex; display: flex; }
-  .flex-col { -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column; }
-  .flex-1 { -webkit-box-flex: 1; -webkit-flex: 1 1 0%; flex: 1 1 0%; }
-
   /* Smooth scroll sidebar trên iPad */
   aside {
     -webkit-overflow-scrolling: touch;
@@ -747,7 +742,8 @@ function examApp() {
       // Lấy thông tin học sinh từ sessionStorage
       this.studentName = sessionStorage.getItem('student_name') || '';
       this.studentClass = sessionStorage.getItem('student_class') || '';
-      this.examId = sessionStorage.getItem('exam_id') || 'exam_001';
+      const urlParams = new URLSearchParams(window.location.search);
+      this.examId = urlParams.get('exam_id') || sessionStorage.getItem('exam_id') || 'exam_001';
       this.startedAt = sessionStorage.getItem('started_at') || new Date().toISOString();
       
       if (!this.studentName) {
@@ -779,15 +775,39 @@ function examApp() {
           const resp = await fetch(`/api/exam/current?exam_id=${this.examId}`);
           if (resp.ok) {
             this.examData = await resp.json();
+            if (this.examData && this.examData.id) {
+              this.examId = this.examData.id;
+              sessionStorage.setItem('exam_id', this.examId);
+            }
+            try {
+              sessionStorage.setItem('cached_exam_data_' + this.examId, JSON.stringify(this.examData));
+            } catch(e) {}
             this.setupShuffledExam();
             this.startCountdown();
             examLoaded = true;
           }
         } catch(e) {
           if (attempt === 1) {
-            alert('Không thể tải đề thi! Kiểm tra kết nối mạng và thử lại.');
+            console.error('Lỗi tải đề thi lần 2:', e);
           }
         }
+      }
+
+      // Fallback: nếu mạng chập chờn nhưng đã có bản lưu examData từ trước
+      if (!examLoaded) {
+        const cached = sessionStorage.getItem('cached_exam_data_' + this.examId);
+        if (cached) {
+          try {
+            this.examData = JSON.parse(cached);
+            this.setupShuffledExam();
+            this.startCountdown();
+            examLoaded = true;
+          } catch(e) {}
+        }
+      }
+
+      if (!examLoaded) {
+        alert('Không thể tải đề thi! Kiểm tra kết nối mạng và thử lại.');
       }
 
       this.loading = false;
@@ -957,14 +977,16 @@ function examApp() {
                         .replace(/<td[^>]*>/gi, '  ')
                         .replace(/<\/td>/gi, '  ');
 
-      const optRegex = /(?:^|[\s\n>]|(?<=\}\}))(?:(?:\([A-Da-d]\)|\[[A-Da-d]\])|([A-Da-d])[\.\)\:\/\-])\s*/g;
+      const optRegex = /(^|[\s\n>]|\}\})(?:(?:\(([A-Da-d])\)|\[([A-Da-d])\])|([A-Da-d])[\.\)\:\/\-])\s*/g;
       let match;
       const matches = [];
       while ((match = optRegex.exec(clean)) !== null) {
+        const prefixLen = (match[1] || '').length;
+        const key = (match[2] || match[3] || match[4] || match[0].replace(/[^A-Za-z]/g, '')).toUpperCase();
         matches.push({
-          key: (match[1] || match[0].replace(/[\(\)\[\]\.\:\/\-\s]/g, '')).toUpperCase(),
-          index: match.index,
-          length: match[0].length
+          key: key,
+          index: match.index + prefixLen,
+          endIndex: match.index + match[0].length
         });
       }
 
@@ -972,7 +994,7 @@ function examApp() {
         const newOpts = { A: '', B: '', C: '', D: '' };
         for (let i = 0; i < matches.length; i++) {
           const m = matches[i];
-          const start = m.index + m.length;
+          const start = m.endIndex;
           const end = (i + 1 < matches.length) ? matches[i + 1].index : clean.length;
           let val = clean.slice(start, end).trim().replace(/<[^>]+>/g, '').trim();
           newOpts[m.key] = val;
@@ -1012,14 +1034,16 @@ function examApp() {
                         .replace(/<td[^>]*>/gi, '  ')
                         .replace(/<\/td>/gi, '  ');
 
-      const itemRegex = /(?:^|[\s\n>]|(?<=\}\}))(?:(?:\([a-d]\)|\[[a-d]\])|([a-d])[\.\)\:\/\-])\s*/gi;
+      const itemRegex = /(^|[\s\n>]|\}\})(?:(?:\(([a-d])\)|\[([a-d])\])|([a-d])[\.\)\:\/\-])\s*/gi;
       let match;
       const matches = [];
       while ((match = itemRegex.exec(clean)) !== null) {
+        const prefixLen = (match[1] || '').length;
+        const key = (match[2] || match[3] || match[4] || match[0].replace(/[^A-Za-z]/g, '')).toLowerCase();
         matches.push({
-          key: (match[1] || match[0].replace(/[\(\)\[\]\.\:\/\-\s]/g, '')).toLowerCase(),
-          index: match.index,
-          length: match[0].length
+          key: key,
+          index: match.index + prefixLen,
+          endIndex: match.index + match[0].length
         });
       }
 
@@ -1027,7 +1051,7 @@ function examApp() {
         const newItems = {};
         for (let i = 0; i < matches.length; i++) {
           const m = matches[i];
-          const start = m.index + m.length;
+          const start = m.endIndex;
           const end = (i + 1 < matches.length) ? matches[i + 1].index : clean.length;
           let val = clean.slice(start, end).trim().replace(/<[^>]+>/g, '').trim();
           newItems[m.key] = { text: val, answer: true };
@@ -1377,6 +1401,8 @@ function examApp() {
         student_name: (this.studentName || '').trim(),
         student_class: (this.studentClass || '').trim().toUpperCase(),
         exam_id: this.examId,
+        exam_title: this.examData?.title || '',
+        exam_data: this.examData || null,
         started_at: this.startedAt,
         submitted_at: submittedAt,
         duration_seconds: durationSeconds,
@@ -1428,6 +1454,8 @@ function examApp() {
         student_name: (this.studentName || '').trim(),
         student_class: (this.studentClass || '').trim().toUpperCase(),
         exam_id: this.examId,
+        exam_title: this.examData?.title || '',
+        exam_data: this.examData || null,
         started_at: this.startedAt,
         submitted_at: submittedAt,
         duration_seconds: durationSeconds,

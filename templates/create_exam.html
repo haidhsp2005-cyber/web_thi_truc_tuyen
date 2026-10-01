@@ -1302,14 +1302,16 @@ function examBuilder() {
                         .replace(/<td[^>]*>/gi, '  ')
                         .replace(/<\/td>/gi, '  ');
 
-      const optRegex = /(?:^|[\s\n>]|(?<=\}\}))(?:(?:\([A-Da-d]\)|\[[A-Da-d]\])|([A-Da-d])[\.\)\:\/\-])\s*/g;
+      const optRegex = /(^|[\s\n>]|\}\})(?:(?:\(([A-Da-d])\)|\[([A-Da-d])\])|([A-Da-d])[\.\)\:\/\-])\s*/g;
       let match;
       const matches = [];
       while ((match = optRegex.exec(clean)) !== null) {
+        const prefixLen = (match[1] || '').length;
+        const key = (match[2] || match[3] || match[4] || match[0].replace(/[^A-Za-z]/g, '')).toUpperCase();
         matches.push({
-          key: (match[1] || match[0].replace(/[\(\)\[\]\.\:\/\-\s]/g, '')).toUpperCase(),
-          index: match.index,
-          length: match[0].length
+          key: key,
+          index: match.index + prefixLen,
+          endIndex: match.index + match[0].length
         });
       }
 
@@ -1317,7 +1319,7 @@ function examBuilder() {
         const newOpts = { A: '', B: '', C: '', D: '' };
         for (let i = 0; i < matches.length; i++) {
           const m = matches[i];
-          const start = m.index + m.length;
+          const start = m.endIndex;
           const end = (i + 1 < matches.length) ? matches[i + 1].index : clean.length;
           let val = clean.slice(start, end).trim().replace(/<[^>]+>/g, '').trim();
           newOpts[m.key] = val;
@@ -1349,14 +1351,16 @@ function examBuilder() {
                         .replace(/<td[^>]*>/gi, '  ')
                         .replace(/<\/td>/gi, '  ');
 
-      const itemRegex = /(?:^|[\s\n>]|(?<=\}\}))(?:(?:\([a-d]\)|\[[a-d]\])|([a-d])[\.\)\:\/\-])\s*/gi;
+      const itemRegex = /(^|[\s\n>]|\}\})(?:(?:\(([a-d])\)|\[([a-d])\])|([a-d])[\.\)\:\/\-])\s*/gi;
       let match;
       const matches = [];
       while ((match = itemRegex.exec(clean)) !== null) {
+        const prefixLen = (match[1] || '').length;
+        const key = (match[2] || match[3] || match[4] || match[0].replace(/[^A-Za-z]/g, '')).toLowerCase();
         matches.push({
-          key: (match[1] || match[0].replace(/[\(\)\[\]\.\:\/\-\s]/g, '')).toLowerCase(),
-          index: match.index,
-          length: match[0].length
+          key: key,
+          index: match.index + prefixLen,
+          endIndex: match.index + match[0].length
         });
       }
 
@@ -1364,7 +1368,7 @@ function examBuilder() {
         const newItems = {};
         for (let i = 0; i < matches.length; i++) {
           const m = matches[i];
-          const start = m.index + m.length;
+          const start = m.endIndex;
           const end = (i + 1 < matches.length) ? matches[i + 1].index : clean.length;
           let val = clean.slice(start, end).trim().replace(/<[^>]+>/g, '').trim();
           newItems[m.key] = { text: val, answer: true };

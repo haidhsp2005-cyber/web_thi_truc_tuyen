@@ -119,8 +119,23 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     
     exam_id = data.get("exam_id", "exam_001")
     exam = load_exam(exam_id)
+    
+    # Phục hồi đề thi từ dữ liệu client nếu máy chủ vừa khởi động lại / redeploy
+    if not exam and data.get("exam_data"):
+        exam = data["exam_data"]
+        try:
+            from ..database import save_exam_record
+            save_exam_record(exam)
+            logger.info(f"Đã tự động khôi phục đề thi '{exam.get('title')}' ({exam_id}) từ bài nộp của học sinh!")
+        except Exception as save_err:
+            logger.warning(f"Lỗi lưu lại đề thi phục hồi: {save_err}")
+    
+    if not exam and data.get("exam_title"):
+        title = data.get("exam_title").strip()
+        exam = load_exam(title)
+
     if not exam:
-        raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
+        raise HTTPException(status_code=404, detail="Không tìm thấy đề thi trên máy chủ!")
     
     student_name = data.get("student_name", "").strip()
     student_class = data.get("student_class", "").strip()
