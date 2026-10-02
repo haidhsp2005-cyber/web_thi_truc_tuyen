@@ -96,8 +96,15 @@ async def list_users():
 
 
 @router.post("/users/create")
-async def create_new_user(req: CreateUserRequest):
-    """Tạo tài khoản giáo viên mới."""
+async def create_new_user(req: CreateUserRequest, request: Request):
+    """Tạo tài khoản giáo viên mới (chỉ thực hiện được khi đã đăng nhập vào Trang Quản Trị)."""
+    current_user = get_current_user_from_request(request)
+    if not current_user:
+        raise HTTPException(
+            status_code=401,
+            detail="Vui lòng đăng nhập vào trang quản trị để tạo tài khoản giáo viên mới!"
+        )
+
     try:
         new_u = create_user(
             username=req.username,
@@ -118,8 +125,16 @@ async def create_new_user(req: CreateUserRequest):
 async def change_password(req: ChangePasswordRequest, request: Request):
     """
     Đổi mật khẩu tài khoản (kể cả admin và giáo viên).
+    - Yêu cầu người dùng phải đăng nhập vào trang quản trị.
     - Yêu cầu mật khẩu hiện tại (old_password) để đảm bảo an toàn.
     """
+    current_user = get_current_user_from_request(request)
+    if not current_user:
+        raise HTTPException(
+            status_code=401,
+            detail="Vui lòng đăng nhập vào trang quản trị để thực hiện đổi mật khẩu!"
+        )
+
     clean_username = req.username.strip()
     if not clean_username:
         raise HTTPException(status_code=400, detail="Vui lòng nhập tên tài khoản!")
@@ -127,11 +142,16 @@ async def change_password(req: ChangePasswordRequest, request: Request):
     if not req.new_password or len(req.new_password) < 6:
         raise HTTPException(status_code=400, detail="Mật khẩu mới phải có ít nhất 6 ký tự!")
 
-    # Kiểm tra old_password
-    current_user = get_current_user_from_request(request)
-    is_admin = current_user and current_user.get("role") == "admin"
+    is_admin = current_user.get("role") == "admin" or current_user.get("username", "").lower() == "admin"
     
-    # Nếu đổi mật khẩu từ trang đăng nhập hoặc không phải admin đổi hộ người khác -> bắt buộc xác thực old_password
+    # Giáo viên chỉ được đổi mật khẩu cho chính mình; admin có thể đổi mật khẩu cho bất kỳ ai
+    if not is_admin and current_user.get("username", "").lower() != clean_username.lower():
+        raise HTTPException(
+            status_code=403,
+            detail="Bạn chỉ có thể đổi mật khẩu cho tài khoản của chính mình!"
+        )
+
+    # Nếu không phải admin đổi hộ người khác -> bắt buộc xác thực old_password
     if not (is_admin and current_user["username"].lower() != clean_username.lower()):
         if not req.old_password:
             raise HTTPException(status_code=400, detail="Vui lòng nhập mật khẩu hiện tại để xác thực!")

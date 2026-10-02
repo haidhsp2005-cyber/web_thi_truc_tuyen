@@ -3,75 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quản trị & Tài khoản - Hệ thống Kiểm tra Trực tuyến</title>
+<title>Đăng nhập Quản trị & Giáo viên - Hệ thống Kiểm tra Trực tuyến</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   [x-cloak] { display: none !important; }
-  .tab-active {
-    background-color: #1e3a8a;
-    color: #ffffff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-  .tab-inactive {
-    color: #4b5563;
-    background-color: #f3f4f6;
-  }
-  .tab-inactive:hover {
-    background-color: #e5e7eb;
-    color: #1f2937;
-  }
 </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-950 flex items-center justify-center p-4 sm:p-6" x-data="adminLoginApp()" x-init="init()">
 
-<div class="w-full max-w-2xl">
+<div class="w-full max-w-lg">
   
   <!-- Header Logo & Tiêu đề -->
   <div class="text-center mb-6">
     <div class="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur border border-white/20 rounded-2xl shadow-xl mb-3">
       <span class="text-3xl">🔐</span>
     </div>
-    <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Hệ Thống Quản Trị & Tài Khoản</h1>
+    <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Đăng Nhập Quản Trị & Giáo Viên</h1>
     <p class="text-blue-200 text-xs sm:text-sm mt-1">Dành cho Giáo viên & Quản trị viên hệ thống (Chuẩn GDPT 2026)</p>
   </div>
 
-  <!-- Card chức năng chính -->
+  <!-- Card đăng nhập chính -->
   <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
     
-    <!-- Thanh điều hướng Tab -->
-    <div class="bg-gray-100 p-2 border-b grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-xs sm:text-sm font-bold">
-      <button 
-        type="button" 
-        @click="switchTab('login')"
-        :class="activeTab === 'login' ? 'tab-active' : 'tab-inactive'"
-        class="py-2.5 px-3 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
-      >
-        <span>🔑</span>
-        <span>Đăng nhập</span>
-      </button>
-
-      <button 
-        type="button" 
-        @click="switchTab('change_pass')"
-        :class="activeTab === 'change_pass' ? 'tab-active' : 'tab-inactive'"
-        class="py-2.5 px-3 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
-      >
-        <span>🔄</span>
-        <span>Đổi mật khẩu</span>
-      </button>
-
-      <button 
-        type="button" 
-        @click="switchTab('create_user')"
-        :class="activeTab === 'create_user' ? 'tab-active' : 'tab-inactive'"
-        class="py-2.5 px-3 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
-      >
-        <span>➕</span>
-        <span>Tạo tài khoản</span>
-      </button>
-    </div>
-
-    <!-- Thông báo lỗi & thành công chung -->
+    <!-- Thông báo lỗi & thành công -->
     <div class="px-6 pt-5" x-show="errorMessage || successMessage" x-cloak>
       <div x-show="errorMessage" class="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3 text-red-700 text-sm">
         <span class="text-xl flex-shrink-0">⚠️</span>
@@ -86,14 +40,14 @@
       </div>
     </div>
 
-    <!-- ================= TAB 1: ĐĂNG NHẬP ================= -->
-    <div x-show="activeTab === 'login'" x-cloak class="p-6 sm:p-8 space-y-5">
-      <div class="border-b pb-3 mb-4">
+    <!-- Form Đăng nhập -->
+    <div class="p-6 sm:p-8 space-y-5">
+      <div class="border-b pb-3 mb-2">
         <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
           <span>🛡️</span>
-          <span>Đăng nhập trang Quản lý Đề thi & Kết quả</span>
+          <span>Xác thực tài khoản</span>
         </h2>
-        <p class="text-xs text-gray-500 mt-0.5">Sử dụng tài khoản Quản trị viên (admin) hoặc tài khoản Giáo viên đã tạo.</p>
+        <p class="text-xs text-gray-500 mt-0.5">Sử dụng tài khoản Quản trị viên (admin) hoặc tài khoản Giáo viên đã được cấp.</p>
       </div>
 
       <form @submit.prevent="handleLogin()" class="space-y-4">
@@ -105,7 +59,7 @@
             x-model="loginForm.username" 
             id="login_username_input"
             type="text" 
-            placeholder="Ví dụ: admin hoặc tên giáo viên..." 
+            placeholder="Ví dụ: admin hoặc tên tài khoản giáo viên..." 
             autocomplete="username"
             required
             class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
@@ -113,14 +67,9 @@
         </div>
 
         <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-              🔑 Mật khẩu
-            </label>
-            <button type="button" @click="switchTab('change_pass')" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">
-              Quên hoặc muốn đổi mật khẩu?
-            </button>
-          </div>
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+            🔑 Mật khẩu
+          </label>
           <div class="relative">
             <input 
               x-model="loginForm.password" 
@@ -133,7 +82,7 @@
             <button 
               type="button" 
               @click="loginForm.showPassword = !loginForm.showPassword"
-              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 text-lg transition-colors focus:outline-none"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 text-lg transition-colors focus:outline-none cursor-pointer"
               tabindex="-1"
             >
               <span x-text="loginForm.showPassword ? '🙈' : '👁️'"></span>
@@ -151,180 +100,17 @@
           <span x-text="loading ? 'Đang xác thực...' : 'Đăng nhập vào Quản trị'"></span>
         </button>
       </form>
-    </div>
 
-
-    <!-- ================= TAB 2: ĐỔI MẬT KHẨU ================= -->
-    <div x-show="activeTab === 'change_pass'" x-cloak class="p-6 sm:p-8 space-y-5">
-      <div class="border-b pb-3 mb-4">
-        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-          <span>🔄</span>
-          <span>Đổi mật khẩu tài khoản</span>
-        </h2>
-        <p class="text-xs text-gray-500 mt-0.5">Cho phép đổi mật khẩu tài khoản Admin hoặc Giáo viên (cần nhập mật khẩu hiện tại để xác thực).</p>
+      <!-- Ghi chú bảo mật -->
+      <div class="pt-2">
+        <div class="p-3.5 bg-blue-50/80 border border-blue-200/80 rounded-2xl flex items-start gap-2.5 text-xs text-blue-900 leading-relaxed">
+          <span class="text-base flex-shrink-0">🔒</span>
+          <div>
+            <strong>Lưu ý bảo mật:</strong> Để đảm bảo an toàn cho hệ thống kỳ thi, tính năng <strong>Tạo tài khoản giáo viên mới</strong> và <strong>Đổi mật khẩu</strong> chỉ được thực hiện trực tiếp bên trong <strong>Trang quản trị</strong> sau khi đăng nhập thành công.
+          </div>
+        </div>
       </div>
-
-      <form @submit.prevent="handleChangePassword()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-            👤 Tên tài khoản cần đổi mật khẩu
-          </label>
-          <input 
-            x-model="changePassForm.username" 
-            type="text" 
-            placeholder="Ví dụ: admin hoặc tên tài khoản giáo viên..." 
-            required
-            class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
-          >
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-            🔒 Mật khẩu hiện tại
-          </label>
-          <div class="relative">
-            <input 
-              x-model="changePassForm.oldPassword" 
-              :type="changePassForm.showOld ? 'text' : 'password'" 
-              placeholder="Nhập mật khẩu đang sử dụng..." 
-              required
-              class="w-full border-2 border-gray-200 rounded-2xl pl-4 pr-12 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
-            >
-            <button 
-              type="button" 
-              @click="changePassForm.showOld = !changePassForm.showOld"
-              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 text-lg transition-colors focus:outline-none"
-            >
-              <span x-text="changePassForm.showOld ? '🙈' : '👁️'"></span>
-            </button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-              ✨ Mật khẩu mới (≥ 6 ký tự)
-            </label>
-            <input 
-              x-model="changePassForm.newPassword" 
-              type="password" 
-              placeholder="Mật khẩu mới..." 
-              required
-              class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
-            >
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-              ✨ Nhập lại mật khẩu mới
-            </label>
-            <input 
-              x-model="changePassForm.confirmPassword" 
-              type="password" 
-              placeholder="Xác nhận mật khẩu..." 
-              required
-              class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
-            >
-          </div>
-        </div>
-
-        <button 
-          type="submit" 
-          :disabled="loading"
-          class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
-        >
-          <span x-show="loading" class="animate-spin text-base">⏳</span>
-          <span x-show="!loading">💾</span>
-          <span x-text="loading ? 'Đang cập nhật...' : 'Cập nhật Mật khẩu Mới'"></span>
-        </button>
-      </form>
     </div>
-
-
-    <!-- ================= TAB 3: TẠO TÀI KHOẢN GIÁO VIÊN ================= -->
-    <div x-show="activeTab === 'create_user'" x-cloak class="p-6 sm:p-8 space-y-5">
-      <div class="border-b pb-3 mb-4">
-        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-          <span>➕</span>
-          <span>Tạo tài khoản Giáo viên mới</span>
-        </h2>
-        <p class="text-xs text-gray-500 mt-0.5">Tạo thêm tài khoản để các giáo viên bộ môn có thể đăng nhập quản trị, nạp đề và xem điểm.</p>
-      </div>
-
-      <form @submit.prevent="handleCreateUser()" class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-              👤 Tên đăng nhập (viết liền, không dấu)
-            </label>
-            <input 
-              x-model="createUserForm.username" 
-              type="text" 
-              placeholder="Ví dụ: giaovien_toan, thaytung..." 
-              required
-              class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
-            >
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-              🏷️ Họ và tên Giáo viên
-            </label>
-            <input 
-              x-model="createUserForm.fullName" 
-              type="text" 
-              placeholder="Ví dụ: Thầy Nguyễn Văn A..." 
-              class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
-            >
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-              🔑 Mật khẩu (≥ 6 ký tự)
-            </label>
-            <input 
-              x-model="createUserForm.password" 
-              type="password" 
-              placeholder="Nhập mật khẩu..." 
-              required
-              class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
-            >
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-              🔑 Xác nhận mật khẩu
-            </label>
-            <input 
-              x-model="createUserForm.confirmPassword" 
-              type="password" 
-              placeholder="Nhập lại mật khẩu..." 
-              required
-              class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-medium placeholder-gray-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition-all text-sm"
-            >
-          </div>
-        </div>
-
-        <div class="bg-amber-50 rounded-2xl p-3 border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
-          <span>ℹ️</span>
-          <div>
-            Tài khoản mới tạo sẽ có vai trò <strong>Giáo viên</strong>. Bạn có thể xóa tài khoản giáo viên bất kỳ lúc nào tại tab <strong>DS & Xóa TK</strong>.
-          </div>
-        </div>
-
-        <button 
-          type="submit" 
-          :disabled="loading"
-          class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
-        >
-          <span x-show="loading" class="animate-spin text-base">⏳</span>
-          <span x-show="!loading">➕</span>
-          <span x-text="loading ? 'Đang tạo...' : 'Tạo tài khoản Giáo viên'"></span>
-        </button>
-      </form>
-    </div>
-
 
     <!-- Footer card -->
     <div class="bg-gray-50 border-t px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
@@ -348,7 +134,6 @@
 <script>
 function adminLoginApp() {
   return {
-    activeTab: 'login', // 'login' | 'change_pass' | 'create_user'
     loading: false,
     errorMessage: '',
     successMessage: '',
@@ -360,38 +145,14 @@ function adminLoginApp() {
       showPassword: false
     },
 
-    changePassForm: {
-      username: '',
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-      showOld: false
-    },
-
-    createUserForm: {
-      username: '',
-      fullName: '',
-      password: '',
-      confirmPassword: ''
-    },
-
     init() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('next')) {
         this.nextUrl = params.get('next');
       }
-      if (params.get('tab')) {
-        this.switchTab(params.get('tab'));
-      }
       this.$nextTick(() => {
         document.getElementById('login_username_input')?.focus();
       });
-    },
-
-    switchTab(tab) {
-      this.activeTab = tab;
-      this.errorMessage = '';
-      this.successMessage = '';
     },
 
     async handleLogin() {
@@ -429,122 +190,6 @@ function adminLoginApp() {
         this.errorMessage = 'Không thể kết nối đến máy chủ! Vui lòng thử lại.';
         this.loading = false;
       }
-    },
-
-    async handleChangePassword() {
-      if (!this.changePassForm.username.trim()) {
-        this.errorMessage = 'Vui lòng nhập tên tài khoản cần đổi mật khẩu!';
-        return;
-      }
-      if (!this.changePassForm.oldPassword) {
-        this.errorMessage = 'Vui lòng nhập mật khẩu hiện tại!';
-        return;
-      }
-      if (!this.changePassForm.newPassword || this.changePassForm.newPassword.length < 6) {
-        this.errorMessage = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
-        return;
-      }
-      if (this.changePassForm.newPassword !== this.changePassForm.confirmPassword) {
-        this.errorMessage = 'Mật khẩu mới và xác nhận mật khẩu không khớp nhau!';
-        return;
-      }
-
-      this.loading = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
-      try {
-        const resp = await fetch('/api/admin/users/change-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: this.changePassForm.username.trim(),
-            old_password: this.changePassForm.oldPassword,
-            new_password: this.changePassForm.newPassword
-          })
-        });
-
-        const data = await resp.json();
-        if (resp.ok && data.success) {
-          this.successMessage = data.message || 'Đổi mật khẩu thành công! Bạn có thể dùng mật khẩu mới để đăng nhập.';
-          const changedUser = this.changePassForm.username.trim();
-          this.changePassForm = {
-            username: '',
-            oldPassword: '',
-            newPassword: '',
-            confirmPassword: '',
-            showOld: false
-          };
-          // Chuyển sang tab đăng nhập sau 1.5s
-          setTimeout(() => {
-            this.loginForm.username = changedUser;
-            this.switchTab('login');
-          }, 1500);
-        } else {
-          this.errorMessage = data.detail || 'Không thể đổi mật khẩu!';
-        }
-      } catch (err) {
-        this.errorMessage = 'Lỗi kết nối khi gửi yêu cầu đổi mật khẩu!';
-      }
-      this.loading = false;
-    },
-
-    async handleCreateUser() {
-      const u = this.createUserForm.username.trim();
-      if (!u || u.length < 3) {
-        this.errorMessage = 'Tên đăng nhập phải có ít nhất 3 ký tự!';
-        return;
-      }
-      if (u.toLowerCase() === 'admin') {
-        this.errorMessage = "Tên đăng nhập 'admin' đã tồn tại mặc định trong hệ thống!";
-        return;
-      }
-      if (!this.createUserForm.password || this.createUserForm.password.length < 6) {
-        this.errorMessage = 'Mật khẩu phải có ít nhất 6 ký tự!';
-        return;
-      }
-      if (this.createUserForm.password !== this.createUserForm.confirmPassword) {
-        this.errorMessage = 'Mật khẩu và xác nhận mật khẩu không khớp nhau!';
-        return;
-      }
-
-      this.loading = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
-      try {
-        const resp = await fetch('/api/admin/users/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: u,
-            full_name: this.createUserForm.fullName.trim(),
-            password: this.createUserForm.password,
-            role: 'teacher'
-          })
-        });
-
-        const data = await resp.json();
-        if (resp.ok && data.success) {
-          this.successMessage = data.message || `Đã tạo tài khoản giáo viên "${u}" thành công!`;
-          this.createUserForm = {
-            username: '',
-            fullName: '',
-            password: '',
-            confirmPassword: ''
-          };
-          // Chuyển sang tab đăng nhập sau 1.2s
-          setTimeout(() => {
-            this.loginForm.username = u;
-            this.switchTab('login');
-          }, 1200);
-        } else {
-          this.errorMessage = data.detail || 'Không thể tạo tài khoản!';
-        }
-      } catch (err) {
-        this.errorMessage = 'Lỗi kết nối khi tạo tài khoản!';
-      }
-      this.loading = false;
     }
   };
 }

@@ -27,7 +27,13 @@
         </p>
       </div>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 flex-wrap">
+      <button @click="openChangePassModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer border border-blue-600/50" title="Đổi mật khẩu tài khoản đang đăng nhập">
+        <span>🔄</span><span class="hidden sm:inline">Đổi mật khẩu</span>
+      </button>
+      <button @click="showCreateTeacherModal = true" class="bg-green-700 hover:bg-green-600 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer border border-green-500/50" title="Tạo tài khoản Giáo viên mới">
+        <span>➕</span><span class="hidden sm:inline">Tạo tài khoản</span>
+      </button>
       <button @click="showApiKeyModal = true" class="bg-indigo-700 hover:bg-indigo-600 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer border border-indigo-500/50" title="Cấu hình API Key Gemini chấm tự luận">
         <span>🔑</span><span class="hidden sm:inline">Cấu hình API Key (.env)</span>
         <span class="w-2 h-2 rounded-full" :class="keyStatus.active_count > 0 ? 'bg-green-400' : 'bg-amber-400'"></span>
@@ -740,23 +746,25 @@
                 </td>
                 <td class="px-4 py-3 text-center text-xs text-gray-500" x-text="u.created_at || 'Mặc định'"></td>
                 <td class="px-4 py-3 text-center">
-                  <template x-if="u.is_protected || u.username.toLowerCase() === 'admin'">
-                    <span class="text-xs text-gray-400 italic">Không thể xóa</span>
-                  </template>
-                  <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin'">
-                    <div>
-                      <template x-if="isAdmin()">
-                        <button @click="deleteUserAccount(u.username)" 
-                          class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-red-200"
-                          title="Xóa tài khoản giáo viên này">
-                          🗑️ Xóa
-                        </button>
-                      </template>
-                      <template x-if="!isAdmin()">
-                        <span class="text-xs text-gray-400 italic" title="Chỉ tài khoản admin mới có quyền xóa tài khoản">Chỉ Admin mới được xóa</span>
-                      </template>
-                    </div>
-                  </template>
+                  <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                    <template x-if="isAdmin() || (currentUser && currentUser.username === u.username)">
+                      <button @click="openChangePassModal(u.username)" 
+                        class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-900 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-blue-200"
+                        title="Đổi mật khẩu cho tài khoản này">
+                        🔄 Đổi MK
+                      </button>
+                    </template>
+                    <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin' && isAdmin()">
+                      <button @click="deleteUserAccount(u.username)" 
+                        class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-red-200"
+                        title="Xóa tài khoản giáo viên này">
+                        🗑️ Xóa
+                      </button>
+                    </template>
+                    <template x-if="(u.is_protected || u.username.toLowerCase() === 'admin') && !isAdmin() && (!currentUser || currentUser.username !== u.username)">
+                      <span class="text-xs text-gray-400 italic">Mặc định</span>
+                    </template>
+                  </div>
                 </td>
               </tr>
             </template>
@@ -830,26 +838,34 @@
         <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
           <span>🔄</span><span>Đổi Mật Khẩu Tài Khoản</span>
         </h3>
-        <button @click="showChangePassModal = false" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+        <button @click="showChangePassModal = false" class="text-gray-400 hover:text-gray-600 text-lg cursor-pointer">✕</button>
       </div>
 
       <div class="space-y-3">
         <div>
           <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tên tài khoản</label>
-          <input x-model="changePassAdminForm.username" type="text" placeholder="Ví dụ: admin hoặc tên giáo viên..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+          <input x-model="changePassAdminForm.username" type="text" placeholder="Ví dụ: admin hoặc tên giáo viên..." 
+            :readonly="!isAdmin()"
+            :class="!isAdmin() ? 'bg-gray-100 text-gray-600 cursor-not-allowed' : ''"
+            class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+          <p x-show="!isAdmin()" class="text-[11px] text-gray-500 mt-1">Đang đổi mật khẩu cho tài khoản hiện tại của bạn.</p>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu hiện tại</label>
-          <input x-model="changePassAdminForm.oldPassword" type="password" placeholder="Mật khẩu cũ..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu hiện tại <span class="text-red-500">*</span></label>
+          <input x-model="changePassAdminForm.oldPassword" type="password" placeholder="Nhập mật khẩu đang dùng..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu mới (≥ 6 ký tự)</label>
-          <input x-model="changePassAdminForm.newPassword" type="password" placeholder="Mật khẩu mới..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu mới (≥ 6 ký tự) <span class="text-red-500">*</span></label>
+          <input x-model="changePassAdminForm.newPassword" type="password" placeholder="Nhập mật khẩu mới..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nhập lại mật khẩu mới <span class="text-red-500">*</span></label>
+          <input x-model="changePassAdminForm.confirmPassword" type="password" placeholder="Xác nhận lại mật khẩu mới..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
         </div>
       </div>
 
       <div class="flex items-center justify-end gap-2 pt-2 border-t">
-        <button @click="showChangePassModal = false" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">Hủy</button>
+        <button @click="showChangePassModal = false" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 cursor-pointer">Hủy</button>
         <button @click="submitChangePassAdmin()" class="px-5 py-2 rounded-xl text-sm font-bold bg-blue-700 hover:bg-blue-800 text-white shadow-md cursor-pointer">Lưu mật khẩu mới</button>
       </div>
     </div>
@@ -1007,7 +1023,7 @@ function adminApp() {
     userActionMsg: '',
     userActionOk: true,
     newTeacherForm: { username: '', fullName: '', password: '', subject: '' },
-    changePassAdminForm: { username: '', oldPassword: '', newPassword: '' },
+    changePassAdminForm: { username: '', oldPassword: '', newPassword: '', confirmPassword: '' },
     newKey: '',
     keyMsg: '',
     keyMsgOk: true,
@@ -1180,6 +1196,17 @@ function adminApp() {
       }
     },
 
+    openChangePassModal(targetUser = null) {
+      const u = targetUser || (this.currentUser ? this.currentUser.username : '');
+      this.changePassAdminForm = {
+        username: u,
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      };
+      this.showChangePassModal = true;
+    },
+
     async submitChangePassAdmin() {
       const u = this.changePassAdminForm.username.trim();
       if (!u) {
@@ -1192,6 +1219,10 @@ function adminApp() {
       }
       if (!this.changePassAdminForm.newPassword || this.changePassAdminForm.newPassword.length < 6) {
         alert('Mật khẩu mới phải có ít nhất 6 ký tự!');
+        return;
+      }
+      if (this.changePassAdminForm.confirmPassword && this.changePassAdminForm.newPassword !== this.changePassAdminForm.confirmPassword) {
+        alert('Mật khẩu mới và xác nhận mật khẩu không khớp nhau!');
         return;
       }
       try {
@@ -1209,7 +1240,7 @@ function adminApp() {
           this.userActionMsg = data.message;
           this.userActionOk = true;
           this.showChangePassModal = false;
-          this.changePassAdminForm = { username: '', oldPassword: '', newPassword: '' };
+          this.changePassAdminForm = { username: '', oldPassword: '', newPassword: '', confirmPassword: '' };
         } else {
           alert(data.detail || 'Không thể đổi mật khẩu!');
         }
