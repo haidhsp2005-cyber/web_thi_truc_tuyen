@@ -105,6 +105,13 @@ async def create_new_user(req: CreateUserRequest, request: Request):
             detail="Vui lòng đăng nhập vào trang quản trị để tạo tài khoản giáo viên mới!"
         )
 
+    is_admin = current_user.get("role") == "admin" or current_user.get("username", "").lower() == "admin"
+    if not is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Chỉ có tài khoản Quản trị viên (admin) mới có quyền tạo tài khoản giáo viên mới!"
+        )
+
     try:
         new_u = create_user(
             username=req.username,

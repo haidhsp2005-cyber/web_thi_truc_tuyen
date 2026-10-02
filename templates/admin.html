@@ -27,13 +27,7 @@
         </p>
       </div>
     </div>
-    <div class="flex items-center gap-2 flex-wrap">
-      <button @click="openChangePassModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer border border-blue-600/50" title="Đổi mật khẩu tài khoản đang đăng nhập">
-        <span>🔄</span><span class="hidden sm:inline">Đổi mật khẩu</span>
-      </button>
-      <button @click="showCreateTeacherModal = true" class="bg-green-700 hover:bg-green-600 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer border border-green-500/50" title="Tạo tài khoản Giáo viên mới">
-        <span>➕</span><span class="hidden sm:inline">Tạo tài khoản</span>
-      </button>
+    <div class="flex items-center gap-2">
       <button @click="showApiKeyModal = true" class="bg-indigo-700 hover:bg-indigo-600 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer border border-indigo-500/50" title="Cấu hình API Key Gemini chấm tự luận">
         <span>🔑</span><span class="hidden sm:inline">Cấu hình API Key (.env)</span>
         <span class="w-2 h-2 rounded-full" :class="keyStatus.active_count > 0 ? 'bg-green-400' : 'bg-amber-400'"></span>
@@ -688,13 +682,18 @@
           <span>👥</span>
           <span>Quản lý Tài khoản Giáo viên & Quản trị</span>
         </h2>
-        <p class="text-xs text-blue-200 mt-0.5">Tạo tài khoản giáo viên, đổi mật khẩu và quản lý danh sách truy cập.</p>
+        <p class="text-xs text-blue-200 mt-0.5">
+          <span x-show="isAdmin()">Tạo tài khoản giáo viên, đổi mật khẩu và quản lý danh sách truy cập.</span>
+          <span x-show="!isAdmin()" x-cloak>Quản lý mật khẩu cá nhân và thông tin tài khoản giáo viên.</span>
+        </p>
       </div>
       <div class="flex items-center gap-2">
-        <button @click="showCreateTeacherModal = true" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer">
+        <!-- Nút Tạo tài khoản: CHỈ DÀNH CHO ADMIN -->
+        <button x-show="isAdmin()" x-cloak @click="showCreateTeacherModal = true" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer" title="Dành cho Quản trị viên: Tạo tài khoản giáo viên mới">
           <span>➕</span><span>Tạo tài khoản Giáo viên</span>
         </button>
-        <button @click="showChangePassModal = true" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+        <!-- Nút Đổi mật khẩu: Cả Admin và Giáo viên đều dùng được -->
+        <button @click="openChangePassModal()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer" title="Đổi mật khẩu tài khoản của bạn">
           <span>🔄</span><span>Đổi mật khẩu</span>
         </button>
         <button @click="loadUsers()" class="text-gray-300 hover:text-white text-sm cursor-pointer ml-1" title="Làm mới">🔄</button>
