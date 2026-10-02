@@ -510,13 +510,17 @@
               <td class="px-4 py-3 font-medium text-gray-800">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span x-text="sub.student_name"></span>
+                  <span x-show="sub.is_online_exam"
+                        class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-700 border border-blue-200">
+                    ⚡ Thi trực tuyến
+                  </span>
                   <span x-show="!sub.is_online_exam"
                         class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
                     📖 Luyện tập
                   </span>
                   <span x-show="sub.is_online_exam && sub.screen_switch_count > 0" 
                         :title="`Học sinh đã rời màn hình làm bài ${sub.screen_switch_count} lần`"
-                        class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 shadow-2xs cursor-help"
+                        class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-black bg-red-100 text-red-700 border border-red-300 shadow-2xs cursor-help"
                         x-text="`⚠️ ${sub.screen_switch_count} lần rời MH`"></span>
                 </div>
               </td>

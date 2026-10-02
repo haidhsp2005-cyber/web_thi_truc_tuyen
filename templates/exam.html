@@ -128,8 +128,8 @@
       <div class="min-w-0 truncate">
         <div class="flex items-center gap-1.5 truncate">
           <p class="font-bold text-xs sm:text-sm leading-tight truncate" x-text="examData?.title || 'Đang tải...'"></p>
-          <span x-show="isOnlineExam" class="hidden sm:inline-flex items-center gap-0.5 text-[10px] bg-red-600 text-white font-bold px-1.5 py-0.2 rounded-full whitespace-nowrap" title="Chế độ thi chính thức: Giám sát chống gian lận">🛡️ Thi trực tuyến</span>
-          <span x-show="!isOnlineExam" class="hidden sm:inline-flex items-center gap-0.5 text-[10px] bg-emerald-600 text-white font-bold px-1.5 py-0.2 rounded-full whitespace-nowrap" title="Chế độ đề luyện tập tự do: Không giới hạn rời màn hình">📖 Đề luyện tập</span>
+          <span x-show="isOnlineExam" class="inline-flex items-center gap-0.5 text-[10px] bg-red-600 text-white font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap" title="Chế độ thi chính thức: Giám sát chống gian lận">🛡️ Thi trực tuyến</span>
+          <span x-show="!isOnlineExam" class="inline-flex items-center gap-0.5 text-[10px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap" title="Chế độ đề luyện tập tự do: Không giới hạn rời màn hình">📖 Đề luyện tập</span>
         </div>
         <p class="text-blue-300 text-[11px] sm:text-xs truncate" x-text="`${studentName} - Lớp ${studentClass}`"></p>
       </div>
@@ -145,7 +145,7 @@
     <div class="flex items-center gap-2 flex-shrink-0">
       <!-- Nút Toàn màn hình (dành cho cả Điện thoại & Máy tính) -->
       <button 
-        type="button"
+        type="button" 
         @click="toggleFullscreen()" 
         :class="{'ring-2 ring-amber-400 bg-amber-600': isOnlineExam && !isFullscreen}"
         class="inline-flex bg-blue-800 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-2.5 sm:px-3 py-2 rounded-xl items-center gap-1.5 border border-blue-700 shadow-sm transition-all cursor-pointer"
@@ -183,6 +183,13 @@
     <span class="animate-bounce">⛶</span>
     <span>Chế độ thi trực tuyến: Nhấp vào đây để bật Toàn màn hình (Tràn viền chống làm việc riêng)</span>
     <span class="underline ml-1">Bật ngay →</span>
+  </div>
+
+  <!-- Dải cảnh báo vi phạm chuyển tab / rời màn hình (hiển thị cố định nổi bật khi có vi phạm) -->
+  <div x-show="isOnlineExam && screenSwitchCount > 0 && !submitted" x-cloak
+       class="bg-red-600 text-white text-[11px] sm:text-xs font-bold px-3 py-1.5 text-center flex items-center justify-center gap-2 shadow-inner border-t border-red-700 animate-pulse">
+    <span>🚨</span>
+    <span>CẢNH BÁO VI PHẠM: Bạn đã rời màn hình làm bài / chuyển tab <span class="bg-white text-red-700 px-1.5 py-0.2 rounded-full font-black text-xs" x-text="`${screenSwitchCount} / ${maxSwitchesAllowed} lần`"></span>! Vi phạm đủ 5 lần hệ thống sẽ tự động thu bài.</span>
   </div>
 </div>
 
@@ -670,9 +677,14 @@
 </div>
 
 <!-- Modal Cảnh Báo Rời Khỏi Màn Hình / Chuyển Ứng Dụng -->
-<div x-show="showScreenSwitchModal" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-4" style="background-color: rgba(15, 23, 42, 0.90); backdrop-filter: blur(6px);">
-  <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full text-center shadow-2xl space-y-4 border-2 border-red-500">
-    <div class="w-16 h-16 mx-auto rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-3xl">
+<div 
+  x-show="showScreenSwitchModal" 
+  x-cloak 
+  class="fixed inset-0 flex items-center justify-center p-4" 
+  style="z-index: 9999999 !important; background-color: rgba(15, 23, 42, 0.94); backdrop-filter: blur(8px);"
+>
+  <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full text-center shadow-2xl space-y-4 border-2 border-red-500 animate-in fade-in zoom-in duration-200">
+    <div class="w-16 h-16 mx-auto rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-3xl animate-bounce">
       🚨
     </div>
     <div>
@@ -695,9 +707,9 @@
     </div>
 
     <!-- Thanh đếm ngược tự động đóng thông báo -->
-    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-      <div class="bg-red-600 h-1.5 rounded-full transition-all duration-1000 ease-linear"
-           :style="`width: ${Math.max(0, (autoCloseCountdown / 4) * 100)}%`"></div>
+    <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+      <div class="bg-red-600 h-2 rounded-full transition-all duration-1000 ease-linear"
+           :style="`width: ${Math.max(0, (autoCloseCountdown / 6) * 100)}%`"></div>
     </div>
 
     <button 
@@ -870,11 +882,14 @@ function examApp() {
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
       }
-      this.autoCloseCountdown = 4;
+      this.autoCloseCountdown = 6;
       this.countdownInterval = setInterval(() => {
-        this.autoCloseCountdown--;
-        if (this.autoCloseCountdown <= 0) {
-          this.dismissScreenSwitchModal();
+        // Chỉ đếm ngược khi học sinh đang mở và nhìn thấy màn hình bài thi
+        if (document.visibilityState === 'visible') {
+          this.autoCloseCountdown--;
+          if (this.autoCloseCountdown <= 0) {
+            this.dismissScreenSwitchModal();
+          }
         }
       }, 1000);
     },
@@ -886,7 +901,8 @@ function examApp() {
         this.countdownInterval = null;
       }
       if (window._examSetLastLeaveTime) {
-        window._examSetLastLeaveTime(Date.now() + 2000);
+        // Cho 3.5 giây đệm để nhấp chuột hoặc vào lại toàn màn hình không bị tính lỗi chuyển màn hình
+        window._examSetLastLeaveTime(Date.now() + 3500);
       }
       if (this.isOnlineExam && !this.submitted && !this.submitting) {
         this.enterFullscreen();
@@ -1120,7 +1136,6 @@ function examApp() {
           this.submitExam();
         } else {
           this.showScreenSwitchModal = true;
-          this.startScreenSwitchCountdown();
         }
       };
 
@@ -1139,7 +1154,7 @@ function examApp() {
             this.isAutoSubmitting = true;
             this.submitExam();
           } else {
-            // Hiện modal cảnh báo tự động đóng sau 4 giây (không dùng window.alert tránh mất focus)
+            // Hiện modal cảnh báo rõ ràng khi quay lại và bắt đầu đếm ngược 6 giây
             this.showScreenSwitchModal = true;
             this.startScreenSwitchCountdown();
           }

@@ -154,13 +154,25 @@ def save_submission(submission_data: dict, result_data: dict = None):
     conn = get_connection()
     c = conn.cursor()
     
+    is_online = bool(submission_data.get("is_online_exam", False))
+    switch_count = int(submission_data.get("screen_switch_count", 0)) if is_online else 0
+    switch_viols = submission_data.get("switch_violations", []) if is_online else []
+    
     answers = {
         "part1": submission_data.get("part1_answers", {}),
         "part2": submission_data.get("part2_answers", {}),
         "part3": submission_data.get("part3_answers", {}),
         "part4_question_id": submission_data.get("part4_question_id"),
         "part4_answer": submission_data.get("part4_answer", ""),
+        "is_online_exam": is_online,
+        "screen_switch_count": switch_count,
+        "switch_violations": switch_viols,
     }
+    
+    if result_data:
+        result_data["is_online_exam"] = is_online
+        result_data["screen_switch_count"] = switch_count
+        result_data["switch_violations"] = switch_viols
     
     c.execute("""
         INSERT OR REPLACE INTO submissions 
@@ -202,6 +214,9 @@ def get_submission(submission_id: str) -> Optional[dict]:
         "submitted_at": row[5],
         "duration_seconds": row[6],
         "status": row[9],
+        "is_online_exam": False,
+        "screen_switch_count": 0,
+        "switch_violations": [],
     }
 
     if row[7]:  # answers_json
@@ -210,12 +225,33 @@ def get_submission(submission_id: str) -> Optional[dict]:
             result["answers"] = ans_data
             result["part4_answer"] = ans_data.get("part4_answer", "")
             result["part4_question_id"] = ans_data.get("part4_question_id")
+            if "is_online_exam" in ans_data:
+                result["is_online_exam"] = bool(ans_data["is_online_exam"])
+            if "screen_switch_count" in ans_data:
+                result["screen_switch_count"] = int(ans_data["screen_switch_count"])
+            if "switch_violations" in ans_data:
+                result["switch_violations"] = ans_data["switch_violations"]
         except:
             pass
 
     if row[8]:  # result_json
-        result_data = json.loads(row[8])
-        result.update(result_data)
+        try:
+            result_data = json.loads(row[8])
+            result.update(result_data)
+            if "is_online_exam" in result_data:
+                result["is_online_exam"] = bool(result_data["is_online_exam"])
+            if "screen_switch_count" in result_data:
+                result["screen_switch_count"] = int(result_data["screen_switch_count"])
+            if "switch_violations" in result_data:
+                result["switch_violations"] = result_data["switch_violations"]
+        except:
+            pass
+            
+    # Fallback kiểm tra đề thi gốc nếu chưa xác định được is_online_exam
+    if not result["is_online_exam"] and result.get("exam_id"):
+        exam_obj = get_exam_by_id(result["exam_id"])
+        if exam_obj:
+            result["is_online_exam"] = bool(exam_obj.get("is_online_exam", False))
     
     return result
 
@@ -225,7 +261,16 @@ def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[
     conn = get_connection()
     c = conn.cursor()
     
-    query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status FROM submissions"
+    # Bản đồ exam_id -> is_online_exam dự phòng
+    exam_online_map = {}
+    try:
+        c.execute("SELECT id, is_online_exam FROM exams")
+        for row_e in c.fetchall():
+            exam_online_map[row_e[0]] = bool(row_e[1])
+    except Exception:
+        pass
+    
+    query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status, answers_json FROM submissions"
     conditions = []
     params = []
     
@@ -256,13 +301,42 @@ def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[
             "duration_seconds": row[5],
             "status": row[7],
             "scores": {},
+            "is_online_exam": False,
+            "screen_switch_count": 0,
+            "switch_violations": [],
         }
+        
+        # 1. Trích xuất từ result_json
         if row[6]:
             try:
                 result_data = json.loads(row[6])
                 item["scores"] = result_data.get("scores", {}) or {}
+                if "is_online_exam" in result_data:
+                    item["is_online_exam"] = bool(result_data["is_online_exam"])
+                if "screen_switch_count" in result_data:
+                    item["screen_switch_count"] = int(result_data["screen_switch_count"])
+                if "switch_violations" in result_data:
+                    item["switch_violations"] = result_data["switch_violations"]
             except:
                 item["scores"] = {}
+                
+        # 2. Dự phòng kiểm tra answers_json
+        if len(row) > 8 and row[8]:
+            try:
+                ans_data = json.loads(row[8])
+                if not item["is_online_exam"] and "is_online_exam" in ans_data:
+                    item["is_online_exam"] = bool(ans_data["is_online_exam"])
+                if item["screen_switch_count"] == 0 and "screen_switch_count" in ans_data:
+                    item["screen_switch_count"] = int(ans_data["screen_switch_count"])
+                if not item["switch_violations"] and "switch_violations" in ans_data:
+                    item["switch_violations"] = ans_data["switch_violations"]
+            except:
+                pass
+                
+        # 3. Dự phòng đối chiếu theo exam_id
+        if not item["is_online_exam"] and item["exam_id"] in exam_online_map:
+            item["is_online_exam"] = exam_online_map[item["exam_id"]]
+            
         results.append(item)
     
     return results

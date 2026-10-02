@@ -188,6 +188,7 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     
     result_data = {
         "scores": scores,
+        "is_online_exam": is_online_exam,
         "part1_result": p1_result,
         "part2_result": p2_result,
         "part3_result": p3_result,
@@ -214,6 +215,7 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         "student_name": student_name,
         "student_class": student_class,
         "exam_id": exam_id,
+        "is_online_exam": is_online_exam,
         "started_at": submission_data["started_at"],
         "submitted_at": submission_data["submitted_at"],
         "duration_seconds": submission_data["duration_seconds"],

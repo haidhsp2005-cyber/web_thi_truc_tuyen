@@ -49,8 +49,17 @@
       <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-950 text-white p-6 sm:p-8">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-blue-200 text-xs font-semibold mb-2">
-              <span>🎯</span><span>KẾT QUẢ ĐẠT ĐƯỢC</span>
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-blue-200 text-xs font-semibold">
+                <span>🎯</span><span>KẾT QUẢ ĐẠT ĐƯỢC</span>
+              </div>
+              <span x-show="result.is_online_exam" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-500/80 text-white text-xs font-bold shadow-sm">
+                <span>🛡️</span><span>Thi trực tuyến</span>
+              </span>
+              <span x-show="!result.is_online_exam" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/80 text-white text-xs font-bold shadow-sm">
+                <span>📖</span><span>Đề luyện tập</span>
+              </span>
+              <span x-show="result.is_online_exam && result.screen_switch_count > 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-400 text-amber-950 text-xs font-black shadow-sm" x-text="`⚠️ ${result.screen_switch_count} lần rời màn hình`"></span>
             </div>
             <div class="flex items-baseline gap-2">
               <span class="text-6xl sm:text-7xl font-black tracking-tight" x-text="result.scores?.total_score ?? 0"></span>
