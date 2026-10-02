@@ -676,6 +676,49 @@
   </div>
 </div>
 
+<!-- Modal Bắt đầu thi trực tuyến & Tự động bật Toàn màn hình -->
+<div 
+  x-show="isOnlineExam && !hasStartedOnlineExam && !submitted" 
+  x-cloak 
+  class="fixed inset-0 flex items-center justify-center p-4" 
+  style="z-index: 99999999 !important; background: linear-gradient(135deg, rgba(15, 23, 42, 0.96) 0%, rgba(30, 27, 75, 0.96) 50%, rgba(15, 23, 42, 0.96) 100%); backdrop-filter: blur(10px);"
+>
+  <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl space-y-5 border-2 border-blue-500 animate-in fade-in zoom-in duration-200">
+    <div class="w-20 h-20 mx-auto rounded-3xl bg-blue-100 text-blue-700 flex items-center justify-center text-4xl shadow-inner animate-bounce">
+      🛡️
+    </div>
+    <div>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-wider mb-2">
+        Kỳ thi trực tuyến chính thức
+      </span>
+      <h3 class="text-xl sm:text-2xl font-black text-gray-900 leading-tight">
+        SẴN SÀNG LÀM BÀI THI
+      </h3>
+      <p class="text-gray-600 text-xs sm:text-sm mt-2 leading-relaxed">
+        Phòng thi áp dụng giám sát chống gian lận. Khi nhấn nút, màn hình sẽ tự động <strong>tràn toàn viền (Toàn màn hình)</strong> để bạn tập trung làm bài thi.
+      </p>
+    </div>
+
+    <div class="bg-amber-50 rounded-2xl p-3.5 border border-amber-200 text-left text-xs text-amber-900 space-y-1">
+      <div class="font-bold flex items-center gap-1 text-amber-800">
+        <span>⚠️</span><span>Quy chế phòng thi:</span>
+      </div>
+      <p class="text-[11px] leading-relaxed">
+        Nghiêm cấm chuyển tab, thu nhỏ hoặc mở ứng dụng khác. Nếu vi phạm đủ <strong>5 lần</strong>, hệ thống sẽ <strong>TỰ ĐỘNG THU VÀ NỘP BÀI</strong> ngay lập tức!
+      </p>
+    </div>
+
+    <button 
+      type="button" 
+      @click="startOnlineExamNow()" 
+      class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white font-black text-base rounded-2xl shadow-xl transition-all uppercase tracking-wide cursor-pointer flex items-center justify-center gap-2"
+    >
+      <span>BẮT ĐẦU LÀM BÀI</span>
+      <span>⛶</span>
+    </button>
+  </div>
+</div>
+
 <!-- Modal Cảnh Báo Rời Khỏi Màn Hình / Chuyển Ứng Dụng -->
 <div 
   x-show="showScreenSwitchModal" 
@@ -830,7 +873,9 @@ function examApp() {
     showBackWarningModal: false,
     maxSwitchesAllowed: 5,
     isFullscreen: false,
-    autoCloseCountdown: 4,
+    hasStartedOnlineExam: false,
+    isInternalAction: false,
+    autoCloseCountdown: 6,
     countdownInterval: null,
 
     playWarningSound() {
@@ -857,10 +902,32 @@ function examApp() {
       const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
       if (rfs && !document.fullscreenElement && !document.webkitFullscreenElement) {
         try {
+          this.isInternalAction = true;
           const p = rfs.call(el);
-          if (p && p.catch) p.catch(() => {});
-        } catch(e) {}
+          if (p && p.then) {
+            p.then(() => {
+              this.isFullscreen = true;
+              setTimeout(() => { this.isInternalAction = false; }, 800);
+            }).catch(() => {
+              setTimeout(() => { this.isInternalAction = false; }, 800);
+            });
+          } else {
+            setTimeout(() => { this.isInternalAction = false; }, 800);
+          }
+        } catch(e) {
+          setTimeout(() => { this.isInternalAction = false; }, 800);
+        }
       }
+    },
+
+    startOnlineExamNow() {
+      this.isInternalAction = true;
+      this.hasStartedOnlineExam = true;
+      sessionStorage.setItem('has_started_online_' + this.examId, '1');
+      this.enterFullscreen();
+      setTimeout(() => {
+        this.isInternalAction = false;
+      }, 1000);
     },
 
     toggleFullscreen() {
@@ -871,9 +938,21 @@ function examApp() {
         const efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
         if (efs) {
           try {
+            this.isInternalAction = true;
             const p = efs.call(document);
-            if (p && p.catch) p.catch(() => {});
-          } catch(e) {}
+            if (p && p.then) {
+              p.then(() => {
+                this.isFullscreen = false;
+                setTimeout(() => { this.isInternalAction = false; }, 800);
+              }).catch(() => {
+                setTimeout(() => { this.isInternalAction = false; }, 800);
+              });
+            } else {
+              setTimeout(() => { this.isInternalAction = false; }, 800);
+            }
+          } catch(e) {
+            setTimeout(() => { this.isInternalAction = false; }, 800);
+          }
         }
       }
     },
@@ -895,18 +974,18 @@ function examApp() {
     },
 
     dismissScreenSwitchModal() {
+      this.isInternalAction = true;
       this.showScreenSwitchModal = false;
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
         this.countdownInterval = null;
       }
-      if (window._examSetLastLeaveTime) {
-        // Cho 3.5 giây đệm để nhấp chuột hoặc vào lại toàn màn hình không bị tính lỗi chuyển màn hình
-        window._examSetLastLeaveTime(Date.now() + 3500);
-      }
       if (this.isOnlineExam && !this.submitted && !this.submitting) {
         this.enterFullscreen();
       }
+      setTimeout(() => {
+        this.isInternalAction = false;
+      }, 1000);
     },
 
     // Questions & Exam Mode
@@ -963,6 +1042,12 @@ function examApp() {
       const savedSwitches = sessionStorage.getItem('screen_switch_' + this.examId);
       if (savedSwitches) {
         this.screenSwitchCount = parseInt(savedSwitches, 10) || 0;
+      }
+
+      // Khôi phục trạng thái đã bắt đầu thi trực tuyến nếu học sinh tải lại trang
+      const savedStartedOnline = sessionStorage.getItem('has_started_online_' + this.examId);
+      if (savedStartedOnline) {
+        this.hasStartedOnlineExam = true;
       }
 
       // Chặn phím Back điện thoại khi đang làm bài (Chỉ áp dụng khi thi trực tuyến)
@@ -1105,19 +1190,20 @@ function examApp() {
       this.loading = false;
       
       // Giám sát chuyển màn hình điện thoại / đổi ứng dụng / chuyển tab máy tính
+      let isAway = false;
       let origDocTitle = document.title;
-      let lastLeaveTime = 0;
-      window._examSetLastLeaveTime = (t) => { lastLeaveTime = t; };
 
       const onScreenLeave = () => {
         if (!this.isOnlineExam) return; // Đề luyện tập: không theo dõi chuyển màn hình
+        if (!this.hasStartedOnlineExam) return; // Chưa bấm bắt đầu làm bài: không tính vi phạm
         if (this.loading || this.submitting || this.submitted) return;
-        // Nếu modal cảnh báo hoặc modal nộp bài đang mở, không cộng dồn lỗi
-        if (this.showScreenSwitchModal || this.showTimeUpModal || this.showBackWarningModal) return;
+        if (this.isInternalAction) return; // Đang bấm nút nội bộ hoặc đang vào toàn màn hình: không tính lỗi
+        if (this.showTimeUpModal) return;
 
-        const now = Date.now();
-        if (now - lastLeaveTime < 2500) return; // Tránh tính đúp sự kiện blur & visibilitychange
-        lastLeaveTime = now;
+        // Nếu đã ở trạng thái rời màn hình rồi (ví dụ cả blur và visibilitychange cùng bắn sự kiện)
+        // thì không cộng dồn, chỉ tính đúng 1 lượt rời cho đến khi học sinh quay lại
+        if (isAway) return;
+        isAway = true;
 
         this.screenSwitchCount++;
         sessionStorage.setItem('screen_switch_' + this.examId, this.screenSwitchCount);
@@ -1125,12 +1211,11 @@ function examApp() {
         this.switchViolations.push(timeStr);
         this.autoSave();
 
-        // Nhấp nháy cảnh báo đỏ trên tab trình duyệt máy tính
-        document.title = '🚨 [CẢNH BÁO VI PHẠM] Quay lại làm bài ngay! 🚨';
+        // Đổi tiêu đề tab cảnh báo
+        document.title = `🚨 [VI PHẠM LẦN ${this.screenSwitchCount}] Quay lại bài thi ngay!`;
 
-        // Lập tức kích hoạt trạng thái cảnh báo ngay trong giao diện (không dùng alert chặn luồng)
         if (this.screenSwitchCount >= this.maxSwitchesAllowed) {
-          this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Chuyển tab / rời màn hình làm bài ${this.screenSwitchCount} lần (vượt quá giới hạn ${this.maxSwitchesAllowed} lần cho phép). Hệ thống tự động thu và nộp bài!`;
+          this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Rời màn hình làm bài / chuyển tab ${this.screenSwitchCount} lần (vượt quá giới hạn ${this.maxSwitchesAllowed} lần cho phép). Hệ thống tự động thu và nộp bài!`;
           this.showTimeUpModal = true;
           this.isAutoSubmitting = true;
           this.submitExam();
@@ -1140,21 +1225,27 @@ function examApp() {
       };
 
       const onScreenReturn = () => {
-        if (!this.isOnlineExam) return; // Đề luyện tập: không pop up cảnh báo / không tự động thu bài
+        if (!this.isOnlineExam) return;
+        if (!this.hasStartedOnlineExam) return;
         if (this.loading || this.submitting || this.submitted) return;
+        if (this.isInternalAction) return;
         document.title = origDocTitle;
         this.updateTimerTick();
 
-        if (this.screenSwitchCount > 0) {
+        // Khi thí sinh thực sự đã rời màn hình và giờ quay trở lại:
+        if (isAway) {
+          isAway = false;
+
+          // Luôn phát âm thanh cảnh báo vi phạm
           this.playWarningSound();
+
           if (this.screenSwitchCount >= this.maxSwitchesAllowed) {
-            // Đã chuyển màn hình quá 5 lần -> Tự động thu và nộp bài
-            this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Chuyển tab / rời màn hình làm bài ${this.screenSwitchCount} lần (vượt quá giới hạn ${this.maxSwitchesAllowed} lần cho phép). Hệ thống tự động thu và nộp bài!`;
+            this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Rời màn hình làm bài / chuyển tab ${this.screenSwitchCount} lần (vượt quá giới hạn ${this.maxSwitchesAllowed} lần cho phép). Hệ thống tự động thu và nộp bài!`;
             this.showTimeUpModal = true;
             this.isAutoSubmitting = true;
             this.submitExam();
           } else {
-            // Hiện modal cảnh báo rõ ràng khi quay lại và bắt đầu đếm ngược 6 giây
+            // Hiển thị modal cảnh báo vi phạm cập nhật số lần mới nhất và đếm ngược 6 giây
             this.showScreenSwitchModal = true;
             this.startScreenSwitchCountdown();
           }
@@ -1183,16 +1274,15 @@ function examApp() {
       };
       this.$nextTick(() => tryAutoFullscreen());
 
-      // Kích hoạt tràn màn hình ngay khi học sinh chạm hoặc nhấp chuột lần đầu
-      const onUserFirstInteraction = () => {
-        tryAutoFullscreen();
-        document.removeEventListener('click', onUserFirstInteraction);
-        document.removeEventListener('touchstart', onUserFirstInteraction);
-        document.removeEventListener('keydown', onUserFirstInteraction);
+      // Kích hoạt tràn màn hình ở bất kỳ tương tác nào của học sinh nếu chưa toàn màn hình
+      const onUserInteraction = () => {
+        if (this.isOnlineExam && !this.isFullscreen && !this.submitted && !this.submitting) {
+          this.enterFullscreen();
+        }
       };
-      document.addEventListener('click', onUserFirstInteraction, { passive: true });
-      document.addEventListener('touchstart', onUserFirstInteraction, { passive: true });
-      document.addEventListener('keydown', onUserFirstInteraction, { passive: true });
+      window.addEventListener('click', onUserInteraction, { passive: true });
+      window.addEventListener('touchstart', onUserInteraction, { passive: true });
+      window.addEventListener('keydown', onUserInteraction, { passive: true });
       
       // Render LaTeX sau khi tải xong
       this.$nextTick(() => this.renderAllLatex());
@@ -1884,6 +1974,7 @@ function examApp() {
           sessionStorage.removeItem('exam_end_time_' + this.examId);
           sessionStorage.removeItem('exam_shuffled_' + this.examId);
           sessionStorage.removeItem('screen_switch_' + this.examId);
+          sessionStorage.removeItem('has_started_online_' + this.examId);
           if (this.isOnlineExam) {
             sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
             localStorage.setItem('exam_submitted_' + this.examId, result.submission_id);
