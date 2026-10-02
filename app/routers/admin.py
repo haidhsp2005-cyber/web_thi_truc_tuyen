@@ -89,9 +89,22 @@ async def get_current_admin(request: Request):
 
 
 @router.get("/users")
-async def list_users():
-    """Lấy danh sách tất cả tài khoản quản trị và giáo viên."""
+async def list_users(request: Request):
+    """
+    Lấy danh sách tài khoản.
+    - Quản trị viên (admin): Thấy toàn bộ danh sách tài khoản (admin + tất cả giáo viên).
+    - Giáo viên (không phải admin): Để bảo mật, chỉ thấy đúng tài khoản của chính mình.
+    """
+    current_user = get_current_user_from_request(request)
     users = get_all_users()
+    if not current_user:
+        return {"success": True, "users": [], "total": 0}
+
+    is_admin = current_user.get("role") == "admin" or current_user.get("username", "").lower() == "admin"
+    if not is_admin:
+        my_username = (current_user.get("username") or "").lower()
+        users = [u for u in users if (u.get("username") or "").lower() == my_username]
+
     return {"success": True, "users": users, "total": len(users)}
 
 
