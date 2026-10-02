@@ -459,10 +459,18 @@ async def restore_full_backup(request: Request, file: UploadFile = File(...)):
     try:
         content = await file.read()
         backup_data = json.loads(content.decode("utf-8"))
+        if backup_data.get("type") == "users_backup" or ("users" in backup_data and "exams" not in backup_data and "submissions" not in backup_data):
+            res_u = import_users_backup(backup_data)
+            return {
+                "success": True,
+                "message": f"Khôi phục tài khoản thành công: Thêm mới {res_u['restored']} tài khoản, cập nhật {res_u['updated']} tài khoản!",
+                "details": res_u
+            }
+
         res = import_full_backup(backup_data)
         return {
             "success": True,
-            "message": f"Khôi phục thành công! Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài làm học sinh.",
+            "message": f"Khôi phục thành công! Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài làm học sinh, {res.get('restored_users', 0)} tài khoản.",
             "details": res
         }
     except Exception as e:

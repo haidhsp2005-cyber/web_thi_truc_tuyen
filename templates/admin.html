@@ -720,37 +720,6 @@
       <button @click="userActionMsg = ''" class="font-bold opacity-75 hover:opacity-100">✕</button>
     </div>
 
-    <!-- Mục Sao lưu & Khôi phục Tài khoản (Dành cho Quản trị viên) -->
-    <div x-show="isAdmin()" class="mx-5 mt-4 p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-sm flex-shrink-0">
-          💾
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h3 class="text-sm font-bold text-blue-950">Sao lưu & Khôi phục Tài khoản Giáo viên</h3>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-200 text-blue-800">Quyền Admin</span>
-          </div>
-          <p class="text-xs text-blue-700 mt-0.5">Tải file sao lưu JSON về máy tính để bảo vệ toàn bộ tài khoản giáo viên khi Render khởi động lại.</p>
-        </div>
-      </div>
-      <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end flex-shrink-0">
-        <a href="/api/admin/users/backup/download" 
-          class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-          title="Tải file JSON chứa toàn bộ tài khoản giáo viên về máy tính">
-          <span>💾</span><span>Tải sao lưu tài khoản</span>
-        </a>
-        <input type="file" x-ref="userBackupFileInput" accept=".json" @change="restoreUsersBackup($event)" class="hidden">
-        <button type="button" @click="$refs.userBackupFileInput.click()" :disabled="restoringUserBackup"
-          class="px-3.5 py-2 bg-white hover:bg-gray-100 active:scale-95 text-blue-800 border border-blue-300 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-          title="Khôi phục tài khoản từ file sao lưu JSON">
-          <span x-show="restoringUserBackup" class="animate-spin">⏳</span>
-          <span x-show="!restoringUserBackup">📥</span>
-          <span x-text="restoringUserBackup ? 'Đang nạp...' : 'Khôi phục tài khoản'"></span>
-        </button>
-      </div>
-    </div>
-
     <!-- Bảng danh sách tài khoản -->
     <div class="p-5">
       <div class="overflow-x-auto">
