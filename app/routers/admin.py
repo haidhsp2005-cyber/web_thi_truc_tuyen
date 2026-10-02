@@ -1,7 +1,8 @@
 """
 Admin Router - Quản lý API keys và xem kết quả học sinh
 """
-from fastapi import APIRouter, HTTPException, Request, Response, Depends
+from typing import Optional, List, Dict
+from fastapi import APIRouter, HTTPException, Request, Response, Depends, Query
 from fastapi.responses import HTMLResponse
 from ..database import (
     get_all_submissions, get_submission, get_config, set_config, load_exam,
@@ -20,6 +21,7 @@ from ..services.auth_service import (
 )
 from ..services.export_service import (
     export_student_exam_print_html,
+    export_class_submissions_print_html,
     export_clean_exam_print_html,
     export_exam_answers_print_html
 )
@@ -421,5 +423,69 @@ async def print_exam_answers(exam_id: str):
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
         
     html = export_exam_answers_print_html(exam)
+    return HTMLResponse(content=html)
+
+
+@router.get("/print/submissions/class", response_class=HTMLResponse)
+async def print_class_submissions(
+    request: Request,
+    student_class: Optional[str] = Query(None),
+    exam_id: Optional[str] = Query(None),
+    subject: Optional[str] = Query(None)
+):
+    """
+    In toàn bộ bài thi đã nộp của tất cả học sinh theo Lớp (hoặc theo đề thi / bộ lọc hiện tại):
+    Tự động phân trang chuẩn A4 (mỗi học sinh 1 trang in riêng biệt) để in ra giấy hoặc lưu thành 1 file PDF trọn bộ.
+    """
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
+    clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
+    clean_cls = student_class.strip().upper() if student_class and student_class.strip() and student_class.strip() != "all" else None
+    clean_sub = subject.strip().lower() if subject and subject.strip() and subject.strip() != "all" else None
+
+    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
+    all_exams = _list_exam_files()
+
+    # Lọc theo quyền giáo viên
+    if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
+        accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
+        submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
+
+    # Lọc theo môn học nếu có tham số subject
+    if clean_sub:
+        subject_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub}
+        submissions = [s for s in submissions if s.get('exam_id') in subject_exam_ids]
+
+    if not submissions:
+        return HTMLResponse(
+            content="""<!DOCTYPE html><html lang='vi'><head><meta charset='UTF-8'><title>Không có bài nộp</title>
+            <script src='https://cdn.tailwindcss.com'></script></head>
+            <body class='p-8 text-center bg-gray-50 flex items-center justify-center min-h-screen'>
+              <div class='bg-white p-6 rounded-2xl shadow border max-w-md'>
+                <p class='text-4xl mb-3'>📋</p>
+                <h2 class='font-bold text-lg text-gray-800 mb-2'>Không có bài nộp nào phù hợp!</h2>
+                <p class='text-sm text-gray-600 mb-4'>Chưa có học sinh nào nộp bài thuộc lớp hoặc bộ lọc được chọn.</p>
+                <button onclick='window.close()' class='px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold'>Đóng tab</button>
+              </div>
+            </body></html>""",
+            status_code=200
+        )
+
+    # Nạp thông tin các đề thi tương ứng
+    exams_cache = {}
+    for s in submissions:
+        eid = s.get("exam_id")
+        if eid and eid not in exams_cache:
+            e = load_exam(eid)
+            if e:
+                exams_cache[eid] = e
+
+    html = export_class_submissions_print_html(
+        submissions=submissions,
+        exams_cache=exams_cache,
+        class_name=clean_cls or "Tất cả các lớp",
+        exam_id=clean_eid,
+        subject=clean_sub
+    )
     return HTMLResponse(content=html)
 

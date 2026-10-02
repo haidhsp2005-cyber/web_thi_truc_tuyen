@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import List, Optional, Dict, Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
-from fastapi.responses import JSONResponse, Response, StreamingResponse
+from fastapi.responses import JSONResponse, Response, StreamingResponse, FileResponse
 
 from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, file_url_to_base64
 
@@ -544,7 +544,7 @@ def _append_text_and_math_to_docx_p(p, text: str, is_red: bool = False, bold: bo
             if omml is not None:
                 p._element.append(omml)
             else:
-                r = p.add_run(inner_math)
+                r = p.add_run(tok)
                 r.bold = bold
                 if is_red:
                     r.font.color.rgb = RGBColor(255, 0, 0)
@@ -1790,7 +1790,16 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         )
 
     elif format == "docx":
-        # Mẫu Word (.docx) chuẩn 22 câu + tự luận
+        # Ưu tiên trả về file mẫu chuẩn đã được nhúng sẵn 134 công thức Word Equation (OMML) gốc
+        static_sample_docx = Path(__file__).parent.parent / "resources" / "mau_de_thi_gdpt2026.docx"
+        if static_sample_docx.exists():
+            return FileResponse(
+                path=str(static_sample_docx),
+                media_type="application/vnd.openxmlformats-officedoc.wordprocessingml.document",
+                filename="mau_de_thi_gdpt2026.docx"
+            )
+
+        # Mẫu Word (.docx) chuẩn 22 câu + tự luận (dự phòng tạo động)
         import docx
         from docx.shared import Pt, RGBColor
         from docx.enum.text import WD_ALIGN_PARAGRAPH

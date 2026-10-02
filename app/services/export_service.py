@@ -430,10 +430,10 @@ def export_result_html(submission: dict, exam_data: dict) -> str:
 
 # ===================== DÀNH CHO ADMIN / GIÁO VIÊN: IN BÀI THI HỌC SINH =====================
 
-def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
+def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> str:
     """
-    Tạo HTML bản in BÀI THI ĐẦY ĐỦ CỦA HỌC SINH dành cho GIÁO VIÊN / ADMIN:
-    Gồm toàn bộ đề bài, phương án học sinh chọn, đáp án đúng của đề, ký hiệu Đúng/Sai, điểm số từng câu.
+    Tạo nội dung HTML cho một bài thi của học sinh (khung phiếu bài làm, điểm số, các câu hỏi và chữ ký).
+    Dùng chung cho cả in đơn lẻ từng học sinh lẫn in gộp toàn bộ lớp theo định dạng chuẩn A4.
     """
     scores = submission.get("scores", {})
     p1_res = submission.get("part1_result", {})
@@ -465,7 +465,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
             opts_html = f"<div class='mt-1 text-xs'>{' '.join(opts_parts)}</div>"
 
         p1_details_html += f"""
-        <div class="p-3 border rounded-xl mb-2 {row_bg}">
+        <div class="p-3 border rounded-xl mb-2 {row_bg} avoid-break">
           <div class="flex justify-between items-start text-xs sm:text-sm font-semibold">
             <span class="text-gray-900"><b>Câu {idx}:</b> {d.get('text', '')}</span>
             <span class="ml-2 font-bold flex-shrink-0 {'text-green-700' if is_cor else 'text-red-600'}">{icon} (+{pts}đ)</span>
@@ -508,7 +508,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
             </tr>"""
 
         p2_details_html += f"""
-        <div class="p-3 border rounded-xl mb-3 bg-white">
+        <div class="p-3 border rounded-xl mb-3 bg-white avoid-break">
           <div class="flex justify-between items-start text-xs sm:text-sm font-semibold mb-2">
             <span class="text-gray-900"><b>Câu {idx}:</b> {q.get('text', '')}</span>
             <span class="font-bold text-purple-900 flex-shrink-0">Điểm: {q_pts}đ ({q.get('correct_count',0)}/4 ý đúng)</span>
@@ -538,7 +538,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
         row_bg = "bg-green-50/60" if is_cor else "bg-red-50/60"
 
         p3_details_html += f"""
-        <div class="p-3 border rounded-xl mb-2 {row_bg}">
+        <div class="p-3 border rounded-xl mb-2 {row_bg} avoid-break">
           <div class="flex justify-between items-start text-xs sm:text-sm font-semibold">
             <span class="text-gray-900"><b>Câu {idx}:</b> {d.get('text', '')}</span>
             <span class="font-bold flex-shrink-0 {'text-green-700' if is_cor else 'text-red-600'}">{icon} (+{pts}đ)</span>
@@ -553,7 +553,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
     p4_html = ""
     if p4_res and not p4_res.get("skipped"):
         p4_html = f"""
-        <div class="p-4 border rounded-xl bg-orange-50/50 mb-3">
+        <div class="p-4 border rounded-xl bg-orange-50/50 mb-3 avoid-break">
           <div class="flex justify-between items-center mb-2">
             <h3 class="font-bold text-sm text-gray-900">✍️ PHẦN IV: BÀI LÀM TỰ LUẬN</h3>
             <span class="font-black text-orange-700 text-sm">Điểm: {p4_res.get('score', 0)} / 1.0đ</span>
@@ -568,50 +568,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
           </div>
         </div>"""
 
-    html = f"""<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Bản in bài thi học sinh - {submission.get('student_name','')}</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/mhchem.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
-<script>
-  function triggerMath() {{
-    if (window.renderMathInElement) {{
-      renderMathInElement(document.body, {{
-        delimiters: [
-          {{left: '$$', right: '$$', display: true}},
-          {{left: '$', right: '$', display: false}},
-          {{left: '\\\\(', right: '\\\\)', display: false}},
-          {{left: '\\\\[', right: '\\\\]', display: true}}
-        ],
-        throwOnError: false
-      }});
-    }} else {{
-      setTimeout(triggerMath, 100);
-    }}
-  }}
-  if (document.readyState === 'loading') {{
-    document.addEventListener("DOMContentLoaded", triggerMath);
-  }} else {{
-    triggerMath();
-  }}
-  window.addEventListener("load", triggerMath);
-</script>
-<style>
-  @media print {{
-    .no-print {{ display: none !important; }}
-    body {{ background: white !important; padding: 0 !important; font-size: 12px; }}
-    .page-break {{ page-break-before: always; }}
-  }}
-</style>
-</head>
-<body class="bg-gray-100 p-4 sm:p-6 font-sans">
-<div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-8 border">
-  
+    return f"""
   <!-- Header Quốc ngữ / Sở GD -->
   <div class="flex justify-between items-start border-b pb-4 mb-4">
     <div>
@@ -663,7 +620,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
   {p4_html}
 
   <!-- Chữ ký giám khảo -->
-  <div class="grid grid-cols-2 text-center text-xs mt-6 pt-4 border-t">
+  <div class="grid grid-cols-2 text-center text-xs mt-6 pt-4 border-t avoid-break">
     <div>
       <p class="font-bold text-gray-700 uppercase">GIÁM KHẢO 1</p>
       <div class="h-16"></div>
@@ -675,6 +632,75 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
       <p class="font-semibold text-gray-800">................................................</p>
     </div>
   </div>
+"""
+
+
+def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
+    """
+    Tạo HTML bản in BÀI THI ĐẦY ĐỦ CỦA HỌC SINH dành cho GIÁO VIÊN / ADMIN:
+    Gồm toàn bộ đề bài, phương án học sinh chọn, đáp án đúng của đề, ký hiệu Đúng/Sai, điểm số từng câu.
+    """
+    inner = render_single_student_exam_inner_html(submission, exam_data)
+    student_name = submission.get('student_name', '')
+
+    html = f"""<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Bản in bài thi học sinh - {student_name}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/mhchem.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+<script>
+  function triggerMath() {{
+    if (window.renderMathInElement) {{
+      renderMathInElement(document.body, {{
+        delimiters: [
+          {{left: '$$', right: '$$', display: true}},
+          {{left: '$', right: '$', display: false}},
+          {{left: '\\\\(', right: '\\\\)', display: false}},
+          {{left: '\\\\[', right: '\\\\]', display: true}}
+        ],
+        throwOnError: false
+      }});
+    }} else {{
+      setTimeout(triggerMath, 100);
+    }}
+  }}
+  if (document.readyState === 'loading') {{
+    document.addEventListener("DOMContentLoaded", triggerMath);
+  }} else {{
+    triggerMath();
+  }}
+  window.addEventListener("load", triggerMath);
+</script>
+<style>
+  @media print {{
+    .no-print {{ display: none !important; }}
+    body {{ background: white !important; padding: 0 !important; font-size: 12px; margin: 0 !important; }}
+    .student-exam-card {{
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }}
+    .avoid-break {{
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }}
+  }}
+  @page {{
+    size: A4;
+    margin: 15mm;
+  }}
+</style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 font-sans">
+<div class="student-exam-card max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-8 border">
+  {inner}
 
   <!-- Thanh nút bấm in -->
   <div class="mt-6 pt-4 border-t text-center no-print flex justify-center gap-3">
@@ -690,6 +716,138 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
 </body>
 </html>"""
     return html
+
+
+def export_class_submissions_print_html(
+    submissions: List[dict],
+    exams_cache: Dict[str, dict],
+    class_name: str = "Tất cả các lớp",
+    exam_id: str = None,
+    subject: str = None
+) -> str:
+    """
+    Tạo HTML bản in PDF trọn bộ tất cả bài thi học sinh theo lớp:
+    - Sắp xếp học sinh theo Lớp rồi theo Tên (A-Z)
+    - Tự động ngắt trang in (page-break-before: always) giữa các học sinh
+    - Có thanh điều hướng in PDF cố định phía trên (ẩn khi in)
+    - Nhúng KaTeX đầy đủ render công thức toán học sắc nét
+    """
+    sorted_subs = sorted(
+        submissions,
+        key=lambda s: (
+            (s.get("student_class") or "").strip().upper(),
+            (s.get("student_name") or "").strip().lower()
+        )
+    )
+
+    exam_title = ""
+    if exam_id and exam_id in exams_cache:
+        exam_title = exams_cache[exam_id].get("title", "")
+    elif exams_cache:
+        first_exam = next(iter(exams_cache.values()))
+        exam_title = first_exam.get("title", "")
+
+    cards_html = []
+    for idx, sub in enumerate(sorted_subs):
+        eid = sub.get("exam_id", "exam_001")
+        exam_data = exams_cache.get(eid) or {"title": exam_title or "BÀI KIỂM TRA", "subject": subject or "Toán", "grade": "12"}
+        inner = render_single_student_exam_inner_html(sub, exam_data)
+        
+        page_break_style = "page-break-before: always; break-before: page;" if idx > 0 else ""
+        cards_html.append(f"""
+        <div class="student-exam-card max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-8 border mb-8" style="{page_break_style}">
+          {inner}
+        </div>
+        """)
+
+    all_cards = "\n".join(cards_html)
+
+    return f"""<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>In tất cả bài thi - Lớp {class_name} ({len(sorted_subs)} bài nộp)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/mhchem.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+<script>
+  function triggerMath() {{
+    if (window.renderMathInElement) {{
+      renderMathInElement(document.body, {{
+        delimiters: [
+          {{left: '$$', right: '$$', display: true}},
+          {{left: '$', right: '$', display: false}},
+          {{left: '\\\\(', right: '\\\\)', display: false}},
+          {{left: '\\\\[', right: '\\\\]', display: true}}
+        ],
+        throwOnError: false
+      }});
+    }} else {{
+      setTimeout(triggerMath, 100);
+    }}
+  }}
+  if (document.readyState === 'loading') {{
+    document.addEventListener("DOMContentLoaded", triggerMath);
+  }} else {{
+    triggerMath();
+  }}
+  window.addEventListener("load", triggerMath);
+</script>
+<style>
+  @media print {{
+    .no-print {{ display: none !important; }}
+    body {{ background: white !important; padding: 0 !important; font-size: 12px; margin: 0 !important; }}
+    .student-exam-card {{
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      margin: 0 auto !important;
+      max-width: 100% !important;
+    }}
+    .avoid-break {{
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }}
+  }}
+  @page {{
+    size: A4;
+    margin: 15mm;
+  }}
+</style>
+</head>
+<body class="bg-gray-100 p-0 sm:p-4 font-sans text-gray-800">
+
+  <!-- Thanh điều khiển In / Xuất PDF (ẩn khi in ra giấy/PDF) -->
+  <div class="no-print sticky top-0 z-50 bg-gray-900/95 backdrop-blur-md text-white py-3 px-4 sm:px-6 shadow-xl border-b border-gray-700 mb-6">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">📋</span>
+        <div>
+          <h1 class="text-sm sm:text-base font-bold leading-tight">IN TẤT CẢ BÀI THI - LỚP {class_name}</h1>
+          <p class="text-xs text-gray-300">Tổng số: <b>{len(sorted_subs)} bài thi</b> đã nộp • Tự động ngắt trang riêng từng học sinh</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer transition-transform active:scale-95">
+          <span>🖨️</span><span>In ra giấy / Lưu file PDF (Ctrl + P)</span>
+        </button>
+        <button onclick="window.close()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer transition-colors">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danh sách bài thi từng học sinh -->
+  <div class="max-w-4xl mx-auto">
+    {all_cards}
+  </div>
+
+</body>
+</html>"""
 
 
 # ===================== DÀNH CHO ADMIN / GIÁO VIÊN: IN ĐỀ THI GỐC (CHO HỌC SINH LÀM) =====================
