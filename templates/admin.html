@@ -644,6 +644,14 @@
                       <span x-text="e.is_online_exam ? '🛡️ Thi trực tuyến' : '📖 Luyện tập'"></span>
                       <span class="text-[10px] text-gray-500">⇄</span>
                     </button>
+                    <!-- Huy hiệu Ngân hàng bốc đề ngẫu nhiên -->
+                    <template x-if="e.is_bank">
+                      <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-800 border border-purple-300 inline-flex items-center gap-1 shadow-2xs"
+                        :title="`Đang bật chế độ Ngân hàng đề: Mỗi học sinh bốc ngẫu nhiên ${e.bank_config?.total_draw || 30} câu`">
+                        <span>🎲 Bốc ngẫu nhiên</span>
+                        <strong x-text="`(${e.bank_config?.total_draw || 30} câu)`"></strong>
+                      </span>
+                    </template>
                   </div>
                 </td>
                 <td class="px-3 py-2 text-center text-gray-500 text-xs" x-text="`${e.subject} / Lớp ${e.grade}`"></td>
@@ -653,6 +661,11 @@
                 <td class="px-3 py-2 text-center text-gray-600" x-text="`${e.duration_minutes} phút`"></td>
                 <td class="px-3 py-2 text-center">
                   <div class="flex gap-1.5 justify-center flex-wrap">
+                    <button @click="openBankConfigModal(e)" 
+                      class="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-900 rounded-lg text-xs font-bold transition-colors border border-purple-200 flex items-center gap-1 cursor-pointer" 
+                      title="Cài đặt chế độ Ngân hàng: bốc ngẫu nhiên số lượng câu cho từng học sinh">
+                      <span>🎲</span><span>Bốc đề</span>
+                    </button>
                     <a :href="`/api/admin/print/exam/${e.id}`" target="_blank" class="px-2.5 py-1 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-900 rounded-lg text-xs font-bold transition-colors border border-green-200 flex items-center gap-1 cursor-pointer" title="In đề thi giấy cho học sinh làm (không có đáp án đỏ)">
                       <span>📄</span><span>In đề thi</span>
                     </a>
@@ -870,6 +883,136 @@
     </div>
   </div>
 
+  <!-- Modal Cấu hình Ngân hàng câu hỏi & Bốc đề ngẫu nhiên -->
+  <div x-show="showBankConfigModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div @click.outside="showBankConfigModal = false" class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div>
+          <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+            <span>🎲</span><span>Cài Đặt Ngân Hàng Đề & Bốc Đề Tự Động</span>
+          </h3>
+          <p class="text-xs text-gray-500 mt-0.5 truncate max-w-md" x-text="bankConfigExam?.title || ''"></p>
+        </div>
+        <button @click="showBankConfigModal = false" class="text-gray-400 hover:text-gray-600 text-lg cursor-pointer">✕</button>
+      </div>
+
+      <!-- Bật / Tắt chế độ Ngân hàng -->
+      <div class="p-4 rounded-2xl border-2 transition-all" :class="bankConfigForm.enabled ? 'bg-purple-50/80 border-purple-300' : 'bg-gray-50 border-gray-200'">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" x-model="bankConfigForm.enabled" class="mt-1 w-5 h-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
+          <div>
+            <div class="font-bold text-sm text-gray-900">
+              Bật chế độ Ngân hàng (Mỗi học sinh bốc đề ngẫu nhiên riêng)
+            </div>
+            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+              Khi bật, mỗi khi học sinh bấm vào phòng thi, hệ thống sẽ tự động bốc ngẫu nhiên bộ câu hỏi riêng cho học sinh đó từ đề gốc này. Chống gian lận tuyệt đối!
+            </p>
+          </div>
+        </label>
+      </div>
+
+      <!-- Thống kê kho câu hỏi gốc -->
+      <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-xs space-y-1.5" x-show="bankConfigExam">
+        <div class="font-bold text-blue-900 flex items-center gap-1.5 text-sm">
+          <span>📦</span>
+          <span>Kho câu hỏi gốc hiện có trong file:</span>
+          <span class="text-purple-700 font-black text-base" x-text="`${(bankConfigExam?.part1_count || 0) + (bankConfigExam?.part2_count || 0) + (bankConfigExam?.part3_count || 0) + (bankConfigExam?.part4_count || 0)} câu`"></span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-medium text-gray-700">
+          <div class="bg-white p-2 rounded-xl border">Phần I: <strong class="text-blue-700" x-text="`${bankConfigExam?.part1_count || 0} câu`"></strong></div>
+          <div class="bg-white p-2 rounded-xl border">Phần II: <strong class="text-purple-700" x-text="`${bankConfigExam?.part2_count || 0} câu`"></strong></div>
+          <div class="bg-white p-2 rounded-xl border">Phần III: <strong class="text-teal-700" x-text="`${bankConfigExam?.part3_count || 0} câu`"></strong></div>
+          <div class="bg-white p-2 rounded-xl border">Phần IV: <strong class="text-orange-700" x-text="`${bankConfigExam?.part4_count || 0} câu`"></strong></div>
+        </div>
+      </div>
+
+      <!-- Cấu hình số câu rút -->
+      <div class="space-y-3" :class="{'opacity-50 pointer-events-none': !bankConfigForm.enabled}">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-gray-700 uppercase">Cấu hình số câu bốc cho mỗi học sinh:</span>
+          <button type="button" @click="autoFillBankRatio()" class="text-xs text-purple-700 hover:text-purple-900 font-bold underline cursor-pointer">
+            ✨ Tự chia theo chuẩn GDPT (18 + 6 + 6 = 30 câu)
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-gray-50 p-3 rounded-2xl border">
+            <label class="block text-xs font-bold text-gray-700 mb-1">
+              Phần I (TNKQ 4 lựa chọn)
+            </label>
+            <div class="flex items-center gap-1.5">
+              <input type="number" x-model.number="bankConfigForm.part1_draw" min="0" :max="bankConfigExam?.part1_count || 100"
+                @input="bankConfigForm.total_draw = (Number(bankConfigForm.part1_draw)||0) + (Number(bankConfigForm.part2_draw)||0) + (Number(bankConfigForm.part3_draw)||0)"
+                class="w-full border-2 border-gray-200 rounded-xl px-3 py-1.5 text-sm font-bold text-blue-700 bg-white focus:outline-none focus:border-purple-600">
+              <span class="text-xs text-gray-400 whitespace-nowrap" x-text="`/ ${bankConfigExam?.part1_count || 0}`"></span>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-3 rounded-2xl border">
+            <label class="block text-xs font-bold text-gray-700 mb-1">
+              Phần II (Đúng / Sai)
+            </label>
+            <div class="flex items-center gap-1.5">
+              <input type="number" x-model.number="bankConfigForm.part2_draw" min="0" :max="bankConfigExam?.part2_count || 100"
+                @input="bankConfigForm.total_draw = (Number(bankConfigForm.part1_draw)||0) + (Number(bankConfigForm.part2_draw)||0) + (Number(bankConfigForm.part3_draw)||0)"
+                class="w-full border-2 border-gray-200 rounded-xl px-3 py-1.5 text-sm font-bold text-purple-700 bg-white focus:outline-none focus:border-purple-600">
+              <span class="text-xs text-gray-400 whitespace-nowrap" x-text="`/ ${bankConfigExam?.part2_count || 0}`"></span>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-3 rounded-2xl border">
+            <label class="block text-xs font-bold text-gray-700 mb-1">
+              Phần III (Trả lời ngắn)
+            </label>
+            <div class="flex items-center gap-1.5">
+              <input type="number" x-model.number="bankConfigForm.part3_draw" min="0" :max="bankConfigExam?.part3_count || 100"
+                @input="bankConfigForm.total_draw = (Number(bankConfigForm.part1_draw)||0) + (Number(bankConfigForm.part2_draw)||0) + (Number(bankConfigForm.part3_draw)||0)"
+                class="w-full border-2 border-gray-200 rounded-xl px-3 py-1.5 text-sm font-bold text-teal-700 bg-white focus:outline-none focus:border-purple-600">
+              <span class="text-xs text-gray-400 whitespace-nowrap" x-text="`/ ${bankConfigExam?.part3_count || 0}`"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-purple-100/50 border border-purple-200 rounded-2xl p-3.5 flex items-center justify-between text-sm">
+          <div class="font-bold text-purple-950 flex items-center gap-1.5">
+            <span>🎯</span>
+            <span>Tổng số câu học sinh sẽ làm:</span>
+          </div>
+          <div class="text-lg font-black text-purple-800" x-text="`${(Number(bankConfigForm.part1_draw)||0) + (Number(bankConfigForm.part2_draw)||0) + (Number(bankConfigForm.part3_draw)||0)} câu hỏi / 10 điểm`"></div>
+        </div>
+      </div>
+
+      <!-- Khu vực xem thử bốc đề preview -->
+      <div x-show="bankPreviewInfo" x-cloak class="p-3 bg-green-50 border border-green-200 rounded-2xl text-xs space-y-1">
+        <div class="font-bold text-green-900 flex items-center justify-between">
+          <span>✅ Kết quả bốc thử nghiệm (Mã hạt giống: <span x-text="bankPreviewInfo?.seed"></span>):</span>
+          <button @click="previewBankDraw()" class="text-green-700 hover:text-green-900 underline font-bold cursor-pointer">Bốc lại thử</button>
+        </div>
+        <p class="text-green-800">
+          Đề bốc ra thành công: <strong><span x-text="bankPreviewInfo?.drawn_exam?.drawn_question_count || 0"></span> câu hỏi</strong>.
+          Tổng điểm tính toán tự động: <strong><span x-text="`${bankPreviewInfo?.drawn_exam?.scoring?.total || 10} điểm`"></span></strong>.
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t">
+        <button type="button" @click="previewBankDraw()" :disabled="!bankConfigForm.enabled"
+          class="px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-40">
+          <span>🎲</span><span>Bốc thử 1 đề mẫu</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button @click="showBankConfigModal = false" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 cursor-pointer">Hủy</button>
+          <button @click="saveBankConfig()" :disabled="bankSaving"
+            class="px-5 py-2 rounded-xl text-sm font-bold bg-purple-700 hover:bg-purple-800 text-white shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+            <span x-show="bankSaving" class="animate-spin">⏳</span>
+            <span x-show="!bankSaving">💾</span>
+            <span x-text="bankSaving ? 'Đang lưu...' : 'Lưu cài đặt Ngân hàng'"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Cấu hình API Key Gemini (.env / AI chấm bài) -->
   <div x-show="showApiKeyModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div @click.outside="showApiKeyModal = false" class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border space-y-4">
@@ -1030,6 +1173,11 @@ function adminApp() {
     uploading: false,
     uploadMsg: '',
     uploadMsgOk: true,
+    showBankConfigModal: false,
+    bankConfigExam: null,
+    bankConfigForm: { enabled: false, total_draw: 30, part1_draw: 18, part2_draw: 6, part3_draw: 6, part4_draw: 0 },
+    bankPreviewInfo: null,
+    bankSaving: false,
 
     // ===== SCORING CONFIG =====
     scoringExamId: '',
@@ -1242,6 +1390,94 @@ function adminApp() {
           this.changePassAdminForm = { username: '', oldPassword: '', newPassword: '', confirmPassword: '' };
         } else {
           alert(data.detail || 'Không thể đổi mật khẩu!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    openBankConfigModal(exam) {
+      this.bankConfigExam = exam;
+      const cfg = exam.bank_config || {};
+      const p1 = exam.part1_count || 0;
+      const p2 = exam.part2_count || 0;
+      const p3 = exam.part3_count || 0;
+      const p4 = exam.part4_count || 0;
+
+      let p1_draw = cfg.part1_draw != null ? cfg.part1_draw : (p1 >= 18 ? 18 : p1);
+      let p2_draw = cfg.part2_draw != null ? cfg.part2_draw : (p2 >= 6 ? 6 : p2);
+      let p3_draw = cfg.part3_draw != null ? cfg.part3_draw : (p3 >= 6 ? 6 : p3);
+      let p4_draw = cfg.part4_draw != null ? cfg.part4_draw : 0;
+      let total_draw = cfg.total_draw || (p1_draw + p2_draw + p3_draw + p4_draw);
+
+      this.bankConfigForm = {
+        enabled: Boolean(exam.is_bank || cfg.enabled),
+        total_draw: total_draw || 30,
+        part1_draw: p1_draw,
+        part2_draw: p2_draw,
+        part3_draw: p3_draw,
+        part4_draw: p4_draw
+      };
+      this.bankPreviewInfo = null;
+      this.showBankConfigModal = true;
+    },
+
+    autoFillBankRatio() {
+      if (!this.bankConfigExam) return;
+      const p1 = this.bankConfigExam.part1_count || 0;
+      const p2 = this.bankConfigExam.part2_count || 0;
+      const p3 = this.bankConfigExam.part3_count || 0;
+      
+      this.bankConfigForm.part1_draw = Math.min(p1, 18);
+      this.bankConfigForm.part2_draw = Math.min(p2, 6);
+      this.bankConfigForm.part3_draw = Math.min(p3, 6);
+      this.bankConfigForm.part4_draw = 0;
+      this.bankConfigForm.total_draw = this.bankConfigForm.part1_draw + this.bankConfigForm.part2_draw + this.bankConfigForm.part3_draw;
+    },
+
+    async saveBankConfig() {
+      if (!this.bankConfigExam) return;
+      this.bankSaving = true;
+      try {
+        const r = await fetch('/api/exam-builder/bank-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            exam_id: this.bankConfigExam.id,
+            bank_config: {
+              enabled: Boolean(this.bankConfigForm.enabled),
+              draw_mode: 'per_student',
+              total_draw: Number(this.bankConfigForm.total_draw) || 30,
+              part1_draw: Number(this.bankConfigForm.part1_draw) || 0,
+              part2_draw: Number(this.bankConfigForm.part2_draw) || 0,
+              part3_draw: Number(this.bankConfigForm.part3_draw) || 0,
+              part4_draw: Number(this.bankConfigForm.part4_draw) || 0
+            }
+          })
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          alert('🎉 ' + data.message);
+          this.showBankConfigModal = false;
+          await this.loadExamList();
+        } else {
+          alert(data.detail || 'Không thể lưu cấu hình ngân hàng!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+      this.bankSaving = false;
+    },
+
+    async previewBankDraw() {
+      if (!this.bankConfigExam) return;
+      try {
+        const r = await fetch(`/api/exam-builder/bank-preview/${encodeURIComponent(this.bankConfigExam.id)}`);
+        const data = await r.json();
+        if (r.ok && data.success) {
+          this.bankPreviewInfo = data;
+        } else {
+          alert(data.detail || 'Không thể xem thử bốc đề!');
         }
       } catch(e) {
         alert('Lỗi kết nối máy chủ!');

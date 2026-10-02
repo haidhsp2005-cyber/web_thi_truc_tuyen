@@ -1050,6 +1050,14 @@ function examApp() {
         return;
       }
 
+      // Hạt giống ngẫu nhiên (seed) duy nhất và ổn định cho học sinh này (hỗ trợ đề ngân hàng)
+      let seed = sessionStorage.getItem('exam_seed_' + this.examId);
+      if (!seed) {
+        seed = String(Math.floor(100000 + Math.random() * 900000));
+        sessionStorage.setItem('exam_seed_' + this.examId, seed);
+      }
+      this.sessionSeed = seed;
+
       // Khôi phục số lần chuyển màn hình nếu có
       const savedSwitches = sessionStorage.getItem('screen_switch_' + this.examId);
       if (savedSwitches) {
@@ -1161,12 +1169,17 @@ function examApp() {
       for (let attempt = 0; attempt < 2 && !examLoaded; attempt++) {
         try {
           if (attempt > 0) await new Promise(r => setTimeout(r, 800));
-          const resp = await fetch(`/api/exam/current?exam_id=${this.examId}`);
+          const reqUrl = `/api/exam/current?exam_id=${encodeURIComponent(this.examId)}&student_name=${encodeURIComponent(this.studentName)}&student_class=${encodeURIComponent(this.studentClass)}&seed=${encodeURIComponent(this.sessionSeed || '')}`;
+          const resp = await fetch(reqUrl);
           if (resp.ok) {
             this.examData = await resp.json();
             if (this.examData && this.examData.id) {
               this.examId = this.examData.id;
               sessionStorage.setItem('exam_id', this.examId);
+            }
+            if (this.examData && this.examData.bank_seed) {
+              this.sessionSeed = String(this.examData.bank_seed);
+              sessionStorage.setItem('exam_seed_' + this.examId, this.sessionSeed);
             }
             try {
               sessionStorage.setItem('cached_exam_data_' + this.examId, JSON.stringify(this.examData));
@@ -1903,6 +1916,7 @@ function examApp() {
         switch_violations: this.switchViolations,
         part4_question_id: this.p4QuestionId || null,
         part4_answer: this.p4Answer || '',
+        seed: this.sessionSeed || this.examData?.bank_seed || '',
       };
 
       try {
@@ -1970,6 +1984,7 @@ function examApp() {
         part3_answers: p3CleanAnswers,
         part4_question_id: this.p4QuestionId || null,
         part4_answer: this.p4Answer || '',
+        seed: this.sessionSeed || this.examData?.bank_seed || '',
       };
       
       try {

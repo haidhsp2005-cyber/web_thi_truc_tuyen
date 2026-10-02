@@ -29,13 +29,31 @@ router = APIRouter(prefix="/api/exam", tags=["exam"])
 
 
 @router.get("/current")
-async def get_current_exam(exam_id: str = "exam_001"):
-    """Lấy nội dung đề thi (đã ẩn đáp án)."""
+async def get_current_exam(
+    exam_id: str = "exam_001",
+    student_name: str = "",
+    student_class: str = "",
+    seed: str = ""
+):
+    """Lấy nội dung đề thi (đã ẩn đáp án). Nếu là đề ngân hàng thì bốc ngẫu nhiên riêng cho từng học sinh."""
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
     
     heal_exam_data(exam)
+
+    # Nếu là đề ngân hàng, bốc ngẫu nhiên theo hạt giống (seed) của học sinh
+    from ..services.bank_service import is_bank_exam, generate_student_exam_from_bank, get_student_seed
+    if is_bank_exam(exam):
+        numeric_seed = None
+        if seed:
+            try:
+                numeric_seed = int(seed)
+            except ValueError:
+                pass
+        if numeric_seed is None:
+            numeric_seed = get_student_seed(student_name, student_class, exam_id, client_seed=seed)
+        exam = generate_student_exam_from_bank(exam, numeric_seed)
     
     # Loại bỏ đáp án trước khi gửi cho học sinh
     safe_exam = {
@@ -46,6 +64,9 @@ async def get_current_exam(exam_id: str = "exam_001"):
         "duration_minutes": exam["duration_minutes"],
         "scoring": exam["scoring"],
         "is_online_exam": bool(exam.get("is_online_exam", False)),
+        "is_bank": bool(exam.get("is_bank", False)) or bool(exam.get("is_bank_drawn", False)),
+        "bank_seed": exam.get("bank_seed"),
+        "drawn_question_count": exam.get("drawn_question_count"),
         "parts": {}
     }
     
@@ -146,21 +167,36 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     if not student_name:
         raise HTTPException(status_code=400, detail="Vui lòng nhập họ tên!")
     
-    # Chấm điểm tức thì
+    # Nếu là đề ngân hàng, tái tạo chính xác bộ câu hỏi của học sinh này theo seed để chấm
+    from ..services.bank_service import is_bank_exam, generate_student_exam_from_bank, get_student_seed
+    student_exam = exam
+    if is_bank_exam(exam):
+        client_seed = str(data.get("seed") or data.get("bank_seed") or "")
+        numeric_seed = None
+        if client_seed:
+            try:
+                numeric_seed = int(client_seed)
+            except ValueError:
+                pass
+        if numeric_seed is None:
+            numeric_seed = get_student_seed(student_name, student_class, exam_id, client_seed=client_seed)
+        student_exam = generate_student_exam_from_bank(exam, numeric_seed)
+    
+    # Chấm điểm tức thì dựa trên bộ câu hỏi của học sinh
     p1_answers = data.get("part1_answers", {})
     p2_answers = data.get("part2_answers", {})
     p3_answers = {str(k): str(v).strip().upper() for k, v in (data.get("part3_answers") or {}).items() if v is not None}
     p4_question_id = data.get("part4_question_id")
     p4_answer = data.get("part4_answer", "")
     
-    p1_result = grade_part1(exam, p1_answers)
-    p2_result = grade_part2(exam, p2_answers)
-    p3_result = grade_part3(exam, p3_answers)
+    p1_result = grade_part1(student_exam, p1_answers)
+    p2_result = grade_part2(student_exam, p2_answers)
+    p3_result = grade_part3(student_exam, p3_answers)
     
     # Phần IV ban đầu chấm 0, sẽ cập nhật sau khi AI chấm xong
     p4_result = {"score": 0.0, "status": "pending", "skipped": not bool(p4_answer.strip())}
     
-    scores = calculate_total_score(p1_result, p2_result, p3_result, 0.0, exam)
+    scores = calculate_total_score(p1_result, p2_result, p3_result, 0.0, student_exam)
     
     client_submitted = data.get("submitted_at")
     if not client_submitted or not isinstance(client_submitted, str):
@@ -184,6 +220,9 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         "part3_answers": p3_answers,
         "part4_question_id": p4_question_id,
         "part4_answer": p4_answer,
+        "is_bank": bool(student_exam.get("is_bank") or student_exam.get("is_bank_drawn")),
+        "bank_seed": student_exam.get("bank_seed"),
+        "exam_data": student_exam,
     }
     
     result_data = {

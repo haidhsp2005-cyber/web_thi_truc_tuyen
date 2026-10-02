@@ -49,6 +49,8 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": r[5] or "",
                     "is_online_exam": bool(data.get("is_online_exam", False)),
+                    "is_bank": bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False)),
+                    "bank_config": data.get("bank_config", {}),
                 }
             except Exception:
                 pass
@@ -77,6 +79,8 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": data.get("created_by", ""),
                     "is_online_exam": bool(data.get("is_online_exam", False)),
+                    "is_bank": bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False)),
+                    "bank_config": data.get("bank_config", {}),
                 }
         except Exception as e:
             logger.warning(f"Bỏ qua file {f.name}: {e}")
@@ -142,6 +146,51 @@ async def add_sample_exam_to_system():
         "exam_id": data.get("id", "exam_toan_12_101"),
         "exam": data
     }
+
+
+@router.post("/bank-config")
+async def save_bank_config(request: Request, payload: dict):
+    """Lưu cấu hình Ngân hàng câu hỏi (bốc đề ngẫu nhiên theo từng học sinh)."""
+    exam_id = payload.get("exam_id")
+    if not exam_id:
+        raise HTTPException(400, "Thiếu exam_id!")
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+    
+    cfg = payload.get("bank_config") or {}
+    enabled = bool(cfg.get("enabled", False))
+    exam["is_bank"] = enabled
+    exam["bank_config"] = cfg
+    
+    save_exam_record(exam)
+    return {
+        "success": True,
+        "message": f"Đã cập nhật cấu hình Ngân hàng câu hỏi cho đề '{exam.get('title')}' thành công!",
+        "is_bank": enabled,
+        "bank_config": cfg
+    }
+
+
+@router.get("/bank-preview/{exam_id}")
+async def preview_bank_draw(exam_id: str, seed: Optional[int] = None):
+    """Xem thử 1 đề mẫu bốc ngẫu nhiên từ Ngân hàng đề thi."""
+    from ..services.bank_service import generate_student_exam_from_bank, normalize_bank_config
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+    if seed is None:
+        import random
+        seed = random.randint(100000, 999999)
+    drawn = generate_student_exam_from_bank(exam, seed)
+    cfg = normalize_bank_config(exam)
+    return {
+        "success": True,
+        "seed": seed,
+        "bank_config": cfg,
+        "drawn_exam": drawn
+    }
+
 
 
 def _is_run_red_or_marked(run) -> tuple[bool, bool]:

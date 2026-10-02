@@ -849,7 +849,7 @@ def export_class_submissions_print_html(
     cards_html = []
     for idx, sub in enumerate(sorted_subs):
         eid = sub.get("exam_id", "exam_001")
-        exam_data = exams_cache.get(eid) or {"title": exam_title or "BÀI KIỂM TRA", "subject": subject or "Toán", "grade": "12"}
+        exam_data = sub.get("exam_data") or exams_cache.get(eid) or {"title": exam_title or "BÀI KIỂM TRA", "subject": subject or "Toán", "grade": "12"}
         inner = render_single_student_exam_inner_html(sub, exam_data)
         
         page_break_style = "page-break-before: always; break-before: page;" if idx > 0 else ""

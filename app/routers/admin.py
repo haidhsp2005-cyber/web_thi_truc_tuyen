@@ -417,7 +417,7 @@ async def print_student_submission(submission_id: str):
     if not sub:
         raise HTTPException(status_code=404, detail="Không tìm thấy bài nộp của học sinh!")
     
-    exam = load_exam(sub.get("exam_id", "exam_001"))
+    exam = sub.get("exam_data") or load_exam(sub.get("exam_id", "exam_001"))
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi tương ứng!")
         
