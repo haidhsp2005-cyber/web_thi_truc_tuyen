@@ -430,16 +430,79 @@ def export_result_html(submission: dict, exam_data: dict) -> str:
 
 # ===================== DÀNH CHO ADMIN / GIÁO VIÊN: IN BÀI THI HỌC SINH =====================
 
+def _format_exam_text_html(text: str, image_url: str = None) -> str:
+    """Format nội dung câu hỏi và hiển thị thẻ <img> nếu có hình ảnh nhúng [IMAGE: ...] hoặc thuộc tính image."""
+    if not text:
+        text = ""
+    # Chuyển đổi cú pháp [IMAGE: ...] thành ảnh minh họa hiển thị đẹp mắt
+    formatted = re.sub(
+        r'\[IMAGE:\s*([^\]]+)\]',
+        r'<div class="my-2 text-center"><img src="\1" class="max-h-64 max-w-full rounded-lg border mx-auto inline-block shadow-xs" /></div>',
+        str(text)
+    )
+    if image_url:
+        formatted += f'<div class="my-2 text-center"><img src="{image_url}" class="max-h-64 max-w-full rounded-lg border mx-auto inline-block shadow-xs" /></div>'
+    return formatted
+
+
 def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> str:
     """
     Tạo nội dung HTML cho một bài thi của học sinh (khung phiếu bài làm, điểm số, các câu hỏi và chữ ký).
+    Tự động khôi phục nội dung câu hỏi và đáp án từ đề thi nếu bài nộp cũ chỉ lưu tổng điểm.
     Dùng chung cho cả in đơn lẻ từng học sinh lẫn in gộp toàn bộ lớp theo định dạng chuẩn A4.
     """
-    scores = submission.get("scores", {})
-    p1_res = submission.get("part1_result", {})
-    p2_res = submission.get("part2_result", {})
-    p3_res = submission.get("part3_result", {})
-    p4_res = submission.get("part4_result", {})
+    scores = submission.get("scores", {}) or {}
+    p1_res = submission.get("part1_result", {}) or {}
+    p2_res = submission.get("part2_result", {}) or {}
+    p3_res = submission.get("part3_result", {}) or {}
+    p4_res = submission.get("part4_result", {}) or {}
+
+    ans = submission.get("answers", {}) or {}
+    p1_ans = ans.get("part1") or submission.get("part1_answers") or {}
+    p2_ans = ans.get("part2") or submission.get("part2_answers") or {}
+    p3_ans = ans.get("part3") or submission.get("part3_answers") or {}
+
+    # Tự động tái tạo đầy đủ đề bài và đáp án chi tiết nếu dữ liệu bài nộp bị thiếu details
+    if exam_data and exam_data.get("parts"):
+        from .grading_service import grade_part1, grade_part2, grade_part3
+        if (not p1_res.get("details")) and exam_data.get("parts", {}).get("part1", {}).get("questions"):
+            try:
+                p1_res = grade_part1(exam_data, p1_ans)
+                submission["part1_result"] = p1_res
+            except Exception as e:
+                logger.debug(f"Không thể tái tạo part1_result: {e}")
+
+        if (not p2_res.get("details")) and exam_data.get("parts", {}).get("part2", {}).get("questions"):
+            try:
+                p2_res = grade_part2(exam_data, p2_ans)
+                submission["part2_result"] = p2_res
+            except Exception as e:
+                logger.debug(f"Không thể tái tạo part2_result: {e}")
+
+        if (not p3_res.get("details")) and exam_data.get("parts", {}).get("part3", {}).get("questions"):
+            try:
+                p3_res = grade_part3(exam_data, p3_ans)
+                submission["part3_result"] = p3_res
+            except Exception as e:
+                logger.debug(f"Không thể tái tạo part3_result: {e}")
+
+    # Đảm bảo bảng điểm tổng hợp có đầy đủ số liệu
+    if not scores or scores.get("total_score") is None:
+        p1_s = p1_res.get("score", 0.0)
+        p2_s = p2_res.get("score", 0.0)
+        p3_s = p3_res.get("score", 0.0)
+        p4_s = p4_res.get("score", 0.0)
+        total_s = round(p1_s + p2_s + p3_s + p4_s, 2)
+        rank = "Giỏi" if total_s >= 8.5 else ("Khá" if total_s >= 7.0 else ("Trung bình" if total_s >= 5.0 else "Yếu"))
+        scores = {
+            "part1_score": p1_s,
+            "part2_score": p2_s,
+            "part3_score": p3_s,
+            "part4_score": p4_s,
+            "total_score": total_s,
+            "rank": rank
+        }
+        submission["scores"] = scores
 
     submitted_at = format_datetime_vn(submission.get("submitted_at", ""))
 
@@ -464,10 +527,12 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
                     opts_parts.append(f"<span class='mr-4 {cls}'><b>{k}.</b> {val}</span>")
             opts_html = f"<div class='mt-1 text-xs'>{' '.join(opts_parts)}</div>"
 
+        q_txt_html = _format_exam_text_html(d.get('text', ''), d.get('image'))
+
         p1_details_html += f"""
         <div class="p-3 border rounded-xl mb-2 {row_bg} avoid-break">
           <div class="flex justify-between items-start text-xs sm:text-sm font-semibold">
-            <span class="text-gray-900"><b>Câu {idx}:</b> {d.get('text', '')}</span>
+            <span class="text-gray-900"><b>Câu {idx}:</b> {q_txt_html}</span>
             <span class="ml-2 font-bold flex-shrink-0 {'text-green-700' if is_cor else 'text-red-600'}">{icon} (+{pts}đ)</span>
           </div>
           {opts_html}
@@ -498,19 +563,23 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
             it_bg = "bg-green-50" if is_cor else "bg-red-50"
             it_icon = "✅" if is_cor else "❌"
 
+            item_txt_html = _format_exam_text_html(txt)
+
             items_html += f"""
             <tr class="{it_bg}">
               <td class="border px-2 py-1 text-center font-bold w-8">({str(k).upper()})</td>
-              <td class="border px-3 py-1 text-xs sm:text-sm">{txt}</td>
+              <td class="border px-3 py-1 text-xs sm:text-sm">{item_txt_html}</td>
               <td class="border px-2 py-1 text-center font-bold">{st_str}</td>
               <td class="border px-2 py-1 text-center font-bold text-green-700">{cr_str}</td>
               <td class="border px-2 py-1 text-center">{it_icon}</td>
             </tr>"""
 
+        q_txt_html = _format_exam_text_html(q.get('text', ''), q.get('image'))
+
         p2_details_html += f"""
         <div class="p-3 border rounded-xl mb-3 bg-white avoid-break">
           <div class="flex justify-between items-start text-xs sm:text-sm font-semibold mb-2">
-            <span class="text-gray-900"><b>Câu {idx}:</b> {q.get('text', '')}</span>
+            <span class="text-gray-900"><b>Câu {idx}:</b> {q_txt_html}</span>
             <span class="font-bold text-purple-900 flex-shrink-0">Điểm: {q_pts}đ ({q.get('correct_count',0)}/4 ý đúng)</span>
           </div>
           <table class="w-full text-xs border-collapse">
@@ -537,10 +606,12 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
         icon = "✅ ĐÚNG" if is_cor else "❌ SAI"
         row_bg = "bg-green-50/60" if is_cor else "bg-red-50/60"
 
+        q_txt_html = _format_exam_text_html(d.get('text', ''), d.get('image'))
+
         p3_details_html += f"""
         <div class="p-3 border rounded-xl mb-2 {row_bg} avoid-break">
           <div class="flex justify-between items-start text-xs sm:text-sm font-semibold">
-            <span class="text-gray-900"><b>Câu {idx}:</b> {d.get('text', '')}</span>
+            <span class="text-gray-900"><b>Câu {idx}:</b> {q_txt_html}</span>
             <span class="font-bold flex-shrink-0 {'text-green-700' if is_cor else 'text-red-600'}">{icon} (+{pts}đ)</span>
           </div>
           <div class="mt-2 text-xs flex gap-4 text-gray-700 border-t pt-1.5 border-gray-200">
@@ -567,6 +638,56 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
             <p><strong>Cần cải thiện:</strong> {p4_res.get('weaknesses', '—')}</p>
           </div>
         </div>"""
+    elif submission.get("part4_answer"):
+        p4_ans_txt = submission.get("part4_answer", "").strip()
+        if p4_ans_txt:
+            p4_html = f"""
+            <div class="p-4 border rounded-xl bg-orange-50/50 mb-3 avoid-break">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="font-bold text-sm text-gray-900">✍️ PHẦN IV: BÀI LÀM TỰ LUẬN</h3>
+                <span class="font-black text-orange-700 text-sm">Điểm: {p4_res.get('score', 0)} / 1.0đ</span>
+              </div>
+              <div class="bg-white p-3 rounded-lg border text-xs sm:text-sm text-gray-800 whitespace-pre-line mb-3">
+                <b>Bài làm của học sinh:</b>\n{p4_ans_txt}
+              </div>
+            </div>"""
+
+    # Phần I HTML block
+    p1_count = len(p1_res.get("details", []))
+    p1_correct = p1_res.get("correct_count", sum(1 for d in p1_res.get("details", []) if d.get("is_correct")))
+    p1_section_html = ""
+    if p1_details_html:
+        p1_section_html = f"""
+        <div class="mb-5">
+          <h2 class="text-sm font-black uppercase text-indigo-900 mb-2 border-b-2 border-indigo-200 pb-1">
+            PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN ({p1_correct}/{p1_count} câu đúng • Điểm: {scores.get('part1_score',0)}đ)
+          </h2>
+          {p1_details_html}
+        </div>"""
+
+    # Phần II HTML block
+    p2_section_html = ""
+    if p2_details_html:
+        p2_section_html = f"""
+        <div class="mb-5">
+          <h2 class="text-sm font-black uppercase text-purple-900 mb-2 border-b-2 border-purple-200 pb-1">
+            PHẦN II: TRẮC NGHIỆM ĐÚNG / SAI (Điểm: {scores.get('part2_score',0)}đ)
+          </h2>
+          {p2_details_html}
+        </div>"""
+
+    # Phần III HTML block
+    p3_count = len(p3_res.get("details", []))
+    p3_correct = p3_res.get("correct_count", sum(1 for d in p3_res.get("details", []) if d.get("is_correct")))
+    p3_section_html = ""
+    if p3_details_html:
+        p3_section_html = f"""
+        <div class="mb-5">
+          <h2 class="text-sm font-black uppercase text-teal-900 mb-2 border-b-2 border-teal-200 pb-1">
+            PHẦN III: TRẢ LỜI NGẮN ({p3_correct}/{p3_count} câu đúng • Điểm: {scores.get('part3_score',0)}đ)
+          </h2>
+          {p3_details_html}
+        </div>"""
 
     return f"""
   <!-- Header Quốc ngữ / Sở GD -->
@@ -592,31 +713,9 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
     <div><span>Điểm từng phần:</span> <strong class="block text-indigo-900">P1: {scores.get('part1_score',0)}đ · P2: {scores.get('part2_score',0)}đ · P3: {scores.get('part3_score',0)}đ</strong></div>
   </div>
 
-  <!-- PHẦN I -->
-  <div class="mb-5">
-    <h2 class="text-sm font-black uppercase text-indigo-900 mb-2 border-b-2 border-indigo-200 pb-1">
-      PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN ({p1_res.get('correct_count',0)}/{p1_res.get('total_count',0)} câu đúng • Điểm: {scores.get('part1_score',0)}/5.0đ)
-    </h2>
-    {p1_details_html}
-  </div>
-
-  <!-- PHẦN II -->
-  <div class="mb-5">
-    <h2 class="text-sm font-black uppercase text-purple-900 mb-2 border-b-2 border-purple-200 pb-1">
-      PHẦN II: TRẮC NGHIỆM ĐÚNG / SAI (Điểm: {scores.get('part2_score',0)}/4.0đ)
-    </h2>
-    {p2_details_html}
-  </div>
-
-  <!-- PHẦN III -->
-  <div class="mb-5">
-    <h2 class="text-sm font-black uppercase text-teal-900 mb-2 border-b-2 border-teal-200 pb-1">
-      PHẦN III: TRẢ LỜI NGẮN ({p3_res.get('correct_count',0)}/{p3_res.get('total_count',0)} câu đúng • Điểm: {scores.get('part3_score',0)}/1.0đ)
-    </h2>
-    {p3_details_html}
-  </div>
-
-  <!-- PHẦN IV -->
+  {p1_section_html}
+  {p2_section_html}
+  {p3_section_html}
   {p4_html}
 
   <!-- Chữ ký giám khảo -->

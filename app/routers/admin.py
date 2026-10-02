@@ -471,12 +471,28 @@ async def print_class_submissions(
             status_code=200
         )
 
-    # Nạp thông tin các đề thi tương ứng
+    # 1. Nạp đầy đủ thông tin bài nộp (bao gồm cả nội dung câu hỏi, bài làm và kết quả từng phần)
+    full_submissions = []
+    for s in submissions:
+        sub_id = s.get("submission_id") or s.get("id")
+        full_sub = get_submission(sub_id) if sub_id else None
+        if full_sub:
+            full_submissions.append(full_sub)
+        else:
+            full_submissions.append(s)
+    submissions = full_submissions
+
+    # 2. Nạp thông tin các đề thi tương ứng (từ SQLite hoặc file JSON)
     exams_cache = {}
     for s in submissions:
         eid = s.get("exam_id")
         if eid and eid not in exams_cache:
             e = load_exam(eid)
+            if not e:
+                for cand in all_exams:
+                    if cand.get("id") == eid or cand.get("file") == eid:
+                        e = load_exam(cand.get("id")) or cand
+                        break
             if e:
                 exams_cache[eid] = e
 
