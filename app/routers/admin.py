@@ -8,7 +8,8 @@ from ..database import (
     get_all_submissions, get_submission, get_config, set_config, load_exam,
     delete_submission, delete_all_submissions,
     get_all_users, create_user, update_user_password, delete_user,
-    get_user_by_username, hash_password, export_full_backup, import_full_backup
+    get_user_by_username, hash_password, export_full_backup, import_full_backup,
+    export_users_backup, import_users_backup
 )
 import io, json
 from datetime import datetime
@@ -225,6 +226,57 @@ async def remove_user(request: Request, username: str = None, req: DeleteUserReq
         logger.error(f"Lỗi khi xóa user: {e}")
         raise HTTPException(status_code=500, detail="Lỗi máy chủ khi xóa tài khoản!")
 
+
+@router.get("/users/backup/download")
+async def download_users_backup(request: Request):
+    """
+    Tải file JSON sao lưu danh sách tài khoản (chỉ dành cho Quản trị viên).
+    """
+    current_user = get_current_user_from_request(request)
+    if not current_user or (current_user.get("role") != "admin" and current_user.get("username", "").lower() != "admin"):
+        raise HTTPException(status_code=403, detail="Chỉ có Quản trị viên (admin) mới có quyền sao lưu tài khoản!")
+
+    backup_data = export_users_backup()
+    content_bytes = json.dumps(backup_data, ensure_ascii=False, indent=2).encode("utf-8")
+    now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"sao_luu_tai_khoan_{now_str}.json"
+
+    return StreamingResponse(
+        io.BytesIO(content_bytes),
+        media_type="application/json; charset=utf-8",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Cache-Control": "no-cache, no-store, must-revalidate"
+        }
+    )
+
+
+@router.post("/users/backup/restore")
+async def restore_users_backup(request: Request, file: UploadFile = File(...)):
+    """
+    Khôi phục danh sách tài khoản từ file sao lưu JSON (chỉ dành cho Quản trị viên).
+    """
+    current_user = get_current_user_from_request(request)
+    if not current_user or (current_user.get("role") != "admin" and current_user.get("username", "").lower() != "admin"):
+        raise HTTPException(status_code=403, detail="Chỉ có Quản trị viên (admin) mới có quyền khôi phục tài khoản!")
+
+    try:
+        content = await file.read()
+        backup_data = json.loads(content.decode("utf-8"))
+        res = import_users_backup(backup_data)
+        msg = f"Khôi phục tài khoản thành công: Thêm mới {res['restored']} tài khoản, cập nhật {res['updated']} tài khoản!"
+        return {
+            "success": True,
+            "message": msg,
+            "details": res
+        }
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="File tải lên không phải định dạng JSON hợp lệ!")
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Lỗi khi khôi phục tài khoản: {e}")
+        raise HTTPException(status_code=500, detail=f"Lỗi máy chủ khi khôi phục tài khoản: {str(e)}")
 
 
 # ===================== QUẢN LÝ API KEYS =====================

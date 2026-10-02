@@ -982,12 +982,12 @@ def export_full_backup() -> dict:
     config = dict(c.fetchall())
 
     # 4. Lấy tài khoản
-    c.execute("SELECT id, username, password_hash, full_name, role, is_protected, created_at, updated_at FROM admin_users")
+    c.execute("SELECT id, username, password_hash, full_name, role, is_protected, subject, created_at, updated_at FROM admin_users")
     users = []
     for r in c.fetchall():
         users.append({
             "id": r[0], "username": r[1], "password_hash": r[2], "full_name": r[3],
-            "role": r[4], "is_protected": r[5], "created_at": r[6], "updated_at": r[7]
+            "role": r[4], "is_protected": r[5], "subject": r[6] or "", "created_at": r[7], "updated_at": r[8]
         })
 
     conn.close()
@@ -1055,10 +1055,23 @@ def import_full_backup(backup: dict) -> dict:
     users = backup.get("users", [])
     for u in users:
         try:
-            c.execute("""
-                INSERT OR IGNORE INTO admin_users (username, password_hash, full_name, role, is_protected)
-                VALUES (?, ?, ?, ?, ?)
-            """, (u["username"], u["password_hash"], u.get("full_name", ""), u.get("role", "teacher"), u.get("is_protected", 0)))
+            uname = (u.get("username") or "").strip()
+            p_hash = u.get("password_hash")
+            if not uname or not p_hash:
+                continue
+            c.execute("SELECT id, is_protected FROM admin_users WHERE LOWER(username) = LOWER(?)", (uname,))
+            existing = c.fetchone()
+            if existing:
+                if not existing[1] and uname.lower() != "admin":
+                    c.execute("""
+                        UPDATE admin_users SET password_hash = ?, full_name = ?, role = ?, subject = ?, updated_at = datetime('now')
+                        WHERE id = ?
+                    """, (p_hash, u.get("full_name", ""), u.get("role", "teacher"), u.get("subject", ""), existing[0]))
+            else:
+                c.execute("""
+                    INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+                """, (uname, p_hash, u.get("full_name", ""), u.get("role", "teacher"), 1 if u.get("is_protected") else 0, u.get("subject", "")))
             restored_users += 1
         except Exception:
             pass
@@ -1075,8 +1088,91 @@ def import_full_backup(backup: dict) -> dict:
     conn.close()
 
     return {
-        "success": True,
         "restored_exams": restored_exams,
         "restored_submissions": restored_subs,
         "restored_users": restored_users
+    }
+
+
+def export_users_backup() -> dict:
+    """Sao lưu riêng danh sách tài khoản giáo viên và quản trị."""
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("""
+        SELECT id, username, password_hash, full_name, role, is_protected, subject, created_at, updated_at 
+        FROM admin_users ORDER BY is_protected DESC, created_at ASC
+    """)
+    users = []
+    for r in c.fetchall():
+        users.append({
+            "id": r[0], "username": r[1], "password_hash": r[2], "full_name": r[3] or "",
+            "role": r[4] or "teacher", "is_protected": bool(r[5]), "subject": r[6] or "",
+            "created_at": r[7], "updated_at": r[8]
+        })
+    conn.close()
+    return {
+        "version": "2026.1",
+        "type": "users_backup",
+        "exported_at": datetime.now().isoformat(),
+        "total": len(users),
+        "users": users
+    }
+
+
+def import_users_backup(backup: dict) -> dict:
+    """Khôi phục danh sách tài khoản từ file sao lưu JSON."""
+    users = backup.get("users", [])
+    if not isinstance(users, list):
+        raise ValueError("Dữ liệu sao lưu tài khoản không hợp lệ (không tìm thấy danh sách users)!")
+
+    conn = get_connection()
+    c = conn.cursor()
+    restored = 0
+    updated = 0
+    skipped = 0
+
+    for u in users:
+        uname = (u.get("username") or "").strip()
+        p_hash = u.get("password_hash")
+        if not uname or not p_hash:
+            skipped += 1
+            continue
+
+        try:
+            c.execute("SELECT id, is_protected FROM admin_users WHERE LOWER(username) = LOWER(?)", (uname,))
+            row = c.fetchone()
+            if row:
+                uid, is_protected = row[0], row[1]
+                if is_protected or uname.lower() == "admin":
+                    c.execute("""
+                        UPDATE admin_users SET full_name = ?, updated_at = datetime('now')
+                        WHERE id = ?
+                    """, (u.get("full_name") or "Quản trị viên", uid))
+                else:
+                    c.execute("""
+                        UPDATE admin_users 
+                        SET password_hash = ?, full_name = ?, role = ?, subject = ?, updated_at = datetime('now')
+                        WHERE id = ?
+                    """, (p_hash, u.get("full_name", ""), u.get("role", "teacher"), u.get("subject", ""), uid))
+                updated += 1
+            else:
+                c.execute("""
+                    INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+                """, (
+                    uname, p_hash, u.get("full_name", ""), u.get("role", "teacher"),
+                    1 if u.get("is_protected") else 0, u.get("subject", "")
+                ))
+                restored += 1
+        except Exception as e:
+            logger.warning(f"Lỗi khôi phục tài khoản {uname}: {e}")
+            skipped += 1
+
+    conn.commit()
+    conn.close()
+    return {
+        "restored": restored,
+        "updated": updated,
+        "skipped": skipped,
+        "total": len(users)
     }
