@@ -225,13 +225,13 @@
             <div class="flex items-center gap-2 flex-wrap">
               <span class="text-xl">🛡️</span>
               <label for="is_online_exam_cb" class="font-black text-gray-900 text-sm sm:text-base cursor-pointer">
-                Hình thức thi: <span x-text="exam.is_online_exam ? 'Thi trực tuyến (Có giám sát)' : 'Đề luyện tập tự do'"></span>
+                Hình thức thi: <span x-text="exam.is_online_exam ? 'Thi trực tuyến (Có giám sát)' : 'Đề luyện tập tự do (Mặc định)'"></span>
               </label>
               <span x-show="exam.is_online_exam" class="bg-blue-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 ✓ Giám sát chống gian lận
               </span>
               <span x-show="!exam.is_online_exam" class="bg-amber-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                📖 Ôn luyện tự do
+                📖 Ôn luyện tự do (Mặc định)
               </span>
             </div>
             <p class="text-xs text-gray-600 leading-relaxed">
@@ -1100,7 +1100,7 @@ function examBuilder() {
       subject: 'Toán học',
       grade: '12',
       duration_minutes: 50,
-      is_online_exam: true,
+      is_online_exam: false,
       scoring: {},
       parts: {
         part1: {
@@ -1233,7 +1233,7 @@ function examBuilder() {
         });
       });
       this.exam = data;
-      this.exam.is_online_exam = data.is_online_exam !== undefined ? data.is_online_exam : true;
+      this.exam.is_online_exam = data.is_online_exam !== undefined ? Boolean(data.is_online_exam) : false;
       if (isClone) {
         this.exam.id = ''; // Xoá id để khi bấm Lưu sẽ tạo thành đề mới độc lập
         this.exam.title = (data.title || '').replace(' (Bản sao)', '') + ' (Bản sao)';

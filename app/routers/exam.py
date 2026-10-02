@@ -45,7 +45,7 @@ async def get_current_exam(exam_id: str = "exam_001"):
         "grade": exam["grade"],
         "duration_minutes": exam["duration_minutes"],
         "scoring": exam["scoring"],
-        "is_online_exam": exam.get("is_online_exam", True),
+        "is_online_exam": bool(exam.get("is_online_exam", False)),
         "parts": {}
     }
     
@@ -166,7 +166,7 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     if not client_submitted or not isinstance(client_submitted, str):
         client_submitted = datetime.now(VIETNAM_TZ).isoformat()
     
-    is_online_exam = exam.get("is_online_exam", True)
+    is_online_exam = bool(exam.get("is_online_exam", False))
     
     submission_data = {
         "submission_id": submission_id,

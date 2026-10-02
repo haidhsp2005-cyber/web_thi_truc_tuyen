@@ -486,11 +486,11 @@
               <td class="px-4 py-3 font-medium text-gray-800">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span x-text="sub.student_name"></span>
-                  <span x-show="sub.is_online_exam === false"
+                  <span x-show="!sub.is_online_exam"
                         class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
                     📖 Luyện tập
                   </span>
-                  <span x-show="sub.is_online_exam !== false && sub.screen_switch_count > 0" 
+                  <span x-show="sub.is_online_exam && sub.screen_switch_count > 0" 
                         :title="`Học sinh đã rời màn hình làm bài ${sub.screen_switch_count} lần`"
                         class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 shadow-2xs cursor-help"
                         x-text="`⚠️ ${sub.screen_switch_count} lần rời MH`"></span>
@@ -609,11 +609,11 @@
                     <button 
                       @click="toggleOnlineMode(e.id)" 
                       type="button"
-                      :class="e.is_online_exam !== false ? 'bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300' : 'bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300'"
+                      :class="e.is_online_exam ? 'bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300' : 'bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300'"
                       class="px-2 py-0.5 rounded-full text-[11px] font-black border transition-all cursor-pointer inline-flex items-center gap-1 shadow-2xs"
-                      :title="e.is_online_exam !== false ? 'Đang bật giám sát chống gian lận (bấm để chuyển sang đề luyện tập)' : 'Đang là đề luyện tập tự do (bấm để chuyển sang thi trực tuyến)'"
+                      :title="e.is_online_exam ? 'Đang bật thi trực tuyến có giám sát (bấm để chuyển sang đề luyện tập)' : 'Đang là đề luyện tập tự do (bấm để chuyển sang thi trực tuyến)'"
                     >
-                      <span x-text="e.is_online_exam !== false ? '🛡️ Thi trực tuyến' : '📖 Luyện tập'"></span>
+                      <span x-text="e.is_online_exam ? '🛡️ Thi trực tuyến' : '📖 Luyện tập'"></span>
                       <span class="text-[10px] text-gray-500">⇄</span>
                     </button>
                   </div>

@@ -143,15 +143,16 @@
 
     <!-- Actions -->
     <div class="flex items-center gap-2 flex-shrink-0">
-      <!-- Nút Toàn màn hình (dành cho Máy tính & Laptop) -->
+      <!-- Nút Toàn màn hình (dành cho cả Điện thoại & Máy tính) -->
       <button 
         type="button"
         @click="toggleFullscreen()" 
-        class="hidden sm:inline-flex bg-blue-800 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl items-center gap-1.5 border border-blue-700 shadow-sm transition-all cursor-pointer"
-        :title="isFullscreen ? 'Thu nhỏ cửa sổ' : 'Bật chế độ toàn màn hình để tập trung làm bài'"
+        :class="{'ring-2 ring-amber-400 bg-amber-600': isOnlineExam && !isFullscreen}"
+        class="inline-flex bg-blue-800 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-2.5 sm:px-3 py-2 rounded-xl items-center gap-1.5 border border-blue-700 shadow-sm transition-all cursor-pointer"
+        :title="isFullscreen ? 'Thu nhỏ cửa sổ' : 'Bật chế độ tràn toàn màn hình để tập trung làm bài'"
       >
         <span x-text="isFullscreen ? '🗗' : '⛶'"></span>
-        <span x-text="isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'"></span>
+        <span class="hidden sm:inline" x-text="isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'"></span>
       </button>
 
       <button 
@@ -173,6 +174,15 @@
   <!-- Progress bar -->
   <div class="h-1 bg-blue-800">
     <div class="h-1 bg-green-400 transition-all duration-300" :style="`width: ${answeredPercent}%`"></div>
+  </div>
+
+  <!-- Dải nhắc nhở Toàn màn hình khi thi trực tuyến (cả điện thoại & máy tính) -->
+  <div x-show="isOnlineExam && !isFullscreen && !submitted" x-cloak
+       @click="enterFullscreen()"
+       class="bg-gradient-to-r from-amber-600 to-red-600 text-white text-[11px] sm:text-xs font-bold px-3 py-1.5 text-center flex items-center justify-center gap-2 cursor-pointer shadow-md hover:opacity-95 transition-opacity">
+    <span class="animate-bounce">⛶</span>
+    <span>Chế độ thi trực tuyến: Nhấp vào đây để bật Toàn màn hình (Tràn viền chống làm việc riêng)</span>
+    <span class="underline ml-1">Bật ngay →</span>
   </div>
 </div>
 
@@ -684,12 +694,20 @@
       </p>
     </div>
 
+    <!-- Thanh đếm ngược tự động đóng thông báo -->
+    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+      <div class="bg-red-600 h-1.5 rounded-full transition-all duration-1000 ease-linear"
+           :style="`width: ${Math.max(0, (autoCloseCountdown / 4) * 100)}%`"></div>
+    </div>
+
     <button 
       type="button" 
-      @click="showScreenSwitchModal = false" 
-      class="w-full py-3.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg transition-all text-sm uppercase tracking-wide cursor-pointer"
+      @click="dismissScreenSwitchModal()" 
+      class="w-full py-3.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-2xl shadow-lg transition-all text-sm uppercase tracking-wide cursor-pointer flex items-center justify-center gap-2"
     >
-      Tôi đã hiểu và cam kết quay lại làm bài
+      <span>Tôi đã hiểu</span>
+      <span class="bg-red-800 text-xs px-2 py-0.5 rounded-full font-mono" x-text="`${autoCloseCountdown}s`"></span>
+      <span class="text-xs font-normal opacity-90">(tự đóng)</span>
     </button>
   </div>
 </div>
@@ -800,6 +818,8 @@ function examApp() {
     showBackWarningModal: false,
     maxSwitchesAllowed: 5,
     isFullscreen: false,
+    autoCloseCountdown: 4,
+    countdownInterval: null,
 
     playWarningSound() {
       try {
@@ -820,18 +840,61 @@ function examApp() {
       } catch(e) {}
     },
 
+    enterFullscreen() {
+      const el = document.documentElement;
+      const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+      if (rfs && !document.fullscreenElement && !document.webkitFullscreenElement) {
+        try {
+          const p = rfs.call(el);
+          if (p && p.catch) p.catch(() => {});
+        } catch(e) {}
+      }
+    },
+
     toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      if (!isFs) {
+        this.enterFullscreen();
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
+        const efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (efs) {
+          try {
+            const p = efs.call(document);
+            if (p && p.catch) p.catch(() => {});
+          } catch(e) {}
         }
       }
     },
 
+    startScreenSwitchCountdown() {
+      if (this.countdownInterval) {
+        clearInterval(this.countdownInterval);
+      }
+      this.autoCloseCountdown = 4;
+      this.countdownInterval = setInterval(() => {
+        this.autoCloseCountdown--;
+        if (this.autoCloseCountdown <= 0) {
+          this.dismissScreenSwitchModal();
+        }
+      }, 1000);
+    },
+
+    dismissScreenSwitchModal() {
+      this.showScreenSwitchModal = false;
+      if (this.countdownInterval) {
+        clearInterval(this.countdownInterval);
+        this.countdownInterval = null;
+      }
+      if (window._examSetLastLeaveTime) {
+        window._examSetLastLeaveTime(Date.now() + 2000);
+      }
+      if (this.isOnlineExam && !this.submitted && !this.submitting) {
+        this.enterFullscreen();
+      }
+    },
+
     // Questions & Exam Mode
-    get isOnlineExam() { return this.examData?.is_online_exam !== false; },
+    get isOnlineExam() { return Boolean(this.examData?.is_online_exam); },
     get p1Questions() { return this.examData?.parts?.part1?.questions || []; },
     get p2Questions() { return this.examData?.parts?.part2?.questions || []; },
     get p3Questions() { return this.examData?.parts?.part3?.questions || []; },
@@ -955,10 +1018,14 @@ function examApp() {
         }
       });
 
-      // 4. Theo dõi trạng thái toàn màn hình trên máy tính
-      document.addEventListener('fullscreenchange', () => {
-        this.isFullscreen = !!document.fullscreenElement;
-      });
+      // 4. Theo dõi trạng thái toàn màn hình trên cả máy tính và điện thoại
+      const onFsChange = () => {
+        this.isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      };
+      document.addEventListener('fullscreenchange', onFsChange);
+      document.addEventListener('webkitfullscreenchange', onFsChange);
+      document.addEventListener('mozfullscreenchange', onFsChange);
+      document.addEventListener('MSFullscreenChange', onFsChange);
       
       window.zoomExamImage = (url) => { this.zoomImage(url); };
       
@@ -1024,11 +1091,16 @@ function examApp() {
       // Giám sát chuyển màn hình điện thoại / đổi ứng dụng / chuyển tab máy tính
       let origDocTitle = document.title;
       let lastLeaveTime = 0;
+      window._examSetLastLeaveTime = (t) => { lastLeaveTime = t; };
+
       const onScreenLeave = () => {
         if (!this.isOnlineExam) return; // Đề luyện tập: không theo dõi chuyển màn hình
         if (this.loading || this.submitting || this.submitted) return;
+        // Nếu modal cảnh báo hoặc modal nộp bài đang mở, không cộng dồn lỗi
+        if (this.showScreenSwitchModal || this.showTimeUpModal || this.showBackWarningModal) return;
+
         const now = Date.now();
-        if (now - lastLeaveTime < 1500) return; // Tránh tính đúp sự kiện blur & visibilitychange
+        if (now - lastLeaveTime < 2500) return; // Tránh tính đúp sự kiện blur & visibilitychange
         lastLeaveTime = now;
 
         this.screenSwitchCount++;
@@ -1040,13 +1112,15 @@ function examApp() {
         // Nhấp nháy cảnh báo đỏ trên tab trình duyệt máy tính
         document.title = '🚨 [CẢNH BÁO VI PHẠM] Quay lại làm bài ngay! 🚨';
 
-        // Lập tức kích hoạt trạng thái cảnh báo ngay
+        // Lập tức kích hoạt trạng thái cảnh báo ngay trong giao diện (không dùng alert chặn luồng)
         if (this.screenSwitchCount >= this.maxSwitchesAllowed) {
-          this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Chuyển tab / rời màn hình làm bài ${this.screenSwitchCount} lần (vượt quá giới hạn cho phép). Hệ thống tự động thu và nộp bài!`;
+          this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Chuyển tab / rời màn hình làm bài ${this.screenSwitchCount} lần (vượt quá giới hạn ${this.maxSwitchesAllowed} lần cho phép). Hệ thống tự động thu và nộp bài!`;
           this.showTimeUpModal = true;
           this.isAutoSubmitting = true;
+          this.submitExam();
         } else {
           this.showScreenSwitchModal = true;
+          this.startScreenSwitchCountdown();
         }
       };
 
@@ -1060,21 +1134,14 @@ function examApp() {
           this.playWarningSound();
           if (this.screenSwitchCount >= this.maxSwitchesAllowed) {
             // Đã chuyển màn hình quá 5 lần -> Tự động thu và nộp bài
-            this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Chuyển tab / rời màn hình làm bài ${this.screenSwitchCount} lần (vượt quá giới hạn 5 lần cho phép). Hệ thống tự động thu và nộp bài!`;
+            this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Chuyển tab / rời màn hình làm bài ${this.screenSwitchCount} lần (vượt quá giới hạn ${this.maxSwitchesAllowed} lần cho phép). Hệ thống tự động thu và nộp bài!`;
             this.showTimeUpModal = true;
             this.isAutoSubmitting = true;
-            try {
-              alert(`🚨 VI PHẠM QUY CHẾ THI!\n\nBạn đã rời màn hình / chuyển tab ${this.screenSwitchCount} lần (đạt giới hạn tối đa ${this.maxSwitchesAllowed} lần cho phép).\n\nHệ thống sẽ TỰ ĐỘNG THU VÀ NỘP BÀI của bạn ngay bây giờ!`);
-            } catch(e) {}
             this.submitExam();
           } else {
-            // Hiện cảnh báo lần 1, 2, 3, 4
+            // Hiện modal cảnh báo tự động đóng sau 4 giây (không dùng window.alert tránh mất focus)
             this.showScreenSwitchModal = true;
-            setTimeout(() => {
-              try {
-                alert(`⚠️ CẢNH BÁO VI PHẠM QUY CHẾ THI!\n\nBạn vừa chuyển tab hoặc rời khỏi màn hình làm bài!\nSố lần vi phạm: ${this.screenSwitchCount} / ${this.maxSwitchesAllowed} lần.\n\nNghiêm cấm chuyển tab, thu nhỏ cửa sổ hoặc mở ứng dụng khác. Nếu vi phạm đủ ${this.maxSwitchesAllowed} lần, hệ thống sẽ TỰ ĐỘNG THU VÀ NỘP BÀI THI ngay lập tức!`);
-              } catch(e) {}
-            }, 100);
+            this.startScreenSwitchCountdown();
           }
         }
       };
@@ -1092,6 +1159,25 @@ function examApp() {
       window.addEventListener('focus', () => {
         onScreenReturn();
       });
+
+      // Tự động kích hoạt toàn màn hình khi thi trực tuyến trên cả điện thoại và máy tính
+      const tryAutoFullscreen = () => {
+        if (this.isOnlineExam && !this.submitted && !this.submitting) {
+          this.enterFullscreen();
+        }
+      };
+      this.$nextTick(() => tryAutoFullscreen());
+
+      // Kích hoạt tràn màn hình ngay khi học sinh chạm hoặc nhấp chuột lần đầu
+      const onUserFirstInteraction = () => {
+        tryAutoFullscreen();
+        document.removeEventListener('click', onUserFirstInteraction);
+        document.removeEventListener('touchstart', onUserFirstInteraction);
+        document.removeEventListener('keydown', onUserFirstInteraction);
+      };
+      document.addEventListener('click', onUserFirstInteraction, { passive: true });
+      document.addEventListener('touchstart', onUserFirstInteraction, { passive: true });
+      document.addEventListener('keydown', onUserFirstInteraction, { passive: true });
       
       // Render LaTeX sau khi tải xong
       this.$nextTick(() => this.renderAllLatex());

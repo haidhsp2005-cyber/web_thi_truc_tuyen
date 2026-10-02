@@ -48,7 +48,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": r[5] or "",
-                    "is_online_exam": data.get("is_online_exam", True),
+                    "is_online_exam": bool(data.get("is_online_exam", False)),
                 }
             except Exception:
                 pass
@@ -76,7 +76,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": data.get("created_by", ""),
-                    "is_online_exam": data.get("is_online_exam", True),
+                    "is_online_exam": bool(data.get("is_online_exam", False)),
                 }
         except Exception as e:
             logger.warning(f"Bỏ qua file {f.name}: {e}")
@@ -951,7 +951,7 @@ async def save_exam(request: Request = None, exam_data: dict = None):
     _ensure_part_structure(exam_data)
 
     if exam_data.get("is_online_exam") is None:
-        exam_data["is_online_exam"] = True
+        exam_data["is_online_exam"] = False
 
     exam_id = exam_data["id"]
     save_exam_record(exam_data)
@@ -965,7 +965,7 @@ async def toggle_exam_online_mode(exam_id: str):
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(404, "Không tìm thấy đề thi!")
-    current_val = exam.get("is_online_exam", True)
+    current_val = bool(exam.get("is_online_exam", False))
     exam["is_online_exam"] = not current_val
     save_exam_record(exam)
     status_str = "Thi trực tuyến (Có giám sát chống gian lận)" if exam["is_online_exam"] else "Đề luyện tập tự do"
