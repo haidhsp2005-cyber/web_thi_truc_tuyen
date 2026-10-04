@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 
 VIETNAM_TZ = timezone(timedelta(hours=7))
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from typing import Optional
 import io
 import re
@@ -16,7 +16,7 @@ import urllib.parse
 
 from ..models import StudentInfo, ExamSubmission
 from ..database import (
-    load_exam, save_submission, get_submission, get_all_submissions, heal_exam_data
+    load_exam, save_submission, get_submission, get_all_submissions, heal_exam_data, is_exam_published
 )
 from ..services.grading_service import (
     grade_part1, grade_part2, grade_part3, calculate_total_score
@@ -41,10 +41,7 @@ async def get_current_exam(
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
     
-    is_published = exam.get("is_published")
-    if is_published is None:
-        is_published = True
-    if not is_published:
+    if not is_exam_published(exam.get("is_published")):
         raise HTTPException(
             status_code=403, 
             detail="Đề thi này đang ở trạng thái CHƯA XUẤT BẢN. Không thể vào làm bài thi!"
@@ -144,7 +141,10 @@ async def get_current_exam(
         ]
     }
     
-    return safe_exam
+    return JSONResponse(
+        content=safe_exam,
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+    )
 
 
 @router.post("/submit")
@@ -171,6 +171,13 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
 
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi trên máy chủ!")
+    
+    # Kiểm tra trạng thái xuất bản
+    if not is_exam_published(exam.get("is_published")):
+        raise HTTPException(
+            status_code=403, 
+            detail="Đề thi này đang ở trạng thái CHƯA XUẤT BẢN. Không thể nộp bài!"
+        )
     
     student_name = data.get("student_name", "").strip().upper()
     student_class = data.get("student_class", "").strip().upper()

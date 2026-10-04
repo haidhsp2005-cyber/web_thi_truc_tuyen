@@ -1164,7 +1164,7 @@ function examApp() {
             sessionStorage.removeItem('exam_id');
             const errData = await resp.json().catch(() => ({}));
             alert(errData.detail || 'Đề thi này đang ở trạng thái CHƯA XUẤT BẢN. Không thể vào làm bài!');
-            window.location.href = '/';
+            window.location.replace('/');
             return;
           }
           if (resp.ok) {
@@ -1205,7 +1205,9 @@ function examApp() {
       }
 
       if (!examLoaded) {
-        alert('Không thể tải đề thi! Kiểm tra kết nối mạng và thử lại.');
+        alert('Không thể tải đề thi hoặc đề thi chưa được xuất bản! Đang quay về trang chủ.');
+        window.location.replace('/');
+        return;
       }
 
       this.loading = false;

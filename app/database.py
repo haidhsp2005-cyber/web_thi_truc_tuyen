@@ -33,6 +33,19 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
+def is_exam_published(val) -> bool:
+    """Kiểm tra một đề thi có đang ở trạng thái xuất bản (True) hay không. Mặc định đề cũ chưa có cờ là True."""
+    if val is None:
+        return True
+    if isinstance(val, bool):
+        return val
+    if isinstance(val, (int, float)):
+        return val != 0
+    if isinstance(val, str):
+        return val.strip().lower() not in ("false", "0", "off", "no", "chua_xuat_ban")
+    return bool(val)
+
+
 def get_connection() -> sqlite3.Connection:
     """Lấy kết nối SQLite tối ưu hóa đa luồng, hỗ trợ hàng trăm thí sinh nộp bài cùng lúc."""
     conn = sqlite3.connect(str(DB_PATH), timeout=30.0)

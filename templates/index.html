@@ -253,15 +253,13 @@ function startExam() {
   if (!cls) { showError('Vui lòng nhập lớp!'); document.getElementById('student_class').focus(); return; }
   if (!examId) { showError('Vui lòng chọn đề thi!'); return; }
 
-  // KIỂM TRA CHẶN: Đề chưa xuất bản không được phép vào phòng thi
+  // KIỂM TRA CHẶN: Đề chưa xuất bản tuyệt đối không được phép vào phòng thi
   const appEl = document.querySelector('[x-data]');
   const appData = appEl && window.Alpine ? Alpine.$data(appEl) : null;
-  if (appData && appData.filteredExamList) {
-    const valid = appData.filteredExamList.find(e => e.id === examId);
-    if (!valid) {
-      showError('Đề thi này đang ở trạng thái CHƯA XUẤT BẢN! Không thể vào làm bài.');
-      return;
-    }
+  const validList = (appData && appData.filteredExamList) ? appData.filteredExamList : [];
+  if (!validList.find(e => e.id === examId)) {
+    showError('Đề thi này đang ở trạng thái CHƯA XUẤT BẢN hoặc không tồn tại! Không thể vào làm bài.');
+    return;
   }
 
   sessionStorage.removeItem('exam_answers');

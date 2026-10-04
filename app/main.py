@@ -58,10 +58,17 @@ async def lifespan(app: FastAPI):
     logger.info("Ứng dụng đang tắt...")
 
 
-def read_html(filename: str) -> str:
-    """Đọc file HTML trực tiếp — tránh lỗi Jinja2 cache trên Python 3.14."""
+def no_cache_html(filename: str) -> HTMLResponse:
+    """Trả về file HTML kèm header cấm lưu cache để trình duyệt luôn tải mới nhất."""
     path = TEMPLATES_DIR / filename
-    return path.read_text(encoding="utf-8")
+    return HTMLResponse(
+        content=path.read_text(encoding="utf-8"),
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+    )
 
 
 # Tạo ứng dụng
@@ -95,17 +102,17 @@ async def health_check():
 
 @app.get("/", response_class=HTMLResponse)
 async def home():
-    return HTMLResponse(content=read_html("index.html"))
+    return no_cache_html("index.html")
 
 
 @app.get("/exam", response_class=HTMLResponse)
 async def exam_page():
-    return HTMLResponse(content=read_html("exam.html"))
+    return no_cache_html("exam.html")
 
 
 @app.get("/result", response_class=HTMLResponse)
 async def result_page():
-    return HTMLResponse(content=read_html("result.html"))
+    return no_cache_html("result.html")
 
 
 @app.get("/admin/login", response_class=HTMLResponse)
@@ -113,7 +120,7 @@ async def admin_login_page(request: Request):
     """Trang đăng nhập Admin."""
     if is_authenticated_admin(request):
         return RedirectResponse(url="/admin", status_code=303)
-    return HTMLResponse(content=read_html("login.html"))
+    return no_cache_html("login.html")
 
 
 @app.get("/admin/logout")
@@ -129,7 +136,7 @@ async def admin_page(request: Request):
     """Trang quản trị (yêu cầu đăng nhập)."""
     if not is_authenticated_admin(request):
         return RedirectResponse(url="/admin/login?next=/admin", status_code=303)
-    return HTMLResponse(content=read_html("admin.html"))
+    return no_cache_html("admin.html")
 
 
 @app.get("/create-exam", response_class=HTMLResponse)
@@ -137,7 +144,7 @@ async def create_exam_page(request: Request):
     """Trang tạo đề thi (yêu cầu đăng nhập)."""
     if not is_authenticated_admin(request):
         return RedirectResponse(url="/admin/login?next=/create-exam", status_code=303)
-    return HTMLResponse(content=read_html("create_exam.html"))
+    return no_cache_html("create_exam.html")
 
 
 @app.get("/health")

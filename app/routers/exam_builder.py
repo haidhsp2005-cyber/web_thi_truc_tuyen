@@ -12,7 +12,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from fastapi.responses import JSONResponse, Response, StreamingResponse, FileResponse
 
-from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, file_url_to_base64
+from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, file_url_to_base64, is_exam_published
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
@@ -49,7 +49,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": r[5] or "",
                     "is_online_exam": bool(data.get("is_online_exam", False)),
-                    "is_published": True if data.get("is_published") is None else bool(data.get("is_published")),
+                    "is_published": is_exam_published(data.get("is_published")),
                     "is_bank": bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False)),
                     "bank_config": data.get("bank_config", {}),
                 }
@@ -80,7 +80,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": data.get("created_by", ""),
                     "is_online_exam": bool(data.get("is_online_exam", False)),
-                    "is_published": True if data.get("is_published") is None else bool(data.get("is_published")),
+                    "is_published": is_exam_published(data.get("is_published")),
                     "is_bank": bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False)),
                     "bank_config": data.get("bank_config", {}),
                 }
@@ -112,16 +112,18 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
 
 
 @router.get("/list")
-async def list_exams(request: Request, published_only: bool = False):
-    """Danh sách tất cả đề thi có sẵn."""
+async def list_exams(request: Request, include_unpublished: bool = False, published_only: bool = True):
+    """Danh sách đề thi. Mặc định CHỈ trả về đề đã xuất bản. Chỉ Admin/Giáo viên có yêu cầu rõ ràng include_unpublished=True mới xem được đề ẩn."""
     from ..services.auth_service import get_current_user_from_request
     current_user = get_current_user_from_request(request)
     exams = _list_exam_files(current_user)
-    # Nếu là học sinh (chưa đăng nhập giáo viên/admin) HOẶC yêu cầu published_only=True:
-    if not current_user or published_only:
+    
+    # Chỉ cho phép xem đề chưa xuất bản nếu là admin/giáo viên đã đăng nhập và yêu cầu include_unpublished=True
+    allow_unpublished = bool(current_user and include_unpublished and not published_only)
+    if not allow_unpublished:
         exams = [
             e for e in exams 
-            if e.get("is_published") is True or str(e.get("is_published", "")).lower() in ("true", "1")
+            if is_exam_published(e.get("is_published"))
         ]
     return JSONResponse(
         content={"exams": exams},
@@ -1060,10 +1062,8 @@ async def toggle_exam_publish_status(exam_id: str):
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(404, "Không tìm thấy đề thi!")
-    current_val = exam.get("is_published")
-    if current_val is None:
-        current_val = True  # Đề cũ giữ y như vậy bật màu xanh
-    new_val = not bool(current_val)
+    current_val = is_exam_published(exam.get("is_published"))
+    new_val = not current_val
     exam["is_published"] = new_val
     save_exam_record(exam)
     status_str = "Đã xuất bản (Hiện trên trang thi học sinh)" if new_val else "Chưa xuất bản (Ẩn khỏi học sinh)"

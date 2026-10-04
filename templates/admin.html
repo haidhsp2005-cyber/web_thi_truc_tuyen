@@ -1787,7 +1787,7 @@ function adminApp() {
 
     async loadExamList() {
       try {
-        const r = await fetch('/api/exam-builder/list');
+        const r = await fetch('/api/exam-builder/list?include_unpublished=true&published_only=false&_t=' + Date.now(), { cache: 'no-store' });
         if (r.ok) {
           const data = await r.json();
           this.examList = data.exams || [];
