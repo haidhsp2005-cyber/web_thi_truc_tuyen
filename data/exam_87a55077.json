@@ -1,0 +1,343 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN LỚP 6 ĐỀ 1",
+  "subject": "Toán học",
+  "grade": "6",
+  "duration_minutes": 40,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tìm số tự nhiên  $x$ , biết:  $3\\cdot x-5=16$ .",
+          "options": {
+            "A": "$x=9$",
+            "B": "$x=8$",
+            "C": "$x=7$",
+            "D": "$x=6$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Khi thực hiện các phép tính trong biểu thức có các dấu ngoặc tròn  $()$ , ngoặc vuông  $[]$ , ngoặc nhọn  ${}$ , thứ tự thực hiện đúng là:",
+          "options": {
+            "A": "$()\\rightarrow {}\\rightarrow []$",
+            "B": "$()\\rightarrow []\\rightarrow {}$",
+            "C": "${}\\rightarrow []\\rightarrow ()$",
+            "D": "$[]\\rightarrow ()\\rightarrow {}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Lớp 6A có  $42$  học sinh được chia đều thành  $3$  tổ để tham gia hoạt động ngoại khóa. Hỏi mỗi tổ có bao nhiêu học sinh?",
+          "options": {
+            "A": "$12$  học sinh",
+            "B": "$15$  học sinh",
+            "C": "$13$  học sinh",
+            "D": "$14$  học sinh"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Viết tập hợp  $A=\\left\\{ x\\in \\mathbb{N}\\mid 3<x\\le 7 \\right\\}$  bằng cách liệt kê các phần tử:",
+          "options": {
+            "A": "$A=\\left\\{ 3;4;5;6 \\right\\}$",
+            "B": "$A=\\left\\{ 4;5;6 \\right\\}$",
+            "C": "$A=\\left\\{ 3;4;5;6;7 \\right\\}$",
+            "D": "$A=\\left\\{ 4;5;6;7 \\right\\}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Giá trị của biểu thức  $20-2\\cdot 3^{2}$  là:",
+          "options": {
+            "A": "2",
+            "B": "14",
+            "C": "164",
+            "D": "162"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Tính hợp lý giá trị của biểu thức  $47\\cdot 65+47\\cdot 35$ , ta được kết quả là:",
+          "options": {
+            "A": "4700",
+            "B": "470",
+            "C": "3500",
+            "D": "47000"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Cho từ 'HOC SINH'. Tập hợp  $M$  gồm các chữ cái khác nhau xuất hiện trong từ đã cho có bao nhiêu phần tử?",
+          "options": {
+            "A": "5",
+            "B": "7",
+            "C": "8",
+            "D": "6"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Kết quả của phép chia  $7^{6}:7^{2}$  dưới dạng một lũy thừa là:",
+          "options": {
+            "A": "$7^{8}$",
+            "B": "$7^{4}$",
+            "C": "$1^{4}$",
+            "D": "$7^{3}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Mẹ đưa cho bạn Bình tờ tiền mệnh giá  $100000$  đồng đi siêu thị mua  $3 kg$  gạo với giá  $18000$  đồng/kg và một hộp trứng gà giá  $30000$  đồng. Hỏi người bán hàng phải trả lại cho Bình bao nhiêu tiền thừa?",
+          "options": {
+            "A": "$18000$  đồng",
+            "B": "$16000$  đồng",
+            "C": "$24000$  đồng",
+            "D": "$26000$  đồng"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Kết quả của phép nhân  $5^{3}\\cdot 5^{4}$  dưới dạng một lũy thừa là:",
+          "options": {
+            "A": "$25^{7}$",
+            "B": "$5^{12}$",
+            "C": "$5^{7}$",
+            "D": "$5^{1}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Giá trị của lũy thừa  $2^{4}$  bằng bao nhiêu?",
+          "options": {
+            "A": "8",
+            "B": "32",
+            "C": "16",
+            "D": "6"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Bạn An mua  $5$  quyển vở với giá  $8000$  đồng một quyển và  $2$  chiếc bút bi với giá  $5000$  đồng một chiếc. Tổng số tiền bạn An phải trả là:",
+          "options": {
+            "A": "$55000$  đồng",
+            "B": "$45000$  đồng",
+            "C": "$50000$  đồng",
+            "D": "$40000$  đồng"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho tập hợp  $B=\\left\\{ x\\in {\\mathbb{N}}^{*}\\mid x<6 \\right\\}$ . Xét tính đúng hoặc sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Viết tập hợp  $B$  bằng cách liệt kê phần tử là  $B=\\left\\{ 1;2;3;4;5 \\right\\}$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Tập hợp  $B$  có đúng  $5$  phần tử.",
+              "answer": true
+            },
+            "c": {
+              "text": "Phần tử  $0$  thuộc tập hợp  $B$ , ký hiệu  $0\\in B$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "Phần tử  $6$  thuộc tập hợp  $B$ , ký hiệu  $6\\in B$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Để chuẩn bị khen thưởng học kỳ I, cô tổng phụ trách dự định chuẩn bị  $120$  phần quà như nhau. Mỗi phần quà gồm có  $8$  quyển vở và  $2$  cây bút bi. Biết rằng vở được đóng theo lốc ( $10$  quyển/lốc) và bút được đóng theo hộp ( $12$  cây/hộp). Xét tính đúng hoặc sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Tổng số quyển vở cô cần dùng cho  $120$  phần quà là  $960$  quyển.",
+              "answer": true
+            },
+            "b": {
+              "text": "Nhà trường cần mua vừa đủ  $96$  lốc vở.",
+              "answer": true
+            },
+            "c": {
+              "text": "Nhà trường cần mua vừa đủ  $20$  hộp bút bi.",
+              "answer": true
+            },
+            "d": {
+              "text": "Tổng số cây bút bi cô cần dùng cho  $120$  phần quà là  $200$  cây.",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Cho biểu thức  $A=100-[30-(5-1{)}^{2}]$ . Khi thực hiện tính giá trị biểu thức theo thứ tự các phép tính, xét tính đúng hoặc sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Giá trị cuối cùng của biểu thức  $A$  là  $86$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Giá trị trong ngoặc vuông là  $[30-(5-1{)}^{2}]=14$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Giá trị của biểu thức  $A$  là một số chia hết cho  $5$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "Thực hiện phép tính trong ngoặc tròn trước, ta được  $(5-1{)}^{2}=16$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Xét tính đúng hoặc sai của các phát biểu về phép tính lũy thừa sau:",
+          "items": {
+            "a": {
+              "text": "Với mọi số tự nhiên  $a\\neq 0$ , ta có  $a^{0}=1$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Lũy thừa  $4^{3}$  có giá trị bằng  $8^{2}$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "$2^{3}+2^{2}=2^{5}$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "$3^{2}\\cdot 3^{3}=3^{5}$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho tập hợp  $C=\\left\\{ x\\in \\mathbb{N}\\mid 10\\le x\\le 99 \\right\\}$ . Hỏi tập hợp  $C$  có tất cả bao nhiêu phần tử?",
+          "answer": "90",
+          "accepted_answers": [
+            "90"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Tính giá trị của biểu thức:  $125\\cdot 78\\cdot 8$ .",
+          "answer": "78000",
+          "accepted_answers": [
+            "78000"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Trường THCS tổ chức cho  $215$  học sinh khối 6 đi trải nghiệm thực tế. Biết rằng mỗi xe ô tô chở được tối đa  $45$  học sinh. Hỏi nhà trường cần thuê ít nhất bao nhiêu xe ô tô cùng loại để chở hết toàn bộ số học sinh đó?",
+          "answer": "5",
+          "accepted_answers": [
+            "5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$ , biết:  $2\\cdot (x-3)=2^{4}$ .",
+          "answer": "11",
+          "accepted_answers": [
+            "11"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Một xưởng sản xuất đóng gói được  $1450$  túi bánh. Người ta xếp các túi bánh vào các thùng carton, mỗi thùng xếp vừa đủ  $48$  túi bánh. Hỏi xưởng đó đóng được nhiều nhất bao nhiêu thùng bánh hoàn chỉnh?",
+          "answer": "30",
+          "accepted_answers": [
+            "30"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Tính giá trị của biểu thức:  $2^{3}\\cdot 5-3^{2}\\cdot 4$ .",
+          "answer": "4",
+          "accepted_answers": [
+            "4"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_87a55077",
+  "created_by": "admin",
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

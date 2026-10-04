@@ -1,0 +1,343 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 6 ĐỀ 2",
+  "subject": "Toán học",
+  "grade": "6",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Giá trị của lũy thừa  $3^{4}$  bằng bao nhiêu?",
+          "options": {
+            "A": "64",
+            "B": "12",
+            "C": "27",
+            "D": "81"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$  biết  $2^{x}=32$ .",
+          "options": {
+            "A": "$x=16$",
+            "B": "$x=5$",
+            "C": "$x=4$",
+            "D": "$x=6$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Cho tập hợp  $B=\\left\\{ x\\in {\\mathbb{N}}^{*}\\mid x<5 \\right\\}$ . Số phần tử của tập hợp  $B$  là:",
+          "options": {
+            "A": "5",
+            "B": "6",
+            "C": "3",
+            "D": "4"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Mẹ mua 3 hộp sữa hết 24 000 đồng và 5 cái bánh ngọt hết 50 000 đồng. Mẹ đưa cho cô bán hàng tờ tiền 100 000 đồng. Hỏi cô bán hàng phải trả lại mẹ bao nhiêu tiền?",
+          "options": {
+            "A": "26 000 đồng",
+            "B": "34 000 đồng",
+            "C": "36 000 đồng",
+            "D": "16 000 đồng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Cách viết nào sau đây đúng về tập hợp  $M$  các chữ cái trong từ 'TOAN'?",
+          "options": {
+            "A": "$M=\\left\\{ T;O;A;N \\right\\}$",
+            "B": "$M={T,O,A,N}$",
+            "C": "$M=\\left\\{ T;O;A;N;T \\right\\}$",
+            "D": "$M={TOAN}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Một cửa hàng có 150 kg gạo. Ngày thứ nhất bán được 45 kg, ngày thứ hai bán được gấp đôi ngày thứ nhất. Hỏi cửa hàng còn lại bao nhiêu ki-lô-gam gạo?",
+          "options": {
+            "A": "15 kg",
+            "B": "90 kg",
+            "C": "60 kg",
+            "D": "105 kg"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Viết tích  $5^{3}\\cdot 5^{4}$  dưới dạng một lũy thừa ta được:",
+          "options": {
+            "A": "$5^{12}$",
+            "B": "$25^{7}$",
+            "C": "$5^{7}$",
+            "D": "$10^{7}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Một trường học có 8 lớp khối 6, mỗi lớp có đúng 40 học sinh. Nhà trường dự định chia đều số học sinh này vào 10 phòng thi. Hỏi mỗi phòng thi có bao nhiêu học sinh?",
+          "options": {
+            "A": "30 học sinh",
+            "B": "32 học sinh",
+            "C": "35 học sinh",
+            "D": "40 học sinh"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Kết quả của phép tính  $20+[30-(5-1{)}^{2}]$  là:",
+          "options": {
+            "A": "34",
+            "B": "24",
+            "C": "36",
+            "D": "46"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Cho tập hợp  $A$  các số tự nhiên lớn hơn 5 và nhỏ hơn hoặc bằng 10. Cách viết nào sau đây đúng?",
+          "options": {
+            "A": "$A=\\left\\{ 6;7;8;9 \\right\\}$",
+            "B": "$A=\\left\\{ 6;7;8;9;10 \\right\\}$",
+            "C": "$A=\\left\\{ 5;6;7;8;9;10 \\right\\}$",
+            "D": "$A=\\left\\{ 5;6;7;8;9 \\right\\}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Kết quả của phép tính  $100-2\\cdot 3^{2}$  là:",
+          "options": {
+            "A": "82",
+            "B": "88",
+            "C": "98",
+            "D": "94"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$  biết  $123-5\\cdot (x+4)=38$ .",
+          "options": {
+            "A": "$x=9$",
+            "B": "$x=13$",
+            "C": "$x=17$",
+            "D": "$x=21$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Xét tính đúng, sai của các phép tính liên quan đến lũy thừa sau đây:",
+          "items": {
+            "a": {
+              "text": "$(3+4{)}^{2}=3^{2}+4^{2}$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Giá trị của  $10^{3}$  là  $1000$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "$5^{6}:5^{2}=5^{4}$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "$2^{3}\\cdot 2^{2}=2^{6}$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Cho tập hợp  $A=\\left\\{ x\\in \\mathbb{N}\\mid 3<x\\le 8 \\right\\}$ . Xét tính đúng hoặc sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Tập hợp  $A$  có tất cả 5 phần tử.",
+              "answer": true
+            },
+            "b": {
+              "text": "Viết tập hợp  $A$  bằng cách liệt kê các phần tử là  $A=\\left\\{ 4;5;6;7;8 \\right\\}$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Khẳng định  $8\\notin A$  là khẳng định đúng.",
+              "answer": false
+            },
+            "d": {
+              "text": "Phần tử  $3\\in A$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Cho biểu thức  $M=2^{4}\\cdot 5-[131-(13-4{)}^{2}]$ . Xét tính đúng hoặc sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Giá trị của biểu thức  $M$  bằng 35.",
+              "answer": false
+            },
+            "b": {
+              "text": "Giá trị của  $(13-4{)}^{2}$  bằng 81.",
+              "answer": true
+            },
+            "c": {
+              "text": "Giá trị trong ngoặc vuông  $[131-(13-4{)}^{2}]$  bằng 50.",
+              "answer": true
+            },
+            "d": {
+              "text": "Giá trị của lũy thừa  $2^{4}$  bằng 8.",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Cho tập hợp  $A=\\left\\{ x\\in \\mathbb{N}\\mid 12\\le x<16 \\right\\}$ . Xét tính đúng, sai của các phát biểu sau:",
+          "items": {
+            "a": {
+              "text": "Phần tử  $16$  thuộc tập hợp  $A$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Số  $12$  là phần tử nhỏ nhất của tập hợp  $A$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Tập hợp  $A$  có thể viết dưới dạng liệt kê là  $A=\\left\\{ 12;13;14;15 \\right\\}$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Tập hợp  $A$  có 5 phần tử.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tính giá trị của biểu thức:  $5^{8}:5^{5}+2^{3}\\cdot 2^{0}$ .",
+          "answer": "133",
+          "accepted_answers": [
+            "133"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Tính giá trị của biểu thức  $A=35\\cdot 78+35\\cdot 22$ .",
+          "answer": "3500",
+          "accepted_answers": [
+            "3500"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$  thỏa mãn:  $2^{x}\\cdot 4=128$ .",
+          "answer": "5",
+          "accepted_answers": [
+            "5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Cho tập hợp  $B=\\left\\{ x\\in {\\mathbb{N}}^{*}\\mid x\\le 25 \\right\\}$ . Hỏi tập hợp  $B$  có bao nhiêu phần tử?",
+          "answer": "25",
+          "accepted_answers": [
+            "25"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tìm số tự nhiên  $x$  thỏa mãn:  $125-5\\cdot (x+4)=35$ .",
+          "answer": "14",
+          "accepted_answers": [
+            "14"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Tính giá trị của biểu thức:  $100-[60-(9-2{)}^{2}]$ .",
+          "answer": "89",
+          "accepted_answers": [
+            "89"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_070a28d5",
+  "created_by": "admin",
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": true
+}

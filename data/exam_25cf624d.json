@@ -1,0 +1,434 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN SINH HỌC 12",
+  "subject": "Sinh học",
+  "grade": "12",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Hội chứng Down ở người là dạng đột biến số lượng nhiễm sắc thể nào sau đây?",
+          "options": {
+            "A": "Thể một nhiễm ở nhiễm sắc thể số  $21$",
+            "B": "Thể ba nhiễm ở nhiễm sắc thể giới tính X",
+            "C": "Thể tứ bội ở nhiễm sắc thể số  $21$",
+            "D": "Thể ba nhiễm ở nhiễm sắc thể số  $21$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Loại bằng chứng tiến hóa nào sau đây cung cấp bằng chứng trực tiếp về lịch sử phát triển của sinh giới?",
+          "options": {
+            "A": "Bằng chứng sinh học phân tử",
+            "B": "Bằng chứng hóa thạch",
+            "C": "Bằng chứng tế bào học",
+            "D": "Bằng chứng giải ph học so sánh"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Mối quan hệ giữa hai loài sinh vật trong đó một loài sống bình thường và có lợi, còn loài kia không có lợi cũng không có hại được gọi là:",
+          "options": {
+            "A": "Hội sinh",
+            "B": "Kí sinh",
+            "C": "Cạnh tranh",
+            "D": "Cộng sinh"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Trong cơ chế điều hòa hoạt động gene ở vi khuẩn  $E.coli$ , vùng mà RNA polymerase bám vào và khởi đầu phiên mã được gọi là:",
+          "options": {
+            "A": "Vùng vận hành ( $O$ )",
+            "B": "Gene cấu trúc ( $lacZ,lacY,lacA$ )",
+            "C": "Vùng khởi động ( $P$ )",
+            "D": "Gene điều hòa ( $lacI$ )"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Dạng đột biến cấu trúc nhiễm sắc thể nào sau đây làm tăng hoặc giảm số lượng gene trên nhiễm sắc thể?",
+          "options": {
+            "A": "Đảo đoạn chứa tâm động",
+            "B": "Mất đoạn và lặp đoạn",
+            "C": "Chuyển đoạn trong một nhiễm sắc thể",
+            "D": "Đảo đoạn"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Trong quá trình giảm phân ở cơ thể có kiểu gene  $\\frac{AB}{ab}$ , nếu có hoán vị gene với tần số  $f$ , tần số của mỗi loại giao tử thế hệ liên kết là:",
+          "options": {
+            "A": "$f$",
+            "B": "$(1-f)/2$",
+            "C": "$1-f$",
+            "D": "$\\frac{f}{2}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Hiện tượng số lượng cá thể của quần thể sinh vật tăng hoặc giảm đột ngột do điều kiện thời tiết thay đổi bất thường được gọi là:",
+          "options": {
+            "A": "Cân bằng sinh học",
+            "B": "Biến động số lượng theo chu kỳ",
+            "C": "Biến động số lượng không theo chu kỳ",
+            "D": "Diễn thế sinh thái"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Theo Mendel, phép lai giữa hai thể bố mẹ thuần chủng khác nhau về hai cặp tính trạng tương phản di truyền độc lập với nhau sẽ cho đời con  $F_{2}$  có tỉ lệ phân li kiểu hình là:",
+          "options": {
+            "A": "$9:3:3:1$",
+            "B": "$1:1:1:1$",
+            "C": "$1:2:1$",
+            "D": "$3:1$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Quá trình biến đổi tuần tự của quần xã qua các giai đoạn tương ứng với sự biến đổi của môi trường được gọi là:",
+          "options": {
+            "A": "Cân bằng sinh thái",
+            "B": "Tháp sinh thái",
+            "C": "Diễn thế sinh thái",
+            "D": "Ổ sinh thái"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Ổ sinh thái của một loài sinh vật được hiểu là:",
+          "options": {
+            "A": "Tập hợp tất cả các cá thể cùng loài",
+            "B": "Không gian sinh thái mà ở đó tất cả các nhân tố sinh thái của môi trường nằm trong giới hạn chịu đựng",
+            "C": "Không gian sinh sống của loài đó",
+            "D": "Nơi ở cụ thể của loài trong sinh cảnh"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Theo thuyết tiến hóa tổng hợp hiện đại, nhân tố nào sau đây là nhân tố tiến hóa có hướng?",
+          "options": {
+            "A": "Các yếu tố ngẫu nhiên",
+            "B": "Di - nhập gene",
+            "C": "Đột biến",
+            "D": "Chọn lọc tự nhiên"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Chu trình nào sau đây là chu trình sinh địa hóa khí quyển?",
+          "options": {
+            "A": "Chu trình nước",
+            "B": "Chu trình lưu huỳnh dạng trầm tích",
+            "C": "Chu trình phosphor",
+            "D": "Chu trình carbon"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Quá trình phiên mã ở sinh vật nhân thực diễn ra ở bào quan hoặc cấu trúc nào sau đây?",
+          "options": {
+            "A": "Màng tế bào",
+            "B": "Tế bào chất",
+            "C": "Ribosome",
+            "D": "Nhân tế bào"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Quần thể tự thụ phấn nghiêm ngặt qua nhiều thế hệ có xu hướng:",
+          "options": {
+            "A": "Tăng tỉ lệ dị hợp tử, giảm tỉ lệ đồng hợp tử",
+            "B": "Tăng tỉ lệ đồng hợp tử, giảm tỉ lệ dị hợp tử",
+            "C": "Luôn đạt trạng thái cân bằng di truyền",
+            "D": "Duy trì tỉ lệ dị hợp tử không đổi"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Ở người, gene quy định tính trạng máu khó đông nằm trên vùng không tương đồng của nhiễm sắc thể giới tính X. Một người nam mắc bệnh máu khó đông nhận gene bệnh từ ai?",
+          "options": {
+            "A": "Nhận từ ông nội",
+            "B": "Chỉ nhận từ mẹ",
+            "C": "Nhận từ cả bố và mẹ",
+            "D": "Chỉ nhận từ bố"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Tập hợp các cá thể cùng loài, sinh sống trong một khoảng không gian xác định, vào một thời điểm nhất định và có khả năng sinh sản tạo ra thế hệ sau được gọi là:",
+          "options": {
+            "A": "Sinh quyển",
+            "B": "Quần xã sinh vật",
+            "C": "Hệ sinh thái",
+            "D": "Quần thể sinh vật"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Đặc điểm nào sau đây KHÔNG phải là đặc điểm của quần thể ngẫu phối?",
+          "options": {
+            "A": "Duy trì tần số các allele không đổi qua các thế hệ nếu không có các nhân tố tiến hóa",
+            "B": "Các cá thể trong quần thể giao phối với nhau một cách ngẫu nhiên",
+            "C": "Làm phong phú vốn gene của quần thể",
+            "D": "Làm tăng nhanh tỉ lệ đồng hợp tử và giảm tỉ lệ dị hợp tử qua các thế hệ"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Một quần thể ngẫu phối đang ở trạng thái cân bằng di truyền có tần số allele  $A$  là  $0.6$  và allele  $a$  là  $0.4$ . Tần số kiểu gene  $Aa$  của quần thể này là:",
+          "options": {
+            "A": "$0.24$",
+            "B": "$0.48$",
+            "C": "$0.36$",
+            "D": "$0.16$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Ở sinh vật nhân thực, đơn vị cấu trúc gồm một đoạn ADN quấn quanh khối protein histone được gọi là:",
+          "options": {
+            "A": "Nucleosome",
+            "B": "Operon",
+            "C": "Anticodon",
+            "D": "Codon"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Trong hệ sinh thái, năng lượng được truyền từ bậc dinh dưỡng thấp lên bậc dinh dưỡng cao hơn và càng lên bậc dinh dưỡng cao hơn thì tổng năng lượng:",
+          "options": {
+            "A": "Càng tăng lên",
+            "B": "Không đổi",
+            "C": "Càng giảm mạnh",
+            "D": "Tăng theo hàm mũ"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Khi nói về cấu trúc di truyền của quần thể ngẫu phối, mỗi nhận định sau đây là Đúng hay Sai?",
+          "items": {
+            "a": {
+              "text": "Quần thể ngẫu phối đa dạng về kiểu gene và kiểu hình, là nguyên liệu cho chọn lọc tự nhiên.",
+              "answer": true
+            },
+            "b": {
+              "text": "Quá trình ngẫu phối làm thay đổi tần số allele của quần thể qua các thế hệ.",
+              "answer": false
+            },
+            "c": {
+              "text": "Quần thể ngẫu phối có sự giao phối không lựa chọn giữa các cá thể trong quần thể.",
+              "answer": false
+            },
+            "d": {
+              "text": "Nếu không chịu tác động của các nhân tố tiến hóa, tần số allele của quần thể ngẫu phối được duy trì ổn định qua các thế hệ.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Khi nói về quá trình nhân đôi ADN ở sinh vật nhân thực, mỗi nhận định sau đây là Đúng hay Sai?",
+          "items": {
+            "a": {
+              "text": "Quá trình nhân đôi ADN diễn ra theo nguyên tắc bổ sung và nguyên tắc bán bảo toàn.",
+              "answer": true
+            },
+            "b": {
+              "text": "Enzyme DNA polymerase tổng hợp và kéo dài mạch mới theo chiều  ${3}^{'}\\rightarrow {5}^{'}$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Trên mỗi chỏm chữ Y, mạch ADN có mạch khuôn  ${3}^{'}\\rightarrow {5}^{'}$  được tổng hợp liên tục.",
+              "answer": true
+            },
+            "d": {
+              "text": "Enzyme DNA ligase có vai trò tháo xoắn phân tử ADN.",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Khi nói về dòng năng lượng trong hệ sinh thái, mỗi nhận định sau đây là Đúng hay Sai?",
+          "items": {
+            "a": {
+              "text": "Năng lượng được tuần hoàn liên tục trong hệ sinh thái từ sinh vật sản xuất đến sinh vật phân giải.",
+              "answer": false
+            },
+            "b": {
+              "text": "Càng lên bậc dinh dưỡng cao hơn, sinh khối của quần xã càng lớn.",
+              "answer": false
+            },
+            "c": {
+              "text": "Năng lượng cung cấp chủ yếu cho hầu hết các hệ sinh thái trên Trái Đất là năng lượng ánh sáng mặt trời.",
+              "answer": true
+            },
+            "d": {
+              "text": "Hiệu suất sinh thái giữa các bậc dinh dưỡng thường đạt khoảng  $10%$  đến  $20%$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Cho cây thân cao, hoa đỏ tự thụ phấn thu được  $F_{1}$  gồm 4 loại kiểu hình. Mỗi nhận định sau đây là Đúng hay Sai?",
+          "items": {
+            "a": {
+              "text": "Các gene quy định hai tính trạng trên phân li độc lập hoặc hoán vị gene hai bên với tần số như nhau.",
+              "answer": true
+            },
+            "b": {
+              "text": "Đời  $F_{1}$  luôn có tỉ lệ kiểu gene đồng hợp tử lặn bằng tỉ lệ kiểu gene đồng hợp tử trội.",
+              "answer": false
+            },
+            "c": {
+              "text": "Nếu tỉ lệ kiểu hình thân thấp, hoa trắng ở  $F_{1}$  chiếm  $1%$ , thì tần số hoán vị gene là  $20%$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Tính trạng chiều cao thân và màu sắc hoa di truyền theo quy luật liên kết gene hoàn toàn.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một gene ở sinh vật nhân thực có chiều dài  $5100 \\AA$ . Tổng số nucleotide của gene này là bao nhiêu?",
+          "answer": "3000",
+          "accepted_answers": [
+            "3000"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Một cơ thể thực vật có kiểu gene  $AaBbDd$  giảm phân bình thường không xảy ra hoán vị gene. Số loại giao tử tối đa được tạo ra từ cơ thể này là bao nhiêu?",
+          "answer": "8",
+          "accepted_answers": [
+            "8"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Cho phép lai ở thực vật:  $P: AaBb\\times aabb$  (các gene phân li độc lập, trội hoàn toàn). Tỉ lệ cá thể mang kiểu hình trội về cả hai tính trạng ở đời con chiếm tỉ lệ bao nhiêu phần trăm?",
+          "answer": "25",
+          "accepted_answers": [
+            "25"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Trong một hệ sinh thái đơn giản gồm các sinh vật: Cỏ, Thỏ, Cáo và Vi sinh vật. Có bao nhiêu chuỗi thức ăn có mặt cả 4 loài sinh vật trên?",
+          "answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Một gene có số lượng nucleotide loại  $A=600$  và loại  $G=900$ . Tổng số liên kết hydrogen của gene này là bao nhiêu?",
+          "answer": "3900",
+          "accepted_answers": [
+            "3900"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Xét một locus 1 có 3 allele và locus 2 có 4 allele cùng nằm trên một nhiễm sắc thể thường ở một loài động vật. Số kiểu gene đồng hợp và dị hợp tối đa có thể được tạo ra trong quần thể này là bao nhiêu?",
+          "answer": "60",
+          "accepted_answers": [
+            "60"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_25cf624d",
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 1.0,
+    "part3_per_question": 0.1667,
+    "part4_total": 0.0
+  }
+}

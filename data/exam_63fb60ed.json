@@ -1,0 +1,435 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TIẾNG ANH 9 - UNIT 1: LOCAL COMMUNITY",
+  "subject": "Tiếng Anh",
+  "grade": "9",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "We have ________ of milk, so I need to go to the store.",
+          "options": {
+            "A": "taken out",
+            "B": "run out",
+            "C": "handed down",
+            "D": "looked for"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Pottery is a traditional ________ of this village.",
+          "options": {
+            "A": "advice",
+            "B": "fragrance",
+            "C": "speciality",
+            "D": "function"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Bat Trang is a famous ________ village in Hanoi.",
+          "options": {
+            "A": "tourist",
+            "B": "community",
+            "C": "craft",
+            "D": "suburb"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "I need to ________ my younger brother while my parents are out.",
+          "options": {
+            "A": "find out",
+            "B": "look after",
+            "C": "take out",
+            "D": "look for"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "A ________ is someone who collects waste from houses.",
+          "options": {
+            "A": "garbage collector",
+            "B": "firefighter",
+            "C": "delivery person",
+            "D": "electrician"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "A person who is skilled at making things by hand is called an ________.",
+          "options": {
+            "A": "firefighter",
+            "B": "police officer",
+            "C": "electrician",
+            "D": "artisan"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "They are wondering whether ________ to the craft village or not.",
+          "options": {
+            "A": "going",
+            "B": "went",
+            "C": "to go",
+            "D": "go"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "My brother is trying to ________ a new job in the city.",
+          "options": {
+            "A": "look after",
+            "B": "find out",
+            "C": "come back",
+            "D": "look for"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "We should ________ our traditional customs for future generations.",
+          "options": {
+            "A": "remind",
+            "B": "preserve",
+            "C": "guess",
+            "D": "shorten"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "This product is ________; it is sold in many countries.",
+          "options": {
+            "A": "traditional",
+            "B": "world-famous",
+            "C": "original",
+            "D": "useful"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "She wondered how ________ the traditional technique to the next generation.",
+          "options": {
+            "A": "to hand down",
+            "B": "handed down",
+            "C": "hand down",
+            "D": "handing down"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "We need to ________ on the amount of waste we produce every day.",
+          "options": {
+            "A": "take out",
+            "B": "get on",
+            "C": "look for",
+            "D": "cut down"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "The tradition has been ________ from father to son for centuries.",
+          "options": {
+            "A": "looked around",
+            "B": "taken out",
+            "C": "come back",
+            "D": "handed down"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "I don't know where ________ the traditional pottery.",
+          "options": {
+            "A": "bought",
+            "B": "buying",
+            "C": "buy",
+            "D": "to buy"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "'- Could you tell me where the nearest post office is?' - '________.'",
+          "options": {
+            "A": "No, thanks",
+            "B": "Certainly, it is over there",
+            "C": "Yes, I could",
+            "D": "I don't mind"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "'- Do you mind if I sit here?' - '________. Please go ahead.'",
+          "options": {
+            "A": "Yes, please",
+            "B": "I'm sorry",
+            "C": "Yes, I do",
+            "D": "Not at all"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "The word 'deal with' in the text is closest in meaning to ________.",
+          "options": {
+            "A": "solve",
+            "B": "create",
+            "C": "ignore",
+            "D": "avoid"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Please put the rubbish in the ________ bin.",
+          "options": {
+            "A": "water",
+            "B": "electric",
+            "C": "special",
+            "D": "garbage"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "She told me how ________ the rubbish properly.",
+          "options": {
+            "A": "sort",
+            "B": "sorting",
+            "C": "to sort",
+            "D": "sorted"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "They decided ________ the tourist attraction this weekend.",
+          "options": {
+            "A": "to visit",
+            "B": "visit",
+            "C": "visiting",
+            "D": "visited"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Read the following passage: 'In our local community, many artisans work hard to preserve traditional techniques. They make beautiful handicrafts like pottery and silk. It is important for young people to learn these skills so that they are not lost. We should support local products to help our community grow.'",
+          "items": {
+            "a": {
+              "text": "Supporting local products helps the community grow.",
+              "answer": true
+            },
+            "b": {
+              "text": "It is not important for young people to learn traditional skills.",
+              "answer": false
+            },
+            "c": {
+              "text": "Artisans in the community are trying to preserve traditional techniques.",
+              "answer": true
+            },
+            "d": {
+              "text": "Handicrafts mentioned in the text include plastic toys.",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Read the following passage: 'Sorting rubbish is a simple but effective way to protect the environment. By separating plastic, paper, and food waste, we can recycle more efficiently. Many communities have started using different coloured bins to instruct people on how to sort their trash. This helps reduce the amount of waste sent to landfills.'",
+          "items": {
+            "a": {
+              "text": "We should mix all types of waste together in one bin.",
+              "answer": false
+            },
+            "b": {
+              "text": "Coloured bins are used to instruct people on how to sort trash.",
+              "answer": true
+            },
+            "c": {
+              "text": "Sorting trash increases the amount of waste sent to landfills.",
+              "answer": false
+            },
+            "d": {
+              "text": "Sorting rubbish is a way to protect the environment.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Read the following passage: 'When you are new to a community, it is useful to ask for advice. You can ask your neighbors where to find the best local speciality or how to get to the nearest tourist attraction. Using polite phrases like 'Do you mind...' makes communication easier and more friendly.'",
+          "items": {
+            "a": {
+              "text": "You should never ask neighbors for information.",
+              "answer": false
+            },
+            "b": {
+              "text": "You should only ask about tourist attractions, not food.",
+              "answer": false
+            },
+            "c": {
+              "text": "Polite phrases make communication more friendly.",
+              "answer": true
+            },
+            "d": {
+              "text": "Asking for advice is useful when you are new to a community.",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Read the following passage: 'Every member of the community plays a role. Firefighters protect us from fires, while police officers ensure our safety. Electricians help maintain our power systems, and delivery persons bring goods to our doors. Each job is essential for a smooth-running community.'",
+          "items": {
+            "a": {
+              "text": "Police officers are the only people who work in the community.",
+              "answer": false
+            },
+            "b": {
+              "text": "Electricians help maintain power systems.",
+              "answer": true
+            },
+            "c": {
+              "text": "Delivery persons are not considered essential workers.",
+              "answer": false
+            },
+            "d": {
+              "text": "Firefighters are responsible for ensuring our safety from fires.",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Give the correct form of the word in brackets: Local ________ (consume) prefer buying fresh products.",
+          "answer": "consumers",
+          "accepted_answers": [
+            "consumers"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Give the correct form of the word in brackets: My teacher gave me some useful ________ (advise) on how to study English.",
+          "answer": "advice",
+          "accepted_answers": [
+            "advice"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Give the correct form of the word in brackets: These products ________ (symbol) the culture of our community.",
+          "answer": "symbolize",
+          "accepted_answers": [
+            "symbolize"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Give the correct form of the word in brackets: We are trying to preserve our ________ (tradition) customs.",
+          "answer": "traditional",
+          "accepted_answers": [
+            "traditional"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Give the correct form of the word in brackets: Please follow the ________ (instruct) on the bin to sort your trash.",
+          "answer": "instructions",
+          "accepted_answers": [
+            "instructions"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Give the correct form of the word in brackets: This village is a popular tourist ________ (attract).",
+          "answer": "attraction",
+          "accepted_answers": [
+            "attraction"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_63fb60ed",
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 1.0,
+    "part3_per_question": 0.1667,
+    "part4_total": 0.0
+  },
+  "is_online_exam": false
+}

@@ -49,6 +49,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": r[5] or "",
                     "is_online_exam": bool(data.get("is_online_exam", False)),
+                    "is_published": True if data.get("is_published") is None else bool(data.get("is_published")),
                     "is_bank": bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False)),
                     "bank_config": data.get("bank_config", {}),
                 }
@@ -79,6 +80,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": data.get("created_by", ""),
                     "is_online_exam": bool(data.get("is_online_exam", False)),
+                    "is_published": True if data.get("is_published") is None else bool(data.get("is_published")),
                     "is_bank": bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False)),
                     "bank_config": data.get("bank_config", {}),
                 }
@@ -87,8 +89,12 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
 
     exams_list = list(exams_map.values())
 
-    # RBAC: lọc theo môn / người tạo cho giáo viên (không áp dụng với admin)
-    if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
+    # RBAC: Chỉ tài khoản SUPER ADMIN mặc định ('admin' hoặc is_protected) mới thấy tất cả các môn.
+    # Tài khoản giáo viên (kể cả được cấp quyền quản trị tạo tài khoản) vẫn giữ nguyên môn phụ trách.
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
         user_subject = (current_user.get('subject') or '').strip().lower()
         user_username = current_user.get('username', '').lower()
         if user_subject:
@@ -106,11 +112,21 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
 
 
 @router.get("/list")
-async def list_exams(request: Request):
+async def list_exams(request: Request, published_only: bool = False):
     """Danh sách tất cả đề thi có sẵn."""
     from ..services.auth_service import get_current_user_from_request
     current_user = get_current_user_from_request(request)
-    return {"exams": _list_exam_files(current_user)}
+    exams = _list_exam_files(current_user)
+    # Nếu là học sinh (chưa đăng nhập giáo viên/admin) HOẶC yêu cầu published_only=True:
+    if not current_user or published_only:
+        exams = [
+            e for e in exams 
+            if e.get("is_published") is True or str(e.get("is_published", "")).lower() in ("true", "1")
+        ]
+    return JSONResponse(
+        content={"exams": exams},
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}
+    )
 
 
 @router.get("/get/{exam_id}")
@@ -923,9 +939,22 @@ async def save_exam(request: Request = None, exam_data: dict = None):
     if total_qs == 0:
         raise HTTPException(400, "Không nhận diện được câu hỏi nào trong đề thi! Vui lòng kiểm tra lại định dạng file (ví dụ: 'Câu 1:... A. ... B. ...').")
 
-    # Gán ID nếu chưa có
-    if not exam_data.get("id"):
+    # Gán ID nếu chưa có và kiểm tra đề mới hay cập nhật đề cũ
+    raw_id = exam_data.get("id")
+    is_new_exam = not raw_id or not load_exam(raw_id)
+    if not raw_id:
         exam_data["id"] = f"exam_{uuid.uuid4().hex[:8]}"
+
+    # Xử lý trạng thái xuất bản (is_published):
+    # - Khi thêm mới thì mặc định màu đỏ (Chưa xuất bản / False)
+    # - Các đề cũ vẫn giữ y như vậy (mặc định True nếu chưa có cờ)
+    if "is_published" in exam_data and exam_data["is_published"] is not None:
+        exam_data["is_published"] = bool(exam_data["is_published"])
+    elif is_new_exam:
+        exam_data["is_published"] = False
+    else:
+        existing = load_exam(exam_data["id"])
+        exam_data["is_published"] = bool(existing.get("is_published", True)) if existing else True
 
     # Stamp created_by nếu chưa có
     if request:
@@ -1022,6 +1051,26 @@ async def toggle_exam_online_mode(exam_id: str):
         "success": True,
         "is_online_exam": exam["is_online_exam"],
         "message": f"Đã chuyển chế độ đề thi sang: {status_str}"
+    }
+
+
+@router.post("/toggle-publish/{exam_id}")
+async def toggle_exam_publish_status(exam_id: str):
+    """Bật/tắt trạng thái xuất bản đề thi (Đỏ: Chưa xuất bản, ẩn khỏi học sinh / Xanh: Đã xuất bản, hiện trên trang làm đề)."""
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+    current_val = exam.get("is_published")
+    if current_val is None:
+        current_val = True  # Đề cũ giữ y như vậy bật màu xanh
+    new_val = not bool(current_val)
+    exam["is_published"] = new_val
+    save_exam_record(exam)
+    status_str = "Đã xuất bản (Hiện trên trang thi học sinh)" if new_val else "Chưa xuất bản (Ẩn khỏi học sinh)"
+    return {
+        "success": True,
+        "is_published": new_val,
+        "message": f"Đã chuyển trạng thái đề thi sang: {status_str}"
     }
 
 
@@ -2080,6 +2129,7 @@ async def upload_question_image(file: UploadFile = File(...)):
     base64_url = convert_bytes_to_base64_data_uri(content, ext)
     return {
         "success": True,
+        "url": base64_url,
         "image_url": base64_url,
         "filename": unique_name
     }

@@ -1,0 +1,403 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 8 ĐỀ 1",
+  "subject": "Toán học",
+  "grade": "8",
+  "duration_minutes": 45,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho hai đa thức  $A=3 x^{2}y-2xy^{2}+5$  và  $B=-x^{2}y+3xy^{2}-2$ . Hiệu  $A-B$  là:",
+          "options": {
+            "A": "$4 x^{2}y-5xy^{2}+7$",
+            "B": "$4 x^{2}y+xy^{2}+7$",
+            "C": "$2 x^{2}y-5xy^{2}+3$",
+            "D": "$2 x^{2}y+xy^{2}+3$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Kết quả của phép chia  $(12 x^{4}y^{3}):(3 x^{2}y)$  là:",
+          "options": {
+            "A": "$4 x^{6}y^{4}$",
+            "B": "$4 x^{2}y^{2}$",
+            "C": "$9 x^{2}y^{2}$",
+            "D": "$4 x^{2}y^{3}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Cho hai đa thức  $A=2 x^{2}-3x+1$  và  $B=x^{2}+2x-5$ . Hiệu  $A-B$  là:",
+          "options": {
+            "A": "$3 x^{2}-x-4$",
+            "B": "$3 x^{2}+x-4$",
+            "C": "$x^{2}-5x+6$",
+            "D": "$x^{2}-x-4$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x^{2}-3x+2$ ,  $B=2 x^{2}+x-1$ ,  $C=-x^{2}+2x+3$ . Tổng  $A+B+C$  là:",
+          "options": {
+            "A": "$2 x^{2}+4$",
+            "B": "$2 x^{2}-4$",
+            "C": "$2 x^{2}+6x+4$",
+            "D": "$x^{2}+4$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Kết quả của phép nhân  $3x(x^{2}-2x+1)$  là:",
+          "options": {
+            "A": "$3 x^{3}-2 x^{2}+x$",
+            "B": "$3 x^{3}-6 x^{2}+3x$",
+            "C": "$3 x^{2}-6x+3$",
+            "D": "$3 x^{3}-6x+3$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Cho hai đa thức  $A=3 x^{2}y-2xy^{2}+5$  và  $B=-x^{2}y+3xy^{2}-2$ . Tổng  $A+B$  là:",
+          "options": {
+            "A": "$4 x^{2}y-5xy^{2}+7$",
+            "B": "$2 x^{2}y-xy^{2}+3$",
+            "C": "$2 x^{2}y+xy^{2}+3$",
+            "D": "$2 x^{2}y+xy^{2}+7$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Cho hai đa thức  $A=x^{2}-2xy+y^{2}$  và  $B=2 x^{2}+xy-3 y^{2}$ . Tổng  $A+B$  là:",
+          "options": {
+            "A": "$3 x^{2}+xy-2 y^{2}$",
+            "B": "$3 x^{2}-xy-2 y^{2}$",
+            "C": "$-x^{2}-3xy+4 y^{2}$",
+            "D": "$3 x^{2}-3xy-4 y^{2}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Kết quả của phép tính  $3 x^{2}y-5 x^{2}y+x^{2}y$  là:",
+          "options": {
+            "A": "$-9 x^{2}y$",
+            "B": "$-x^{2}y$",
+            "C": "$9 x^{2}y$",
+            "D": "$x^{2}y$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x^{2}-3x+2$ ,  $B=2 x^{2}+x-1$ ,  $C=-x^{2}+2x+3$ . Biểu thức  $A+B-C$  là:",
+          "options": {
+            "A": "$2 x^{2}-4x-2$",
+            "B": "$4 x^{2}-4x+4$",
+            "C": "$4 x^{2}-2x-2$",
+            "D": "$4 x^{2}-4x-2$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Kết quả của phép nhân  $(x+1)(x-2)$  là:",
+          "options": {
+            "A": "$x^{2}-2x-2$",
+            "B": "$x^{2}-x-2$",
+            "C": "$x^{2}-3x-2$",
+            "D": "$x^{2}+x-2$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Đơn thức nào sau đây có bậc là 5?",
+          "options": {
+            "A": "$5 x^{2}y^{3}$",
+            "B": "$2 x^{3}y^{2}z$",
+            "C": "$x^{4}y^{2}$",
+            "D": "$3 x^{5}y$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Giá trị của đa thức  $P(x)=x^{3}-2 x^{2}+5$  tại  $x=-1$  là:",
+          "options": {
+            "A": "-2",
+            "B": "2",
+            "C": "8",
+            "D": "4"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Cho hai đa thức  $A=2 x^{2}-3x+1$  và  $B=x^{2}+2x-5$ . Tổng  $A+B$  là:",
+          "options": {
+            "A": "$x^{2}-5x+6$",
+            "B": "$3 x^{2}+x-4$",
+            "C": "$3 x^{2}-x-4$",
+            "D": "$x^{2}-x-4$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Cho hai đa thức  $A=x^{2}-2xy+y^{2}$  và  $B=2 x^{2}+xy-3 y^{2}$ . Hiệu  $A-B$  là:",
+          "options": {
+            "A": "$3 x^{2}-xy-2 y^{2}$",
+            "B": "$-x^{2}-3xy+4 y^{2}$",
+            "C": "$-x^{2}-xy+2 y^{2}$",
+            "D": "$x^{2}-3xy-2 y^{2}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Tích của hai đơn thức  $2 x^{3}$  và  $-3xy^{2}$  là:",
+          "options": {
+            "A": "$-6 x^{3}y^{2}$",
+            "B": "$-6 x^{4}y^{2}$",
+            "C": "$6 x^{3}y^{2}$",
+            "D": "$6 x^{4}y^{2}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Giá trị của đa thức  $P(x)=x^{2}-4x+4$  tại  $x=2$  là:",
+          "options": {
+            "A": "4",
+            "B": "16",
+            "C": "-4",
+            "D": "0"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Cho ba đa thức  $A=5 x^{2}-2x+1$ ,  $B=-3 x^{2}+x-4$ ,  $C=x^{2}+x+2$ . Biểu thức  $A-B+C$  là:",
+          "options": {
+            "A": "$7 x^{2}-2x+7$",
+            "B": "$9 x^{2}+7$",
+            "C": "$9 x^{2}-4x+7$",
+            "D": "$9 x^{2}-2x+7$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q17"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một chất điểm chuyển động với vận tốc  $v(t)=3 t^{2}-6t+4$  (m/s), với  $t$  tính bằng giây ( $t\\ge 0$ ).",
+          "items": {
+            "a": {
+              "text": "Tại thời điểm  $t=2$  (s), vận tốc của chất điểm bằng  $4$  m/s.",
+              "answer": true
+            },
+            "b": {
+              "text": "Gia tốc của chất điểm tại thời điểm  $t$  là  $a(t)=6t-6$  (m/s ${}^{2}$ ).",
+              "answer": true
+            },
+            "c": {
+              "text": "Vận tốc tức thời nhỏ nhất của chất điểm bằng  $1$  m/s.",
+              "answer": true
+            },
+            "d": {
+              "text": "Quãng đường chất điểm đi được từ  $t=0$  đến  $t=3$  là  $15$  m.",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Cho hình chóp  $S.ABCD$  có đáy  $ABCD$  là hình vuông cạnh  $a$ ,  $SA⟂(ABCD)$  và  $SA=a\\sqrt{3}$ .",
+          "items": {
+            "a": {
+              "text": "Đường thẳng  $SA$  vuông góc với đường thẳng  $CD$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Góc giữa mặt phẳng  $(SCD)$  và đáy  $(ABCD)$  bằng  ${30}^{∘}$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Tam giác  $SBC$  là tam giác vuông tại  $B$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Thể tích của khối chóp  $S.ABCD$  là  $V=\\frac{a^{3}\\sqrt{3}}{3}$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Cho hàm số  $y=f(x)=\\frac{x^{2}-3x+6}{x-1}$  có đồ thị  $(C)$ . Xét tính đúng sai của các khẳng định sau:",
+          "items": {
+            "a": {
+              "text": "Hệ phương trình bậc nhất hai ẩn có nghiệm duy nhất khi các đường thẳng cắt nhau.",
+              "answer": true
+            },
+            "b": {
+              "text": "Tập xác định của hàm số là  $D=\\mathbb{R}⧵{1}$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Hàm số đồng biến trên toàn bộ tập xác định  $D$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "Hệ phương trình bậc nhất hai ẩn có nghiệm duy nhất khi các đường thẳng cắt nhau.",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Trong không gian với hệ tọa độ  $Oxyz$ , cho ba điểm  $A(1;0;0),B(0;2;0),C(0;0;3)$ .",
+          "items": {
+            "a": {
+              "text": "Điểm  $M(1;2;3)$  thuộc mặt phẳng  $(ABC)$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Khoảng cách từ gốc tọa độ  $O$  đến mặt phẳng  $(ABC)$  bằng  $\\frac{6}{7}$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Phương trình mặt phẳng  $(ABC)$  theo đoạn chắn là  $\\frac{x}{1}+\\frac{y}{2}+\\frac{z}{3}=1$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Một vectơ pháp tuyến của mặt phẳng  $(ABC)$  là  $n\\rightarrow =(6;3;2)$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Trong không gian  $Oxyz$ , cho mặt cầu  $(S):x^{2}+y^{2}+z^{2}-2x+4y-6z-11=0$ . Bán kính của mặt cầu bằng bao nhiêu?",
+          "answer": "5",
+          "accepted_answers": [
+            "5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Cho hình hộp chữ nhật  $ABCD.A'B'C'D'$  có  $AB=3,AD=4,AA'=5$ . Tính khoảng cách giữa hai đường thẳng  $AB$  và  $C'D'$ .",
+          "answer": "5",
+          "accepted_answers": [
+            "5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Tìm hệ số góc của tiếp tuyến của đồ thị hàm số  $y=x^{3}-3 x^{2}+2$  tại điểm có hoành độ  $x_{0}=3$ .",
+          "answer": "9",
+          "accepted_answers": [
+            "9"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Một xạ thủ bắn vào bia 3 phát độc lập. Xác suất bắn trúng mỗi phát là  $0.8$ . Tính xác suất để xạ thủ đó bắn trúng đúng 2 phát (kết quả làm tròn đến hàng phần trăm).",
+          "answer": "0.38",
+          "accepted_answers": [
+            "0.38"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Một công ty sản xuất muốn thiết kế một hộp sữa hình trụ có thể tích  $V=500$  ml. Để tiết kiệm chi phí kim loại làm vỏ hộp nhất (diện tích toàn phần nhỏ nhất), tỉ số giữa chiều cao  $h$  và bán kính đáy  $r$  của hình trụ phải bằng bao nhiêu?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Biết  $12\\frac{2x+3}{x}dx=a+bln2$  với  $a,b$  là các số nguyên. Tính giá trị của biểu thức  $T=a^{2}+b^{2}$ .",
+          "answer": "13",
+          "accepted_answers": [
+            "13"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_8317bfc0",
+  "created_by": "admin",
+  "scoring": {
+    "part1_total": 4.25,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 1.75,
+    "part3_per_question": 0.2917,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

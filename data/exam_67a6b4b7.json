@@ -1,0 +1,1193 @@
+{
+  "title": "KIỂM TRA TX KHỐI 10 L1",
+  "subject": "Tin học",
+  "grade": "10",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tuần tự quá trình xử lí thông tin/dữ liệu bằng máy tính là",
+          "options": {
+            "A": "Tiếp nhận dữ liệu => Xử lí dữ liệu => Đưa ra kết quả.",
+            "B": "Xử lí dữ liệu => Tiếp nhận dữ liệu => Đưa ra kết quả.",
+            "C": "Đưa ra kết quả =>Tiếp nhận dữ liệu => Xử lí dữ liệu.",
+            "D": "Tiếp nhận dữ liệu => Đưa ra kết quả => Xử lí dữ liệu."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Định nghĩa nào về Byte là đúng?",
+          "options": {
+            "A": "Là một kí tự.",
+            "B": "Là đơn vị dữ liệu 8 bit.",
+            "C": "Là đơn vị đo tốc độ của máy tính.",
+            "D": "Là một dãy 8 chữ số."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Chọn câu đúng trong các câu sau:",
+          "options": {
+            "A": "1MB = 1024KB.",
+            "B": "1PB = 1024 GB.",
+            "C": "1ZB = 1024PB.",
+            "D": "1Bit = 1024B."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Phát biểu nào sau đây là sai khi nói về quan hệ giữa thông tin và dữ liệu?",
+          "options": {
+            "A": "Dữ liệu là thông tin đã được đưa vào máy tính.",
+            "B": "Thông tin là ý nghĩa của dữ liệu.",
+            "C": "Thông tin và dữ liệu có tính độc lập tương đối.",
+            "D": "Thông tin không có tính toàn vẹn."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Chọn phát biểu đúng về IoT?",
+          "options": {
+            "A": "IoT là mạng kết nối các thiết bị thông minh thông qua mạng Internet nhằm thu thập dữ liệu trên phạm vi toàn cầu.",
+            "B": "IoT là mạng của các thiết bị thông minh nhằm thu thập và xử lý dữ liệu tự động.",
+            "C": "IoT là mạng của các thiết bị tiếp nhận tín hiệu.",
+            "D": "IoT là mạng của các máy tính, nhằm trao đổi dữ liệu với nhau."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Em hãy chọn phương án sai.",
+          "options": {
+            "A": "Thiết bị thông minh là thiết bị số.",
+            "B": "Thiết bị số là thiết bị thông minh.",
+            "C": "Thiết bị thông minh có thể làm việc một cách tự chủ.",
+            "D": "Thiết bị thông minh có thể tương tác với người sử dụng hay các thiết bị thông minh khác."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Loại công cụ nào gắn liền với nền văn minh thông tin?",
+          "options": {
+            "A": "Máy phát điện.",
+            "B": "Đồng hồ.",
+            "C": "Máy tính điện tử.",
+            "D": "Động cơ hơi nước."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Về cơ bản điện thoại thông minh có giao diện và cách thức sử dụng tương tự như thiết bị nào?",
+          "options": {
+            "A": "Máy tính để bàn.",
+            "B": "Laptop",
+            "C": "Máy tính bảng.",
+            "D": "Điện thoại thường"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Về cơ bản, điện thoại thông minh khác điện thoại di động thường ở điểm nào?",
+          "options": {
+            "A": "Có danh bạ.",
+            "B": "Có thể nhắn tin văn bản.",
+            "C": "Có thể kết nối Internet.",
+            "D": "Có hệ điều hành và có thể chạy được mọi ứng dụng."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Phát biểu nào sau đây là phù hợp nhất về khái niệm bit?",
+          "options": {
+            "A": "Chính chữ số 1.",
+            "B": "Một số có 1 chữ số.",
+            "C": "Đơn vị đo khối lượng kiến thức.",
+            "D": "Đơn vị đo lượng thông tin."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Đơn vị đo lượng thông tin cơ sở là:",
+          "options": {
+            "A": "Bit.",
+            "B": "GHz.",
+            "C": "GB.",
+            "D": "Byte."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Bản chất quá trình mã hóa thông tin?",
+          "options": {
+            "A": "Chuyển dãy hệ nhị phân về hệ đếm khác.",
+            "B": "Đưa thông tin vào máy tính.",
+            "C": "Chuyển thông tin về bit nhị phân.",
+            "D": "Nhận dạng thông tin."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Thông tin khi đưa vào máy tính, chúng đều được biến đổi thành dạng chung đó là:",
+          "options": {
+            "A": "Văn bản.",
+            "B": "Âm thanh.",
+            "C": "Hình ảnh.",
+            "D": "Dãy bit."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Trong các thiết bị dưới đây, thiết bị nào không phải là thiết bị số?",
+          "options": {
+            "A": "Thẻ nhớ.",
+            "B": "Bộ thu phát wifi.",
+            "C": "Máy tính xách tay.",
+            "D": "Đĩa hát."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Một thẻ nhớ có dung lượng 64 GB có thể lưu trữ tối đa bao nhiêu video có dung lượng 300MB?",
+          "options": {
+            "A": "218 video.",
+            "B": "1.",
+            "C": "8 video.",
+            "D": "4."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Em đọc thông tin dòng chữ viết trên bảng tin nhà trường. Lúc đó nội dung dòng chữ là:",
+          "options": {
+            "A": "Thông tin.",
+            "B": "Dữ liệu.",
+            "C": "Vừa là thông tin vừa là dữ liệu.",
+            "D": "Vật mang tin."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "1 byte bằng nhiêu bit",
+          "options": {
+            "A": "10.",
+            "B": "2.",
+            "C": "3.",
+            "D": "8."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Biển báo sau chứa dữ liệu dạng gì?",
+          "options": {
+            "A": "Dạng hình ảnh",
+            "B": "Dạng chữ",
+            "C": "Dạng hình ảnh, chữ và số",
+            "D": "Dạng số"
+          },
+          "answer": "A",
+          "explanation": "",
+          "image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAB3AHsDASIAAhEBAxEB/8QAHAAAAgIDAQEAAAAAAAAAAAAABwgAAwQFBgIB/8QAShAAAQMCAwMGCAsFBwUBAAAAAgEDBAAFBgcREiExE0FRUoGRCBQiMkJhcXIXI1ZigpShscHC0RUzorLSFiRDRFNjkhglJjRz4v/EABsBAAICAwEAAAAAAAAAAAAAAAUHAAYCAwQB/8QANhEAAQMDAgQBCgUFAQAAAAAAAQACAwQFESExBhJBURMHFCIyYXGBkdHwFaGxweEjNEJSgvH/2gAMAwEAAhEDEQA/AHGdcUF0Qa8cuXVrzK/eD7tV1FFdy69Wpy69WqaFOaWcdsw247a7ELdyuobjXa+KZX1qnnL6krXLK2Iczjouyht9RcJRFA3JP3qipOuMaBFOVNkMRmATUnHnEEU7Voc4jzzwXayVqI6/dnU5ooeT/wAi0TupasU4ov2JphSr1cn5a7WogpaAHsFNyVpfOLQeK8EoRJdHO0jCZNu8n8MbQ+skyew0Hz/8R6uHhHSyVf2fhlkU5lelKq9yDWv/AOorEm1vsVs2fecoZ2zB+KrmIlBw9cnhLgSRyQe9dErZllfj8R2/7MTtPo6/zVp84qzqM/JFPwThqL0Hcufa7+UTbb4RxoSDcsMJpzlHk/gSfjXeYbzqwReVRtycVsfXg3MHYTX3k1H7aV264WxJaRJbjYrnGAeJHHLZ/wCWmlaevRX1DD6awm4Os9Y3mpzj2g5H55T8szG32QdZNp1sh1EwLVFT1LVnLr1aSXBmNsR4TkCdouBAxtalGc8pk/aK8PalMjlfmrZsZCEF/Zt132d8cy8lz1tkvH2caJU9dHNodCqJe+Eqy2AyN9NncdPeESeXLq1OXLq1TUruVUWSy4p7WvNVtURvS7KvqKLFk+ePu1XVkn94nu0MM/scrhXDqW+3PbF1uAqLapxZb9I/bzJWuWURNLnbLroaOWuqGwRDJK47PfNV0H38L4ZlbCjqE2Y2W8V52wVPtWgJU4+UXlLzrXpwDAiAxIDTii7lGqzUTvndzOT8s1op7VAIYhr1PUlFLLPJu64nZZud4dK2Ww0QgTTV54V50RfNRelaPeE8BYUwwAra7Qwjw8ZDo7bhfSX8KBmSGabmHHWrDfniO0GWjT671iqv5PupmWHQfbB1pwTbMUISAtUVF4Ki0YoWQublo1Sv4vqbqyqMVQ4hh9XGgI+vvX3ROivtSpRJUnJXxUQh0JEVF4pXG4wyzwhidDKXbWosleEiJo2evSum4u1Kws7MzoeWVpt8yRa3bk5NfVoGgcRvZQU1IlVUXprtrPNbudphXJkSBuWwD4CfEUIUVEXvrF7A8YcNFvgqp6Z4fC4tPsKVTMvKq/YPQ5jX/crUn+ZbHQm0/wBweb28K4Flx1l4HmXCBwCQxIC0UVTgqKlNguZ9rlZxLlmza35TnIEsiUhIrQEgbago9Gm5V6aF+e+V4WJTxJh5nS2mWsqMH+WVfST5i/ZQert/IOePZNDhrjDztwpK7c7O7+w/eq7TIvNH+0QBh6/vCl2bH4h9dySRTp+en20X6Q2G+/DlNSorxMvtGjjZhuUCRdUVKcHKLGTeNMJNTj2RnsfEzATmNE85PUqb66LfV+KORx1CBcY8OtoH+dU49B247H6FdxG9Lsq+qI3pdlX0SVEWJLIW/LItEEdpVXmRKSvM/EbmK8a3C6qWrHKclGToaHcnfxppM8rwVky3u8ps9h11nxdtfnOLs/cq0mtBrpLsxM7ye29uJKxw12H6n9kR8g8GDirFvjUxnbtlt0deReDh+iH2arRbzsysZxRHO82NoGbyyPlCO4ZQp6K9BdC1tcgrCNjy3gGrekmf/enl5/K81OwdKIFdNPSN8ANcN0DvXElSbuaiB2Aw4HbHX5pDJDL0aQ7HfZJp5slAwMdFFU4oqLRWyQzTdw281Yb+8TtmMtGnV3rFVfyfdRIzsyuZxVGO82VsGL22PlDwSUieivzuhaWKQy9GkOxpLJMvNEomBjooqnFFShj2S0UuQr/SVdBxTQmOQYcNx1B7hPgw60+yDzLgm2YoQkBaoqLwVFr1SxZJZpu4bfasV+eJ2zmWjTq71iqv5PupmWHWn2QeZcF1twUISAtUVF4Ki0cp6hszcjdKe92Se0z+HJt0Pf8AlK54ZUpy74+wvheP5Ro1t7PznnEBP5KZWY/Gw3hd18//AF7XBUlT5rQf/mlnzO2JfhjWRmZ5LISYIDrw0QUJP4lpmMWWpL5hm62Y3OSSfDdjbfV2xVNftrpQZAfwQbY9eLhibMW5eXNnyiYaJfR1XlHNO8EphJcdmVGdjSWxcYdBWzA96KKpoqLSp5a5hXvI3xvBmNMLzDheNE8y+zoi6qiIpCq+SYrsoqb6PWXua+B8cvJFsl02J2zr4nJHknl047KLuL6K1iV613KchLZmthM8HYxk2wdpYbnx0Ql5214J7UXdW48H/E64ex/HjvObMK56RnkXghKvkF2Fu+lRV8KKwhOwbHvTTfx1teRCXn5NzcvcWlLQ2ZtuC42Wy4BIQqnoqm9FquTt82qMt23TttFQ2/WQxzauxyn3jY/on8jcS7Ku1StHge6Je8LW67JwlRW3F95U3/bW8qxA8wyElJWOjeWO3Bwgt4WklWsGW6KK6eMTU19ggS/fS0R2uWkNM/6hoHeulMd4XQKuHbKfMkskXtBf0pdbWYtXSI6XAHwVewkqv1/9x8k5uDPRsuW7kuTz29gIcCPFAdkGWhBE9SIiVkV8FdRRU4Km6vtWAJMPdzEk9VKFmdmVzOKo53qytize2h3pwGUieiXzuhaKdSsJYmytLXDRddvr56GcTQnBCQ2Uw9GkOxpLJMvtEomBjooKm5UVKKmSWabuGXmrFfXidsxlo26u9Yqr+Tp6KJedWVzOKo53izNgxemR3pwGUieivzuhaWCUw/FkOxpLJMvtEomBjoQKnFFSgD2S0UuQnJSVdBxTQmKQYcNx1B7hMH4QOUk3HcyBi/CE5gLsw0IaK5si+ArqBCacCTXdXG2e2eE1LkHbgxEDSxtBeV6ZGIg1TUdrRCLenTXvJLNJ3DL7VivrxO2ZwtG3F3rFVfydKc1E24xcV4cx9dMWYRw+xia14hjx1fZbnAw4060OyJoRaiQqK0cpqls7cjdKe9WSe0z+HJt0PdcuMDPqwxeXxDHsGO7aO9+Aoir2zz7GoDqvfWVfsBYMzBwQGLsAQWrFf4+r0N6O3yDjUlverLgpuQtU04V39nvGPnBGTdsFwYTHEmWbsjr4p6k2EFV9W1WwstobtuLrjPhN7ES7sBJfBB0TxgV2VPTmUgUNfdregy52RcCxpkG5c329l6dZiddHquiK7X8Q0pQ+bTiMQBsWUUyIY7CNwZbmz1UNXDRP4qTsfNGgl29Zqavk6cfBmb0yE3fg3Slk5UW5CLUmTda7EMtPsWiTQt8F9sgysjkvpSnlT2bWn4UUl40VpiTE0+xL6+NDbjOB/sf1Qo8KG3LNy2ckAO0sKQ28vsVVFf5qVLfzceanoxlam75h64Wh7cMuKTWvQqoui9i0j06M9CmPQ5Lew+yZNOCvMQrotCbozlka9Mbyf1bZKSSmJ1Bz8Cm6cvjlxyRfv0R4mnysbjougWhA4LS6qi9KKlJUOYuP9kf/ADS+/Xj/AFplfBsvcS8YaueBbp8aCNuE22pacoy5uMU06FX+Kuu+ArKv5KtfWnf6qL00oliDkub3QPoa6SAjQHT3HZJ78IuP/lpffrx/rU+EXH/y0vv14/1pwfgLyr+SrX1p3+qp8BeVfyVa+tO/1VvyhaT74Rcf/LS+/Xj/AFrEbxLcpVwOTeZz85x3TbffJSc3bkXVd605nwF5V/JVr607/VU+AvKv5KtfWnf6q1ysbK0tcF22+vnoJxNCcEJUBVDETAtoV3oqVlyMRYwiW8GLPii8Qm2R0BhmYYt6cdERF3UwuP8AIywFh8iwXD/Z86PqYsK8RA+nV8pV2V6KXWUw/FlOxpLJMvtEomBjoQKnFFSq89ktFLkbJyUdbQ8UURjkHpDcdQe4WyyjxzjadmphqBPxVepEd25stvMvTDUTRS3iSKtdjdsW4pXKPFc5cRXPxqPjMYrD3jBIQNdQV13D6q0uUM/CdmxnFn4ks7Tyg6LjE1CJCiuDwJRRUQh6d1MqxlxgOVYJVvC0tSLbcZiXN0UkGQuPrwNFQvu3Ucp6ls7cjdKe92Se01Hhyer0PdY2d91G2ZTXBwi+MlsBHb6SU9EX7NaUWjT4UGJwl3mHheG5tM28eVkbP+oqaCPYP81CzCFmexDie3WZkdpZT4tkvQPEl7B1oNXv8Wblb7kz+D6QW60mol05su+H3qm3yOt62zLCyxjHZM46PEnrcVT/ADV2+ulYtuaCOwLDY6A2IgKdCIlZVHGMDGgdkn6uc1E75T/kSfmsaT54+7Sy+Exg87XiIMTw2f7ncS0kacAeROf3k3+2mak+ePu1qMT2SBiOxSrNcW9uPJDZXpReYk9aLvSsKmETRlvVEbDdn2usbN02PuSXYYvU3Dt9iXm3ubEiMe0nQacCFfUqbqcfAuJ7di3D8e725zyXB0cbXzmTTzhKlFx7hS5YQv71puA6onlMPoPkvBzEn41bl9jK7YLvXj9tc22nNEkxjLyHh9fQqcy0FpKk0ryx40TR4iscV9pm1NKRz40Pcdk6VSuVwBjywYyhI9bZPJyUHV2I5ojja+znT1pXVUfa8PGWnRJuop5aeQxyjBHQqVKlSslpUoW51ZXsYsineLO2DF7ZH2JJRPRL53QtFKpWuWJsrS1w0XbQ101DM2aE4ISGymH4sp2NJZJl9olEwMdFBU4oqUQstM17vhC0SbW414/F5IlhiZfuHF4fQ6UrsfCciYOU2pTUwG8SJohNMChcoH+5p5qpzLxoD1XHh1LKQ0p3UbqfiGga6pjwD0PcdQeyvnypM6c9NlvE9IkGpuGvFSVdVWjx4L2DybGRjCa3sqYqxBRer6Z/lT6VDPKjA0zG+IBj7JN2xgkKZI6B6ifOWm9t0ONb4DEGGyLMeOCNtgHBBRNESu23U5c7xXbKtcbXxkEP4fAdTvjoO330WdG9Lsq+qI3pdlX0aSpWLK/eD7tV1ZK/eD7tV1FFzuPcH2nGNmK3XRvyk3sSA89ousi/enPSp5g4FvmDLhyNyZ5SIRfEy2xXknE/KXqWnOrGuMKHcYbsOfFakx3R0NtwUIVT1otcVTRsm16qy2DiWptDuT1mdvokYhyZMOUEqHIdjvtlqDjZKJIvqVKKWE89cT2sAYvDDF5ZTdtn8U7p7UTRe1K7DHGQkGU4crCk7xEl3+KSNSb7CTyh7daEOIcvMZ2I1SfYpJtJ/ixx5YO8fxoX4VTSnI2TIFwsV+jDZcc3Y6EfH6FHG1594QkoPj0W5QS50VlDTvFfwraFnZl9s6/tST7PEz1+6lRcQmiIDEgVOKLuWvOo9ashcpm9lodwJannLXOA94+iZe6+EBhdgS/Z1tuU4+bURbHvVdfsoa4wzqxdewOPBJuzRi3Kkfe4qes1392lDZlt19wW2WydNeAgKqpdiV2GHMsMbX4kWPZXYjC/40v4kdO3yl7ErE1NTNoPyW6Lh+xWr+pLjI6uP7fwuNcM3XCddcIzMtSIy1Ul6VVa7nLDLS840lg+glDtAL8ZLMfO6RbRfOX7KLuBcjLJaSCZiOR+15Sb0ZQdlgV9nEu3uotsNNMMgyy2LTYjoIAOiIicyIldFPbjnmlQa98cxtYYbeP+unwC12FrBbMNWVm1WmOLMZrvNedVXnVa2tSpRlrQ0YGyWD3ulcXvOSVfG9Lsq+qI3pdlX1FrXgwEl8pN/tr5yLfUTvqVKiinIt9RO+pyLfUTvqVKiinIt9RO+ojLfUTvqVKiiwp1ktM5NJlrhyP/AKsiX3pWCmDMJoe0mHbXtdPiofpUqVgWt7La2eVowHH5rYw7VbIQ6RLfFjp0NNoH3JWVyQdRO+pUrMabLBznO1JypyLfUTvqci31E76lSosVORb6id9TkW+onfUqVFF9bEB12e2vdSpUUX//2Q==",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Cây đàn organ điện tử có các nút điều khiển, có thể thay thế nhiều nhạc cụ khác nhau. Hãy chọn khẳng định đúng?",
+          "options": {
+            "A": "Đàn organ điện tử không phải là thiết bị số mà là nhạc cụ.",
+            "B": "Đàn organ điện tử là thiết bị số.",
+            "C": "Đàn organ điện tử vừa là thiết bị thông minh vừa là nhạc cụ.",
+            "D": "Đàn organ điện tử là thiết bị thông minh."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Trong danh sách các thiết bị dưới đây, thiết bị nào là thiết bị thông minh, thiết bị nào không nên thêm hai chữ thông minh?\n(1). Đồng hồ lịch vạn niên;\n(2) Robot hút bụi\n(3) Người máy\n(4) Camera nhận dạng khuôn mặt",
+          "options": {
+            "A": "(1); (2); (4)",
+            "B": "(1); (3)",
+            "C": "(2); (3); (4)",
+            "D": "(2); (4)"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q20"
+        },
+        {
+          "text": "Chọn đáp án KHÔNG ĐÚNG trong các phát biểu sau?",
+          "options": {
+            "A": "Công nghệ thông tin giúp con người rất hiệu quả trong việc trích xuất thông tin từ dữ liệu.",
+            "B": "Khai thác tri thức là việc tạo ra tri thức từ các nguồn dữ liệu và thông tin.",
+            "C": "Trí tuệ nhân tạo là lĩnh vực khoa học nhằm tạo ra các hệ thống thông minh, góp phần làm nên các sản phẩm, dịch vụ có chất lượng cao.",
+            "D": "Thiết bị thông minh là thiết bị điện tử không thể hoạt động tự chủ khi không có sự can thiệp của con người."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q21"
+        },
+        {
+          "text": "Chọn phát biểu đúng trong các phát biểu sau:",
+          "options": {
+            "A": "Internet, máy tìm kiếm, mạng xã hội, trí tuệ nhân tạo làm thay đổi xã hội loài người.",
+            "B": "Internet là một thành tựu vĩ đại làm thay đổi tính khí một người.",
+            "C": "Trí tuệ nhân tạo thật nguy hiểm cho xã hội loài người.",
+            "D": "Máy tính có khả năng ưu việt có thể thay thế con người trong mọi lĩnh vực."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q22"
+        },
+        {
+          "text": "Sau nhiều năm để dành tiền tiết kiệm, Lan được bố mẹ dẫn đi mua máy tính. Theo em để xác định được tốc độ vi xử lý của máy tính, Lan cần dựa vào:",
+          "options": {
+            "A": "Giá tiền.",
+            "B": "Hãng sản xuất.",
+            "C": "Độ lớn của màn hình.",
+            "D": "Các thông số của máy tính."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q23"
+        },
+        {
+          "text": "Phát biểu nào sau đây về các thiết bị trong hệ thống IoT là Sai?",
+          "options": {
+            "A": "Được gắn cảm biến để tự cảm nhận môi trường xung quanh.",
+            "B": "Là những cảm biến được kết nối mạng với nhau thành một hệ thống.",
+            "C": "Được kết nối mạng Internet để phối hợp với nhau tạo thành một hệ thống tự động.",
+            "D": "Được trang bị Trí tuệ nhân tạo (AI) để có khả năng tự thực hiện công việc."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q24"
+        },
+        {
+          "text": "Đâu không phải là loại hình dịch vụ lưu trữ?",
+          "options": {
+            "A": "Google Drive",
+            "B": "Gmail",
+            "C": "Dropbox",
+            "D": "iCloud"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q25"
+        },
+        {
+          "text": "Đặc điểm nào sau đây KHÔNG phải là ưu điểm của điện toán đám mây?",
+          "options": {
+            "A": "Giảm chi phí",
+            "B": "Dễ sử dụng, tiện lợi",
+            "C": "Tăng lao động",
+            "D": "An toàn dữ liệu"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q26"
+        },
+        {
+          "text": "Phương án nào sau đây nêu đúng các thành phần của Dịch vụ đám mây bao gồm?",
+          "options": {
+            "A": "Nền tảng, phần mềm, cơ sở hạ tầng",
+            "B": "Phần mềm,",
+            "C": "Nền tảng,",
+            "D": ""
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q27"
+        },
+        {
+          "text": "Để bảo vệ dữ liệu trên máy tính an toàn khi sử dụng Internet, em không nên làm gì?",
+          "options": {
+            "A": "Cài phần mềm diệt virus",
+            "B": "Thường xuyên cập nhật hệ điều hành",
+            "C": "Mở các tệp đính kèm từ mail của người lạ gửi đến.",
+            "D": "Bật chức năng tường lửa của máy tính."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q28"
+        },
+        {
+          "text": "Những tờ tiền giấy có thể bị bẩn, bị rách hoặc bị làm giả. Ứng dụng nào sau đây của Internet giúp khắc phục những hạn chế đó?",
+          "options": {
+            "A": "E-Payment",
+            "B": "Mạng xã hội",
+            "C": "E-Government",
+            "D": "E-Laerning"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q29"
+        },
+        {
+          "text": "Phát biểu nào sau đây nêu ĐÚNG về mạng Internet?",
+          "options": {
+            "A": "Mạng Internet có bán kính nhỏ hơn mạng LAN.",
+            "B": "Mạng Internet là mạng có kết nối máy tính với khoảng cách trong toàn thành phố.",
+            "C": "Mạng Internet là mạng toàn cầu, kết nối máy tính trong phạm vi toàn cầu.",
+            "D": "Mạng Internet là mạng kết nối máy tính trong phạm vi một quốc gia."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q30"
+        },
+        {
+          "text": "Mạng nào sau đây có bán kính lớn nhất?",
+          "options": {
+            "A": "Mạng LAN",
+            "B": "Mạng Internet",
+            "C": "Mạng WAN",
+            "D": "Mạng MAN"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q31"
+        },
+        {
+          "text": "Một mật khẩu mạnh cần có những thành phần nào?",
+          "options": {
+            "A": "Các chữ số và chữ cái thường.",
+            "B": "Các chữ cái thường và chữ cái viết hoa.",
+            "C": "Các chữ cái hoa, kí tự đặc biệt và chữ số.",
+            "D": "Chữ hoa, chữ thường, chữ số và ký tự đặc biệt."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q32"
+        },
+        {
+          "text": "Hành vi nào sau đây KHÔNG vi phạm đạo đức, pháp luật và văn hóa khi sử dụng mạng?",
+          "options": {
+            "A": "Đưa thông tin không phù hợp lên mạng.",
+            "B": "Mua bản quyền phần mềm.",
+            "C": "Bắt nạt qua mạng.",
+            "D": "Ứng xử thiếu văn hóa."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q33"
+        },
+        {
+          "text": "Trên các đồ dùng đã được công nhận bản quyền sẽ có kí hiệu nào?",
+          "options": {
+            "A": "®",
+            "B": "©",
+            "C": "Ф",
+            "D": "@"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q34"
+        },
+        {
+          "text": "Vấn đề tiêu cực nào sau đây có thể nảy sinh khi tham gia các hoạt động trên mạng Internet?",
+          "options": {
+            "A": "Đăng tải thông tin cần thiết.",
+            "B": "Gửi thư điện tử.",
+            "C": "Bắt nạt qua mạng.",
+            "D": "Tham gia khóa học trực tuyến."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q35"
+        },
+        {
+          "text": "Trong các hành vi sau, hành vi nào vi phạm bản quyền?",
+          "options": {
+            "A": "Tải một bản nhạc miễn phí để nghe.",
+            "B": "Thay đổi mật khẩu cho thư điện tử cá nhân.",
+            "C": "Không mua quyền sử dụng phần mềm đối với các phần mềm phải trả tiền.",
+            "D": "Sử dụng một phần mềm diệt virus đã mua bản quyền."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q36"
+        },
+        {
+          "text": "Theo em biện pháp nào không giúp chia sẻ thông tin một cách an toàn trong môi trường số?",
+          "options": {
+            "A": "Không tùy tiện tiết lộ thông tin cá nhân của bản thân hay của người khác trên mạng xã hội.",
+            "B": "Đặt và sử dụng mật khẩu mạnh cho các tài khoản mạng.",
+            "C": "Thay đổi mật khẩu các tài khoản mạng sau một thời gian sử dụng.",
+            "D": "Tin tưởng hoàn toàn các địa chỉ bắt đầu bằng https://..."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q37"
+        },
+        {
+          "text": "Văn bản, số, hình ảnh, âm thanh, đã lưu trong máy tính được gọi chung là?",
+          "options": {
+            "A": "Lệnh.",
+            "B": "Chỉ dẫn.",
+            "C": "Thông tin.",
+            "D": "Dữ liệu"
+          },
+          "answer": "D",
+          "explanation": "",
+          "image": "data:image/jpeg;base64,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",
+          "id": "p1_q38"
+        },
+        {
+          "text": "Biển báo sau chứa dữ liệu dạng gì?",
+          "options": {
+            "A": "Dạng hình ảnh",
+            "B": "Dạng chữ",
+            "C": "Dạng hình ảnh, chữ và số",
+            "D": "Dạng số"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q39"
+        },
+        {
+          "text": "Cho biết các thiết bị dưới đây, thiết bị nào là thiết bị số?",
+          "options": {
+            "A": "Bộ thu phát wifi, thẻ nhớ, máy tính xách tay",
+            "B": "Thẻ nhớ, đồng hồ, quạt điện cơ",
+            "C": "Bộ thu phát wifi, đồng hồ, thẻ nhớ,",
+            "D": "Máy tính xách tay, thẻ nhớ, đồng hồ"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q40"
+        },
+        {
+          "text": "Một quyển truyện A gồm 10 trang nếu lưu trữ trên đĩa chiếm khoảng 2 MB. Hỏi một đĩa cứng 5 GB có thể chứa được bao nhiêu quyển truyện A? (giả sử dung lượng mỗi trang là bằng nhau).",
+          "options": {
+            "A": "5120",
+            "B": "25600",
+            "C": "2560",
+            "D": "51200"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q41"
+        },
+        {
+          "text": "Kết quả của việc nhìn thấy hoặc nghe thấy ở con người được xếp vào hoạt động nào trong quá trình xử lí thông tin?",
+          "options": {
+            "A": "Thu nhận.",
+            "B": "Lưu trữ.",
+            "C": "Xử lí.",
+            "D": "Truyền."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q42"
+        },
+        {
+          "text": "Thiết bị điện tử có thể hoạt động tự chủ không cần sự can thiệp của con người, tự thích ứng với hoàn cảnh và có khả năng kết nối với các thiết bị khác để trao đổi dữ liệu đó là:",
+          "options": {
+            "A": "Thiết bị thông minh",
+            "B": "Thiết bị số",
+            "C": "Điện thoại thông minh",
+            "D": "Máy tính bảng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q43"
+        },
+        {
+          "text": "Thiết bị nào dưới đây không là thiết bị thông minh?",
+          "options": {
+            "A": "Điện thoại thông minh.",
+            "B": "Máy tính bảng.",
+            "C": "Đồng hồ lịch vạn niên.",
+            "D": "Camera có kết nối internet."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q44"
+        },
+        {
+          "text": "Công nghiệp 4.0 thiết bị đóng vai trò chủ chốt trong hệ thống IoT là?",
+          "options": {
+            "A": "Thiết bị số.",
+            "B": "Thiết bị thông minh.",
+            "C": "Thiết bị vi tính.",
+            "D": "Thiết bị văn phòng."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q45"
+        },
+        {
+          "text": "Việc chế tạo rô bốt được chế tạo nhằm hỗ trợ con người trong nhiều lĩnh vực sản xuất và nghiên cứu khoa học là ứng dụng của Tin học trong\\ldots .",
+          "options": {
+            "A": "Văn phòng",
+            "B": "Trí tuệ nhân tạo",
+            "C": "Giải trí",
+            "D": "Giải các bài toán khoa học kỹ thuật"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q46"
+        },
+        {
+          "text": "Các thành tựu của tin học cần được nhìn nhận trên mấy phương diện?",
+          "options": {
+            "A": "2",
+            "B": "3",
+            "C": "4",
+            "D": "5"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q47"
+        },
+        {
+          "text": "E-commerce, E-learning, E-government,... là ứng dụng của Tin học trong:",
+          "options": {
+            "A": "Truyền thông",
+            "B": "Tự động hóa",
+            "C": "Văn phòng",
+            "D": "Giải trí"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q48"
+        },
+        {
+          "text": "Theo phạm vi địa lí, mạng máy tính chia thành mấy loại?",
+          "options": {
+            "A": "3.",
+            "B": "4.",
+            "C": "2.",
+            "D": "5."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q49"
+        },
+        {
+          "text": "Các mạng LAN có thể kết nối với nhau tạo thành một mạng lưới rộng lớn  thông qua thiết bị nào?",
+          "options": {
+            "A": "Switch.",
+            "B": "HUB.",
+            "C": "Router.",
+            "D": "Mô-đem."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q50"
+        },
+        {
+          "text": "Việc chia sẻ các tài nguyên mạng theo nhu cầu qua Internet miễn phí hoặc trả phí theo hạn mức sử dụng được gọi là:",
+          "options": {
+            "A": "Trí tuệ nhân tạo",
+            "B": "Dịch vụ đám mây",
+            "C": "Kết nối vạn vật",
+            "D": "Dữ liệu lớn"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q51"
+        },
+        {
+          "text": "Phát biểu nào đúng?",
+          "options": {
+            "A": "IoT là mạng kết nối các thiết bị thông minh thông qua mạng internet nhằm thu thập dữ liệu trên phạm vi toàn cầu",
+            "B": "IoT là mạng của các thiết bị thông minh nhằm thu thập và xử lí dữ liệu tự động",
+            "C": "IoT là mạng của các thiết bị tiếp nhận tín hiệu",
+            "D": "IoT là mạng của các máy tính, nhằm trao đổi dữ liệu với nhau"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q52"
+        },
+        {
+          "text": "Một mạng máy mà chỉ kết nối các máy tính trong một phạm vi nhỏ như một phòng học được là mạng?",
+          "options": {
+            "A": "Mạng diện rộng WAN.",
+            "B": "Mạng cục bộ LAN.",
+            "C": "Kết nối của nhiều mạng diện rộng.",
+            "D": "Mạng thông tin toàn cầu Internet."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q53"
+        },
+        {
+          "text": "Phát biểu nào đúng trong các phát biểu sau?",
+          "options": {
+            "A": "Bất cứ dịch vụ trực tuyến nào (dịch vụ tương tác qua Internet) đều là dịch vụ đám mây.",
+            "B": "Báo điện tử đăng tin tức hàng ngày là dịch vụ đám mây.",
+            "C": "Nhắn tin ngắn trên điện thoại (SMS) là sử dụng dịch vụ đám mây.",
+            "D": "Web-mail (thư điện tử trên giao diện web) là dịch vụ đám mây."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q54"
+        },
+        {
+          "text": "Lưu trữ thông tin trên Internet qua Google drive là thuê?",
+          "options": {
+            "A": "ứng dụng.",
+            "B": "C. phần mềm.",
+            "C": "",
+            "D": "dịch vụ."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q55"
+        },
+        {
+          "text": "Chọn đáp án đúng. Hành động nào không là hành vi bắt nạt trên không gian mạng?",
+          "options": {
+            "A": "Đưa tin bịa đặt.",
+            "B": "Vu khống.",
+            "C": "Tống tiến, ép buộc làm điều xấu.",
+            "D": "Tổ chức học Online."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q56"
+        },
+        {
+          "text": "Điều nào sau đây sai khi nói về các đặc điểm của virus?",
+          "options": {
+            "A": "Virus là các chương trình gây nhiễu hoặc phá hoại.",
+            "B": "Virus có khả năng tự nhân bản để lây lan.",
+            "C": "Virus không phải là một chương trình hoàn chỉnh.",
+            "D": "Virus chỉ hoạt động trên HĐH Windows."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q57"
+        },
+        {
+          "text": "Đưa thông tin không phù hợp lên mạng có thể bị coi là vi phạm gì?",
+          "options": {
+            "A": "Vi phạm pháp luật",
+            "B": "Vi phạm đạo đức.",
+            "C": "Tùy theo nội dung và hậu quả, có thể vi phạm pháp luật hay đạo đức.",
+            "D": "Không vi phạm"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q58"
+        },
+        {
+          "text": "Hành vi nào sau đây không vi phạm đạo đức, pháp luật và văn hóa khi sử dụng mạng?",
+          "options": {
+            "A": "Đưa thông tin không phù hợp lên mạng.",
+            "B": "Mua bản quyền phần mềm.",
+            "C": "Bắt nạt qua mạng.",
+            "D": "Ứng xử thiếu văn hóa."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q59"
+        },
+        {
+          "text": "Điều 8 khoản 1 Luật An ninh mạng cấm sử dụng không gian mạng để thực hiện hành vi nào sau đây?",
+          "options": {
+            "A": "Chia sẻ tài liệu qua mạng.",
+            "B": "Gửi thư điện tử.",
+            "C": "Tạo nhóm trao đổi thông tin.",
+            "D": "Xúi giục, lôi kéo, kích động người khác phạm tội."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q60"
+        },
+        {
+          "text": "Luật An ninh mạng được Quốc hội Việt Nam ban hành vào năm nào?",
+          "options": {
+            "A": "1998",
+            "B": "2008",
+            "C": "2018",
+            "D": "2017"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q61"
+        },
+        {
+          "text": "Chỉ mua quyền sử dụng thì người mua có thể làm gì đối với sản phẩm?",
+          "options": {
+            "A": "Chỉ sử dụng.",
+            "B": "Kinh doanh",
+            "C": "Bán",
+            "D": "Không thể tác động gì."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q62"
+        },
+        {
+          "text": "Đâu không phải là dịch vụ chủ yếu của điện toán đám mây?",
+          "options": {
+            "A": "SaaS",
+            "B": "PaaS",
+            "C": "DaaS",
+            "D": "IaaS"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q63"
+        },
+        {
+          "text": "Phát biểu nào sau đây đúng?",
+          "options": {
+            "A": "Dữ liệu chỉ có trong máy tính.",
+            "B": "Dữ liệu là những giá trị số do con người nghĩ ra.",
+            "C": "Dữ liệu được thể hiện dạng văn bản, hình ảnh, âm thanh.",
+            "D": "Dữ liệu chỉ có thể được hiểu bởi những người có"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q64"
+        },
+        {
+          "text": "Chúng ta gọi dữ liệu hay lệnh được gõ vào máy tính là gì?",
+          "options": {
+            "A": "Thông tin máy tính.",
+            "B": "Thông tin vào.",
+            "C": "Thông tin ra.",
+            "D": "Dữ liệu được lưu trữ"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q65"
+        },
+        {
+          "text": "Nghe bản tin dự báo thời tiết “Ngày mai trời có thể nắng”, em sẽ xử lý thông tin và quyết định như thế nào (thông tin ra)?",
+          "options": {
+            "A": "Mặc đồng phục.",
+            "B": "Đi học mang theo áo mưa.",
+            "C": "Ăn sáng trước khi đến trường",
+            "D": "Đi học mang theo ô mũ"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q66"
+        },
+        {
+          "text": "Thiết bị nào dưới đây là thiết bị thông minh:",
+          "options": {
+            "A": "Đồng hồ kết nối với điện thoại qua Bluetooth.",
+            "B": "Cân.",
+            "C": "Ổ cắm.",
+            "D": "Khóa đa năng."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q67"
+        },
+        {
+          "text": "Trong điện toán đám mây, IaaS có nghĩa là gì?",
+          "options": {
+            "A": "Cơ sở hạ tầng như là dịch vụ.",
+            "B": "Nền tảng như là dịch vụ.",
+            "C": "Phần mềm như là dịch vụ.",
+            "D": "Giao tiếp như là dịch vụ."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q68"
+        },
+        {
+          "text": "Phần mềm chống virus Window Defender được tích hợp trên hệ điều hành nào?",
+          "options": {
+            "A": "MS-DOS.",
+            "B": "Window XP.",
+            "C": "Window 10, 11.",
+            "D": "Window 7."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q69"
+        },
+        {
+          "text": "Phần mềm độc hại viết ra có tác dụng gì?",
+          "options": {
+            "A": "Dùng để hỗ trợ các ứng dụng.",
+            "B": "Dùng với ý đồ xấu, gây ra tác động không mong muốn.",
+            "C": "Cải thiện khả năng xử lí của máy tính.",
+            "D": "Được cài đặt vào máy tính để diệt các loại virus máy tính."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q70"
+        },
+        {
+          "text": "Phát biểu nào sau đây là đúng về Virus máy tính.",
+          "options": {
+            "A": "Virus không phải là phần mềm hoàn chỉnh.",
+            "B": "Virus là phần mềm hoàn chỉnh.",
+            "C": "Virus giúp cho máy tính hoạt động hiệu quả.",
+            "D": "Virus là phần mềm được cài đặt vào máy tính để ngăn chặn phần mềm độc hại."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q71"
+        },
+        {
+          "text": "Ứng dụng của google.com.vn không hỗ trợ việc làm gì trong các công việc sau:",
+          "options": {
+            "A": "Chuyển đổi hình ảnh thành lời nói.",
+            "B": "Chuyển đổi lời nói thành văn bản.",
+            "C": "Chuyển đổi qua lại ngôn ngữ của một số quốc gia trên thế giới.",
+            "D": "Hỗ trợ tìm kiếm bằng văn bản hoặc giọng nói."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q72"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Khi tìm hiểu về các đơn vị lưu trữ dữ liệu. Giáo viên cho học sinh nghiên cứu sách giáo khoa có nội dung: “Các máy tính ngày nay đều tổ chức bộ nhớ thành những đơn vị lưu trữ có độ dài bằng bội của byte như 2, 4 hay 8 byte. Cách tổ chức như vậy rất tiện cho lưu trữ và truy cập dữ liệu”. Sau đó học sinh đã đưa ra các kết luận sau:",
+          "items": {
+            "a": {
+              "text": "Các đơn vị dữ liệu hơn kém nhau 1024 lần.",
+              "answer": true
+            },
+            "b": {
+              "text": "Byte là đơn vị dữ liệu nhỏ nhất mà máy tính truy cập được.",
+              "answer": true
+            },
+            "c": {
+              "text": "1byte gồm 10 bit.",
+              "answer": false
+            },
+            "d": {
+              "text": "Các đơn vị nhớ trên máy tính chỉ biểu diễn được số nguyên, không biểu diễn được số thực.",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Giả sử để số hóa một cuốn sách kể cả văn bản và hình ảnh cần khối lượng dữ liệu khoảng 100MB. Thư viện của trường có khoảng 1500 cuốn sách.",
+          "items": {
+            "a": {
+              "text": "Chỉ số hoá được phần hình ảnh của các cuốn sách, phần văn bản thì không.",
+              "answer": false
+            },
+            "b": {
+              "text": " Nếu số hoá, sẽ cần 100GB để lưu trữ.",
+              "answer": false
+            },
+            "c": {
+              "text": " Có thể chứa nội dung số hoá trong thẻ nhớ 256GB.",
+              "answer": true
+            },
+            "d": {
+              "text": "Lưu trữ 1500 cuốn sách mất nhiều không gian hơn 150 000MB.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Quan sát hình sau:",
+          "items": {
+            "a": {
+              "text": "Để lưu trữ tệp 1_lớp 1.png cần số đơn vị nhớ trên máy tính là 20KB.",
+              "answer": false
+            },
+            "b": {
+              "text": "Danh sách các tệp ảnh được sắp xếp theo kích thước ảnh.",
+              "answer": false
+            },
+            "c": {
+              "text": "Ta có thể gửi các ảnh trên lên Drive.",
+              "answer": true
+            },
+            "d": {
+              "text": " Theo độ lớn trung bình của các ảnh trên, thẻ 2GB có thể chứa tối đa 81 ảnh.",
+              "answer": true
+            }
+          },
+          "image": "data:image/jpeg;base64,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",
+          "id": "p2_q3"
+        },
+        {
+          "text": "Thiết bị thông minh như điện thoại di động, máy tính bảng, và các thiết bị IoT (Internet of Things) đã trở thành một phần không thể thiếu trong đời sống hàng ngày. Chúng giúp con người quản lý công việc, giao tiếp, giải trí và thậm chí điều khiển các thiết bị gia dụng từ xa.",
+          "items": {
+            "a": {
+              "text": " Thiết bị thông minh chỉ được sử dụng để giải trí và không có nhiều ứng dụng thực tiễn trong cuộc sống hàng ngày.",
+              "answer": false
+            },
+            "b": {
+              "text": " Điện thoại di động thông minh có thể được sử dụng để điều khiển các thiết bị gia dụng từ xa.",
+              "answer": true
+            },
+            "c": {
+              "text": " Thiết bị thông minh không ảnh hưởng gì đến cách con người giao tiếp trong xã hội hiện đại.",
+              "answer": false
+            },
+            "d": {
+              "text": " Sự phổ biến của thiết bị thông minh đã làm giảm sự cần thiết của các thiết bị truyền thống như máy tính bàn trong đời sống hàng ngày.",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        },
+        {
+          "text": "Tin học đóng vai trò quan trọng trong việc tối ưu hóa các quy trình sản xuất, quản lý doanh nghiệp, và cung cấp các dịch vụ công nghệ cao. Hệ thống quản lý dữ liệu, phần mềm quản lý doanh nghiệp (ERP), và các công nghệ tự động hóa là những ví dụ điển hình.",
+          "items": {
+            "a": {
+              "text": " Tin học không có ảnh hưởng gì đến việc tối ưu hóa quy trình sản xuất trong các doanh nghiệp.",
+              "answer": false
+            },
+            "b": {
+              "text": " Các phần mềm quản lý doanh nghiệp (ERP) giúp doanh nghiệp quản lý hiệu quả các nguồn lực như nhân lực, tài chính và vật liệu.",
+              "answer": true
+            },
+            "c": {
+              "text": " Ứng dụng tin học trong sản xuất không giúp doanh nghiệp tăng tính cạnh tranh trên thị trường.",
+              "answer": false
+            },
+            "d": {
+              "text": " Tin học giúp tạo ra các hệ thống tự động hóa trong sản xuất, từ đó giảm thiểu sự can thiệp của con người và giảm rủi ro sai sót.",
+              "answer": true
+            }
+          },
+          "id": "p2_q5"
+        },
+        {
+          "text": "Tin học và các thiết bị thông minh đã cách mạng hóa lĩnh vực giáo dục, từ việc tạo ra các phương pháp học tập mới đến việc cung cấp các nguồn tài nguyên học tập trực tuyến và hỗ trợ học tập từ xa.",
+          "items": {
+            "a": {
+              "text": " Các thiết bị thông minh chỉ được sử dụng để giải trí trong giáo dục, không có giá trị học tập thực tiễn.",
+              "answer": false
+            },
+            "b": {
+              "text": " Học tập từ xa qua mạng không bao giờ hiệu quả bằng việc học trực tiếp tại lớp học.",
+              "answer": false
+            },
+            "c": {
+              "text": " Tin học cho phép giáo viên tạo ra các phương pháp giảng dạy sáng tạo và cá nhân hóa việc học tập cho từng học sinh.",
+              "answer": true
+            },
+            "d": {
+              "text": "Thiết bị thông minh và tin học đã giúp nâng cao chất lượng giáo dục ở các vùng sâu, vùng xa nơi khó tiếp cận với giáo dục truyền thống.",
+              "answer": true
+            }
+          },
+          "id": "p2_q6"
+        },
+        {
+          "text": "Trợ thủ số cá nhân hay PDA là thiết bị số tích hợp nhiều chức năng và phần mềm ứng dụng hữu ích cho người dùng với đặc điểm quan trọng là nhỏ gọn, có khả năng kết nối mạng.",
+          "items": {
+            "a": {
+              "text": "Điện thoại thông minh là một trợ thủ số cá nhân.",
+              "answer": true
+            },
+            "b": {
+              "text": "Androi và Ios là hai hệ điều hành phổ biến của trợ thủ số cá nhân.",
+              "answer": true
+            },
+            "c": {
+              "text": "Kết nối hồng ngoại là kết nối chủ yếu của trợ thủ số cá nhân.",
+              "answer": false
+            },
+            "d": {
+              "text": "Trợ thủ số cá nhân chỉ một số người làm nhiệm vụ quan trọng như bảo vệ Tổ quốc, truy bắt tội phạm\\ldots  mới được dùng.",
+              "answer": false
+            }
+          },
+          "id": "p2_q7"
+        },
+        {
+          "text": "Trợ thủ số cá nhân hay PDA là thiết bị số tích hợp nhiều chức năng và phần mềm ứng dụng hữu ích cho người dùng với đặc điểm quan trọng là nhỏ gọn, có khả năng kết nối mạng.",
+          "items": {
+            "a": {
+              "text": "Máy tính bảng là một trợ thủ số cá nhân.",
+              "answer": true
+            },
+            "b": {
+              "text": "Androi là hệ điều hành duy nhất của trợ thủ số cá nhân.",
+              "answer": false
+            },
+            "c": {
+              "text": " Kết nối wifi không là kết nối của trợ thủ số cá nhân.",
+              "answer": false
+            },
+            "d": {
+              "text": "Mọi người đều được sử dụng trợ thủ số cá nhân.",
+              "answer": true
+            }
+          },
+          "id": "p2_q8"
+        },
+        {
+          "text": "Quan sát hình: Trong đó 4 cụm tròn tương đương A, B, C, D\n\n\n\n\n  A        B  \n\n            \n\n  C        D",
+          "items": {
+            "a": {
+              "text": " A, B, C, D là các mạng LAN, là mạng quy mô nhỏ có chủ sở hữu.",
+              "answer": true
+            },
+            "b": {
+              "text": " Internet là mạng toàn cầu, thuộc quyền sở hữu của tất cả mọi người.",
+              "answer": false
+            },
+            "c": {
+              "text": "Wifi là một trong những cách kết nối của mạng LAN.",
+              "answer": true
+            },
+            "d": {
+              "text": "Chỉ các công ty, trường học, bệnh viện,\\ldots có nhiều máy tính nhiều hơn 10 máy mới được đăng ký mạng LAN.",
+              "answer": false
+            }
+          },
+          "image": "data:image/jpeg;base64,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",
+          "id": "p2_q9"
+        },
+        {
+          "text": "Điện toán đám mây được định nghĩa như là việc phân phối các tài nguyên Công nghệ thông tin theo nhu cầu qua internet với chính sách thanh toán theo mức độ sử dụng. SaaS, PaaS, IaaS là các loại hình dịch vụ chủ yếu của điện toán đám mây.\nSử dụng dịch vụ đám mây linh hoạt hơn, tin cậy hơn, chi phí nói chung rẻ hơn so với tự mua sắm",
+          "items": {
+            "a": {
+              "text": "Báo điện tử là dịch vụ đám mây.",
+              "answer": false
+            },
+            "b": {
+              "text": "Tất cả các dịch vụ đám mây đều phải trả tiền.",
+              "answer": false
+            },
+            "c": {
+              "text": "Sử dụng dịch vụ đám mây linh hoạt hơn so với tự mua sắm",
+              "answer": true
+            },
+            "d": {
+              "text": "Máy tính, máy tính bảng, điện thoại thông minh\\ldots đều có thể sử dụng được dịch vụ điện toán đám mây.",
+              "answer": true
+            }
+          },
+          "id": "p2_q10"
+        },
+        {
+          "text": "Thu phí không dừng trên đường cao tốc",
+          "items": {
+            "a": {
+              "text": "Tại các trạm thu phí có đầy đủ các biển số xe để nhận diện cho xe đi qua.",
+              "answer": false
+            },
+            "b": {
+              "text": "Khi xe ô tô đi qua trạm thu phí không dừng thì trên xe phải có dán thẻ định danh (có thông tin về xe ô tô: biển số, chủ sở hữu, số tiền đã nộp để đi qua trạm thu phí\\ldots ).",
+              "answer": true
+            },
+            "c": {
+              "text": "Thiết bị đọc thẻ tại trạm đọc các thông tin trên thẻ định danh và lấy các thông tin và truyền về trung tâm kiểm soát, trung tâm kiểm soát sẽ kiểm tra thông tin và số tiền xe ô tô đã đóng, nếu số tiền còn thì trung tâm kiểm soát sẽ trừ tiền và truyền lệnh về trạm thu phí yêu cầu mở thanh chắn cho xem ô tô đi qua.",
+              "answer": true
+            },
+            "d": {
+              "text": "Thiết bị đọc thẻ kết nối đến trung tâm kiểm soát bằng bluetooth.",
+              "answer": false
+            }
+          },
+          "image": "data:image/jpeg;base64,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",
+          "id": "p2_q11"
+        },
+        {
+          "text": "Ngôi nhà thông minh là?",
+          "items": {
+            "a": {
+              "text": "Nhà thông minh là một ngôi nhà đẹp.",
+              "answer": false
+            },
+            "b": {
+              "text": "Khi có trộm đột nhập, camera thông minh sẽ bắt được tín hiệu của tên trộm, sau đó truyền thông tin đến điện thoại thông minh của chủ nhà, chủ nhà kết nối đến chuông báo động để rung chuông, kết nối đến các đèn để bật đèn lên, như vậy trộm sẽ không dám đột nhập.",
+              "answer": true
+            },
+            "c": {
+              "text": " Các thiết bị thông minh như đèn thông minh, camera thông minh, chuông báo động thông minh,\\ldots không có khả năng kết nối với nhau.",
+              "answer": false
+            },
+            "d": {
+              "text": "Nhà thông minh là một ví dụ về kết nối vạn vật IoT.",
+              "answer": true
+            }
+          },
+          "id": "p2_q12"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": []
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_67a6b4b7",
+  "created_by": "hongquy",
+  "scoring": {
+    "part1_total": 18.0,
+    "part1_per_question": 0.25,
+    "part2_total": 12,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 0.0,
+    "part3_per_question": 0.0,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": true,
+  "is_bank": true,
+  "bank_config": {
+    "enabled": true,
+    "draw_mode": "per_student",
+    "total_draw": 31,
+    "part1_draw": 28,
+    "part2_draw": 3,
+    "part3_draw": 0,
+    "part4_draw": 0
+  }
+}

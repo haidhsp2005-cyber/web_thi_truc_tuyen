@@ -30,6 +30,7 @@ router = APIRouter(prefix="/api/exam", tags=["exam"])
 
 @router.get("/current")
 async def get_current_exam(
+    request: Request,
     exam_id: str = "exam_001",
     student_name: str = "",
     student_class: str = "",
@@ -40,6 +41,15 @@ async def get_current_exam(
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
     
+    is_published = exam.get("is_published")
+    if is_published is None:
+        is_published = True
+    if not is_published:
+        raise HTTPException(
+            status_code=403, 
+            detail="Đề thi này đang ở trạng thái CHƯA XUẤT BẢN. Không thể vào làm bài thi!"
+        )
+
     heal_exam_data(exam)
 
     # Nếu là đề ngân hàng, bốc ngẫu nhiên theo hạt giống (seed) của học sinh
@@ -365,18 +375,33 @@ def to_ascii_slug(text: str) -> str:
 
 
 @router.get("/export/excel")
-async def export_excel(exam_id: Optional[str] = None, student_class: Optional[str] = None, subject: Optional[str] = None):
+async def export_excel(
+    request: Request,
+    exam_id: Optional[str] = None,
+    student_class: Optional[str] = None,
+    subject: Optional[str] = None
+):
     """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Môn thi, Đề thi và theo Lớp."""
     try:
+        from ..services.auth_service import get_current_user_from_request
+        from .exam_builder import _list_exam_files
+        current_user = get_current_user_from_request(request)
+        is_super_admin = bool(
+            current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+        )
+
         clean_class = student_class.strip().upper() if student_class and student_class.strip() else None
         clean_exam_id = exam_id.strip() if exam_id and exam_id.strip() else None
         clean_subject = subject.strip() if subject and subject.strip() and subject.strip() != "all" else None
         
         submissions = get_all_submissions(exam_id=clean_exam_id, student_class=clean_class)
-        
-        if clean_subject:
-            from .exam_builder import _list_exam_files
-            all_exams = _list_exam_files()
+        all_exams = _list_exam_files()
+
+        # Lọc theo quyền giáo viên (chỉ Super Admin mới xuất điểm tất cả các môn)
+        if current_user and not is_super_admin:
+            accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
+            submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
+        elif clean_subject:
             sub_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_subject.lower()}
             submissions = [s for s in submissions if s.get('exam_id') in sub_exam_ids]
 

@@ -1,0 +1,343 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN HỌC LỚP 9 ĐỀ 2",
+  "subject": "Toán học",
+  "grade": "9",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cặp số nào sau đây là nghiệm của hệ phương trình  $\\begin{cases} 2x+y=5 \\\\ x-y=1 \\end{cases}$ ?",
+          "options": {
+            "A": "$(2;1)$",
+            "B": "$(2;2)$",
+            "C": "$(3;1)$",
+            "D": "$(1;2)$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Một chiếc thang dài  $4 m$  đặt tựa vào tường và tạo với mặt đất góc  ${60}^{∘}$ . Khoảng cách từ chân thang đến tường bằng",
+          "options": {
+            "A": "$2\\sqrt{3} m$",
+            "B": "$1 m$",
+            "C": "$2 m$",
+            "D": "$3 m$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Phương trình bậc hai  $x^{2}-4x+3=0$  có tích hai nghiệm  $x_{1}\\cdot x_{2}$  bằng:",
+          "options": {
+            "A": "-3",
+            "B": "3",
+            "C": "-4",
+            "D": "4"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Cho hai góc nhọn  $\\alpha$  và  $\\beta$  phụ nhau. Đẳng thức nào sau đây là sai?",
+          "options": {
+            "A": "$sin\\alpha =sin\\beta$",
+            "B": "$tan\\alpha =cot\\beta$",
+            "C": "$sin\\alpha =cos\\beta$",
+            "D": "$cos\\alpha =sin\\beta$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Cho tam giác  $ABC$  vuông tại  $A$  có  $AB=3 cm$  và  $AC=4 cm$ . Giá trị của  $sinB$  bằng",
+          "options": {
+            "A": "$\\frac{4}{5}$",
+            "B": "$\\frac{3}{4}$",
+            "C": "$\\frac{4}{3}$",
+            "D": "$\\frac{3}{5}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Nghiệm của hệ phương trình  $\\begin{cases} 3x-2y=7 \\\\ 2x+3y=9 \\end{cases}$  là",
+          "options": {
+            "A": "$(x;y)=(1;3)$",
+            "B": "$(x;y)=(3;1)$",
+            "C": "$(x;y)=(2;1)$",
+            "D": "$(x;y)=(-3;-1)$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Với góc nhọn  $\\alpha$  tùy ý, khẳng định nào sau đây là đúng?",
+          "options": {
+            "A": "$tan\\alpha =\\frac{sin\\alpha }{cos\\alpha }$",
+            "B": "$sin^{2}\\alpha -cos^{2}\\alpha =1$",
+            "C": "$tan\\alpha =\\frac{cos\\alpha }{sin\\alpha }$",
+            "D": "$tan\\alpha \\cdot cot\\alpha =-1$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Hai bạn An và Bình có tổng cộng 15 quyển vở. Số vở của An gấp đôi số vở của Bình. Gọi  $x,y$  lần lượt là số vở của An và Bình ( $x,y\\in {\\mathbb{N}}^{*}$ ). Hệ phương trình diễn đạt bài toán là",
+          "options": {
+            "A": "$x+y=15 \\\\ x-2y=0$",
+            "B": "$x+y=15 \\\\ 2x-y=0$",
+            "C": "$x+y=15 \\\\ x+2y=0$",
+            "D": "$x-y=15 \\\\ x=2y$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Cho tam giác vuông có một góc nhọn  $\\alpha$  thỏa mãn  $cos\\alpha =\\frac{1}{2}$ . Số đo góc  $\\alpha$  là",
+          "options": {
+            "A": "${45}^{∘}$",
+            "B": "${90}^{∘}$",
+            "C": "${30}^{∘}$",
+            "D": "${60}^{∘}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Giá trị của biểu thức  $P=sin^{2}{35}^{∘}+sin^{2}{55}^{∘}$  là",
+          "options": {
+            "A": "0",
+            "B": "2",
+            "C": "1",
+            "D": "$\\frac{1}{2}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Hai tổ công nhân theo kế hoạch may được  $800$  chiếc áo trong một ngày. Thực tế, tổ I vượt mức  $10%$ , tổ II vượt mức  $20%$  nên cả hai tổ may được  $910$  chiếc áo. Số áo tổ I may trong một ngày theo kế hoạch là",
+          "options": {
+            "A": "$400$  chiếc",
+            "B": "$500$  chiếc",
+            "C": "$300$  chiếc",
+            "D": "$450$  chiếc"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Hệ phương trình  $x+my=2 \\\\ 2x+4y=4$  có vô số nghiệm khi giá trị của  $m$  bằng",
+          "options": {
+            "A": "$m=-2$",
+            "B": "$m=2$",
+            "C": "$m=4$",
+            "D": "$m=1$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một thiết bị cảm biến đo góc nhọn  $\\alpha$  trong hệ thống điều khiển tự động cho kết quả  $sin\\alpha =0,6$ . Kỹ sư cần xác định các thông số lượng giác khác để lập trình cho bộ vi xử lý.",
+          "items": {
+            "a": {
+              "text": "Giá trị của  $tan\\alpha$  bằng  $0,75$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Biểu thức  $M=sin^{2}\\alpha +cos^{2}\\alpha +tan\\alpha \\cdot cot\\alpha$  có giá trị bằng  $2$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Giá trị của  $cot\\alpha$  bằng  $1,25$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Giá trị của  $cos\\alpha$  bằng  $0,8$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Một khu vườn hình chữ nhật có chu vi  $50 m$ . Nếu tăng chiều dài thêm  $5 m$  và giảm chiều rộng đi  $3 m$  thì diện tích không đổi. Gọi  $x (m)$  là chiều dài,  $y (m)$  là chiều rộng ban đầu của vườn.",
+          "items": {
+            "a": {
+              "text": "Điều kiện của các ẩn là  $0<y<x<25$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Chiều dài ban đầu của khu vườn là  $18 m$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Phương trình biểu diễn mối liên hệ về diện tích là  $(x+5)(y-3)=xy$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Nửa chu vi hình chữ nhật là  $25 m$  nên ta có phương trình  $x+y=25$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Trong một dự án thiết kế kiến trúc, một mái che tam giác  $ABC$  vuông tại  $A$  được lắp đặt với góc  $B^={30}^{∘}$  và cạnh huyền  $BC=12 m$ . Kỹ sư cần tính toán các thông số kỹ thuật để đảm bảo độ bền và thẩm mỹ.",
+          "items": {
+            "a": {
+              "text": "Diện tích mái che là  $36\\sqrt{3}{ m^{2}}$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Độ dài cạnh  $AB$  bằng  $6\\sqrt{3} m$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Độ dài cạnh  $AC$  bằng  $6 m$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Giá trị của  $tanC$  bằng  $\\sqrt{3}$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Một người quan sát đứng trên đài quan sát của một ngọn hải đăng cao 40 m so với mực nước biển, nhìn thấy một con tàu chở hàng đang neo đậu ngoài khơi với góc hạ là  ${30}^{∘}$ . Cùng thời điểm đó, một chiếc ca nô tuần tra đang di chuyển hướng thẳng về phía chân ngọn hải đăng và người quan sát nhìn thấy chiếc ca nô dưới góc hạ là  ${45}^{∘}$ . Giả sử chân ngọn hải đăng, con tàu và ca nô cùng nằm trên một mặt phẳng nằm ngang mặt biển.",
+          "items": {
+            "a": {
+              "text": "Khoảng cách từ chân ngọn hải đăng đến chiếc ca nô tại thời điểm quan sát là  $40 m$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Khoảng cách giữa chiếc ca nô và con tàu tại thời điểm quan sát đúng bằng  $20 m$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Khoảng cách từ chân ngọn hải đăng đến con tàu đang neo đậu là  $40\\sqrt{3} m$  (khoảng  $69,28 m$ ).",
+              "answer": true
+            },
+            "d": {
+              "text": "Nếu ca nô tiếp tục di chuyển với vận tốc đều  $8 m/s$  hướng về hải đăng thì sau đúng 5 giây ca nô sẽ cập sát chân hải đăng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tính giá trị của biểu thức  $A=2sin{30}^{∘}+4cos{60}^{∘}-tan{45}^{∘}$ .",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Một cột cờ dựng thẳng đứng có bóng trên mặt đất dài  $7,5 m$ . Góc tạo bởi tia nắng mặt trời và mặt đất tại thời điểm đó là  ${45}^{∘}$ . Chiều cao của cột cờ là bao nhiêu mét?",
+          "answer": "7,5",
+          "accepted_answers": [
+            "7,5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Cho hệ phương trình  $\\begin{cases} 3x+my=2 \\\\ x+2y=1 \\end{cases}$ . Tìm giá trị của tham số  $m$  để hệ phương trình vô nghiệm.",
+          "answer": "6",
+          "accepted_answers": [
+            "6"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Một nông trại nuôi gà và thỏ có tổng cộng 35 con. Người ta đếm được tất cả 100 cái chân. Hỏi nông trại đó có bao nhiêu con thỏ?",
+          "answer": "15",
+          "accepted_answers": [
+            "15"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tính giá trị của biểu thức  $B=sin^{2}{20}^{∘}+sin^{2}{70}^{∘}+tan{35}^{∘}\\cdot tan{55}^{∘}$ .",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Tìm nghiệm  $x$  của hệ phương trình  $\\begin{cases} 2x+3y=13 \\\\ 5x-y=7 \\end{cases}$ .",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_586ffd1e",
+  "created_by": "admin",
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": true
+}

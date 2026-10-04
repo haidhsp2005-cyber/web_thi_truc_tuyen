@@ -1,0 +1,439 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN 8 ĐỀ 2",
+  "subject": "Toán học",
+  "grade": "8",
+  "duration_minutes": 45,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho ba đa thức  $A=5 x^{2}$ ,  $B=2 x^{2}$  và  $C=x^{2}$ . Biểu thức  $A-B+C$  bằng:",
+          "options": {
+            "A": "$2 x^{2}$",
+            "B": "$4 x^{2}$",
+            "C": "$6 x^{2}$",
+            "D": "$8 x^{2}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Cho hai đơn thức  $A=5x$  và  $B=2x$ . Hiệu  $A-B$  bằng:",
+          "options": {
+            "A": "$3 x^{2}$",
+            "B": "$10x$",
+            "C": "$3x$",
+            "D": "$7x$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Kết quả của phép nhân  $2x(x-3)$  là:",
+          "options": {
+            "A": "$x^{2}-6x$",
+            "B": "$2x-6x$",
+            "C": "$2 x^{2}-3$",
+            "D": "$2 x^{2}-6x$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Cho hai đơn thức  $A=2 x^{2}$  và  $B=3 x^{2}$ . Tổng của hai đơn thức  $A$  và  $B$  là:",
+          "options": {
+            "A": "$6 x^{4}$",
+            "B": "$5 x^{4}$",
+            "C": "$5 x^{2}$",
+            "D": "$6 x^{2}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Cho ba đa thức  $A=4 x^{2}-3x$ ,  $B=x^{2}+x$  và  $C=2 x^{2}-x$ . Tổng  $A+B+C$  là:",
+          "options": {
+            "A": "$7 x^{2}-5x$",
+            "B": "$7 x^{2}+3x$",
+            "C": "$5 x^{2}-3x$",
+            "D": "$7 x^{2}-3x$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Tích của hai đơn thức  $2x$  và  $3 x^{3}$  là:",
+          "options": {
+            "A": "$6 x^{4}$",
+            "B": "$6 x^{3}$",
+            "C": "$5 x^{4}$",
+            "D": "$5 x^{3}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Cho hai đa thức  $A=x^{2}+2x$  và  $B=x^{2}-x$ . Tổng  $A+B$  là:",
+          "options": {
+            "A": "$x^{2}+x$",
+            "B": "$2 x^{2}-x$",
+            "C": "$2 x^{2}+x$",
+            "D": "$2 x^{2}+3x$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Thương của phép chia đa thức  $(4 x^{2}-6x)$  cho đơn thức  $2x$  là:",
+          "options": {
+            "A": "$2x-3$",
+            "B": "$2 x^{2}-3$",
+            "C": "$4x-3$",
+            "D": "$2x-6$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Thương của phép chia đơn thức  $6 x^{4}$  cho  $2x$  là:",
+          "options": {
+            "A": "$12 x^{5}$",
+            "B": "$4 x^{3}$",
+            "C": "$3 x^{4}$",
+            "D": "$3 x^{3}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x^{2}+2$ ,  $B=x^{2}-2$  và  $C=5$ . Kết quả của biểu thức  $A+B+C$  là:",
+          "options": {
+            "A": "$2 x^{2}$",
+            "B": "$x^{2}+5$",
+            "C": "$2 x^{2}+5$",
+            "D": "$2 x^{2}-5$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Cho ba đa thức  $A=3x+1$ ,  $B=x-2$  và  $C=2x+3$ . Biểu thức  $A+B-C$  sau khi thu gọn là:",
+          "options": {
+            "A": "$2x+2$",
+            "B": "$4x-4$",
+            "C": "$2x-4$",
+            "D": "$6x+2$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Cho ba đa thức  $A=2 x^{2}$ ,  $B=x^{2}$  và  $C=3 x^{2}$ . Biểu thức  $A+B-C$  thu gọn bằng:",
+          "options": {
+            "A": "0",
+            "B": "$2 x^{2}$",
+            "C": "$6 x^{2}$",
+            "D": "$x^{2}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Cho ba đa thức  $A=3x$ ,  $B=4x$  và  $C=5x$ . Kết quả của  $A+B-C$  là:",
+          "options": {
+            "A": "$12x$",
+            "B": "$2x$",
+            "C": "$2 x^{2}$",
+            "D": "$7x$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x^{2}+x$ ,  $B=x^{2}-x$  và  $C=2x$ . Kết quả của biểu thức  $A+B-C$  là:",
+          "options": {
+            "A": "0",
+            "B": "$2 x^{2}-2x$",
+            "C": "$2 x^{2}$",
+            "D": "$2 x^{2}+2x$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Cho hai đa thức  $A=x^{2}+3x$  và  $B=x^{2}+x$ . Hiệu  $A-B$  là:",
+          "options": {
+            "A": "$2x$",
+            "B": "$4x$",
+            "C": "$2 x^{2}+4x$",
+            "D": "$2 x^{2}+2x$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x^{2}$ ,  $B=2 x^{2}$  và  $C=4 x^{2}$ . Tổng  $A+B+C$  bằng:",
+          "options": {
+            "A": "$7 x^{2}$",
+            "B": "$7 x^{4}$",
+            "C": "$6 x^{2}$",
+            "D": "$8 x^{2}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x^{2}+1$ ,  $B=x^{2}+2$  và  $C=2 x^{2}$ . Giá trị của biểu thức  $A+B-C$  là:",
+          "options": {
+            "A": "$4 x^{2}+3$",
+            "B": "3",
+            "C": "$3 x^{2}$",
+            "D": "0"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Kết quả của phép nhân  $(x+1)(x+2)$  là:",
+          "options": {
+            "A": "$x^{2}+3x+2$",
+            "B": "$x^{2}+3x+3$",
+            "C": "$x^{2}+2$",
+            "D": "$x^{2}+x+2$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x+1$ ,  $B=x-1$  và  $C=2$ . Tổng  $A+B+C$  bằng:",
+          "options": {
+            "A": "$2x-2$",
+            "B": "$2x+2$",
+            "C": "2",
+            "D": "$2x$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x^{2}-x$ ,  $B=x^{2}+x$  và  $C=2 x^{2}$ . Giá trị của biểu thức  $A+B-C$  là:",
+          "options": {
+            "A": "$-2x$",
+            "B": "0",
+            "C": "$4 x^{2}$",
+            "D": "$2 x^{2}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho đơn thức  $M=2 x^{2}$  và đa thức  $N=3 x^{3}-x+5$ . Xét tính đúng sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Hệ số cao nhất của đa thức  $M\\cdot N$  bằng  $10$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Bậc của đa thức  $M\\cdot N$  bằng  $5$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Tích  $M\\cdot N=6 x^{5}-2 x^{3}+10 x^{2}$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Giá trị của  $M\\cdot N$  tại  $x=1$  bằng  $15$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Cho ba đa thức  $A=3 x^{2}-x$ ,  $B=x^{2}+2x$  và  $C=2 x^{2}-3x$ . Xét tính đúng sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Tổng  $A+B=4 x^{2}+x$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Hiệu  $A-C=x^{2}+2x$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Biểu thức  $A+B-C=2 x^{2}+4x$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Biểu thức  $A+B+C=5 x^{2}+2x$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Cho ba đa thức  $P=x^{2}-3x+2$ ,  $Q=2 x^{2}+x-1$  và  $R=-3 x^{2}+2x$ . Xét tính đúng sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Tổng  $P+Q=3 x^{2}-2x+1$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Giá trị của biểu thức  $P+Q+R$  tại mọi  $x$  luôn bằng  $1$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Hiệu  $P-Q=-x^{2}-4x+3$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Tổng  $P+Q+R=-x^{2}+1$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Cho hai đa thức  $A=x^{2}+2x+1$  và  $B=x^{2}-2x+1$ . Xét tính đúng sai của các mệnh đề sau:",
+          "items": {
+            "a": {
+              "text": "Giá trị của đa thức  $A$  tại  $x=1$  bằng  $2$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Tổng của hai đa thức  $A$  và  $B$  là  $2 x^{2}+2$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Hiệu  $A-B$  bằng  $4x$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Hiệu  $B-A$  bằng  $4x$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho hai đa thức  $A=2 x^{2}+3x$  và  $B=x^{2}-x$ . Tính giá trị của đa thức  $A+B$  tại  $x=2$ .",
+          "answer": "16",
+          "accepted_answers": [
+            "16"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Cho hai đa thức  $A=5 x^{2}-x$  và  $B=2 x^{2}+x$ . Tính giá trị của hiệu  $A-B$  tại  $x=3$ .",
+          "answer": "21",
+          "accepted_answers": [
+            "21"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Cho ba đa thức  $A=3 x^{2}$ ,  $B=2 x^{2}$  và  $C=-x^{2}$ . Tính giá trị của biểu thức  $A+B+C$  tại  $x=10$ .",
+          "answer": "400",
+          "accepted_answers": [
+            "400"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Cho hai đa thức  $A=x^{2}-4$  và  $B=-x^{2}+2x$ . Tính giá trị của biểu thức  $A+B$  tại  $x=5$ .",
+          "answer": "6",
+          "accepted_answers": [
+            "6"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Cho đa thức  $P(x)=5 x^{3}-2 x^{2}+4x-1$  và  $Q(x)=2 x^{3}+x^{2}-3x+5$ . Tìm hệ số của  $x^{2}$  trong đa thức hiệu  $P(x)-Q(x)$ .",
+          "answer": "-3",
+          "accepted_answers": [
+            "-3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Cho ba đa thức  $A=x+2$ ,  $B=x-2$  và  $C=3$ . Tính giá trị của biểu thức  $A+B-C$  tại  $x=5$ .",
+          "answer": "7",
+          "accepted_answers": [
+            "7"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_7cf7f732",
+  "created_by": "admin",
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 1.0,
+    "part3_per_question": 0.1667,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": true
+}

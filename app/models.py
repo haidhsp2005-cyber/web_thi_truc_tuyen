@@ -69,6 +69,11 @@ class DeleteUserRequest(BaseModel):
     username: str
 
 
+class UpdateRoleRequest(BaseModel):
+    username: str
+    role: str
+
+
 class ExamConfig(BaseModel):
     exam_id: str
     duration_minutes: int = 45

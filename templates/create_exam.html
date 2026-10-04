@@ -257,6 +257,47 @@
         </div>
       </div>
 
+      <!-- Trạng thái xuất bản (Đỏ: Chưa xuất bản / Xanh: Đã xuất bản) -->
+      <div class="md:col-span-3 rounded-2xl p-4 sm:p-5 border-2 transition-all shadow-xs"
+        :class="exam.is_published ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-300' : 'bg-gradient-to-r from-red-50 to-rose-50 border-red-300'">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xl" x-text="exam.is_published ? '🟢' : '🔴'"></span>
+              <label class="font-black text-gray-900 text-sm sm:text-base">
+                Trạng thái xuất bản: <span x-text="exam.is_published ? 'Đã xuất bản (Học sinh thấy)' : 'Chưa xuất bản (Đang ẩn)'"></span>
+              </label>
+              <span x-show="exam.is_published" class="bg-emerald-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                ✓ Hiển thị trên web thi trực tuyến
+              </span>
+              <span x-show="!exam.is_published" class="bg-red-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                ✕ Đang ẩn khỏi học sinh (Mặc định khi tạo mới)
+              </span>
+            </div>
+            <p class="text-xs text-gray-600 leading-relaxed">
+              <template x-if="exam.is_published">
+                <span class="text-emerald-800 font-medium">
+                  Đề thi <strong>đang hiển thị công khai</strong>, học sinh có thể chọn và làm bài trên trang web.
+                </span>
+              </template>
+              <template x-if="!exam.is_published">
+                <span class="text-red-800 font-medium">
+                  Đề thi <strong>chưa xuất bản (màu đỏ)</strong>, chỉ giáo viên thấy trên hệ thống, hoàn toàn ẩn khỏi giao diện học sinh.
+                </span>
+              </template>
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0">
+            <button type="button" @click="exam.is_published = !exam.is_published"
+              :class="exam.is_published ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'"
+              class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow cursor-pointer flex items-center gap-1.5">
+              <span x-text="exam.is_published ? '🟢 Đã xuất bản (Bấm để ẩn)' : '🔴 Bấm để Xuất bản lên web'"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Khung cấu trúc thang điểm -->
       <div class="md:col-span-3 bg-blue-50/70 rounded-2xl p-4 border border-blue-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
         <div>
@@ -742,6 +783,12 @@
     </button>
   </div>
 
+  <!-- Chân trang Bản quyền -->
+  <footer class="mt-8 py-6 border-t border-gray-200 text-center text-xs text-gray-500 space-y-1">
+    <p class="font-bold text-gray-700 text-sm">Bản quyền: Giáo viên tin học - THPT Long Cang</p>
+    <p class="text-gray-400">Hệ thống Kiểm tra Trực tuyến &copy; 2026 — Chuẩn Bộ Giáo dục và Đào tạo</p>
+  </footer>
+
 </div>
 
 <!-- ===================== MODAL NHẬP NHANH ĐỀ THI ===================== -->
@@ -1027,8 +1074,9 @@ function examBuilder() {
           body: formData
         });
         const data = await res.json();
-        if (res.ok && data.url) {
-          q.image = data.url;
+        const imgUrl = data.url || data.image_url;
+        if (res.ok && imgUrl) {
+          q.image = imgUrl;
           this.showMsg('Đã tải hình ảnh / đồ thị lên thành công!', true);
         } else {
           alert(data.detail || 'Lỗi khi tải ảnh lên máy chủ!');
@@ -1056,8 +1104,9 @@ function examBuilder() {
               body: formData
             });
             const data = await res.json();
-            if (res.ok && data.url) {
-              q.image = data.url;
+            const imgUrl = data.url || data.image_url;
+            if (res.ok && imgUrl) {
+              q.image = imgUrl;
               this.showMsg('Đã dán hình ảnh từ clipboard (Ctrl+V) thành công!', true);
             } else {
               alert(data.detail || 'Lỗi khi tải ảnh dán lên!');
@@ -1101,6 +1150,7 @@ function examBuilder() {
       grade: '12',
       duration_minutes: 50,
       is_online_exam: false,
+      is_published: false,
       scoring: {},
       parts: {
         part1: {
@@ -1234,9 +1284,11 @@ function examBuilder() {
       });
       this.exam = data;
       this.exam.is_online_exam = data.is_online_exam !== undefined ? Boolean(data.is_online_exam) : false;
+      this.exam.is_published = data.is_published !== undefined ? Boolean(data.is_published) : true;
       if (isClone) {
         this.exam.id = ''; // Xoá id để khi bấm Lưu sẽ tạo thành đề mới độc lập
         this.exam.title = (data.title || '').replace(' (Bản sao)', '') + ' (Bản sao)';
+        this.exam.is_published = false; // Đề tạo mới nhân bản mặc định màu đỏ
       } else {
         // Giữ nguyên id và title để khi bấm Lưu sẽ cập nhật đè lên đúng file này
         const editId = new URLSearchParams(window.location.search).get('edit');
@@ -1764,9 +1816,12 @@ function examBuilder() {
         if (r.ok) {
           this.exam.id = data.exam_id;
           this.savedExamId = data.exam_id;
-          this.showMsg(`Đã lưu đề thi "${this.exam.title}" thành công! Học sinh đã có thể chọn đề này để thi.`, true);
+          const pubNote = this.exam.is_published 
+            ? '(Đã xuất bản 🟢: Học sinh có thể chọn đề để thi trực tuyến)'
+            : '(Chưa xuất bản 🔴: Đang ẩn khỏi học sinh - bấm nút xuất bản khi sẵn sàng)';
+          this.showMsg(`Đã lưu đề thi "${this.exam.title}" thành công! ${pubNote}`, true);
           history.replaceState(null,'',`/create-exam?edit=${data.exam_id}`);
-          alert(`Đã lưu đề thi "${this.exam.title}" thành công!`);
+          alert(`Đã lưu đề thi "${this.exam.title}" thành công!\n${pubNote}`);
           if (returnToAdmin) {
             window.location.href = '/admin';
           }

@@ -1,0 +1,434 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN MỸ THUẬT 10",
+  "subject": "Mỹ Thuật",
+  "grade": "10",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Thuật ngữ 'thẩm mỹ học' (aesthetics) trong mỹ thuật đề cập đến lĩnh vực nào?",
+          "options": {
+            "A": "Nghiên cứu về bản chất của cái đẹp, nghệ thuật và thị hiếu",
+            "B": "Nghiên cứu về thị trường nghệ thuật",
+            "C": "Nghiên cứu về lịch sử nghệ thuật",
+            "D": "Nghiên cứu về các kỹ thuật vẽ tranh"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Vật liệu nào sau đây thường được sử dụng để tạo ra các tác phẩm điêu khắc truyền thống có độ bền cao?",
+          "options": {
+            "A": "Mực tàu",
+            "B": "Vải bạt (canvas)",
+            "C": "Màu pastel",
+            "D": "Đá cẩm thạch (marble)"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Kỹ thuật tạo bóng bằng cách vẽ các đường song song hoặc đan chéo nhau được gọi là gì?",
+          "options": {
+            "A": "Chấm điểm (Stippling)",
+            "B": "Gạch chéo (Hatching/Cross-hatching)",
+            "C": "Tẩy xóa (Erasing)",
+            "D": "Pha trộn (Blending)"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Cặp màu nào sau đây là cặp màu bổ túc (màu đối nghịch) của nhau?",
+          "options": {
+            "A": "Đỏ và xanh lá",
+            "B": "Đỏ và cam",
+            "C": "Vàng và xanh lá",
+            "D": "Xanh lam và tím"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Dòng tranh dân gian nổi tiếng nào của Việt Nam thường được in từ ván khắc gỗ và có màu sắc tự nhiên?",
+          "options": {
+            "A": "Tranh lụa",
+            "B": "Tranh sơn dầu",
+            "C": "Tranh trừu tượng",
+            "D": "Tranh Đông Hồ"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Trong nhiếp ảnh, 'quy tắc một",
+          "options": {
+            "A": "Khẩu độ ống kính",
+            "B": "Bố cục hình ảnh",
+            "C": "Tốc độ màn trập",
+            "D": "Cân bằng trắng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Đặc điểm nổi bật của trường phái hội họa Ấn tượng (Impressionism) là gì?",
+          "options": {
+            "A": "Tập trung vào việc nắm bắt ánh sáng và khoảnh khắc thoáng qua",
+            "B": "Diễn tả thế giới nội tâm và cảm xúc mãnh liệt",
+            "C": "Phục hưng các giá trị nghệ thuật cổ điển",
+            "D": "Sử dụng các hình khối hình học và nhiều góc nhìn"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Kỹ thuật phối cảnh tuyến tính (linear perspective) trong hội họa chủ yếu được sử dụng để làm gì?",
+          "options": {
+            "A": "Biểu hiện cảm xúc mạnh mẽ",
+            "B": "Tạo ra các hình ảnh trừu tượng",
+            "C": "Tạo ảo giác về chiều sâu và khoảng cách trên mặt phẳng hai chiều",
+            "D": "Nhấn mạnh sự phẳng lặng của bề mặt"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Màu tempera là loại màu vẽ truyền thống thường sử dụng chất kết dính chính là gì?",
+          "options": {
+            "A": "Nhựa acrylic",
+            "B": "Dầu lanh",
+            "C": "Nước",
+            "D": "Lòng đỏ trứng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Trường phái Lập thể (Cubism) trong hội họa nổi bật với việc sử dụng các yếu tố nào?",
+          "options": {
+            "A": "Hình khối hình học và thể hiện đối tượng từ nhiều góc nhìn khác nhau",
+            "B": "Chủ đề lãng mạn, bay bổng",
+            "C": "Đường nét mềm mại, uyển chuyển",
+            "D": "Màu sắc tươi sáng, rực rỡ"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Đặc điểm kiến trúc nào thường thấy ở các ngôi đình, chùa truyền thống của Việt Nam?",
+          "options": {
+            "A": "Mái cong, đầu đao uốn lượn",
+            "B": "Mái vòm tròn lớn",
+            "C": "Cửa sổ kính màu lớn",
+            "D": "Cột thức Doric"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Ba màu sắc nào sau đây được coi là màu cơ bản (màu gốc) trong hệ màu truyền thống?",
+          "options": {
+            "A": "Đỏ, cam, vàng",
+            "B": "Đỏ, vàng, xanh lam",
+            "C": "Đỏ, vàng, xanh lá",
+            "D": "Xanh lam, xanh lá, tím"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Trong các khái niệm sau, đâu KHÔNG phải là một yếu tố cơ bản của nghệ thuật thị giác?",
+          "options": {
+            "A": "Hình khối",
+            "B": "Màu sắc",
+            "C": "Đường nét",
+            "D": "Cân bằng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Trong kiến trúc, 'mái vòm' (dome) là cấu trúc có hình dạng như thế nào?",
+          "options": {
+            "A": "Mái hình chóp",
+            "B": "Mái dốc nhọn",
+            "C": "Mái phẳng hoàn toàn",
+            "D": "Cấu trúc cong hình bán cầu hoặc tương tự, che phủ một không gian"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Danh họa nào sau đây là một trong những nhân vật tiêu biểu của thời kỳ Phục hưng?",
+          "options": {
+            "A": "Pablo Picasso",
+            "B": "Vincent van Gogh",
+            "C": "Claude Monet",
+            "D": "Leonardo da Vinci"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Nghệ thuật trừu tượng (Abstract Art) thường tập trung vào việc thể hiện điều gì?",
+          "options": {
+            "A": "Kể chuyện thông qua các nhân vật và bối cảnh cụ thể",
+            "B": "Mô tả chính xác thế giới thực",
+            "C": "Sử dụng các hình thức, màu sắc và kết cấu phi đại diện để gợi cảm xúc hoặc ý tưởng",
+            "D": "Phục dựng các tác phẩm kinh điển"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Trong thiết kế đồ họa, 'typography' (nghệ thuật chữ) là gì?",
+          "options": {
+            "A": "Nghệ thuật sắp xếp chữ viết để làm cho văn bản dễ đọc, dễ hiểu và hấp dẫn về mặt thị giác",
+            "B": "Kỹ thuật vẽ tranh phong cảnh",
+            "C": "Nghệ thuật điêu khắc trên gỗ",
+            "D": "Kỹ thuật tạo hình 3D"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Trong quá trình phê bình nghệ thuật, bước 'giải thích' (interpretation) chủ yếu liên quan đến việc gì?",
+          "options": {
+            "A": "Đánh giá giá trị tổng thể của tác phẩm",
+            "B": "Tìm hiểu ý nghĩa, thông điệp hoặc cảm xúc mà tác phẩm truyền tải",
+            "C": "Mô tả các yếu tố thị giác trong tác phẩm",
+            "D": "Phân tích cách các yếu tố và nguyên tắc được sử dụng"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Nghệ thuật nặn tò he truyền thống của Việt Nam thường sử dụng nguyên liệu chính là gì?",
+          "options": {
+            "A": "Gỗ quý",
+            "B": "Đất sét nung",
+            "C": "Đồng thau",
+            "D": "Bột gạo nếp trộn với màu thực phẩm"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Đâu là một trong những nguyên tắc thiết kế cơ bản trong mỹ thuật?",
+          "options": {
+            "A": "Giá trị",
+            "B": "Nhịp điệu",
+            "C": "Kết cấu",
+            "D": "Không gian"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Đọc các mệnh đề sau và cho biết chúng Đúng hay Sai về thời kỳ nghệ thuật Phục hưng:",
+          "items": {
+            "a": {
+              "text": "Các nghệ sĩ Phục hưng thường tập trung vào chủ nghĩa hiện thực, nhân văn và phối cảnh.",
+              "answer": true
+            },
+            "b": {
+              "text": "Michelangelo là một họa sĩ nổi tiếng với bức 'Mona Lisa'.",
+              "answer": false
+            },
+            "c": {
+              "text": "Thời kỳ Phục hưng (Renaissance) bắt đầu ở Ý vào khoảng thế kỷ 14.",
+              "answer": true
+            },
+            "d": {
+              "text": "Nghệ thuật Phục hưng chủ yếu sử dụng các hình thức trừu tượng và phi đại diện.",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Đọc các mệnh đề sau và cho biết chúng Đúng hay Sai về một số loại hình nghệ thuật truyền thống Việt Nam:",
+          "items": {
+            "a": {
+              "text": "Múa rối nước là một loại hình nghệ thuật biểu diễn, không có yếu tố mỹ thuật.",
+              "answer": false
+            },
+            "b": {
+              "text": "Các nguyên lý khoa học luôn được xây dựng và kiểm chứng dựa trên thực nghiệm khách quan.",
+              "answer": true
+            },
+            "c": {
+              "text": "Mọi giả thuyết khoa học đều tự động đúng mà không cần thông qua quá trình thử nghiệm.",
+              "answer": false
+            },
+            "d": {
+              "text": "Tranh lụa Việt Nam thường sử dụng chất liệu lụa tơ tằm và màu nước hoặc mực tàu.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Đọc các mệnh đề sau và cho biết chúng Đúng hay Sai về các yếu tố và nguyên tắc cơ bản trong mỹ thuật:",
+          "items": {
+            "a": {
+              "text": "Màu sắc có thể được phân loại thành màu nóng và màu lạnh, ảnh hưởng đến cảm xúc của người xem.",
+              "answer": true
+            },
+            "b": {
+              "text": "Kết cấu chỉ đề cập đến bề mặt vật lý của một đối tượng mà ta có thể chạm vào.",
+              "answer": false
+            },
+            "c": {
+              "text": "Tỷ lệ là một yếu tố cơ bản của nghệ thuật, không phải nguyên tắc thiết kế.",
+              "answer": false
+            },
+            "d": {
+              "text": "Đường nét là một yếu tố cơ bản, có thể tạo ra cảm giác chuyển động hoặc tĩnh lặng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Trong mỹ thuật, các yếu tố tạo hình và nguyên lý thị giác đóng vai trò quan trọng trong việc tạo nên một tác phẩm hoàn chỉnh và có giá trị thẩm mỹ. Hãy xác định các nhận định đúng/sai dưới đây:",
+          "items": {
+            "a": {
+              "text": "Nguyên lý cân bằng trong bố cục giúp tạo sự ổn định và hài hòa cho tác phẩm, có thể là cân bằng đối xứng hoặc bất đối xứng.",
+              "answer": true
+            },
+            "b": {
+              "text": "Màu sắc là yếu tố duy nhất quyết định cảm xúc của người xem đối với một tác phẩm hội họa.",
+              "answer": false
+            },
+            "c": {
+              "text": "Đường nét có thể biểu đạt nhiều trạng thái cảm xúc khác nhau như mạnh mẽ, mềm mại, uyển chuyển, hay tĩnh lặng.",
+              "answer": true
+            },
+            "d": {
+              "text": "Không gian trong tác phẩm mỹ thuật chỉ có thể là không gian ba chiều thực tế được tái hiện một cách chính xác.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Kỹ thuật in nào sử dụng bản khắc nổi, trong đó phần không in được khoét sâu và",
+          "answer": "In khắc gỗ/In nổi",
+          "accepted_answers": [
+            "In khắc gỗ/In nổi"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Chất liệu phổ biến nào thường được sử dụng để tạo ra các tác phẩm điêu khắc tượng tròn, có độ bền cao và dễ tạo hình chi tiết?",
+          "answer": "Đồng/Đá/Gỗ/Thạch cao",
+          "accepted_answers": [
+            "Đồng/Đá/Gỗ/Thạch cao"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Kể tên một trong ba màu cơ bản (màu gốc) trong hội họa mà từ đó có thể pha trộn ra các màu khác.",
+          "answer": "Đỏ/Vàng/Lam",
+          "accepted_answers": [
+            "Đỏ/Vàng/Lam"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Tên gọi của phong cách nghệ thuật phát triển mạnh mẽ ở châu Âu từ thế kỷ 17 đến giữa thế kỷ 18, đặc trưng bởi sự hoành tráng, kịch tính và nhiều chi tiết trang trí cầu kỳ?",
+          "answer": "Baroque",
+          "accepted_answers": [
+            "Baroque"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Nguyên lý nào trong bố cục giúp hướng mắt người xem đến điểm nhấn chính của tác phẩm, tạo sự tập trung và thu hút?",
+          "answer": "Nhấn mạnh/Tập trung",
+          "accepted_answers": [
+            "Nhấn mạnh/Tập trung"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Kiểu mái nhà truyền thống nào của Việt Nam thường có các góc cong vút lên như hình lưỡi đao, tạo nên vẻ đẹp thanh thoát và uyển chuyển?",
+          "answer": "Mái cong/Mái đao",
+          "accepted_answers": [
+            "Mái cong/Mái đao"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_26b69ee2",
+  "scoring": {
+    "part1_total": 5,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 1,
+    "part3_per_question": 0.1667,
+    "part4_total": 0
+  }
+}

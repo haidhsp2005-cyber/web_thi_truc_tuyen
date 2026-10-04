@@ -249,7 +249,7 @@ def get_submission(submission_id: str) -> Optional[dict]:
             
     # Fallback kiểm tra đề thi gốc nếu chưa xác định được is_online_exam
     if not result["is_online_exam"] and result.get("exam_id"):
-        exam_obj = get_exam_by_id(result["exam_id"])
+        exam_obj = load_exam(result["exam_id"])
         if exam_obj:
             result["is_online_exam"] = bool(exam_obj.get("is_online_exam", False))
     
@@ -634,15 +634,22 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
                     logger.info(f"Đã tự động chữa lành và cập nhật đề thi {real_id} vào SQLite.")
                 except Exception as update_err:
                     logger.warning(f"Lỗi cập nhật lại đề thi {real_id}: {update_err}")
+            if "is_published" not in exam_data:
+                exam_data["is_published"] = True
             return exam_data
     except Exception as ex:
         logger.warning(f"Lỗi đọc đề {exam_id} từ SQLite: {ex}")
+
+    def _wrap_exam(d):
+        if d and isinstance(d, dict) and "is_published" not in d:
+            d["is_published"] = True
+        return d
 
     # 2. Thử theo tên file trực tiếp
     path = EXAMS_DIR / f"{exam_id}.json"
     if path.exists():
         with open(path, encoding="utf-8") as f:
-            return json.load(f)
+            return _wrap_exam(json.load(f))
 
     # 3. Quét các file JSON trong EXAMS_DIR để so khớp theo id hoặc title
     for f in sorted(EXAMS_DIR.glob("*.json")):
@@ -652,7 +659,7 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
             with open(f, encoding="utf-8") as jf:
                 data = json.load(jf)
                 if data.get("id") == exam_id or f.stem == exam_id or exam_id in data.get("title", ""):
-                    return data
+                    return _wrap_exam(data)
         except Exception:
             continue
 
@@ -664,7 +671,7 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
         row = c.fetchone()
         conn.close()
         if row and row[1]:
-            return json.loads(row[1])
+            return _wrap_exam(json.loads(row[1]))
     except Exception:
         pass
 
@@ -673,7 +680,7 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
         fallback = EXAMS_DIR / "sample_exam.json"
     if fallback.exists():
         with open(fallback, encoding="utf-8") as f:
-            return json.load(f)
+            return _wrap_exam(json.load(f))
 
     return None
 
@@ -837,6 +844,33 @@ def delete_user(username: str) -> bool:
     conn.close()
 
     logger.info(f"Đã xóa tài khoản: {username}")
+    return True
+
+
+def update_user_role(username: str, role: str) -> bool:
+    """Thay đổi vai trò người dùng (admin hoặc teacher). Không cho phép thay đổi tài khoản admin mặc định."""
+    clean_username = username.strip().lower()
+    clean_role = role.strip().lower()
+    if clean_role not in ["admin", "teacher"]:
+        raise ValueError("Vai trò hợp lệ chỉ bao gồm 'admin' (Quản trị viên) hoặc 'teacher' (Giáo viên)!")
+
+    if clean_username == "admin":
+        raise ValueError("Tài khoản mặc định 'admin' là tài khoản hệ thống cao nhất, không thể đổi vai trò!")
+
+    user = get_user_by_username(clean_username)
+    if not user:
+        raise ValueError(f"Không tìm thấy tài khoản '{username}' để đổi vai trò!")
+
+    if user.get("is_protected"):
+        raise ValueError(f"Tài khoản '{user['username']}' là tài khoản được bảo vệ, không thể đổi vai trò!")
+
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("UPDATE admin_users SET role = ?, updated_at = datetime('now') WHERE LOWER(username) = LOWER(?)", (clean_role, clean_username))
+    conn.commit()
+    conn.close()
+
+    logger.info(f"Đã cập nhật vai trò của '{username}' thành '{clean_role}'")
     return True
 
 

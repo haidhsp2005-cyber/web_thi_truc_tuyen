@@ -1157,8 +1157,16 @@ function examApp() {
       for (let attempt = 0; attempt < 2 && !examLoaded; attempt++) {
         try {
           if (attempt > 0) await new Promise(r => setTimeout(r, 800));
-          const reqUrl = `/api/exam/current?exam_id=${encodeURIComponent(this.examId)}&student_name=${encodeURIComponent(this.studentName)}&student_class=${encodeURIComponent(this.studentClass)}&seed=${encodeURIComponent(this.sessionSeed || '')}`;
-          const resp = await fetch(reqUrl);
+          const reqUrl = `/api/exam/current?exam_id=${encodeURIComponent(this.examId)}&student_name=${encodeURIComponent(this.studentName)}&student_class=${encodeURIComponent(this.studentClass)}&seed=${encodeURIComponent(this.sessionSeed || '')}&_nocache=${Date.now()}`;
+          const resp = await fetch(reqUrl, { cache: 'no-store' });
+          if (resp.status === 403) {
+            sessionStorage.removeItem('cached_exam_data_' + this.examId);
+            sessionStorage.removeItem('exam_id');
+            const errData = await resp.json().catch(() => ({}));
+            alert(errData.detail || 'Đề thi này đang ở trạng thái CHƯA XUẤT BẢN. Không thể vào làm bài!');
+            window.location.href = '/';
+            return;
+          }
           if (resp.ok) {
             this.examData = await resp.json();
             if (this.examData && this.examData.id) {

@@ -1,0 +1,434 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN GIÁO DỤC QUỐC PHÒNG VÀ AN NINH",
+  "subject": "Giáo dục quốc phòng",
+  "grade": "10",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cuộc kháng chiến chống quân xâm lược nào dưới đây gắn liền với tên tuổi của Anh hùng dân tộc Trần Hưng Đạo?",
+          "options": {
+            "A": "Kháng chiến chống quân Tống lần thứ hai",
+            "B": "Kháng chiến chống quân Nguyên - Mông",
+            "C": "Kháng chiến chống quân Minh",
+            "D": "Kháng chiến chống quân Thanh"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Quốc phòng là công cuộc giữ nước của một quốc gia, bao gồm các hoạt động đối nội và đối ngoại về lĩnh vực nào?",
+          "options": {
+            "A": "Chỉ ký kết hiệp ước thương mại quốc tế",
+            "B": "Quân sự, chính trị, kinh tế, văn hóa, khoa học",
+            "C": "Chỉ tập trung phát triển vũ khí hạt nhân",
+            "D": "Chỉ hoạt động giao thương hàng hóa"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Trong nền quốc phòng toàn dân, hình thức đấu tranh chủ yếu để bảo vệ Tổ quốc là gì?",
+          "options": {
+            "A": "Chỉ sử dụng lực lượng quân sự chủ lực",
+            "B": "Đấu tranh kinh tế đơn thuần",
+            "C": "Đấu tranh vũ trang kết hợp với đấu tranh phi vũ trang",
+            "D": "Chỉ sử dụng ngoại giao hòa bình"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Đảng Cộng sản Việt Nam lãnh đạo tuyệt đối, trực tiếp về mọi mặt đối với tổ chức nào dưới đây?",
+          "options": {
+            "A": "Các tổ chức phi chính phủ quốc tế",
+            "B": "Lực lượng vũ trang nhân dân Việt Nam",
+            "C": "Các câu lạc bộ thể thao giải trí",
+            "D": "Các tập đoàn kinh tế tư nhân nước ngoài"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Một trong những quan điểm của Đảng ta trong bảo vệ Tổ quốc là kết hợp chặt chẽ giữa hai nhiệm vụ chiến lược nào?",
+          "options": {
+            "A": "Phát triển công nghiệp nặng và du lịch biển",
+            "B": "Đầu tư nông nghiệp và xuất khẩu khoáng sản",
+            "C": "Xây dựng chủ nghĩa xã hội và bảo vệ Tổ quốc Việt Nam xã hội chủ nghĩa",
+            "D": "Hội nhập quốc tế và đóng cửa nền kinh tế"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Phong trào toàn dân bảo vệ an ninh Tổ quốc do lực lượng nào làm nòng cốt?",
+          "options": {
+            "A": "Lực lượng hải quan",
+            "B": "Lực lượng Công an nhân dân",
+            "C": "Lực lượng kiểm kiểm lâm",
+            "D": "Lực lượng thanh tra giao thông"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Ngày truyền thống của lực lượng Công an nhân dân Việt Nam là ngày nào?",
+          "options": {
+            "A": "Ngày 26 tháng 3 năm 1931",
+            "B": "Ngày 03 tháng 2 năm 1930",
+            "C": "Ngày 19 tháng 8 năm 1945",
+            "D": "Ngày 22 tháng 12 năm 1944"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Lực lượng vũ trang nhân dân Việt Nam bao gồm những thành phần nào?",
+          "options": {
+            "A": "Quân đội nhân dân và lực lượng dự bị động viên",
+            "B": "Công an nhân dân và lực lượng biên phòng",
+            "C": "Chỉ có Bộ đội chủ lực và Bộ đội địa phương",
+            "D": "Quân đội nhân dân, Công an nhân dân và Dân quân tự vệ"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Công dân nam đủ bao nhiêu tuổi trở lên phải đăng ký nghĩa vụ quân sự lần đầu?",
+          "options": {
+            "A": "Đủ 20 tuổi",
+            "B": "Đủ 18 tuổi",
+            "C": "Đủ 17 tuổi",
+            "D": "Đủ 19 tuổi"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Quân đội nhân dân Việt Nam được thành lập vào ngày, tháng, năm nào?",
+          "options": {
+            "A": "Ngày 22 tháng 12 năm 1944",
+            "B": "Ngày 02 tháng 9 năm 1945",
+            "C": "Ngày 30 tháng 4 năm 1975",
+            "D": "Ngày 19 tháng 8 năm 1945"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Theo Hiến pháp nước Cộng hòa xã hội chủ nghĩa Việt Nam, bảo vệ Tổ quốc là nghĩa vụ gì của công dân?",
+          "options": {
+            "A": "Nghĩa vụ thiêng liêng và quyền cao quý",
+            "B": "Nhiệm vụ tạm thời trong thời kỳ chiến tranh",
+            "C": "Trách nhiệm riêng của lực lượng vũ trang",
+            "D": "Công việc của riêng cơ quan nhà nước"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Mục đích cốt lõi của việc xây dựng nền quốc phòng toàn dân là gì?",
+          "options": {
+            "A": "Phát triển công nghiệp nặng vượt bậc",
+            "B": "Chiếm đoạt lãnh thổ của các nước láng giềng",
+            "C": "Bảo vệ vững chắc độc lập, chủ quyền, thống nhất và toàn vẹn lãnh thổ của Tổ quốc",
+            "D": "Gây ảnh hưởng chính trị rộng khắp khu vực"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Quân đội nhân dân Việt Nam mang bản chất của giai cấp công nhân, đồng thời là lực lượng chính trị và lực lượng gì?",
+          "options": {
+            "A": "Lực lượng chiến đấu tuyệt trung với Tổ quốc",
+            "B": "Lực lượng ngoại giao chuyên nghiệp",
+            "C": "Lực lượng cảnh sát gìn giữ trật tự đô thị",
+            "D": "Lực lượng kinh tế nòng cốt quốc gia"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Nền quốc phòng toàn dân và an ninh nhân dân ở nước ta mang tính chất nào dưới đây?",
+          "options": {
+            "A": "Mang tính liên minh quân sự khu vực",
+            "B": "Phục vụ lợi ích của một nhóm nước",
+            "C": "Vì dân, mang tính tự vệ và hòa bình",
+            "D": "Nhằm mục đích tấn công phủ đầu"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Truyền thống nào được xem là sức mạnh nội sinh quan trọng nhất giúp dân tộc Việt Nam chiến thắng mọi kẻ thù xâm lược?",
+          "options": {
+            "A": "Vũ khí trang bị hiện đại từ sớm",
+            "B": "Địa hình hiểm trở và khí hậu khắc nghiệt",
+            "C": "Tinh thần yêu nước và đoàn kết toàn dân",
+            "D": "Sự viện trợ kinh tế từ các nước lớn"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Hành vi nào sau đây vi phạm quy định về bảo vệ an ninh mạng khi tham gia không gian mạng?",
+          "options": {
+            "A": "Đăng tải thông tin sai sự thật, xúc phạm danh dự người khác",
+            "B": "Chia sẻ các bài viết tuyên truyền lịch sử dân tộc",
+            "C": "Sử dụng mạng internet để học tập và tra cứu kiến thức",
+            "D": "Tham gia các cuộc thi trực tuyến lành mạnh"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Thế trận quốc phòng toàn dân là gì?",
+          "options": {
+            "A": "Mạng lưới giao thông vận tải phục vụ kinh tế",
+            "B": "Kế hoạch huy động vốn đầu tư nước ngoài",
+            "C": "Sự bố trí lực lượng, tiềm lực và trang bị trên lãnh thổ để bảo vệ Tổ quốc",
+            "D": "Hệ thống kho tàng vũ khí bí mật trong rừng sâu"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Biện pháp thiết thực nhất của học sinh để phòng chống ma túy là gì?",
+          "options": {
+            "A": "Tin tưởng tuyệt đối vào người lạ khi được cho đồ uống",
+            "B": "Tuyệt đối không thử ma túy dù chỉ một lần, nâng cao cảnh giác",
+            "C": "Tự tàng trữ số lượng nhỏ để phòng thân",
+            "D": "Thử sử dụng khi bạn bè kích động để biết cảm giác"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Độc lập dân tộc gắn liền với chủ nghĩa xã hội là nội dung cốt lõi trong tư tưởng của ai?\n<div class=\"overflow-x-auto my-3 text-center\"><table class=\"inline-table border-collapse border border-gray-400 text-sm bg-white shadow-xs rounded\"><tbody><tr><td class=\"border border-gray-400 px-3 py-1 text-center font-medium\">",
+          "options": {
+            "A": "Chủ tịch Hồ Chí Minh</td><td class=\"border border-gray-400 px-3 py-1 text-center font-medium\">",
+            "B": "Ph. Ăng-ghen</td><td class=\"border border-gray-400 px-3 py-1 text-center font-medium\">",
+            "C": "C Mác</td><td class=\"border border-gray-400 px-3 py-1 text-center font-medium\">",
+            "D": "V.I. Lênin</td></tr></tbody></table></div>"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Lĩnh vực nào sau đây thuộc về các mối đe dọa an ninh phi truyền thống?",
+          "options": {
+            "A": "Xung đột biên giới lãnh thổ truyền thống",
+            "B": "Cạnh tranh thuế quan giữa các quốc gia",
+            "C": "Chiến tranh xâm lược quy mô lớn giữa các quân đội chính quy",
+            "D": "Biến đổi khí hậu và dịch bệnh toàn cầu"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Nhận định nào sau đây đúng hoặc sai về trách nhiệm của học sinh đối với nhiệm vụ quốc phòng và an ninh?",
+          "items": {
+            "a": {
+              "text": "Tham gia các hoạt động đền ơn đáp nghĩa, tuyên truyền quốc phòng là việc làm không cần thiết.",
+              "answer": false
+            },
+            "b": {
+              "text": "Nhiệm vụ bảo vệ Tổ quốc chỉ dành cho người lớn, học sinh còn nhỏ nên không cần quan tâm.",
+              "answer": false
+            },
+            "c": {
+              "text": "Học sinh cần tích cực học tập môn Giáo dục Quốc phòng và An ninh để nắm vững kiến thức cơ bản.",
+              "answer": true
+            },
+            "d": {
+              "text": "Học sinh cần có ý thức chấp hành pháp luật, nội quy nhà trường và quy định về an ninh mạng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Nhận định nào sau đây đúng hoặc sai về nền quốc phòng toàn dân và an ninh nhân dân ở nước ta?",
+          "items": {
+            "a": {
+              "text": "Xây dựng quốc phòng toàn dân chỉ là nhiệm vụ riêng của lực lượng quân đội chính quy.",
+              "answer": false
+            },
+            "b": {
+              "text": "Trong mọi tình huống, nước ta chủ động sử dụng hành động quân sự phủ đầu để tấn công trước.",
+              "answer": false
+            },
+            "c": {
+              "text": "Nền quốc phòng toàn dân là nền quốc phòng vì dân, mang tính chất hòa bình và tự vệ.",
+              "answer": true
+            },
+            "d": {
+              "text": "Tiềm lực quốc phòng, an ninh bao gồm tiềm lực chính trị, tinh thần, kinh tế, khoa học và quân sự.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Nhận định nào sau đây đúng hoặc sai khi nói về truyền thống yêu nước và chống ngoại xâm của dân tộc ta?",
+          "items": {
+            "a": {
+              "text": "Nghệ thuật quân sự 'lấy yếu chống mạnh', 'lấy ít địch nhiều' là một di sản quý báu của cha ông ta.",
+              "answer": true
+            },
+            "b": {
+              "text": "Ông cha ta chỉ dựa vào vũ khí tối tân để chiến thắng các đế quốc hùng mạnh.",
+              "answer": false
+            },
+            "c": {
+              "text": "Tinh thần yêu nước là giá trị truyền thống xuyên suốt lịch sử dựng nước và giữ nước của dân tộc Việt Nam.",
+              "answer": true
+            },
+            "d": {
+              "text": "Truyền thống đánh giặc giữ nước chỉ có giá trị trong thời kỳ phong kiến, nay không còn phù hợp.",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Nhận định nào sau đây đúng hoặc sai về các thành",
+          "items": {
+            "a": {
+              "text": "Lực lượng vũ trang nhân dân Việt Nam gồm ba thứ quân: Quân đội nhân dân, Công an nhân dân và Dân quân tự vệ.",
+              "answer": true
+            },
+            "b": {
+              "text": "Dân quân tự vệ là lực lượng vũ trang quần chúng không thoát ly sản xuất và công tác.",
+              "answer": true
+            },
+            "c": {
+              "text": "Công an nhân dân chịu sự lãnh đạo trực tiếp về mọi mặt của Bộ Quốc phòng.",
+              "answer": false
+            },
+            "d": {
+              "text": "Quân đội nhân dân là lực lượng nòng cốt trong thực hiện nhiệm vụ bảo vệ an ninh trật tự nội địa hàng ngày.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cách mạng Tháng Tám thành công ở nước ta diễn ra vào năm nào?",
+          "answer": "1945",
+          "accepted_answers": [
+            "1945"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Lực lượng vũ trang nhân dân Việt Nam hiện nay bao gồm mấy thành",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Cuộc kháng chiến chống Mỹ cứu nước của nhân dân ta kết thúc thắng lợi hoàn toàn vào năm nào?",
+          "answer": "1975",
+          "accepted_answers": [
+            "1975"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Đội Việt Nam Tuyên truyền Giải phóng quân được thành lập vào tháng 12 của năm nào?",
+          "answer": "1944",
+          "accepted_answers": [
+            "1944"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Quân đội nhân dân Việt Nam được thành lập vào ngày nào của tháng 12 năm 1944?",
+          "answer": "22",
+          "accepted_answers": [
+            "22"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Theo Luật Nghĩa vụ quân sự, công dân nam đủ bao nhiêu tuổi phải đăng ký nghĩa vụ quân sự lần đầu?",
+          "answer": "17",
+          "accepted_answers": [
+            "17"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_33da9fe3",
+  "scoring": {
+    "part1_total": 5,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 1,
+    "part3_per_question": 0.1667,
+    "part4_total": 0
+  }
+}

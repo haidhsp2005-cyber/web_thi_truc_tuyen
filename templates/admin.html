@@ -17,11 +17,12 @@
         <h1 class="text-xl font-bold">Bảng Điều Khiển - Quản Trị & Giáo Viên</h1>
         <p class="text-xs text-blue-200 mt-0.5" x-show="currentUser" x-cloak>
           Đang đăng nhập: <strong class="text-white" x-text="currentUser.full_name || currentUser.username"></strong>
-          <template x-if="isAdmin()"><span> — <span class="text-yellow-300 font-bold">👑 Quản trị viên (Toàn quyền)</span></span></template>
-          <template x-if="!isAdmin() && currentUser">
+          <template x-if="isSuperAdmin()"><span> — <span class="text-yellow-300 font-bold">👑 Quản trị viên (Toàn quyền)</span></span></template>
+          <template x-if="!isSuperAdmin() && currentUser">
             <span> — Giáo viên
               <span x-show="currentUser.subject" class="ml-1 bg-blue-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full" x-text="'📚 Môn: ' + currentUser.subject"></span>
               <span x-show="!currentUser.subject" class="ml-1 text-yellow-300 text-[10px]">⚠️ Chưa phân môn</span>
+              <span x-show="currentUser.role === 'admin'" class="ml-1 bg-purple-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">🛡️ Quyền tạo tài khoản GV</span>
             </span>
           </template>
         </p>
@@ -431,7 +432,7 @@
         <div class="flex flex-wrap items-center gap-3">
           <span class="text-xs font-bold text-gray-600 flex items-center gap-1">🔍 Lọc bài nộp:</span>
           <div class="flex flex-wrap gap-2 flex-1">
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5" x-show="isSuperAdmin()">
               <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Môn:</label>
               <select x-model="selectedSubjectFilter" @change="onSubjectFilterChange()"
                 class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-gray-500 font-medium">
@@ -440,6 +441,9 @@
                   <option :value="s" x-text="s"></option>
                 </template>
               </select>
+            </div>
+            <div class="flex items-center gap-1.5" x-show="!isSuperAdmin() && currentUser?.subject">
+              <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-lg" x-text="'📚 Môn: ' + currentUser.subject"></span>
             </div>
             <div class="flex items-center gap-1.5">
               <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Lớp:</label>
@@ -461,7 +465,8 @@
                 </template>
               </select>
             </div>
-            <button x-show="selectedSubjectFilter || selectedExamFilter || selectedClassFilter" @click="selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
+            <button x-show="(isSuperAdmin() && selectedSubjectFilter) || selectedExamFilter || selectedClassFilter" 
+              @click="if (isSuperAdmin()) selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
               class="text-xs text-gray-600 hover:text-gray-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
             <a :href="pdfClassExportUrl" target="_blank"
               x-show="filteredSubmissions.length > 0"
@@ -577,7 +582,7 @@
         <div class="flex flex-wrap items-center gap-3">
           <span class="text-xs font-bold text-yellow-800 flex items-center gap-1">🔍 Lọc đề thi:</span>
           <div class="flex flex-wrap gap-2 flex-1">
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5" x-show="isSuperAdmin()">
               <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Môn:</label>
               <select x-model="adminExamFilterSubject"
                 class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-yellow-500 font-medium">
@@ -597,7 +602,16 @@
                 </template>
               </select>
             </div>
-            <button x-show="adminExamFilterSubject || adminExamFilterGrade" @click="adminExamFilterSubject=''; adminExamFilterGrade='';" x-cloak
+            <div class="flex items-center gap-1.5">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Trạng thái:</label>
+              <select x-model="adminExamFilterPublish"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-yellow-500 font-medium">
+                <option value="">-- Tất cả trạng thái --</option>
+                <option value="published">🟢 Đã xuất bản (Học sinh thấy)</option>
+                <option value="unpublished">🔴 Chưa xuất bản (Đang ẩn)</option>
+              </select>
+            </div>
+            <button x-show="adminExamFilterSubject || adminExamFilterGrade || adminExamFilterPublish" @click="adminExamFilterSubject=''; adminExamFilterGrade=''; adminExamFilterPublish='';" x-cloak
               class="text-xs text-yellow-700 hover:text-yellow-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
           </div>
         </div>
@@ -634,6 +648,23 @@
                 <td class="px-3 py-2 font-medium text-gray-800">
                   <div class="flex items-center gap-2 flex-wrap">
                     <a :href="`/create-exam?edit=${e.id}`" class="hover:text-blue-600 hover:underline font-bold" x-text="e.title"></a>
+
+                    <!-- Nút Xuất bản bên cạnh đề thi: Đỏ (Chưa xuất bản) / Xanh (Đã xuất bản) -->
+                    <button 
+                      @click="togglePublish(e.id)" 
+                      type="button"
+                      :class="e.is_published 
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-2xs' 
+                        : 'bg-red-600 hover:bg-red-700 text-white border-red-600 shadow-2xs'"
+                      class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border transition-all cursor-pointer inline-flex items-center gap-1"
+                      :title="e.is_published 
+                        ? 'Đang xuất bản (Hiện trên trang làm đề của học sinh). Bấm để chuyển sang Chưa xuất bản (màu đỏ ẩn khỏi học sinh).' 
+                        : 'Chưa xuất bản (Đang ẩn khỏi học sinh). Bấm để chuyển sang Đã xuất bản (màu xanh cho học sinh làm bài).'"
+                    >
+                      <span x-text="e.is_published ? '🟢' : '🔴'"></span>
+                      <span x-text="e.is_published ? 'Đã xuất bản' : 'Chưa xuất bản'"></span>
+                      <span class="text-[9px] opacity-75">⇄</span>
+                    </button>
                     <button 
                       @click="toggleOnlineMode(e.id)" 
                       type="button"
@@ -672,9 +703,6 @@
                     <a :href="`/api/admin/print/answers/${e.id}`" target="_blank" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-900 rounded-lg text-xs font-bold transition-colors border border-red-200 flex items-center gap-1 cursor-pointer" title="In đáp án gốc & ma trận hướng dẫn chấm đề thi">
                       <span>🔑</span><span>In đáp án gốc</span>
                     </a>
-                    <a :href="`/api/exam-builder/export/json/${e.id}`" class="px-2.5 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 rounded-lg text-xs font-bold transition-colors border border-yellow-200 flex items-center gap-1 cursor-pointer" title="Tải file JSON về máy tính để sao lưu vĩnh viễn">
-                      <span>💾</span><span>Tải JSON</span>
-                    </a>
                     <a :href="`/create-exam?edit=${e.id}`" class="px-2.5 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs font-semibold transition-colors">✏️ Sửa</a>
                     <button @click="deleteExam(e.id, e.title)" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer">🗑️ Xóa</button>
                   </div>
@@ -696,17 +724,17 @@
           <span>Quản lý Tài khoản Giáo viên & Quản trị</span>
         </h2>
         <p class="text-xs text-blue-200 mt-0.5">
-          <span x-show="isAdmin()">Tạo tài khoản giáo viên, đổi mật khẩu và quản lý danh sách truy cập.</span>
-          <span x-show="!isAdmin()" x-cloak>Quản lý mật khẩu cá nhân và thông tin tài khoản giáo viên.</span>
+          <span x-show="isSuperAdmin()">Tạo tài khoản giáo viên, đổi mật khẩu và quản lý danh sách truy cập.</span>
+          <span x-show="!isSuperAdmin()" x-cloak>Quản lý mật khẩu cá nhân và thông tin tài khoản giáo viên.</span>
         </p>
       </div>
       <div class="flex items-center gap-2">
-        <!-- Nút Tạo tài khoản: CHỈ DÀNH CHO ADMIN -->
-        <button x-show="isAdmin()" x-cloak @click="showCreateTeacherModal = true" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer" title="Dành cho Quản trị viên: Tạo tài khoản giáo viên mới">
+        <!-- Nút Tạo tài khoản: Super Admin hoặc Giáo viên được cấp quyền quản trị -->
+        <button x-show="canCreateTeacher()" x-cloak @click="showCreateTeacherModal = true" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer" title="Tạo tài khoản giáo viên mới">
           <span>➕</span><span>Tạo tài khoản Giáo viên</span>
         </button>
-        <!-- Nút Đổi mật khẩu trên header: CHỈ HIỆN KHI LÀ ADMIN (đối với giáo viên nút đổi mật khẩu nằm ở bảng bên dưới) -->
-        <button x-show="isAdmin()" x-cloak @click="openChangePassModal()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer" title="Đổi mật khẩu tài khoản của bạn">
+        <!-- Nút Đổi mật khẩu trên header: CHỈ HIỆN KHI LÀ SUPER ADMIN -->
+        <button x-show="isSuperAdmin()" x-cloak @click="openChangePassModal()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer" title="Đổi mật khẩu tài khoản của bạn">
           <span>🔄</span><span>Đổi mật khẩu</span>
         </button>
         <button @click="loadUsers()" class="text-gray-300 hover:text-white text-sm cursor-pointer ml-1" title="Làm mới">🔄</button>
@@ -723,8 +751,8 @@
     <!-- Bảng danh sách tài khoản -->
     <div class="p-5">
       <div class="overflow-x-auto">
-        <!-- BẢNG DÀNH CHO ADMIN: Thấy đầy đủ tất cả tài khoản hệ thống -->
-        <template x-if="isAdmin()">
+        <!-- BẢNG DÀNH CHO SUPER ADMIN: Thấy đầy đủ tất cả tài khoản hệ thống -->
+        <template x-if="isSuperAdmin()">
           <table class="w-full text-sm">
             <thead class="bg-gray-50 text-gray-700 text-xs uppercase font-bold border-b">
               <tr>
@@ -753,10 +781,19 @@
                     </template>
                   </td>
                   <td class="px-4 py-3 text-center">
-                    <span class="px-2.5 py-1 rounded-full text-xs font-bold"
-                      :class="u.is_protected || u.username.toLowerCase() === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'"
-                      x-text="u.is_protected || u.username.toLowerCase() === 'admin' ? 'Quản trị viên' : 'Giáo viên'">
-                    </span>
+                    <div class="inline-flex items-center gap-1.5 flex-wrap justify-center">
+                      <span class="px-2.5 py-1 rounded-full text-xs font-bold"
+                        :class="(u.is_protected || u.username.toLowerCase() === 'admin' || u.role === 'admin') ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'"
+                        x-text="(u.is_protected || u.username.toLowerCase() === 'admin' || u.role === 'admin') ? 'Quản trị viên' : 'Giáo viên'">
+                      </span>
+                      <template x-if="isSuperAdmin() && !u.is_protected && u.username.toLowerCase() !== 'admin'">
+                        <button @click="toggleUserRole(u)" 
+                          class="text-[11px] px-2 py-0.5 rounded border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 transition cursor-pointer font-medium"
+                          :title="u.role === 'admin' ? 'Hạ quyền thành Giáo viên' : 'Nâng quyền thành Quản trị viên'">
+                          <span x-text="u.role === 'admin' ? '⬇️ Giáo viên' : '⬆️ Quản trị'"></span>
+                        </button>
+                      </template>
+                    </div>
                   </td>
                   <td class="px-4 py-3 text-center text-xs text-gray-500" x-text="u.created_at || 'Mặc định'"></td>
                   <td class="px-4 py-3 text-center">
@@ -766,10 +803,10 @@
                         title="Đổi mật khẩu cho tài khoản này">
                         🔄 Đổi MK
                       </button>
-                      <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin'">
+                      <template x-if="!u.is_protected && u.username.toLowerCase() !== 'admin' && (isSuperAdmin() || u.role !== 'admin')">
                         <button @click="deleteUserAccount(u.username)" 
                           class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-red-200"
-                          title="Xóa tài khoản giáo viên này">
+                          title="Xóa tài khoản này">
                           🗑️ Xóa
                         </button>
                       </template>
@@ -782,7 +819,7 @@
         </template>
 
         <!-- BẢNG DÀNH CHO GIÁO VIÊN: Chỉ hiển thị tên tài khoản giáo viên đó và mật khẩu để tăng tính bảo mật -->
-        <template x-if="!isAdmin()">
+        <template x-if="!isSuperAdmin()">
           <table class="w-full text-sm">
             <thead class="bg-gray-50 text-gray-700 text-xs uppercase font-bold border-b">
               <tr>
@@ -848,6 +885,14 @@
         <div>
           <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu (≥ 6 ký tự)</label>
           <input x-model="newTeacherForm.password" type="password" placeholder="Mật khẩu..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+        <div x-show="isSuperAdmin()">
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">🛡️ Phân quyền tài khoản</label>
+          <select x-model="newTeacherForm.role" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600 bg-white">
+            <option value="teacher">👨‍🏫 Giáo viên</option>
+            <option value="admin">🛡️ Quản trị viên</option>
+          </select>
+          <p class="text-[11px] text-gray-500 mt-1">Quản trị viên được phân quyền tạo & xóa tài khoản giáo viên.</p>
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-700 uppercase mb-1">📚 Môn phụ trách <span class="text-red-500">*</span></label>
@@ -1181,6 +1226,12 @@
     </div>
     <p class="text-xs text-indigo-500 mt-2">Sau khi chạy, Cloudflare sẽ cấp đường link dạng <code>https://abc123.trycloudflare.com</code>. Copy link đó gửi cho học sinh là xong!</p>
   </div>
+
+  <!-- Chân trang Bản quyền -->
+  <footer class="mt-12 py-6 border-t border-gray-200 text-center text-xs text-gray-500 space-y-1">
+    <p class="font-bold text-gray-700 text-sm">Bản quyền: Giáo viên tin học - THPT Long Cang</p>
+    <p class="text-gray-400">Hệ thống Kiểm tra Trực tuyến &copy; 2026 — Chuẩn Bộ Giáo dục và Đào tạo</p>
+  </footer>
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -1199,6 +1250,7 @@ function adminApp() {
     availableClasses: [],
     adminExamFilterSubject: '',
     adminExamFilterGrade: '',
+    adminExamFilterPublish: '',
     restoringBackup: false,
     restoringUserBackup: false,
     backupMsg: '',
@@ -1208,7 +1260,7 @@ function adminApp() {
     showApiKeyModal: false,
     userActionMsg: '',
     userActionOk: true,
-    newTeacherForm: { username: '', fullName: '', password: '', subject: '' },
+    newTeacherForm: { username: '', fullName: '', password: '', role: 'teacher', subject: '' },
     changePassAdminForm: { username: '', oldPassword: '', newPassword: '', confirmPassword: '' },
     newKey: '',
     keyMsg: '',
@@ -1262,6 +1314,8 @@ function adminApp() {
       return this.examList.filter(e => {
         if (this.adminExamFilterSubject && e.subject !== this.adminExamFilterSubject) return false;
         if (this.adminExamFilterGrade && e.grade !== this.adminExamFilterGrade) return false;
+        if (this.adminExamFilterPublish === 'published' && !e.is_published) return false;
+        if (this.adminExamFilterPublish === 'unpublished' && e.is_published) return false;
         return true;
       });
     },
@@ -1317,7 +1371,8 @@ function adminApp() {
     },
 
     async init() {
-      await Promise.all([this.loadCurrentUser(), this.loadStats(), this.loadKeyStatus(), this.loadSubmissions(), this.loadExamList(), this.loadUsers()]);
+      await this.loadCurrentUser();
+      await Promise.all([this.loadStats(), this.loadKeyStatus(), this.loadSubmissions(), this.loadExamList(), this.loadUsers()]);
       // Auto-refresh mỗi 10 giây
       setInterval(() => { this.loadStats(); this.loadSubmissions(); this.loadKeyStatus(); }, 10000);
     },
@@ -1328,12 +1383,56 @@ function adminApp() {
         if (r.ok) {
           const d = await r.json();
           this.currentUser = d.user;
+          if (!this.isSuperAdmin() && this.currentUser && this.currentUser.subject) {
+            this.selectedSubjectFilter = this.currentUser.subject;
+            this.adminExamFilterSubject = this.currentUser.subject;
+          }
         }
       } catch(e) {}
     },
 
+    isSuperAdmin() {
+      return this.currentUser && (this.currentUser.username?.toLowerCase() === 'admin' || this.currentUser.is_protected);
+    },
+
     isAdmin() {
       return this.currentUser && (this.currentUser.role === 'admin' || this.currentUser.username?.toLowerCase() === 'admin');
+    },
+
+    canCreateTeacher() {
+      return this.isSuperAdmin() || (this.currentUser && this.currentUser.role === 'admin');
+    },
+
+    async toggleUserRole(u) {
+      if (!this.isSuperAdmin()) {
+        alert("Chỉ tài khoản Quản trị viên chính mới có quyền phân quyền!");
+        return;
+      }
+      const newRole = u.role === 'admin' ? 'teacher' : 'admin';
+      const roleName = newRole === 'admin' ? 'Quản trị viên' : 'Giáo viên';
+      if (!confirm(`Bạn có chắc chắn muốn chuyển vai trò của tài khoản "${u.username}" thành "${roleName}"?`)) {
+        return;
+      }
+      try {
+        const r = await fetch('/api/admin/users/update-role', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: u.username,
+            role: newRole
+          })
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          this.userActionMsg = data.message || `Đã chuyển vai trò tài khoản sang ${roleName}!`;
+          this.userActionOk = true;
+          await this.loadUsers();
+        } else {
+          alert(data.detail || 'Không thể cập nhật vai trò!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
     },
 
     async loadUsers() {
@@ -1347,7 +1446,7 @@ function adminApp() {
     },
 
     getDisplayUsers() {
-      if (this.isAdmin()) {
+      if (this.isSuperAdmin()) {
         return this.userList;
       }
       if (!this.currentUser) return [];
@@ -1384,7 +1483,7 @@ function adminApp() {
             username: u,
             full_name: this.newTeacherForm.fullName.trim(),
             password: this.newTeacherForm.password,
-            role: 'teacher',
+            role: (this.isSuperAdmin() && this.newTeacherForm.role) ? this.newTeacherForm.role : 'teacher',
             subject: this.newTeacherForm.subject
           })
         });
@@ -1393,7 +1492,7 @@ function adminApp() {
           this.userActionMsg = data.message;
           this.userActionOk = true;
           this.showCreateTeacherModal = false;
-          this.newTeacherForm = { username: '', fullName: '', password: '', subject: '' };
+          this.newTeacherForm = { username: '', fullName: '', password: '', role: 'teacher', subject: '' };
           await this.loadUsers();
         } else {
           alert(data.detail || 'Không thể tạo tài khoản!');
@@ -1706,6 +1805,26 @@ function adminApp() {
           alert(res.detail || 'Lỗi khi chuyển đổi chế độ thi!');
         }
       } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    async togglePublish(examId) {
+      const item = this.examList.find(x => x.id === examId);
+      const oldVal = item ? item.is_published : true;
+      if (item) item.is_published = !oldVal;
+
+      try {
+        const resp = await fetch(`/api/exam-builder/toggle-publish/${examId}`, { method: 'POST' });
+        const res = await resp.json();
+        if (resp.ok) {
+          if (item) item.is_published = res.is_published;
+        } else {
+          if (item) item.is_published = oldVal;
+          alert(res.detail || 'Lỗi khi thay đổi trạng thái xuất bản!');
+        }
+      } catch(e) {
+        if (item) item.is_published = oldVal;
         alert('Lỗi kết nối máy chủ!');
       }
     },

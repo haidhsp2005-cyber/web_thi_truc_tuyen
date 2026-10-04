@@ -1,0 +1,435 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN HÓA HỌC 12 - CHƯƠNG 1",
+  "subject": "Hóa học",
+  "grade": "12",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Chất béo lỏng (dầu thực vật) chuyển hóa thành chất béo rắn (mỡ động vật) bằng phản ứng",
+          "options": {
+            "A": "xà phòng hóa",
+            "B": "dehydro hóa",
+            "C": "hydration hóa",
+            "D": "hydro hóa"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Khi đun nóng chất béo với dung dịch kiềm, hiện tượng xảy ra ở giai đoạn đầu là",
+          "options": {
+            "A": "Chất béo tan hoàn toàn trong dung dịch kiềm thành dung dịch đồng nhất ngay từ đầu.",
+            "B": "Chất béo nổi lên trên bề mặt dung dịch kiềm, không tan.",
+            "C": "Dung dịch chuyển thành màu xanh lam.",
+            "D": "Xuất hiện kết tủa trắng ngay lập tức."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Đốt cháy hoàn toàn  $0,15$  mol một este no, đơn chức, mạch hở thu được sản phẩm cháy dẫn qua dung dịch  $Ca(OH{)}_{2}$  dư thu được  $45$  gam kết tủa. Công thức phân tử của este là",
+          "options": {
+            "A": "$C_{2}H_{4}O_{2}$",
+            "B": "$C_{5}H_{1}0O_{2}$",
+            "C": "$C_{4}H_{8}O_{2}$",
+            "D": "$C_{3}H_{6}O_{2}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Chất hữu cơ  $X$  có mùi thơm của hoa nhài, được dùng làm chất tạo hương liệu trong công nghiệp thực phẩm và mỹ phẩm.  $X$  có thể là",
+          "options": {
+            "A": "Ethyl butyrate",
+            "B": "Geranyl acetate",
+            "C": "Benzyl acetate",
+            "D": "Isoamyl acetate"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Ứng với công thức phân tử  $C_{4}H_{8}O_{2}$  có số lượng đồng phân este mạch hở là",
+          "options": {
+            "A": "5",
+            "B": "3",
+            "C": "4",
+            "D": "2"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Cho các chất sau:  $CH_{3}COOH$ ,  $CH_{3}COOCH_{3}$ ,  $C_{2}H_{5}OH$ ,  $CH_{3}CHO$ ,  $(CH_{3}COO{)}_{2}C_{2}H_{4}$ . Số chất tác dụng được với dung dịch  $NaOH$  là",
+          "options": {
+            "A": "4",
+            "B": "2",
+            "C": "3",
+            "D": "5"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Đốt cháy hoàn toàn  $1$  mol este no, đơn chức, mạch hở thu được thể tích khí  $CO_{2}$  (đkc) là",
+          "options": {
+            "A": "$49,58$  lít",
+            "B": "$74,37$  lít",
+            "C": "Tùy thuộc vào số nguyên tử C của este",
+            "D": "$24,79$  lít"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Cho  $0,1$  mol một este đơn chức phản ứng hoàn toàn với dung dịch  $NaOH$  đun nóng, thu được  $8,2$  gam muối. Công thức cấu tạo của este là",
+          "options": {
+            "A": "$HCOOC_{3}H_{7}$",
+            "B": "$CH_{3}COOC_{2}H_{5}$",
+            "C": "$C_{2}H_{5}COOCH_{3}$",
+            "D": "$CH_{3}COOCH_{3}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Xà phòng hóa hoàn toàn  $0,1$  mol  $CH_{3}COOC_{2}H_{5}$  bằng dung dịch  $NaOH$  đun nóng, khối lượng muối thu được sau phản ứng là",
+          "options": {
+            "A": "$6,8$  gam",
+            "B": "$8,2$  gam",
+            "C": "$9,8$  gam",
+            "D": "$7,2$  gam"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Thủy phân hoàn toàn  $0,1$  mol este mạch hở  $X$  cần vừa đủ  $0,2$  mol  $NaOH$ , sản phẩm thu được gồm một muối của axit đa chức và một ancol đơn chức. Công thức cấu tạo của  $X$  là",
+          "options": {
+            "A": "$(CH_{3}COO{)}_{2}C_{2}H_{4}$",
+            "B": "$CH_{3}COOC_{2}H_{5}$",
+            "C": "$HCOOC_{2}H_{5}$",
+            "D": "$C_{2}H_{4}(COOCH_{3}{)}_{2}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Phát biểu nào sau đây không đúng?",
+          "options": {
+            "A": "Các este không tan trong nước do không tạo được liên kết hydro với nước.",
+            "B": "Chất béo là trieste của glycerol với các axit béo.",
+            "C": "Thủy phân este trong môi trường kiềm là phản ứng một chiều.",
+            "D": "Metyl acetate là chất lỏng, nhẹ hơn nước và ít tan trong nước."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Thủy phân hoàn toàn  $8,8$  gam một este đơn chức mạch hở  $X$  bằng dung dịch  $NaOH$  dư, thu được  $8,2$  gam muối của axit hữu cơ và một lượng ancol. Công thức phân tử của  $X$  là",
+          "options": {
+            "A": "$C_{3}H_{6}O_{2}$",
+            "B": "$C_{2}H_{4}O_{2}$",
+            "C": "$C_{4}H_{8}O_{2}$",
+            "D": "$C_{5}H_{1}0O_{2}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Lipit là những hợp chất hữu cơ có trong tế bào sống, không hòa tan trong nước nhưng hòa tan nhiều trong dung môi hữu cơ không phân cực. Phát biểu nào sau đây không đúng về lipit?",
+          "options": {
+            "A": "Chất béo là trieste của glycerol với axit béo.",
+            "B": "Tất cả các lipit đều chứa liên kết este trong phân tử.",
+            "C": "Lipit bao gồm chất béo, sáp, steroid, phospholipid...",
+            "D": "Phospholipid là thành"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Cho  $6$  gam axit acetic tác dụng với dư ancol ethylen có xúc thác  $H_{2}SO_{4}$  đặc, đun nóng. Hiệu suất phản ứng este hóa đạt  $75%$ . Khối lượng este thu được là",
+          "options": {
+            "A": "$6,60$  gam",
+            "B": "$5,28$  gam",
+            "C": "$8,80$  gam",
+            "D": "$4,40$  gam"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Phát biểu nào sau đây đúng khi nói về este và chất béo?",
+          "options": {
+            "A": "Các este đều tan rất tốt trong nước và nhẹ hơn nước.",
+            "B": "Chất béo là trieste của glycerol với các axit béo.",
+            "C": "Phản ứng thủy phân este trong môi trường axit là phản ứng một chiều.",
+            "D": "Chất béo chứa các gốc axit không no thường ở trạng thái rắn ở nhiệt độ thường."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Thủy phân hoàn toàn  $171,3$  gam tristearin trong dung dịch  $NaOH$  vừa đủ, thu được  $m$  gam xà phòng. Giá trị của  $m$  là",
+          "options": {
+            "A": "$183,6$",
+            "B": "$176,4$",
+            "C": "$165,2$",
+            "D": "$190,2$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Cho các chất sau:  $CH_{3}COOH$ ,  $C_{2}H_{5}OH$ ,  $CH_{3}COOCH_{3}$ . Nhiệt độ sôi của các chất được sắp xếp theo chiều tăng dần từ trái sang phải là",
+          "options": {
+            "A": "$CH_{3}COOCH_{3}<CH_{3}COOH<C_{2}H_{5}OH$",
+            "B": "$CH_{3}COOH<C_{2}H_{5}OH<CH_{3}COOCH_{3}$",
+            "C": "$CH_{3}COOCH_{3}<C_{2}H_{5}OH<CH_{3}COOH$",
+            "D": "$C_{2}H_{5}OH<CH_{3}COOCH_{3}<CH_{3}COOH$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Thủy phân este  $X$  có công thức phân tử  $C_{4}H_{6}O_{2}$  trong dung dịch  $NaOH$ , thu được hỗn hợp hai chất hữu cơ đều có phản ứng tráng bạc. Tên gọi của  $X$  là",
+          "options": {
+            "A": "methyl acrylate",
+            "B": "vinyl acetate",
+            "C": "vinyl formate",
+            "D": "ethyl formate"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Đun nóng este  $HCOOCH_{3}$  với dung dịch  $NaOH$  dư, thu được các sản phẩm hữu cơ gồm",
+          "options": {
+            "A": "Natri formate và ethanol",
+            "B": "Natri acetate và methanol",
+            "C": "Acid formic và methanol",
+            "D": "Natri formate và methanol"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Để trung hòa lượng axit tự do có trong  $14$  gam chất béo cần dùng  $2$  ml dung dịch  $KOH$   $0,1M$ . Chỉ số axit của chất béo đó là",
+          "options": {
+            "A": "$0,8$",
+            "B": "$5,6$",
+            "C": "$1,6$",
+            "D": "$2,8$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho các thông tin về lipit:",
+          "items": {
+            "a": {
+              "text": "Các axit béo thiết yếu đóng vai trò quan trọng trong quá trình trao đổi chất.",
+              "answer": true
+            },
+            "b": {
+              "text": "Có thể dùng nước brom để phân biệt dầu ăn thực vật và dầu mỡ bôi trơn máy.",
+              "answer": false
+            },
+            "c": {
+              "text": "Chất béo nhẹ hơn nước và không tan trong nước.",
+              "answer": true
+            },
+            "d": {
+              "text": "Khi để lâu trong không khí, dầu ăn có mùi khó chịu do hiện tượng oxi hóa nối đôi của gốc axit béo không no bởi oxi không khí.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Cho các nhận định về este và phản ứng este hóa:",
+          "items": {
+            "a": {
+              "text": "Thêm dung dịch  $H_{2}SO_{4}$  đặc vào hỗn hợp este và nước giúp tăng hiệu suất thủy phân.",
+              "answer": true
+            },
+            "b": {
+              "text": "Hầu hết các este nặng hơn nước và chìm xuống đáy bình.",
+              "answer": false
+            },
+            "c": {
+              "text": "Phản ứng giữa axit acetic và ethanol là phản ứng thuận nghịch.",
+              "answer": true
+            },
+            "d": {
+              "text": "Các este có nhiệt độ sôi cao hơn các axit có cùng khối lượng mol.",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Cho các phát biểu về phản ứng thủy phân este trong môi trường kiềm:",
+          "items": {
+            "a": {
+              "text": "Tất cả các este khi thủy phân trong  $NaOH$  đều sinh ra ancol.",
+              "answer": false
+            },
+            "b": {
+              "text": "Thủy phân este trong môi trường kiềm là phản ứng một chiều.",
+              "answer": true
+            },
+            "c": {
+              "text": "Thủy phân vinyl acetate trong  $NaOH$  thu được muối và anđehit acetic.",
+              "answer": true
+            },
+            "d": {
+              "text": "Nhỏ dung dịch  $NaOH$  vào ống nghiệm chứa este thấy lớp este tan hoàn toàn sau khi đun nóng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Xét các phát biểu về chất béo và ứng dụng:",
+          "items": {
+            "a": {
+              "text": "Chất béo là nguồn dinh dưỡng quan trọng và cung cấp năng lượng lớn cho cơ thể.",
+              "answer": true
+            },
+            "b": {
+              "text": "Chất béo lỏng chứa các gốc axit béo không no trong phân tử.",
+              "answer": true
+            },
+            "c": {
+              "text": "Xà phòng là muối natri hoặc kali của các axit béo.",
+              "answer": true
+            },
+            "d": {
+              "text": "Dầu ăn và dầu mỡ bôi trơn máy móc đều có cùng bản chất hóa học là este của glycerol.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Đốt cháy hoàn toàn  $0,1$  mol este no, đơn chức, mạch hở, toàn bộ sản phẩm cháy hấp thụ vào bình đựng dung dịch  $Ca(OH{)}_{2}$  dư thấy khối lượng bình tăng  $18,6$  gam. Số nguyên tử carbon trong phân tử este là bao nhiêu?",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Đun nóng  $8,9$  gam tristearin với dung dịch  $NaOH$  dư, khối lượng muối natri stearate thu được (giả sử hiệu suất  $100%$ ) là bao nhiêu gam?",
+          "answer": "9.18",
+          "accepted_answers": [
+            "9.18"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Cho  $12$  gam axit acetic tác dụng với  $13,8$  gam ethanol (xúc tác  $H_{2}SO_{4}$  đặc, đun nóng), hiệu suất phản ứng este hóa đạt  $80%$ . Khối lượng este thu được là bao nhiêu gam?",
+          "answer": "14.08",
+          "accepted_answers": [
+            "14.08"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Thủy phân hoàn toàn  $17,6$  gam một este đơn chức  $X$  bằng dung dịch  $NaOH$  vừa đủ, thu được dung dịch chứa  $20,4$  gam muối. Số mol  $NaOH$  đã phản ứng là bao nhiêu?",
+          "answer": "0.2",
+          "accepted_answers": [
+            "0.2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Một phân tử triolein  $(C_{57}H_{104}O_{6})$  có tổng số liên kết pi  $(\\pi )$  trong phân tử là bao nhiêu?",
+          "answer": "6",
+          "accepted_answers": [
+            "6"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Ứng với công thức phân tử  $C_{3}H_{6}O_{2}$ , số lượng đồng phân cấu tạo là este mạch hở là bao nhiêu?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_cecae772",
+  "scoring": {
+    "part1_total": 5.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 1.0,
+    "part3_per_question": 0.1667,
+    "part4_total": 0.0
+  },
+  "is_online_exam": true
+}

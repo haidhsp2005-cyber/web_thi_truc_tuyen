@@ -155,6 +155,16 @@
       </button>
     </div>
   </div>
+
+  <!-- Chân trang Bản quyền -->
+  <div class="text-center text-xs mt-6 space-y-1">
+    <p class="text-blue-200 font-semibold text-xs tracking-wide">
+      Bản quyền: Giáo viên tin học - THPT Long Cang
+    </p>
+    <p class="text-blue-300/70 text-[11px]">
+      Hệ thống Kiểm tra Trực tuyến &copy; 2026 — Chuẩn GDPT 2026
+    </p>
+  </div>
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -180,6 +190,9 @@ function loginApp() {
 
     get filteredExamList() {
       return this.examList.filter(e => {
+        // Chỉ hiện đề thi đã xuất bản (màu xanh), tuyệt đối không hiện đề màu đỏ
+        const isPub = e.is_published === true || String(e.is_published).toLowerCase() === 'true' || e.is_published === 1;
+        if (!isPub) return false;
         if (this.filterSubject && e.subject !== this.filterSubject) return false;
         if (this.filterGrade && e.grade !== this.filterGrade) return false;
         return true;
@@ -188,13 +201,18 @@ function loginApp() {
 
     async init() {
       try {
-        const r = await fetch('/api/exam-builder/list');
+        const r = await fetch('/api/exam-builder/list?published_only=true&_nocache=' + Date.now(), {
+          cache: 'no-store'
+        });
         if (r.ok) {
           const data = await r.json();
-          this.examList = data.exams || [];
-          if (this.examList.length === 1) {
-            this.selectedExamId = this.examList[0].id;
-            this.selectedExam = this.examList[0];
+          // LỌC TRIỆT ĐỂ: Chỉ lưu các đề đã xuất bản (màu xanh) vào examList
+          this.examList = (data.exams || []).filter(e => {
+            return e.is_published === true || String(e.is_published).toLowerCase() === 'true' || e.is_published === 1;
+          });
+          if (this.filteredExamList.length === 1) {
+            this.selectedExamId = this.filteredExamList[0].id;
+            this.selectedExam = this.filteredExamList[0];
           }
         }
       } catch(e) {}
@@ -234,6 +252,17 @@ function startExam() {
   if (!name) { showError('Vui lòng nhập họ và tên!'); document.getElementById('student_name').focus(); return; }
   if (!cls) { showError('Vui lòng nhập lớp!'); document.getElementById('student_class').focus(); return; }
   if (!examId) { showError('Vui lòng chọn đề thi!'); return; }
+
+  // KIỂM TRA CHẶN: Đề chưa xuất bản không được phép vào phòng thi
+  const appEl = document.querySelector('[x-data]');
+  const appData = appEl && window.Alpine ? Alpine.$data(appEl) : null;
+  if (appData && appData.filteredExamList) {
+    const valid = appData.filteredExamList.find(e => e.id === examId);
+    if (!valid) {
+      showError('Đề thi này đang ở trạng thái CHƯA XUẤT BẢN! Không thể vào làm bài.');
+      return;
+    }
+  }
 
   sessionStorage.removeItem('exam_answers');
   sessionStorage.removeItem('exam_shuffled_' + examId);

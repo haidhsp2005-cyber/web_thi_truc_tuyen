@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from ..database import (
     get_all_submissions, get_submission, get_config, set_config, load_exam,
     delete_submission, delete_all_submissions,
-    get_all_users, create_user, update_user_password, delete_user,
+    get_all_users, create_user, update_user_password, delete_user, update_user_role,
     get_user_by_username, hash_password, export_full_backup, import_full_backup,
     export_users_backup, import_users_backup
 )
@@ -28,7 +28,7 @@ from ..services.export_service import (
 )
 from ..models import (
     APIKeyRequest, AdminLoginRequest,
-    CreateUserRequest, ChangePasswordRequest, DeleteUserRequest
+    CreateUserRequest, ChangePasswordRequest, DeleteUserRequest, UpdateRoleRequest
 )
 import logging
 
@@ -101,8 +101,10 @@ async def list_users(request: Request):
     if not current_user:
         return {"success": True, "users": [], "total": 0}
 
-    is_admin = current_user.get("role") == "admin" or current_user.get("username", "").lower() == "admin"
-    if not is_admin:
+    is_super_admin = bool(
+        current_user.get("is_protected") or current_user.get("username", "").lower() == "admin"
+    )
+    if not is_super_admin:
         my_username = (current_user.get("username") or "").lower()
         users = [u for u in users if (u.get("username") or "").lower() == my_username]
 
@@ -119,19 +121,25 @@ async def create_new_user(req: CreateUserRequest, request: Request):
             detail="Vui lòng đăng nhập vào trang quản trị để tạo tài khoản giáo viên mới!"
         )
 
-    is_admin = current_user.get("role") == "admin" or current_user.get("username", "").lower() == "admin"
+    is_super_admin = bool(
+        current_user and (current_user.get("is_protected") or current_user.get("username", "").lower() == "admin")
+    )
+    is_admin = current_user.get("role") == "admin" or is_super_admin
     if not is_admin:
         raise HTTPException(
             status_code=403,
-            detail="Chỉ có tài khoản Quản trị viên (admin) mới có quyền tạo tài khoản giáo viên mới!"
+            detail="Chỉ có tài khoản Quản trị viên mới có quyền tạo tài khoản giáo viên mới!"
         )
+
+    # Giáo viên được ủy quyền quản trị chỉ có thể tạo tài khoản với vai trò Giáo viên
+    user_role = (req.role or "teacher") if is_super_admin else "teacher"
 
     try:
         new_u = create_user(
             username=req.username,
             password=req.password,
             full_name=req.full_name or "",
-            role=req.role or "teacher",
+            role=user_role,
             subject=req.subject or ""
         )
         return {"success": True, "message": f"Tạo tài khoản giáo viên '{new_u['username']}' thành công! Môn phụ trách: {new_u.get('subject','')}", "user": new_u}
@@ -199,10 +207,13 @@ async def remove_user(request: Request, username: str = None, req: DeleteUserReq
     KHÔNG BAO GIỜ CHO PHÉP XÓA TÀI KHOẢN ADMIN MẶC ĐỊNH.
     """
     current_user = get_current_user_from_request(request)
-    if not current_user or (current_user.get("role") != "admin" and current_user.get("username", "").lower() != "admin"):
+    is_super_admin = bool(
+        current_user and (current_user.get("is_protected") or current_user.get("username", "").lower() == "admin")
+    )
+    if not is_super_admin:
         raise HTTPException(
             status_code=403,
-            detail="Quyền bị từ chối: Chỉ có tài khoản Quản trị viên (admin) mới có quyền xóa tài khoản!"
+            detail="Quyền bị từ chối: Chỉ có tài khoản Quản trị viên chính (admin) mới có quyền xóa tài khoản!"
         )
 
     target = ""
@@ -217,6 +228,16 @@ async def remove_user(request: Request, username: str = None, req: DeleteUserReq
     if target.lower() == "admin":
         raise HTTPException(status_code=403, detail="Tài khoản 'admin' là tài khoản mặc định và KHÔNG THỂ XÓA!")
 
+    # Kiểm tra tài khoản đích
+    target_u = get_user_by_username(target)
+    if not target_u:
+        raise HTTPException(status_code=404, detail="Không tìm thấy tài khoản cần xóa!")
+    if target_u.get("is_protected") or target_u.get("username", "").lower() == "admin":
+        raise HTTPException(status_code=403, detail="Tài khoản Quản trị viên hệ thống là bất khả xâm phạm và KHÔNG THỂ XÓA!")
+    # Người dùng được phân quyền quản trị không thể xóa tài khoản quản trị khác
+    if current_user.get("username", "").lower() != "admin" and target_u.get("role") == "admin":
+        raise HTTPException(status_code=403, detail="Bạn không có quyền xóa tài khoản của Quản trị viên khác!")
+
     try:
         delete_user(target)
         return {"success": True, "message": f"Đã xóa tài khoản '{target}' thành công!"}
@@ -225,6 +246,30 @@ async def remove_user(request: Request, username: str = None, req: DeleteUserReq
     except Exception as e:
         logger.error(f"Lỗi khi xóa user: {e}")
         raise HTTPException(status_code=500, detail="Lỗi máy chủ khi xóa tài khoản!")
+
+
+@router.post("/users/update-role")
+async def change_user_role(req: UpdateRoleRequest, request: Request):
+    """
+    Phân quyền vai trò người dùng (Giáo viên hoặc Quản trị viên).
+    CHỈ CÓ TÀI KHOẢN ADMIN CHÍNH (admin) MỚI CÓ QUYỀN ĐỔI VAI TRÒ.
+    """
+    current_user = get_current_user_from_request(request)
+    if not current_user or current_user.get("username", "").lower() != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Chỉ Quản trị viên chính (admin) mới có quyền phân quyền vai trò tài khoản!"
+        )
+
+    try:
+        update_user_role(req.username, req.role)
+        role_vn = "Quản trị viên" if req.role.lower() == "admin" else "Giáo viên"
+        return {"success": True, "message": f"Đã chuyển vai trò tài khoản '{req.username}' thành '{role_vn}' thành công!"}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Lỗi khi đổi vai trò user: {e}")
+        raise HTTPException(status_code=500, detail="Lỗi máy chủ khi cập nhật vai trò!")
 
 
 @router.get("/users/backup/download")
@@ -346,8 +391,11 @@ async def get_submissions(request: Request, exam_id: str = None, student_class: 
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
     all_exams = _list_exam_files()
 
-    # Lọc theo quyền giáo viên
-    if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
+    # Lọc theo quyền giáo viên (chỉ Super Admin mặc định mới thấy tất cả môn)
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
         accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
         submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
 
@@ -387,8 +435,11 @@ async def get_stats(request: Request, exam_id: str = None, student_class: str = 
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
     all_exams = _list_exam_files()
 
-    # Lọc theo quyền giáo viên
-    if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
+    # Lọc theo quyền giáo viên (chỉ Super Admin mặc định mới thấy tất cả môn)
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
         accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
         submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
 
@@ -546,8 +597,11 @@ async def print_class_submissions(
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
     all_exams = _list_exam_files()
 
-    # Lọc theo quyền giáo viên
-    if current_user and current_user.get('role') != 'admin' and current_user.get('username', '').lower() != 'admin':
+    # Lọc theo quyền giáo viên (chỉ Super Admin mặc định mới thấy tất cả môn)
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
         accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
         submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
 

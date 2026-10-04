@@ -23,20 +23,81 @@ def clean_math_for_print(text: str) -> str:
     """Chuẩn hóa công thức toán và hệ phương trình trước khi xuất in ấn."""
     if not text:
         return ""
-    s = str(text)
-    # Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị: { (m^{2}) -> (m^{2})
+    s = str(text).strip()
+    
+    # Dọn dẹp mã HTML lỗi KaTeX nếu có
+    s = re.sub(r'<span[^>]*class="katex-error"[^>]*>([\s\S]*?)</span>', r'\1', s)
+    s = re.sub(r'style="color:\s*#cc0000"[^>]*>', '', s)
+    
+    # Dọn dẹp lỗi ngoặc nhọn mồ côi: { (m^{2}) -> (m^{2})
     s = re.sub(r'\{(\s*\([^\)]+\))\}?', r'\1', s)
     s = re.sub(r'\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?', r'\1', s)
+
+    # 1. Chuyển đổi \left\{ \begin{matrix} hoặc \begin{array} sang \begin{cases}
+    s = re.sub(r"\\left\\\{\s*\\begin\{(?:matrix|array)\}(?:\{[a-zA-Z]*\})?", r"\\begin{cases}", s)
+    s = re.sub(r"\\end\{(?:matrix|array)\}(?:\s*\\right\.?)?", r"\\end{cases}", s)
+
+    # 2. Chuyển đổi \left\{ ... \right. thành \begin{cases} ... \end{cases}
+    def repl_left_right(m):
+        content = m.group(1).strip()
+        if "\\\\" in content or "\n" in content:
+            inner = re.sub(r'(?<!\\)\n+', r' \\\\ ', content)
+            return f"\\begin{{cases}} {inner} \\end{{cases}}"
+        return m.group(0)
+
+    s = re.sub(r"\\left\\\{\s*([\s\S]+?)\s*\\right\.", repl_left_right, s)
+
+    # 3. Chuẩn hóa hệ phương trình có ngoặc nhọn mở:
+    #    {x + y = 15 \\ x - 2y = 0}
+    #    {x + y = 15 \n x - 2y = 0
+    #    ${x + y = 15 \n x - 2y = 0$
+    def repl_curly_sys(match):
+        body = match.group(1).strip()
+        inner = re.sub(r'(?<!\\)\n+', r' \\\\ ', body)
+        inner = inner.strip('{}')
+        return f"$\\begin{{cases}} {inner} \\end{{cases}}$"
+
     s = re.sub(
-        r'\$?\s*\{\s*([^{}]*?(?:\\\\|\n|&)[^{}]*?)\s*(?:\}\$|\$\}|\}|\$)',
-        lambda m: f"$\\begin{{cases}} {m.group(1).strip().replace(chr(10), ' \\\\ ')} \\end{{cases}}$",
+        r'\$?\s*\{\s*([^{}]*?(?:\\\\|\n|&)[^{}]*?)\s*(?:\}\$|\$\}|\}|\$|$)',
+        repl_curly_sys,
         s
     )
+
+    # 4. Nếu chuỗi có 2 dòng trở lên và các dòng đều chứa biểu thức phương trình (ví dụ có '=', '<', '>', '\le', '\ge')
+    #    nhưng chưa có \begin{cases}: Tự động bao lại thành \begin{cases} ... \end{cases}
+    if "\\begin{cases}" not in s:
+        lines = [line.strip() for line in s.splitlines() if line.strip()]
+        if len(lines) >= 2:
+            eq_pattern = re.compile(r'(=|<|>|\\le|\\ge|\\leq|\\geq)')
+            if all(eq_pattern.search(line) for line in lines):
+                inner_lines = []
+                for line in lines:
+                    cleaned_line = line.strip().strip('$').strip()
+                    inner_lines.append(cleaned_line)
+                inner = " \\\\ ".join(inner_lines)
+                s = f"$\\begin{{cases}} {inner} \\end{{cases}}$"
+
+    # 5. Đảm bảo \begin{cases} ... \end{cases} luôn được bọc trong $...$
     s = re.sub(
         r'([^$]|^)(\\begin\{cases\}[\s\S]*?\\end\{cases\})([^$]|$)',
         r'\1$\2$\3',
         s
     )
+
+    # 6. Tự động đóng \begin{cases} nếu thiếu \end{cases}
+    cases_open = len(re.findall(r"\\begin\{cases\}", s))
+    cases_close = len(re.findall(r"\\end\{cases\}", s))
+    if cases_open > cases_close:
+        missing = cases_open - cases_close
+        if s.endswith("$"):
+            s = s[:-1] + (" \\end{cases}" * missing) + "$"
+        else:
+            s = s + (" \\end{cases}" * missing) + "$"
+
+    # 7. Xử lý trùng lặp dấu $$ thành $
+    s = re.sub(r'\${3,}', '$', s)
+    s = re.sub(r'\$\s*\$', ' ', s)
+
     return s
 
 VIETNAM_TZ = timezone(timedelta(hours=7))
@@ -85,7 +146,7 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
     ws["A2"].alignment = center
 
     # Header
-    headers = ["STT", "Họ và Tên", "Lớp", "Phần I\n(5đ)", "Phần II\n(2đ)", "Phần III\n(2đ)", "Phần IV\n(1đ)", "Tổng điểm\n(/10đ)", "Xếp loại"]
+    headers = ["STT", "Họ và Tên", "Lớp", "Phần I", "Phần II", "Phần III", "Phần IV", "Tổng điểm\n(10đ)", "Xếp loại"]
     col_widths = [5, 25, 8, 10, 10, 10, 10, 12, 12]
 
     for col, (h, w) in enumerate(zip(headers, col_widths), 1):
@@ -434,6 +495,8 @@ def _format_exam_text_html(text: str, image_url: str = None) -> str:
     """Format nội dung câu hỏi và hiển thị thẻ <img> nếu có hình ảnh nhúng [IMAGE: ...] hoặc thuộc tính image."""
     if not text:
         text = ""
+    # Chuẩn hóa công thức toán và hệ phương trình chuẩn xác
+    text = clean_math_for_print(text)
     # Chuyển đổi cú pháp [IMAGE: ...] thành ảnh minh họa hiển thị đẹp mắt
     formatted = re.sub(
         r'\[IMAGE:\s*([^\]]+)\]',
@@ -519,20 +582,42 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
         opts_html = ""
         raw_opts = d.get("options", {})
         if raw_opts:
+            has_multiline = any(
+                "\n" in str(v) or "\\\\" in str(v) or "cases" in str(v) or len(str(v)) > 30
+                for v in raw_opts.values() if v
+            )
+            grid_cols = "grid-cols-1 sm:grid-cols-2" if has_multiline else "grid-cols-2 sm:grid-cols-4"
             opts_parts = []
             for k in ["A", "B", "C", "D"]:
                 val = raw_opts.get(k, "")
                 if val:
-                    cls = "font-bold text-red-600 underline" if k == cr_ans else "text-gray-700"
-                    opts_parts.append(f"<span class='mr-4 {cls}'><b>{k}.</b> {val}</span>")
-            opts_html = f"<div class='mt-1 text-xs'>{' '.join(opts_parts)}</div>"
+                    val_cleaned = clean_math_for_print(val)
+                    is_correct_opt = (k == cr_ans)
+                    is_chosen_opt = (k == st_ans)
+                    if is_correct_opt:
+                        border_cls = "border-green-400 bg-green-50/90 text-green-900 font-semibold shadow-xs"
+                        badge = "<span class='ml-auto text-[10px] text-green-700 font-bold'>✓ Đáp án đúng</span>"
+                    elif is_chosen_opt and not is_cor:
+                        border_cls = "border-red-400 bg-red-50/90 text-red-800 shadow-xs"
+                        badge = "<span class='ml-auto text-[10px] text-red-600 font-bold'>✗ Bạn chọn</span>"
+                    else:
+                        border_cls = "border-gray-200 bg-white text-gray-700"
+                        badge = ""
+                    opts_parts.append(
+                        f"<div class='p-2 px-2.5 rounded-lg border {border_cls} text-xs flex items-center min-h-[34px] overflow-visible'>"
+                        f"<b class='mr-1.5 flex-shrink-0 text-gray-900'>{k}.</b> "
+                        f"<span class='leading-relaxed overflow-visible'>{val_cleaned}</span>"
+                        f"{badge}"
+                        f"</div>"
+                    )
+            opts_html = f"<div class='grid {grid_cols} gap-1.5 mt-2'>{ ''.join(opts_parts) }</div>"
 
         q_txt_html = _format_exam_text_html(d.get('text', ''), d.get('image'))
 
         p1_details_html += f"""
-        <div class="p-3 border rounded-xl mb-2 {row_bg} avoid-break">
-          <div class="flex justify-between items-start text-xs sm:text-sm font-semibold">
-            <span class="text-gray-900"><b>Câu {idx}:</b> {q_txt_html}</span>
+        <div class="p-3.5 border rounded-xl mb-2.5 {row_bg} avoid-break overflow-visible">
+          <div class="flex justify-between items-start text-xs sm:text-sm font-semibold gap-2">
+            <div class="text-gray-900 leading-relaxed overflow-visible"><b>Câu {idx}:</b> {q_txt_html}</div>
             <span class="ml-2 font-bold flex-shrink-0 {'text-green-700' if is_cor else 'text-red-600'}">{icon} (+{pts}đ)</span>
           </div>
           {opts_html}
@@ -776,6 +861,26 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
   window.addEventListener("load", triggerMath);
 </script>
 <style>
+  /* KaTeX và Công thức Toán / Hệ phương trình */
+  .katex {{
+    font-size: 1.05em !important;
+    text-rendering: geometricPrecision !important;
+  }}
+  .katex-html {{
+    overflow: visible !important;
+  }}
+  .katex .delimsizing {{
+    overflow: visible !important;
+  }}
+  .katex-display {{
+    margin: 0.4em 0 !important;
+    overflow-x: auto;
+    overflow-y: visible !important;
+  }}
+  .avoid-break {{
+    overflow: visible !important;
+  }}
+
   @media print {{
     .no-print {{ display: none !important; }}
     body {{ background: white !important; padding: 0 !important; font-size: 12px; margin: 0 !important; }}
@@ -895,6 +1000,26 @@ def export_class_submissions_print_html(
   window.addEventListener("load", triggerMath);
 </script>
 <style>
+  /* KaTeX và Công thức Toán / Hệ phương trình */
+  .katex {{
+    font-size: 1.05em !important;
+    text-rendering: geometricPrecision !important;
+  }}
+  .katex-html {{
+    overflow: visible !important;
+  }}
+  .katex .delimsizing {{
+    overflow: visible !important;
+  }}
+  .katex-display {{
+    margin: 0.4em 0 !important;
+    overflow-x: auto;
+    overflow-y: visible !important;
+  }}
+  .avoid-break {{
+    overflow: visible !important;
+  }}
+
   @media print {{
     .no-print {{ display: none !important; }}
     body {{ background: white !important; padding: 0 !important; font-size: 12px; margin: 0 !important; }}
@@ -969,11 +1094,16 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
     for idx, q in enumerate(p1_qs, 1):
         opts = q.get("options", {})
         opts_rendered = []
+        has_multiline = any(
+            "\n" in str(v) or "\\\\" in str(v) or "cases" in str(v) or len(str(v)) > 30
+            for v in opts.values() if v
+        )
+        grid_cols = "grid-cols-1 sm:grid-cols-2" if has_multiline else "grid-cols-2 sm:grid-cols-4"
         for k in ["A", "B", "C", "D"]:
             v = opts.get(k, "")
             if v:
-                opts_rendered.append(f"<span class='mr-6'><b>{k}.</b> {clean_math_for_print(v)}</span>")
-        opts_block = f"<div class='mt-1 text-sm pl-4 flex flex-wrap gap-y-1'>{' '.join(opts_rendered)}</div>"
+                opts_rendered.append(f"<div class='overflow-visible'><b>{k}.</b> {clean_math_for_print(v)}</div>")
+        opts_block = f"<div class='grid {grid_cols} gap-2 mt-1.5 text-sm pl-2'>{ ''.join(opts_rendered) }</div>" if opts_rendered else ""
 
         img_html = f'<div class="my-2 text-center"><img src="{q["image"]}" class="max-h-56 mx-auto rounded border object-contain" /></div>' if q.get("image") else ''
         p1_html += f"""
@@ -1016,7 +1146,7 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
         p3_html += f"""
         <div class="mb-3 text-sm">
           <div class="flex items-start justify-between gap-3">
-            <p class="font-medium text-gray-900 flex-1"><b>Câu {idx}:</b> {q.get('text', '')}</p>
+            <p class="font-medium text-gray-900 flex-1"><b>Câu {idx}:</b> {clean_math_for_print(q.get('text', ''))}</p>
             <span class="border-b border-dotted border-gray-500 w-32 text-center text-xs text-gray-400 pb-0.5 flex-shrink-0">Đáp số: .................</span>
           </div>
           {img_html}
@@ -1077,6 +1207,23 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
   window.addEventListener("load", triggerMath);
 </script>
 <style>
+  /* KaTeX và Công thức Toán / Hệ phương trình */
+  .katex {{
+    font-size: 1.05em !important;
+    text-rendering: geometricPrecision !important;
+  }}
+  .katex-html {{
+    overflow: visible !important;
+  }}
+  .katex .delimsizing {{
+    overflow: visible !important;
+  }}
+  .katex-display {{
+    margin: 0.4em 0 !important;
+    overflow-x: auto;
+    overflow-y: visible !important;
+  }}
+
   @media print {{
     .no-print {{ display: none !important; }}
     body {{ background: white !important; padding: 0 !important; font-size: 13px; line-height: 1.45; }}
