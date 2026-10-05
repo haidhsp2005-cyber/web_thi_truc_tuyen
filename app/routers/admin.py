@@ -547,14 +547,29 @@ async def get_stats(request: Request, exam_id: str = None, student_class: str = 
 
 @router.get("/backup/download")
 async def download_full_backup(request: Request):
-    """Tải toàn bộ cơ sở dữ liệu hệ thống (Đề thi + Bài thi thí sinh + Tài khoản) về máy tính cá nhân."""
-    if not is_authenticated_admin(request):
+    """
+    Tải file sao lưu CSDL:
+    - Super Admin: Tải toàn bộ hệ thống (Đề thi + Bài thi + Tài khoản).
+    - Giáo viên bộ môn: CHỈ tải đề thi và bài thi thuộc môn học mình phụ trách.
+    """
+    current_user = get_current_user_from_request(request)
+    if not current_user:
         raise HTTPException(401, "Yêu cầu đăng nhập tài khoản Quản trị / Giáo viên!")
-    
-    backup_data = export_full_backup()
+
+    is_super_admin = bool(
+        current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'
+    )
+    teacher_sub = None if is_super_admin else current_user.get('subject')
+
+    backup_data = export_full_backup(subject=teacher_sub)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"sao_luu_toan_bo_he_thong_{timestamp}.json"
-    
+    if teacher_sub:
+        import re as _re
+        sub_slug = _re.sub(r'[^a-zA-Z0-9_]', '_', teacher_sub).strip('_')
+        filename = f"sao_luu_mon_{sub_slug}_{timestamp}.json"
+    else:
+        filename = f"sao_luu_toan_bo_he_thong_{timestamp}.json"
+
     content_bytes = json.dumps(backup_data, ensure_ascii=False, indent=2).encode("utf-8")
     return StreamingResponse(
         io.BytesIO(content_bytes),
@@ -565,14 +580,27 @@ async def download_full_backup(request: Request):
 
 @router.post("/backup/restore")
 async def restore_full_backup(request: Request, file: UploadFile = File(...)):
-    """Khôi phục toàn bộ hệ thống từ file sao lưu JSON tải lên từ máy tính cá nhân."""
-    if not is_authenticated_admin(request):
+    """
+    Khôi phục CSDL từ file JSON sao lưu:
+    - Super Admin: Phục hồi toàn bộ hệ thống (Đề thi + Bài thi + Tài khoản + Cấu hình).
+    - Giáo viên bộ môn: CHỈ phục hồi các đề thi và bài thi thuộc môn phụ trách.
+      Tuyệt đối KHÔNG ghi đè môn khác và KHÔNG được phục hồi tài khoản/cấu hình chung.
+    """
+    current_user = get_current_user_from_request(request)
+    if not current_user:
         raise HTTPException(401, "Yêu cầu đăng nhập tài khoản Quản trị / Giáo viên!")
-    
+
+    is_super_admin = bool(
+        current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'
+    )
+    teacher_sub = None if is_super_admin else current_user.get('subject')
+
     try:
         content = await file.read()
         backup_data = json.loads(content.decode("utf-8"))
         if backup_data.get("type") == "users_backup" or ("users" in backup_data and "exams" not in backup_data and "submissions" not in backup_data):
+            if not is_super_admin:
+                raise HTTPException(403, "Chỉ Quản trị viên (Super Admin) mới có quyền khôi phục tài khoản!")
             res_u = import_users_backup(backup_data)
             return {
                 "success": True,
@@ -580,15 +608,22 @@ async def restore_full_backup(request: Request, file: UploadFile = File(...)):
                 "details": res_u
             }
 
-        res = import_full_backup(backup_data)
+        res = import_full_backup(backup_data, allowed_subject=teacher_sub)
+        if teacher_sub:
+            msg = f"Khôi phục CSDL môn {teacher_sub} thành công: Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài thi của học sinh! (Không ảnh hưởng đến môn học khác)"
+        else:
+            msg = f"Khôi phục toàn bộ CSDL thành công! Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài làm học sinh, {res.get('restored_users', 0)} tài khoản."
+
         return {
             "success": True,
-            "message": f"Khôi phục thành công! Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài làm học sinh, {res.get('restored_users', 0)} tài khoản.",
+            "message": msg,
             "details": res
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Lỗi khôi phục sao lưu: {e}")
-        raise HTTPException(400, f"File sao lưu không hợp lệ: {str(e)}")
+        raise HTTPException(400, f"File sao lưu không hợp lệ hoặc bị lỗi: {str(e)}")
 
 
 # ===================== CÁC ENDPOINT IN ẤN (GIÁO VIÊN & ADMIN) =====================

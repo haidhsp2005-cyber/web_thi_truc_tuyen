@@ -1017,32 +1017,28 @@ def delete_exam_record(exam_id: str) -> bool:
     return deleted_any
 
 
-def export_full_backup() -> dict:
+def export_full_backup(subject: str = None) -> dict:
     """
-    Xuất toàn bộ hệ thống (Đề thi + Bài thi thí sinh + Tài khoản + Cấu hình)
-    thành một file JSON sao lưu hoàn chỉnh để lưu trữ vĩnh viễn trên máy tính cá nhân.
+    Xuất file JSON sao lưu.
+    - Nếu subject=None (Super Admin): Xuất toàn bộ hệ thống (Đề thi + Bài thi + Tài khoản + Cấu hình).
+    - Nếu có subject (Giáo viên bộ môn): CHỈ xuất đề thi và bài thi thuộc môn phụ trách.
     """
     conn = get_connection()
     c = conn.cursor()
 
-    # 1. Lấy tất cả bài thi
-    c.execute("SELECT id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status FROM submissions")
-    sub_rows = c.fetchall()
-    submissions = []
-    for r in sub_rows:
-        submissions.append({
-            "id": r[0], "student_name": r[1], "student_class": r[2], "exam_id": r[3],
-            "started_at": r[4], "submitted_at": r[5], "duration_seconds": r[6],
-            "answers_json": r[7], "result_json": r[8], "status": r[9]
-        })
+    clean_sub = subject.strip().lower() if subject and str(subject).strip() else None
 
-    # 2. Lấy tất cả đề thi (từ SQLite + các file JSON trong EXAMS_DIR)
+    # 1. Lấy đề thi
     exams_map = {}
     try:
         c.execute("SELECT id, title, subject, grade, data_json FROM exams")
         for r in c.fetchall():
             try:
-                exams_map[r[0]] = json.loads(r[4])
+                ex = json.loads(r[4])
+                ex_sub = (ex.get("subject") or r[2] or "").strip().lower()
+                if clean_sub and ex_sub != clean_sub:
+                    continue
+                exams_map[r[0]] = ex
             except:
                 pass
     except:
@@ -1054,28 +1050,51 @@ def export_full_backup() -> dict:
                 d = json.load(jf)
                 eid = d.get("id") or f.stem
                 if eid and eid not in exams_map:
+                    ex_sub = (d.get("subject") or "").strip().lower()
+                    if clean_sub and ex_sub != clean_sub:
+                        continue
                     exams_map[eid] = d
         except:
             pass
 
-    # 3. Lấy cấu hình
-    c.execute("SELECT key, value FROM config")
-    config = dict(c.fetchall())
+    allowed_eids = set(exams_map.keys())
 
-    # 4. Lấy tài khoản
-    c.execute("SELECT id, username, password_hash, full_name, role, is_protected, subject, created_at, updated_at FROM admin_users")
-    users = []
-    for r in c.fetchall():
-        users.append({
-            "id": r[0], "username": r[1], "password_hash": r[2], "full_name": r[3],
-            "role": r[4], "is_protected": r[5], "subject": r[6] or "", "created_at": r[7], "updated_at": r[8]
+    # 2. Lấy tất cả bài thi (nếu là giáo viên thì chỉ lấy bài thuộc đề thi môn đó)
+    c.execute("SELECT id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status FROM submissions")
+    sub_rows = c.fetchall()
+    submissions = []
+    for r in sub_rows:
+        if clean_sub and r[3] not in allowed_eids:
+            continue
+        submissions.append({
+            "id": r[0], "student_name": r[1], "student_class": r[2], "exam_id": r[3],
+            "started_at": r[4], "submitted_at": r[5], "duration_seconds": r[6],
+            "answers_json": r[7], "result_json": r[8], "status": r[9]
         })
+
+    # 3. Lấy cấu hình (chỉ Super Admin mới sao lưu cấu hình)
+    config = {}
+    if not clean_sub:
+        c.execute("SELECT key, value FROM config")
+        config = dict(c.fetchall())
+
+    # 4. Lấy tài khoản (chỉ Super Admin mới sao lưu tài khoản)
+    users = []
+    if not clean_sub:
+        c.execute("SELECT id, username, password_hash, full_name, role, is_protected, subject, created_at, updated_at FROM admin_users")
+        for r in c.fetchall():
+            users.append({
+                "id": r[0], "username": r[1], "password_hash": r[2], "full_name": r[3],
+                "role": r[4], "is_protected": r[5], "subject": r[6] or "", "created_at": r[7], "updated_at": r[8]
+            })
 
     conn.close()
 
     return {
         "version": "2026.1",
         "exported_at": datetime.now().isoformat(),
+        "scope": f"subject:{subject}" if clean_sub else "full",
+        "subject": subject if clean_sub else None,
         "exams": list(exams_map.values()),
         "submissions": submissions,
         "users": users,
@@ -1083,9 +1102,14 @@ def export_full_backup() -> dict:
     }
 
 
-def import_full_backup(backup: dict) -> dict:
+def import_full_backup(backup: dict, allowed_subject: str = None) -> dict:
     """
-    Khôi phục toàn bộ dữ liệu hệ thống từ file JSON sao lưu.
+    Khôi phục dữ liệu từ file JSON sao lưu.
+    - Nếu allowed_subject=None (Super Admin): Khôi phục toàn bộ (Đề thi + Bài thi + Tài khoản + Cấu hình).
+    - Nếu có allowed_subject (Giáo viên bộ môn):
+      + CHỈ phục hồi các đề thi thuộc môn allowed_subject.
+      + CHỈ phục hồi các bài thi học sinh của các đề thuộc môn đó.
+      + BỎ QUA tài khoản và cấu hình hệ thống (không cho phép giáo viên can thiệp vào tài khoản khác).
     """
     conn = get_connection()
     c = conn.cursor()
@@ -1093,13 +1117,22 @@ def import_full_backup(backup: dict) -> dict:
     restored_exams = 0
     restored_subs = 0
     restored_users = 0
+    skipped_other_subject_exams = 0
+
+    clean_sub = allowed_subject.strip().lower() if allowed_subject and str(allowed_subject).strip() else None
 
     # 1. Khôi phục đề thi
     exams = backup.get("exams", [])
+    valid_eids = set()
     for e in exams:
         eid = e.get("id")
         if not eid:
             continue
+        ex_sub = (e.get("subject") or "").strip().lower()
+        if clean_sub and ex_sub != clean_sub:
+            skipped_other_subject_exams += 1
+            continue
+        valid_eids.add(eid)
         try:
             # Ghi ra file JSON
             (EXAMS_DIR / f"{eid}.json").write_text(json.dumps(e, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -1115,9 +1148,18 @@ def import_full_backup(backup: dict) -> dict:
         except Exception as ex:
             logger.warning(f"Lỗi khôi phục đề {eid}: {ex}")
 
+    # Nếu là giáo viên, nạp thêm các đề thi hiện có sẵn trong DB của môn đó
+    if clean_sub:
+        c.execute("SELECT id FROM exams WHERE LOWER(subject) = ?", (clean_sub,))
+        for r in c.fetchall():
+            valid_eids.add(r[0])
+
     # 2. Khôi phục bài thi học sinh
     submissions = backup.get("submissions", [])
     for s in submissions:
+        sub_eid = s.get("exam_id")
+        if clean_sub and sub_eid not in valid_eids:
+            continue
         try:
             c.execute("""
                 INSERT OR REPLACE INTO submissions 
@@ -1132,38 +1174,40 @@ def import_full_backup(backup: dict) -> dict:
         except Exception as ex:
             logger.warning(f"Lỗi khôi phục bài thi {s.get('id')}: {ex}")
 
-    # 3. Khôi phục tài khoản (không đè tài khoản admin mặc định nếu đã tồn tại)
-    users = backup.get("users", [])
-    for u in users:
-        try:
-            uname = (u.get("username") or "").strip()
-            p_hash = u.get("password_hash")
-            if not uname or not p_hash:
-                continue
-            c.execute("SELECT id, is_protected FROM admin_users WHERE LOWER(username) = LOWER(?)", (uname,))
-            existing = c.fetchone()
-            if existing:
-                if not existing[1] and uname.lower() != "admin":
+    # 3. Khôi phục tài khoản (CHỈ Super Admin mới được khôi phục)
+    if not clean_sub:
+        users = backup.get("users", [])
+        for u in users:
+            try:
+                uname = (u.get("username") or "").strip()
+                p_hash = u.get("password_hash")
+                if not uname or not p_hash:
+                    continue
+                c.execute("SELECT id, is_protected FROM admin_users WHERE LOWER(username) = LOWER(?)", (uname,))
+                existing = c.fetchone()
+                if existing:
+                    if not existing[1] and uname.lower() != "admin":
+                        c.execute("""
+                            UPDATE admin_users SET password_hash = ?, full_name = ?, role = ?, subject = ?, updated_at = datetime('now')
+                            WHERE id = ?
+                        """, (p_hash, u.get("full_name", ""), u.get("role", "teacher"), u.get("subject", ""), existing[0]))
+                else:
                     c.execute("""
-                        UPDATE admin_users SET password_hash = ?, full_name = ?, role = ?, subject = ?, updated_at = datetime('now')
-                        WHERE id = ?
-                    """, (p_hash, u.get("full_name", ""), u.get("role", "teacher"), u.get("subject", ""), existing[0]))
-            else:
-                c.execute("""
-                    INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-                """, (uname, p_hash, u.get("full_name", ""), u.get("role", "teacher"), 1 if u.get("is_protected") else 0, u.get("subject", "")))
-            restored_users += 1
-        except Exception:
-            pass
+                        INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+                    """, (uname, p_hash, u.get("full_name", ""), u.get("role", "teacher"), 1 if u.get("is_protected") else 0, u.get("subject", "")))
+                restored_users += 1
+            except Exception:
+                pass
 
-    # 4. Khôi phục cấu hình
-    cfg = backup.get("config", {})
-    for k, v in cfg.items():
-        try:
-            c.execute("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)", (k, v))
-        except:
-            pass
+    # 4. Khôi phục cấu hình (CHỈ Super Admin mới được khôi phục)
+    if not clean_sub:
+        cfg = backup.get("config", {})
+        for k, v in cfg.items():
+            try:
+                c.execute("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)", (k, v))
+            except:
+                pass
 
     conn.commit()
     conn.close()
@@ -1171,7 +1215,9 @@ def import_full_backup(backup: dict) -> dict:
     return {
         "restored_exams": restored_exams,
         "restored_submissions": restored_subs,
-        "restored_users": restored_users
+        "restored_users": restored_users,
+        "skipped_other_subject_exams": skipped_other_subject_exams,
+        "scope": f"subject:{allowed_subject}" if clean_sub else "full"
     }
 
 
