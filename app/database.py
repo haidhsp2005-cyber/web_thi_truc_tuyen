@@ -355,23 +355,36 @@ def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[
     return results
 
 
-def delete_submission(submission_id: str) -> bool:
-    """Xóa một bài nộp theo submission_id."""
+def delete_submission(submission_id: str, allowed_exam_ids: List[str] = None) -> bool:
+    """Xóa một bài nộp theo submission_id, có thể ràng buộc theo allowed_exam_ids."""
     conn = get_connection()
     c = conn.cursor()
-    c.execute("DELETE FROM submissions WHERE id = ?", (submission_id,))
+    if allowed_exam_ids is not None:
+        if not allowed_exam_ids:
+            conn.close()
+            return False
+        placeholders = ",".join("?" for _ in allowed_exam_ids)
+        c.execute(f"DELETE FROM submissions WHERE id = ? AND exam_id IN ({placeholders})", (submission_id, *allowed_exam_ids))
+    else:
+        c.execute("DELETE FROM submissions WHERE id = ?", (submission_id,))
     deleted = c.rowcount > 0
     conn.commit()
     conn.close()
     return deleted
 
 
-def delete_all_submissions(exam_id: str = None) -> int:
-    """Xóa tất cả bài nộp (có thể lọc theo exam_id)."""
+def delete_all_submissions(exam_id: str = None, exam_ids: List[str] = None) -> int:
+    """Xóa bài nộp (có thể lọc theo exam_id hoặc danh sách exam_ids theo phân quyền môn học)."""
     conn = get_connection()
     c = conn.cursor()
     if exam_id:
         c.execute("DELETE FROM submissions WHERE exam_id = ?", (exam_id,))
+    elif exam_ids is not None:
+        if not exam_ids:
+            conn.close()
+            return 0
+        placeholders = ",".join("?" for _ in exam_ids)
+        c.execute(f"DELETE FROM submissions WHERE exam_id IN ({placeholders})", tuple(exam_ids))
     else:
         c.execute("DELETE FROM submissions")
     count = c.rowcount
@@ -481,10 +494,11 @@ def heal_question_images(q: dict) -> bool:
 
 def heal_exam_data(exam: dict) -> bool:
     """Tự động kiểm tra và chữa lành các câu hỏi bị kẹt phương án trong bảng HTML/text,
-    hoặc chứa lỗi ngoặc nhọn KaTeX mồ côi (như 200{ m^{2}).
+    hoặc chứa lỗi ngoặc nhọn KaTeX mồ côi (như 200{ m^{2}), chuẩn hóa hệ phương trình và lượng giác.
     Trả về True nếu có sửa đổi dữ liệu."""
     if not isinstance(exam, dict) or "parts" not in exam:
         return False
+    from app.services.export_service import clean_math_for_print
     modified = False
 
     # 1. Phần I
@@ -494,10 +508,9 @@ def heal_exam_data(exam: dict) -> bool:
             if not isinstance(q, dict):
                 continue
             text = q.get("text", "")
-            # Sửa ngoặc nhọn mồ côi trước chữ cái / đơn vị
+            # Sửa ngoặc nhọn mồ côi và chuẩn hóa công thức KaTeX
             if text:
-                new_text = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', text)
-                new_text = re.sub(r'(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', new_text)
+                new_text = clean_math_for_print(text)
                 if new_text != text:
                     q["text"] = new_text
                     text = new_text
@@ -508,6 +521,14 @@ def heal_exam_data(exam: dict) -> bool:
                 modified = True
 
             opts = q.get("options") or {}
+            # Chuẩn hóa công thức trong các phương án A, B, C, D
+            for k, v in list(opts.items()):
+                if isinstance(v, str) and v:
+                    cleaned_v = clean_math_for_print(v)
+                    if cleaned_v != v:
+                        opts[k] = cleaned_v
+                        modified = True
+
             has_valid_opts = any(v and str(v).strip() for v in opts.values())
             if not has_valid_opts and text:
                 clean = re.sub(r'<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>', '\n', text, flags=re.I)
@@ -546,8 +567,7 @@ def heal_exam_data(exam: dict) -> bool:
                 continue
             text = q.get("text", "")
             if text:
-                new_text = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', text)
-                new_text = re.sub(r'(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', new_text)
+                new_text = clean_math_for_print(text)
                 if new_text != text:
                     q["text"] = new_text
                     text = new_text
@@ -558,6 +578,21 @@ def heal_exam_data(exam: dict) -> bool:
                 modified = True
 
             items = q.get("items") or {}
+            # Chuẩn hóa công thức trong các mệnh đề con a, b, c, d
+            for k, it in list(items.items()):
+                if isinstance(it, dict) and "text" in it:
+                    it_txt = it["text"]
+                    if isinstance(it_txt, str) and it_txt:
+                        cleaned_it = clean_math_for_print(it_txt)
+                        if cleaned_it != it_txt:
+                            it["text"] = cleaned_it
+                            modified = True
+                elif isinstance(it, str) and it:
+                    cleaned_it = clean_math_for_print(it)
+                    if cleaned_it != it:
+                        items[k] = cleaned_it
+                        modified = True
+
             has_valid_items = any(
                 (isinstance(v, dict) and v.get("text", "").strip()) or (isinstance(v, str) and v.strip())
                 for v in items.values()
@@ -599,10 +634,9 @@ def heal_exam_data(exam: dict) -> bool:
                 if isinstance(q, dict):
                     if heal_question_images(q):
                         modified = True
-                    if q.get("text"):
-                        text = q["text"]
-                        new_text = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', text)
-                        new_text = re.sub(r'(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)', r'\1\2', new_text)
+                    text = q.get("text", "")
+                    if text:
+                        new_text = clean_math_for_print(text)
                         if new_text != text:
                             q["text"] = new_text
                             modified = True

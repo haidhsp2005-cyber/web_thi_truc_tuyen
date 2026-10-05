@@ -609,6 +609,7 @@
                 <option value="">-- Tất cả trạng thái --</option>
                 <option value="published">🟢 Đã xuất bản (Học sinh thấy)</option>
                 <option value="unpublished">🔴 Chưa xuất bản (Đang ẩn)</option>
+                <option value="bank">🎲 Đề trộn ngẫu nhiên</option>
               </select>
             </div>
             <button x-show="adminExamFilterSubject || adminExamFilterGrade || adminExamFilterPublish" @click="adminExamFilterSubject=''; adminExamFilterGrade=''; adminExamFilterPublish='';" x-cloak
@@ -687,15 +688,36 @@
                 </td>
                 <td class="px-3 py-2 text-center text-gray-500 text-xs" x-text="`${e.subject} / Lớp ${e.grade}`"></td>
                 <td class="px-3 py-2 text-center text-xs text-gray-600">
-                  <span x-text="`${e.part1_count} TNKQ · ${e.part2_count} Đ/S · ${e.part3_count} TLN · ${e.part4_count} TL`"></span>
+                  <template x-if="!e.is_bank">
+                    <span x-text="`${e.part1_count} TNKQ · ${e.part2_count} Đ/S · ${e.part3_count} TLN · ${e.part4_count} TL`"></span>
+                  </template>
+                  <template x-if="e.is_bank">
+                    <div class="space-y-1 py-0.5 text-center">
+                      <div class="inline-flex items-center gap-1 font-extrabold text-purple-900 bg-purple-100/90 border border-purple-300 px-2 py-0.5 rounded-full text-xs shadow-2xs">
+                        <span>🎲 Bốc làm:</span>
+                        <strong x-text="`${e.bank_config?.total_draw || 0} câu`"></strong>
+                      </div>
+                      <div class="text-[11px] text-purple-800 font-semibold"
+                        x-text="`${e.bank_config?.part1_draw ?? e.part1_count} TNKQ · ${e.bank_config?.part2_draw ?? e.part2_count} Đ/S · ${e.bank_config?.part3_draw ?? e.part3_count} TLN · ${e.bank_config?.part4_draw ?? e.part4_count} TL`"></div>
+                      <div class="text-[10px] text-gray-400"
+                        x-text="`Kho gốc: ${(e.part1_count||0) + (e.part2_count||0) + (e.part3_count||0) + (e.part4_count||0)} câu`"></div>
+                    </div>
+                  </template>
                 </td>
-                <td class="px-3 py-2 text-center text-gray-600" x-text="`${e.duration_minutes} phút`"></td>
+                <td class="px-3 py-2 text-center text-gray-600">
+                  <span class="font-medium" x-text="`${e.duration_minutes} phút`"></span>
+                  <template x-if="e.is_bank">
+                    <div class="text-[10px] text-purple-700 font-bold" x-text="`(${e.bank_config?.total_draw || 0} câu)`"></div>
+                  </template>
+                </td>
                 <td class="px-3 py-2 text-center">
                   <div class="flex gap-1.5 justify-center flex-wrap">
                     <button @click="openBankConfigModal(e)" 
-                      class="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-900 rounded-lg text-xs font-bold transition-colors border border-purple-200 flex items-center gap-1 cursor-pointer" 
-                      title="Cài đặt chế độ Ngân hàng: bốc ngẫu nhiên số lượng câu cho từng học sinh">
-                      <span>🎲</span><span>Bốc đề</span>
+                      :class="e.is_bank ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-700 shadow-2xs' : 'bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-900 border-purple-200'"
+                      class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all border flex items-center gap-1 cursor-pointer" 
+                      :title="e.is_bank ? `Đang bật bốc ngẫu nhiên ${e.bank_config?.total_draw || 0} câu. Bấm để sửa cấu hình bốc.` : 'Cài đặt chế độ Ngân hàng: bốc ngẫu nhiên số lượng câu cho từng học sinh'">
+                      <span>🎲</span>
+                      <span x-text="e.is_bank ? `Bốc ${e.bank_config?.total_draw || 0}c` : 'Bốc đề'"></span>
                     </button>
                     <a :href="`/api/admin/print/exam/${e.id}`" target="_blank" class="px-2.5 py-1 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-900 rounded-lg text-xs font-bold transition-colors border border-green-200 flex items-center gap-1 cursor-pointer" title="In đề thi giấy cho học sinh làm (không có đáp án đỏ)">
                       <span>📄</span><span>In đề thi</span>
@@ -1316,6 +1338,7 @@ function adminApp() {
         if (this.adminExamFilterGrade && e.grade !== this.adminExamFilterGrade) return false;
         if (this.adminExamFilterPublish === 'published' && !e.is_published) return false;
         if (this.adminExamFilterPublish === 'unpublished' && e.is_published) return false;
+        if (this.adminExamFilterPublish === 'bank' && !e.is_bank) return false;
         return true;
       });
     },
@@ -1900,9 +1923,25 @@ function adminApp() {
     },
 
     async clearAllSubmissions() {
-      if (!confirm('⚠️ CẢNH BÁO:\nBạn có chắc chắn muốn XÓA TOÀN BỘ bài nộp của học sinh để bắt đầu ca thi mới?\nThao tác này KHÔNG THỂ khôi phục!')) return;
+      let promptMsg = '⚠️ CẢNH BÁO:\nBạn có chắc chắn muốn XÓA bài nộp của học sinh để bắt đầu ca thi mới?';
+      if (this.selectedExamFilter) {
+        promptMsg = `⚠️ CẢNH BÁO:\nBạn có chắc muốn XÓA bài nộp của ĐỀ THI ĐANG CHỌN để bắt đầu ca thi mới?`;
+      } else if (this.currentUser && !this.isSuperAdmin()) {
+        const sub = this.currentUser.subject || 'môn phụ trách';
+        promptMsg = `⚠️ CẢNH BÁO:\nBạn có chắc muốn XÓA bài nộp thuộc môn [${sub.toUpperCase()}] của bạn để bắt đầu ca thi mới?\n(Hệ thống tự động bảo vệ: KHÔNG làm ảnh hưởng đến bài thi của các môn khác)`;
+      } else if (this.selectedSubjectFilter) {
+        promptMsg = `⚠️ CẢNH BÁO:\nBạn có chắc muốn XÓA các bài nộp thuộc môn [${this.selectedSubjectFilter.toUpperCase()}]?`;
+      }
+      promptMsg += '\n\nThao tác này KHÔNG THỂ khôi phục!';
+      if (!confirm(promptMsg)) return;
+
       try {
-        const r = await fetch('/api/admin/submissions/clear/all', { method: 'DELETE' });
+        const params = new URLSearchParams();
+        if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
+        if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
+        const url = '/api/admin/submissions/clear/all' + (params.toString() ? '?' + params.toString() : '');
+
+        const r = await fetch(url, { method: 'DELETE' });
         const data = await r.json();
         if (r.ok) {
           alert(data.message);

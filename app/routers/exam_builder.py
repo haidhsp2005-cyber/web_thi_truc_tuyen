@@ -36,6 +36,11 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
             try:
                 data = json.loads(r[4])
                 eid = r[0]
+                is_bank = bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False))
+                bank_cfg = {}
+                if is_bank:
+                    from ..services.bank_service import normalize_bank_config
+                    bank_cfg = normalize_bank_config(data)
                 exams_map[eid] = {
                     "file": eid,
                     "id": eid,
@@ -50,8 +55,8 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "created_by": r[5] or "",
                     "is_online_exam": bool(data.get("is_online_exam", False)),
                     "is_published": is_exam_published(data.get("is_published")),
-                    "is_bank": bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False)),
-                    "bank_config": data.get("bank_config", {}),
+                    "is_bank": is_bank,
+                    "bank_config": bank_cfg if is_bank else data.get("bank_config", {}),
                 }
             except Exception:
                 pass
@@ -67,6 +72,11 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
             data = json.loads(f.read_text(encoding="utf-8"))
             eid = data.get("id", f.stem)
             if eid not in exams_map:
+                is_bank = bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False))
+                bank_cfg = {}
+                if is_bank:
+                    from ..services.bank_service import normalize_bank_config
+                    bank_cfg = normalize_bank_config(data)
                 exams_map[eid] = {
                     "file": f.stem,
                     "id": eid,
@@ -81,8 +91,8 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "created_by": data.get("created_by", ""),
                     "is_online_exam": bool(data.get("is_online_exam", False)),
                     "is_published": is_exam_published(data.get("is_published")),
-                    "is_bank": bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False)),
-                    "bank_config": data.get("bank_config", {}),
+                    "is_bank": is_bank,
+                    "bank_config": bank_cfg if is_bank else data.get("bank_config", {}),
                 }
         except Exception as e:
             logger.warning(f"Bỏ qua file {f.name}: {e}")

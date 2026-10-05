@@ -20,50 +20,65 @@ logger = logging.getLogger(__name__)
 import re
 
 def clean_math_for_print(text: str) -> str:
-    """Chuẩn hóa công thức toán và hệ phương trình trước khi xuất in ấn."""
+    """Chuẩn hóa toàn diện công thức toán học LaTeX, hệ phương trình, lượng giác trước khi xuất in ấn."""
     if not text:
         return ""
     s = str(text).strip()
     
-    # Dọn dẹp mã HTML lỗi KaTeX nếu có
+    # 0. Dọn dẹp mã HTML lỗi KaTeX nếu có
     s = re.sub(r'<span[^>]*class="katex-error"[^>]*>([\s\S]*?)</span>', r'\1', s)
     s = re.sub(r'style="color:\s*#cc0000"[^>]*>', '', s)
     
-    # Dọn dẹp lỗi ngoặc nhọn mồ côi: { (m^{2}) -> (m^{2})
+    # Dọn dẹp lỗi ngoặc nhọn mồ côi: { (m^{2}) -> (m^{2}) hoặc 200{ m^{2} -> 200 m^{2}
     s = re.sub(r'\{(\s*\([^\)]+\))\}?', r'\1', s)
     s = re.sub(r'\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?', r'\1', s)
+    s = re.sub(r'(?<=\d)\s*\{\s*([a-zA-Z])', r' \1', s)
 
-    # 1. Chuyển đổi \left\{ \begin{matrix} hoặc \begin{array} sang \begin{cases}
+    # 1. Bóc các ngoặc nhọn bọc ngoài công thức toán: ${\frac{1}{x} ...}$ -> $\frac{1}{x} ...$
+    s = re.sub(r'\$\s*\{(\\[a-zA-Z]+[^{}]*?(?:\{[^{}]*?\}[^{}]*?)*)\}\s*\$', r'$\1$', s)
+
+    # 2. Chuyển đổi \left\{ \begin{matrix} hoặc \begin{array} sang \begin{cases}
     s = re.sub(r"\\left\\\{\s*\\begin\{(?:matrix|array)\}(?:\{[a-zA-Z]*\})?", r"\\begin{cases}", s)
     s = re.sub(r"\\end\{(?:matrix|array)\}(?:\s*\\right\.?)?", r"\\end{cases}", s)
 
-    # 2. Chuyển đổi \left\{ ... \right. thành \begin{cases} ... \end{cases}
+    # 3. Chuyển đổi \left\{ ... \right. thành \begin{cases} ... \end{cases}
     def repl_left_right(m):
         content = m.group(1).strip()
         if "\\\\" in content or "\n" in content:
             inner = re.sub(r'(?<!\\)\n+', r' \\\\ ', content)
+            inner = re.sub(r'\s*\\\\\s*', r' \\\\ ', inner).strip()
             return f"\\begin{{cases}} {inner} \\end{{cases}}"
         return m.group(0)
 
     s = re.sub(r"\\left\\\{\s*([\s\S]+?)\s*\\right\.", repl_left_right, s)
 
-    # 3. Chuẩn hóa hệ phương trình có ngoặc nhọn mở:
-    #    {x + y = 15 \\ x - 2y = 0}
-    #    {x + y = 15 \n x - 2y = 0
-    #    ${x + y = 15 \n x - 2y = 0$
-    def repl_curly_sys(match):
-        body = match.group(1).strip()
+    # 4. Nhận diện hệ phương trình dạng $ ... \\ ... $ hoặc $ ... \n ... $ (chưa có \begin{cases})
+    def _repl_multiline_math(m):
+        content = m.group(1).strip()
+        if re.search(r'\\begin\{(?:cases|matrix|aligned|array|pmatrix|bmatrix)\}', content):
+            return m.group(0)
+        if '\\\\' in content or '\n' in content:
+            if content.startswith('{') and content.endswith('}'):
+                content = content[1:-1].strip()
+            inner = re.sub(r'(?<!\\)\n+', r' \\\\ ', content)
+            inner = re.sub(r'\s*\\\\\s*', r' \\\\ ', inner).strip()
+            return f"$\\begin{{cases}} {inner} \\end{{cases}}$"
+        return m.group(0)
+
+    s = re.sub(r'\$([^$]+?)\$', _repl_multiline_math, s)
+
+    # 5. Nhận diện hệ phương trình không có dấu $: {x + y = 1 \\ x - y = 2}
+    def _repl_curly_no_dollar(m):
+        body = m.group(1).strip()
+        if re.search(r'\\begin\{(?:cases|matrix|aligned|array)\}', body):
+            return m.group(0)
         inner = re.sub(r'(?<!\\)\n+', r' \\\\ ', body)
-        inner = inner.strip('{}')
+        inner = re.sub(r'\s*\\\\\s*', r' \\\\ ', inner).strip()
         return f"$\\begin{{cases}} {inner} \\end{{cases}}$"
 
-    s = re.sub(
-        r'\$?\s*\{\s*([^{}]*?(?:\\\\|\n|&)[^{}]*?)\s*(?:\}\$|\$\}|\}|\$|$)',
-        repl_curly_sys,
-        s
-    )
+    s = re.sub(r'(?<!\$)\{\s*([^{}]*?(?:=|<|>|\\le|\\ge)[^{}]*?\\\\+[^{}]*?)\}(?!\$)', _repl_curly_no_dollar, s)
 
-    # 4. Nếu chuỗi có 2 dòng trở lên và các dòng đều chứa biểu thức phương trình (ví dụ có '=', '<', '>', '\le', '\ge')
+    # 6. Nếu chuỗi có 2 dòng trở lên và các dòng đều chứa biểu thức phương trình (ví dụ có '=', '<', '>', '\le', '\ge')
     #    nhưng chưa có \begin{cases}: Tự động bao lại thành \begin{cases} ... \end{cases}
     if "\\begin{cases}" not in s:
         lines = [line.strip() for line in s.splitlines() if line.strip()]
@@ -77,14 +92,27 @@ def clean_math_for_print(text: str) -> str:
                 inner = " \\\\ ".join(inner_lines)
                 s = f"$\\begin{{cases}} {inner} \\end{{cases}}$"
 
-    # 5. Đảm bảo \begin{cases} ... \end{cases} luôn được bọc trong $...$
+    # 7. Chuẩn hóa hàm lượng giác, log, ln, lim thiếu backslash trong $...$
+    def _repl_trig(m):
+        c = m.group(1)
+        c = re.sub(r'(?<![\\a-zA-Z])(sin|cos|tan|cot|arcsin|arccos|arctan|log|ln|lim)\s*([A-Z0-9_\^\(\[])', r'\\\1 \2', c)
+        c = re.sub(r'(?<![\\a-zA-Z])(sin|cos|tan|cot|arcsin|arccos|arctan|log|ln|lim)(?![a-zA-Z])', r'\\\1', c)
+        return f"${c}$"
+
+    s = re.sub(r'\$([^$]+?)\$', _repl_trig, s)
+
+    # 8. Chuẩn hóa độ góc: $30^0$ hoặc $30^o$ -> $30^\circ$
+    s = re.sub(r'\$(\d+)\s*\^\s*0\$', r'$\1^\\circ$', s)
+    s = re.sub(r'\$(\d+)\s*\^\s*o\$', r'$\1^\\circ$', s)
+
+    # 9. Đảm bảo \begin{cases} ... \end{cases} luôn được bọc trong $...$
     s = re.sub(
         r'([^$]|^)(\\begin\{cases\}[\s\S]*?\\end\{cases\})([^$]|$)',
         r'\1$\2$\3',
         s
     )
 
-    # 6. Tự động đóng \begin{cases} nếu thiếu \end{cases}
+    # 10. Tự động đóng \begin{cases} nếu thiếu \end{cases}
     cases_open = len(re.findall(r"\\begin\{cases\}", s))
     cases_close = len(re.findall(r"\\end\{cases\}", s))
     if cases_open > cases_close:
@@ -94,7 +122,7 @@ def clean_math_for_print(text: str) -> str:
         else:
             s = s + (" \\end{cases}" * missing) + "$"
 
-    # 7. Xử lý trùng lặp dấu $$ thành $
+    # 11. Xử lý trùng lặp dấu $$ thành $
     s = re.sub(r'\${3,}', '$', s)
     s = re.sub(r'\$\s*\$', ' ', s)
 

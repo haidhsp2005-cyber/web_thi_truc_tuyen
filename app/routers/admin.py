@@ -408,19 +408,81 @@ async def get_submissions(request: Request, exam_id: str = None, student_class: 
 
 
 @router.delete("/submissions/{submission_id}")
-async def remove_submission(submission_id: str):
-    """Xóa một bài nộp của học sinh khỏi danh sách."""
-    success = delete_submission(submission_id)
+async def remove_submission(submission_id: str, request: Request):
+    """Xóa một bài nộp của học sinh khỏi danh sách (tự động kiểm tra phân quyền môn học của giáo viên)."""
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
+
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    allowed_exam_ids = None
+    if current_user and not is_super_admin:
+        allowed_exam_ids = list({e['id'] for e in _list_exam_files(current_user)})
+
+    success = delete_submission(submission_id, allowed_exam_ids=allowed_exam_ids)
     if not success:
-        raise HTTPException(status_code=404, detail="Không tìm thấy bài nộp cần xóa!")
+        raise HTTPException(
+            status_code=403 if allowed_exam_ids is not None else 404,
+            detail="Không tìm thấy bài nộp hoặc bạn không có quyền xóa bài thi của môn học khác!"
+        )
     return {"success": True, "message": f"Đã xóa bài nộp của thí sinh ({submission_id}) thành công!"}
 
 
 @router.delete("/submissions/clear/all")
-async def clear_all_submissions(exam_id: str = None):
-    """Xóa toàn bộ bài nộp (reset phòng thi)."""
-    count = delete_all_submissions(exam_id)
-    return {"success": True, "message": f"Đã xóa toàn bộ {count} bài thi thành công!", "count": count}
+async def clear_all_submissions(request: Request, exam_id: str = None, subject: str = None):
+    """
+    Xóa bài nộp theo đề thi hoặc theo môn học của giáo viên.
+    TỰ ĐỘNG BẢO VỆ: Nếu là giáo viên, BẮT BUỘC chỉ được xóa các bài nộp thuộc môn học mình phụ trách.
+    Tuyệt đối không bao giờ làm ảnh hưởng đến bài nộp của các môn học khác!
+    """
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
+
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+
+    clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
+    clean_sub = subject.strip().lower() if subject and subject.strip() and subject.strip() != "all" else None
+
+    all_exams = _list_exam_files()
+
+    if current_user and not is_super_admin:
+        # Giáo viên: BẮT BUỘC chỉ xóa trong phạm vi đề thi môn của mình
+        accessible_exams = _list_exam_files(current_user)
+        accessible_ids = [e['id'] for e in accessible_exams]
+
+        if clean_eid:
+            if clean_eid not in accessible_ids:
+                raise HTTPException(status_code=403, detail="Bạn không có quyền xóa bài thi của môn học khác!")
+            count = delete_all_submissions(exam_id=clean_eid)
+        elif clean_sub:
+            sub_ids = [e['id'] for e in accessible_exams if (e.get('subject') or '').strip().lower() == clean_sub]
+            count = delete_all_submissions(exam_ids=sub_ids)
+        else:
+            # Xóa toàn bộ bài nộp trong phạm vi các đề thuộc môn giáo viên phụ trách
+            count = delete_all_submissions(exam_ids=accessible_ids)
+
+        teacher_name = current_user.get('full_name') or current_user.get('username')
+        teacher_subject = current_user.get('subject') or "môn phụ trách"
+        return {
+            "success": True,
+            "message": f"Đã xóa {count} bài thi thuộc môn {teacher_subject} của giáo viên {teacher_name}! (Không ảnh hưởng đến môn khác)",
+            "count": count
+        }
+
+    else:
+        # Super Admin: có thể xóa theo đề, môn, hoặc toàn bộ
+        if clean_eid:
+            count = delete_all_submissions(exam_id=clean_eid)
+        elif clean_sub:
+            sub_ids = [e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub]
+            count = delete_all_submissions(exam_ids=sub_ids)
+        else:
+            count = delete_all_submissions()
+
+        return {"success": True, "message": f"Đã xóa {count} bài thi thành công!", "count": count}
 
 
 @router.get("/stats")

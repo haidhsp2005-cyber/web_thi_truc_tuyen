@@ -119,23 +119,94 @@
           class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-base bg-white">
           <option value="">-- Chọn đề thi --</option>
           <template x-for="e in filteredExamList" :key="e.id">
-            <option :value="e.id" x-text="`${e.title} (${e.subject}, Lớp ${e.grade})`"></option>
+            <option :value="e.id" x-text="`${e.is_bank ? '🎲 [Đề trộn] ' : ''}${e.title} (${e.subject}, Lớp ${e.grade})`"></option>
           </template>
         </select>
       </div>
 
       <!-- Thông tin đề được chọn -->
-      <div x-show="selectedExam" x-cloak class="bg-blue-50 rounded-xl p-4 border border-blue-100">
-        <h3 class="font-semibold text-blue-900 mb-2">📌 Thông tin bài kiểm tra</h3>
-        <div class="grid grid-cols-2 gap-2 text-sm">
-          <div class="flex items-center gap-2 text-gray-600"><span>📝</span><span x-text="`${selectedExam?.part1_count ?? 0} câu TNKQ`"></span></div>
-          <div class="flex items-center gap-2 text-gray-600"><span>✅</span><span x-text="`${selectedExam?.part2_count ?? 0} câu Đúng/Sai`"></span></div>
-          <div class="flex items-center gap-2 text-gray-600"><span>✏️</span><span x-text="`${selectedExam?.part3_count ?? 0} câu Trả lời ngắn`"></span></div>
-          <div class="flex items-center gap-2 text-gray-600"><span>📄</span><span x-text="`${selectedExam?.part4_count ?? 0} câu Tự luận`"></span></div>
+      <div x-show="selectedExam" x-cloak class="rounded-xl p-4 border transition-all"
+        :class="selectedExam?.is_bank ? 'bg-gradient-to-br from-purple-50/90 to-blue-50/90 border-purple-200' : 'bg-blue-50 border-blue-100'">
+        
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-bold flex items-center gap-1.5 text-sm sm:text-base"
+            :class="selectedExam?.is_bank ? 'text-purple-950' : 'text-blue-900'">
+            <span>📌</span>
+            <span>Thông tin bài kiểm tra</span>
+          </h3>
+          <template x-if="selectedExam?.is_bank">
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-700 border border-purple-300 shadow-2xs">
+              <span>🎲</span>
+              <span>Trộn đề ngẫu nhiên</span>
+            </span>
+          </template>
         </div>
-        <div class="mt-2 pt-2 border-t border-blue-200 flex items-center gap-2 text-blue-800 font-semibold text-sm">
-          <span>⏱️</span>
-          <span x-text="`Thời gian: ${selectedExam?.duration_minutes ?? 45} phút`"></span>
+
+        <!-- Chú thích riêng khi bật chế độ Trộn đề ngẫu nhiên / Ngân hàng -->
+        <template x-if="selectedExam?.is_bank">
+          <div class="mb-3 p-2.5 bg-white/90 text-purple-900 border border-purple-200 rounded-xl text-xs space-y-1 shadow-2xs">
+            <div class="font-bold flex items-center gap-1.5 text-purple-900">
+              <span>🎲</span>
+              <span>Đề thi bốc ngẫu nhiên riêng cho từng học sinh:</span>
+            </div>
+            <p class="text-purple-800 text-[11px] leading-relaxed">
+              Mỗi thí sinh sẽ nhận bộ đề gồm <strong><span x-text="selectedExam?.bank_config?.total_draw || 0"></span> câu hỏi</strong> được bốc ngẫu nhiên từ ngân hàng <span x-text="`${(selectedExam?.part1_count||0) + (selectedExam?.part2_count||0) + (selectedExam?.part3_count||0) + (selectedExam?.part4_count||0)} câu gốc`"></span>.
+            </p>
+          </div>
+        </template>
+
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <!-- Phần 1 -->
+          <div class="flex items-center gap-2 text-gray-700">
+            <span>📝</span>
+            <span x-text="selectedExam?.is_bank
+              ? (selectedExam?.bank_config?.part1_draw < selectedExam?.part1_count 
+                  ? `${selectedExam?.bank_config?.part1_draw} câu TNKQ (rút từ ${selectedExam?.part1_count})` 
+                  : `${selectedExam?.bank_config?.part1_draw ?? selectedExam?.part1_count} câu TNKQ`)
+              : `${selectedExam?.part1_count ?? 0} câu TNKQ`"></span>
+          </div>
+
+          <!-- Phần 2 -->
+          <div class="flex items-center gap-2 text-gray-700">
+            <span>✅</span>
+            <span x-text="selectedExam?.is_bank
+              ? (selectedExam?.bank_config?.part2_draw < selectedExam?.part2_count 
+                  ? `${selectedExam?.bank_config?.part2_draw} câu Đúng/Sai (rút từ ${selectedExam?.part2_count})` 
+                  : `${selectedExam?.bank_config?.part2_draw ?? selectedExam?.part2_count} câu Đúng/Sai`)
+              : `${selectedExam?.part2_count ?? 0} câu Đúng/Sai`"></span>
+          </div>
+
+          <!-- Phần 3 -->
+          <div class="flex items-center gap-2 text-gray-700">
+            <span>✏️</span>
+            <span x-text="selectedExam?.is_bank
+              ? (selectedExam?.bank_config?.part3_draw < selectedExam?.part3_count 
+                  ? `${selectedExam?.bank_config?.part3_draw} câu TL Ngắn (rút từ ${selectedExam?.part3_count})` 
+                  : `${selectedExam?.bank_config?.part3_draw ?? selectedExam?.part3_count} câu Trả lời ngắn`)
+              : `${selectedExam?.part3_count ?? 0} câu Trả lời ngắn`"></span>
+          </div>
+
+          <!-- Phần 4 -->
+          <div class="flex items-center gap-2 text-gray-700">
+            <span>📄</span>
+            <span x-text="selectedExam?.is_bank
+              ? (selectedExam?.bank_config?.part4_draw < selectedExam?.part4_count 
+                  ? `${selectedExam?.bank_config?.part4_draw} câu Tự luận (rút từ ${selectedExam?.part4_count})` 
+                  : `${selectedExam?.bank_config?.part4_draw ?? selectedExam?.part4_count} câu Tự luận`)
+              : `${selectedExam?.part4_count ?? 0} câu Tự luận`"></span>
+          </div>
+        </div>
+
+        <div class="mt-2.5 pt-2 border-t flex items-center justify-between font-semibold text-sm"
+          :class="selectedExam?.is_bank ? 'border-purple-200 text-purple-900' : 'border-blue-200 text-blue-800'">
+          <div class="flex items-center gap-1.5">
+            <span>⏱️</span>
+            <span x-text="`Thời gian: ${selectedExam?.duration_minutes ?? 45} phút`"></span>
+          </div>
+          <template x-if="selectedExam?.is_bank">
+            <span class="text-xs font-bold text-purple-700 bg-white px-2.5 py-0.5 rounded-full border border-purple-200 shadow-2xs"
+              x-text="`Tổng làm: ${selectedExam?.bank_config?.total_draw || 0} câu`"></span>
+          </template>
         </div>
       </div>
 
