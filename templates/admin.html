@@ -410,13 +410,6 @@
     <div class="bg-gray-800 text-white px-5 py-4 flex items-center justify-between">
       <h2 class="font-bold flex items-center gap-2"><span>📋</span>Danh sách bài nộp (<span x-text="filteredSubmissions.length"></span>/<span x-text="submissions.length"></span>)</h2>
       <div class="flex items-center gap-2">
-        <a :href="pdfClassExportUrl" target="_blank"
-          :class="filteredSubmissions.length === 0 ? 'opacity-40 pointer-events-none' : ''"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
-          title="In toàn bộ bài thi đã nộp của học sinh (phân trang chuẩn từng học sinh, có thể lưu file PDF)">
-          <span>🖨️</span>
-          <span x-text="selectedClassFilter ? `In PDF Lớp ${selectedClassFilter} (${filteredSubmissions.length})` : `In PDF tất cả bài thi (${filteredSubmissions.length})`"></span>
-        </a>
         <button @click="clearAllSubmissions()" :disabled="submissions.length === 0" 
           class="bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           title="Xóa toàn bộ bài nộp để bắt đầu ca thi mới">
@@ -468,13 +461,6 @@
             <button x-show="(isSuperAdmin() && selectedSubjectFilter) || selectedExamFilter || selectedClassFilter" 
               @click="if (isSuperAdmin()) selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
               class="text-xs text-gray-600 hover:text-gray-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
-            <a :href="pdfClassExportUrl" target="_blank"
-              x-show="filteredSubmissions.length > 0"
-              class="ml-auto text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
-              title="Xuất bản in PDF trọn bộ tất cả bài thi theo lớp đang chọn">
-              <span>🖨️</span>
-              <span x-text="selectedClassFilter ? `In PDF bài thi Lớp ${selectedClassFilter}` : 'In PDF tất cả bài thi'"></span>
-            </a>
           </div>
         </div>
       </div>
