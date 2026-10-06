@@ -116,9 +116,62 @@
     -webkit-box-flex: 1;
     flex-grow: 1;
   }
+
+  /* Chống chụp màn hình, bôi đen copy và bảo vệ bài thi trực tuyến */
+  .secure-exam-view {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+  }
+  .secure-exam-view img {
+    -webkit-user-drag: none !important;
+    -khtml-user-drag: none !important;
+    -moz-user-drag: none !important;
+    -o-user-drag: none !important;
+    user-drag: none !important;
+    pointer-events: auto;
+  }
+  @media print {
+    body {
+      display: none !important;
+    }
+  }
+
+  /* Thủy vân bảo mật chống chụp màn hình từ thiết bị bên ngoài */
+  .exam-watermark-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 35;
+    overflow: hidden;
+    opacity: 0.07;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-around;
+    justify-content: space-around;
+    user-select: none;
+  }
+  .exam-watermark-item {
+    transform: rotate(-25deg);
+    font-size: 13px;
+    font-weight: 800;
+    color: #0f172a;
+    padding: 24px 30px;
+    white-space: nowrap;
+  }
 </style>
 </head>
-<body class="bg-gray-50 min-h-screen" x-data="examApp()" x-init="init()">
+<body class="bg-gray-50 min-h-screen" :class="{'secure-exam-view': isOnlineExam}" x-data="examApp()" x-init="init()">
+
+<!-- Thủy vân bảo mật chống chụp hình bằng điện thoại ngoài (Watermark) -->
+<div x-show="isOnlineExam && hasStartedOnlineExam && !submitted" class="exam-watermark-overlay" aria-hidden="true">
+  <template x-for="i in 32" :key="i">
+    <div class="exam-watermark-item" x-text="`${studentName || 'Thí sinh'} • Lớp ${studentClass || '...'} • ${examId}`"></div>
+  </template>
+</div>
 
 <!-- Top Bar: Thông tin + Đồng hồ -->
 <div class="fixed top-0 left-0 right-0 z-50 bg-blue-900 text-white shadow-lg">
@@ -194,7 +247,7 @@
 </div>
 
 <!-- Main Layout -->
-<div class="flex pt-[72px] min-h-screen">
+<div class="flex pt-[72px] min-h-screen transition-all duration-150" :class="{'filter blur-3xl opacity-0 pointer-events-none select-none': isOnlineExam && isBlackoutActive}">
 
   <!-- Sidebar: Bảng điều hướng câu hỏi -->
   <aside class="hidden lg:flex flex-col w-64 fixed top-[72px] bottom-0 bg-white border-r shadow-sm overflow-y-auto p-4">
@@ -825,6 +878,30 @@
   </div>
 </div>
 
+<!-- ===================== MÀN HÌNH CHE BẢO MẬT (ANTI-SCREENSHOT BLACKOUT) ===================== -->
+<div x-show="isOnlineExam && isBlackoutActive && !submitted" x-cloak
+     class="fixed inset-0 z-[150] bg-black text-white flex flex-col items-center justify-center p-6 text-center select-none backdrop-blur-2xl">
+  <div class="max-w-md space-y-5">
+    <div class="w-20 h-20 mx-auto rounded-3xl bg-red-950/90 border-2 border-red-500/60 flex items-center justify-center text-4xl animate-pulse shadow-2xl">
+      🛡️
+    </div>
+    <div>
+      <h2 class="text-2xl font-black text-red-400 tracking-wide uppercase">Cảnh Báo Bảo Mật Bài Thi</h2>
+      <p class="text-gray-300 text-sm mt-2 leading-relaxed">
+        Nội dung đề thi đang được che mờ tự động để bảo mật (chống chụp màn hình và chuyển ứng dụng).
+      </p>
+    </div>
+    <div class="p-3 bg-red-950/60 border border-red-800/80 rounded-2xl text-xs text-red-200">
+      ⚠️ Thao tác rời bài thi hoặc chụp ảnh màn hình đã được ghi nhận vào nhật ký giám sát!
+    </div>
+    <button type="button" @click="dismissBlackout()"
+            class="w-full py-3.5 px-6 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 active:scale-95 text-white font-bold rounded-2xl shadow-xl transition-all uppercase tracking-wide cursor-pointer text-sm flex items-center justify-center gap-2">
+      <span>Quay lại làm bài ngay</span>
+      <span>→</span>
+    </button>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 <script>
@@ -873,6 +950,7 @@ function examApp() {
     showBackWarningModal: false,
     maxSwitchesAllowed: 5,
     isFullscreen: false,
+    isBlackoutActive: false,
     hasStartedOnlineExam: false,
     isInternalAction: false,
     autoCloseCountdown: 6,
@@ -976,6 +1054,7 @@ function examApp() {
     dismissScreenSwitchModal() {
       this.isInternalAction = true;
       this.showScreenSwitchModal = false;
+      this.isBlackoutActive = false;
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
         this.countdownInterval = null;
@@ -986,6 +1065,43 @@ function examApp() {
       setTimeout(() => {
         this.isInternalAction = false;
       }, 1000);
+    },
+
+    dismissBlackout() {
+      this.isInternalAction = true;
+      this.isBlackoutActive = false;
+      if (this.isOnlineExam && !this.submitted && !this.submitting) {
+        this.enterFullscreen();
+      }
+      setTimeout(() => {
+        this.isInternalAction = false;
+      }, 1000);
+    },
+
+    handleScreenshotAttempt() {
+      if (!this.hasStartedOnlineExam || this.submitted || this.submitting) return;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText('').catch(() => {});
+        }
+      } catch(e) {}
+      this.isBlackoutActive = true;
+      this.playWarningSound();
+      this.screenSwitchCount++;
+      sessionStorage.setItem('screen_switch_' + this.examId, this.screenSwitchCount);
+      const timeStr = new Date().toLocaleTimeString('vi-VN');
+      this.switchViolations.push(`${timeStr} (Chụp màn hình PrintScreen)`);
+      this.autoSave();
+
+      if (this.screenSwitchCount >= this.maxSwitchesAllowed) {
+        this.timeUpMsg = `Bạn đã vi phạm quy chế thi: Thao tác chụp màn hình / chuyển tab quá ${this.maxSwitchesAllowed} lần cho phép. Hệ thống tự động thu và nộp bài!`;
+        this.showTimeUpModal = true;
+        this.isAutoSubmitting = true;
+        this.submitExam();
+      } else {
+        this.showScreenSwitchModal = true;
+        this.startScreenSwitchCountdown();
+      }
     },
 
     // Questions & Exam Mode
@@ -1223,6 +1339,9 @@ function examApp() {
         if (this.isInternalAction) return; // Đang bấm nút nội bộ hoặc đang vào toàn màn hình: không tính lỗi
         if (this.showTimeUpModal) return;
 
+        // Kích hoạt ngay lập tức màn hình đen che giấu nội dung (Anti-Screenshot Blackout)
+        this.isBlackoutActive = true;
+
         // Nếu đã ở trạng thái rời màn hình rồi (ví dụ cả blur và visibilitychange cùng bắn sự kiện)
         // thì không cộng dồn, chỉ tính đúng 1 lượt rời cho đến khi học sinh quay lại
         if (isAway) return;
@@ -1306,6 +1425,103 @@ function examApp() {
       window.addEventListener('click', onUserInteraction, { passive: true });
       window.addEventListener('touchstart', onUserInteraction, { passive: true });
       window.addEventListener('keydown', onUserInteraction, { passive: true });
+
+      // Chặn chuột phải (Context Menu) khi thi trực tuyến
+      window.addEventListener('contextmenu', (e) => {
+        if (this.isOnlineExam && !this.submitted) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // Chặn kéo thả hình ảnh / văn bản khi thi trực tuyến
+      window.addEventListener('dragstart', (e) => {
+        if (this.isOnlineExam && !this.submitted) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // Chặn sao chép ngoài các ô nhập tự luận
+      window.addEventListener('copy', (e) => {
+        if (this.isOnlineExam && !this.submitted) {
+          const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+          if (!isInput) {
+            e.preventDefault();
+            if (e.clipboardData) {
+              e.clipboardData.setData('text/plain', '');
+            }
+          }
+        }
+      });
+      window.addEventListener('cut', (e) => {
+        if (this.isOnlineExam && !this.submitted) {
+          const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+          if (!isInput) {
+            e.preventDefault();
+          }
+        }
+      });
+
+      // Chặn các phím tắt nguy hiểm (DevTools, View Source, Print, Save, Copy) và phím PrintScreen
+      window.addEventListener('keydown', (e) => {
+        if (!this.isOnlineExam || this.submitted) return;
+
+        // F12 (DevTools)
+        if (e.key === 'F12' || e.keyCode === 123) {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+Shift+I / J / C (Inspect Element)
+        if (e.ctrlKey && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key)) {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+U (Xem mã nguồn)
+        if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+S (Lưu trang)
+        if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+P (In trang)
+        if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+C (Chặn copy ngoài input/textarea)
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+          const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+          if (!isInput) {
+            e.preventDefault();
+            return false;
+          }
+        }
+
+        // PrintScreen (Keydown)
+        if (e.key === 'PrintScreen' || e.code === 'PrintScreen' || e.keyCode === 44) {
+          e.preventDefault();
+          this.handleScreenshotAttempt();
+          return false;
+        }
+      });
+
+      // Chặn PrintScreen khi nhả phím (KeyUp) và xóa clipboard
+      window.addEventListener('keyup', (e) => {
+        if (!this.isOnlineExam || this.submitted) return;
+        if (e.key === 'PrintScreen' || e.code === 'PrintScreen' || e.keyCode === 44) {
+          e.preventDefault();
+          this.handleScreenshotAttempt();
+        }
+      });
       
       // Render LaTeX sau khi tải xong
       this.$nextTick(() => this.renderAllLatex());
