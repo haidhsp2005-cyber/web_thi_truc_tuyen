@@ -296,5 +296,6 @@
     "part4_per_question": 0.0,
     "custom_scoring": false
   },
-  "is_online_exam": true
+  "is_online_exam": true,
+  "created_by": "haidhsp2005"
 }

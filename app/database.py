@@ -143,19 +143,57 @@ def init_db():
                         c.execute("SELECT id FROM exams WHERE id = ?", (eid,))
                         if not c.fetchone():
                             c.execute("""
-                                INSERT INTO exams (id, title, subject, grade, data_json, created_at, updated_at)
-                                VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+                                INSERT INTO exams (id, title, subject, grade, data_json, created_by, created_at, updated_at)
+                                VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
                             """, (
                                 eid,
                                 data.get("title", ""),
                                 data.get("subject", ""),
                                 str(data.get("grade", "")),
-                                json.dumps(data, ensure_ascii=False)
+                                json.dumps(data, ensure_ascii=False),
+                                data.get("created_by", "")
                             ))
             except Exception:
                 continue
     except Exception as e:
         logger.warning(f"Lỗi khi đồng bộ đề thi vào SQLite: {e}")
+
+    # Migration: Cập nhật và gán chính xác người tạo created_by cho từng đề thi hiện có
+    try:
+        c.execute("SELECT id, data_json, created_by FROM exams")
+        for eid, dj, c_by in c.fetchall():
+            owner = (c_by or "").strip()
+            if not owner and dj:
+                try:
+                    parsed_dj = json.loads(dj)
+                    owner = (parsed_dj.get("created_by") or "").strip()
+                except Exception:
+                    pass
+            # Phân định chủ sở hữu chuẩn xác cho các đề thi hiện hữu
+            if not owner:
+                if eid in ("exam_41baf78d", "exam_67a6b4b7"):
+                    owner = "hongquy"
+                elif eid == "exam_ef2cc220":
+                    owner = "haidhsp2005"
+                elif eid == "exam_26b69ee2":
+                    owner = "gv_mythuat"
+                elif eid == "exam_33da9fe3":
+                    owner = "gv_qp"
+                else:
+                    owner = "admin"
+            if owner != (c_by or "").strip():
+                c.execute("UPDATE exams SET created_by = ? WHERE id = ?", (owner, eid))
+                json_path = EXAMS_DIR / f"{eid}.json"
+                if json_path.exists():
+                    try:
+                        jf_data = json.loads(json_path.read_text(encoding="utf-8"))
+                        jf_data["created_by"] = owner
+                        json_path.write_text(json.dumps(jf_data, ensure_ascii=False, indent=2), encoding="utf-8")
+                    except Exception:
+                        pass
+        conn.commit()
+    except Exception as e:
+        logger.warning(f"Lỗi migration created_by cho đề thi: {e}")
 
     conn.commit()
     conn.close()
@@ -926,6 +964,32 @@ def save_exam_record(exam_data: dict):
     exam_id = exam_data.get("id")
     if not exam_id:
         return
+
+    # Bảo toàn created_by nếu exam_data bị thiếu nhưng database hoặc file cũ đã có
+    created_by = (exam_data.get("created_by") or "").strip()
+    if not created_by:
+        try:
+            conn_chk = get_connection()
+            c_chk = conn_chk.cursor()
+            c_chk.execute("SELECT created_by FROM exams WHERE id = ?", (exam_id,))
+            r_chk = c_chk.fetchone()
+            if r_chk and r_chk[0]:
+                created_by = r_chk[0].strip()
+            conn_chk.close()
+        except Exception:
+            pass
+        if not created_by:
+            json_path = EXAMS_DIR / f"{exam_id}.json"
+            if json_path.exists():
+                try:
+                    old_j = json.loads(json_path.read_text(encoding="utf-8"))
+                    created_by = (old_j.get("created_by") or "").strip()
+                except Exception:
+                    pass
+    if not created_by:
+        created_by = "admin"
+    exam_data["created_by"] = created_by
+
     # Lưu ra file JSON
     try:
         json_path = EXAMS_DIR / f"{exam_id}.json"
@@ -946,7 +1010,7 @@ def save_exam_record(exam_data: dict):
             exam_data.get("subject", ""),
             str(exam_data.get("grade", "")),
             json.dumps(exam_data, ensure_ascii=False),
-            exam_data.get("created_by", "")
+            created_by
         ))
         conn.commit()
         conn.close()
@@ -1017,26 +1081,30 @@ def delete_exam_record(exam_id: str) -> bool:
     return deleted_any
 
 
-def export_full_backup(subject: str = None) -> dict:
+def export_full_backup(subject: str = None, owner: str = None) -> dict:
     """
     Xuất file JSON sao lưu.
-    - Nếu subject=None (Super Admin): Xuất toàn bộ hệ thống (Đề thi + Bài thi + Tài khoản + Cấu hình).
-    - Nếu có subject (Giáo viên bộ môn): CHỈ xuất đề thi và bài thi thuộc môn phụ trách.
+    - Nếu không có owner và subject (Super Admin): Xuất toàn bộ hệ thống (Đề thi + Bài thi + Tài khoản + Cấu hình).
+    - Nếu có owner (Giáo viên): CHỈ xuất đề thi và bài thi do chính tài khoản giáo viên đó tạo.
     """
     conn = get_connection()
     c = conn.cursor()
 
     clean_sub = subject.strip().lower() if subject and str(subject).strip() else None
+    clean_owner = owner.strip().lower() if owner and str(owner).strip() else None
 
     # 1. Lấy đề thi
     exams_map = {}
     try:
-        c.execute("SELECT id, title, subject, grade, data_json FROM exams")
+        c.execute("SELECT id, title, subject, grade, data_json, created_by FROM exams")
         for r in c.fetchall():
             try:
                 ex = json.loads(r[4])
                 ex_sub = (ex.get("subject") or r[2] or "").strip().lower()
-                if clean_sub and ex_sub != clean_sub:
+                ex_owner = (r[5] or ex.get("created_by") or "").strip().lower()
+                if clean_owner and ex_owner != clean_owner:
+                    continue
+                if clean_sub and not clean_owner and ex_sub != clean_sub:
                     continue
                 exams_map[r[0]] = ex
             except:
@@ -1051,7 +1119,10 @@ def export_full_backup(subject: str = None) -> dict:
                 eid = d.get("id") or f.stem
                 if eid and eid not in exams_map:
                     ex_sub = (d.get("subject") or "").strip().lower()
-                    if clean_sub and ex_sub != clean_sub:
+                    ex_owner = (d.get("created_by") or "").strip().lower()
+                    if clean_owner and ex_owner != clean_owner:
+                        continue
+                    if clean_sub and not clean_owner and ex_sub != clean_sub:
                         continue
                     exams_map[eid] = d
         except:
@@ -1059,12 +1130,12 @@ def export_full_backup(subject: str = None) -> dict:
 
     allowed_eids = set(exams_map.keys())
 
-    # 2. Lấy tất cả bài thi (nếu là giáo viên thì chỉ lấy bài thuộc đề thi môn đó)
+    # 2. Lấy tất cả bài thi (nếu là giáo viên thì chỉ lấy bài thuộc đề thi của giáo viên đó)
     c.execute("SELECT id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status FROM submissions")
     sub_rows = c.fetchall()
     submissions = []
     for r in sub_rows:
-        if clean_sub and r[3] not in allowed_eids:
+        if (clean_owner or clean_sub) and r[3] not in allowed_eids:
             continue
         submissions.append({
             "id": r[0], "student_name": r[1], "student_class": r[2], "exam_id": r[3],
@@ -1074,13 +1145,13 @@ def export_full_backup(subject: str = None) -> dict:
 
     # 3. Lấy cấu hình (chỉ Super Admin mới sao lưu cấu hình)
     config = {}
-    if not clean_sub:
+    if not clean_owner and not clean_sub:
         c.execute("SELECT key, value FROM config")
         config = dict(c.fetchall())
 
     # 4. Lấy tài khoản (chỉ Super Admin mới sao lưu tài khoản)
     users = []
-    if not clean_sub:
+    if not clean_owner and not clean_sub:
         c.execute("SELECT id, username, password_hash, full_name, role, is_protected, subject, created_at, updated_at FROM admin_users")
         for r in c.fetchall():
             users.append({
@@ -1090,10 +1161,12 @@ def export_full_backup(subject: str = None) -> dict:
 
     conn.close()
 
+    scope_str = f"owner:{owner}" if clean_owner else (f"subject:{subject}" if clean_sub else "full")
     return {
         "version": "2026.1",
         "exported_at": datetime.now().isoformat(),
-        "scope": f"subject:{subject}" if clean_sub else "full",
+        "scope": scope_str,
+        "owner": owner if clean_owner else None,
         "subject": subject if clean_sub else None,
         "exams": list(exams_map.values()),
         "submissions": submissions,
@@ -1102,13 +1175,13 @@ def export_full_backup(subject: str = None) -> dict:
     }
 
 
-def import_full_backup(backup: dict, allowed_subject: str = None) -> dict:
+def import_full_backup(backup: dict, allowed_subject: str = None, allowed_owner: str = None) -> dict:
     """
     Khôi phục dữ liệu từ file JSON sao lưu.
-    - Nếu allowed_subject=None (Super Admin): Khôi phục toàn bộ (Đề thi + Bài thi + Tài khoản + Cấu hình).
-    - Nếu có allowed_subject (Giáo viên bộ môn):
-      + CHỈ phục hồi các đề thi thuộc môn allowed_subject.
-      + CHỈ phục hồi các bài thi học sinh của các đề thuộc môn đó.
+    - Nếu không có allowed_owner/allowed_subject (Super Admin): Khôi phục toàn bộ (Đề thi + Bài thi + Tài khoản + Cấu hình).
+    - Nếu có allowed_owner (Giáo viên):
+      + CHỈ phục hồi các đề thi thuộc sở hữu allowed_owner (hoặc gán created_by = allowed_owner).
+      + CHỈ phục hồi các bài thi học sinh của các đề thuộc quyền quản lý của giáo viên đó.
       + BỎ QUA tài khoản và cấu hình hệ thống (không cho phép giáo viên can thiệp vào tài khoản khác).
     """
     conn = get_connection()
@@ -1117,8 +1190,9 @@ def import_full_backup(backup: dict, allowed_subject: str = None) -> dict:
     restored_exams = 0
     restored_subs = 0
     restored_users = 0
-    skipped_other_subject_exams = 0
+    skipped_other_exams = 0
 
+    clean_owner = allowed_owner.strip().lower() if allowed_owner and str(allowed_owner).strip() else None
     clean_sub = allowed_subject.strip().lower() if allowed_subject and str(allowed_subject).strip() else None
 
     # 1. Khôi phục đề thi
@@ -1128,28 +1202,39 @@ def import_full_backup(backup: dict, allowed_subject: str = None) -> dict:
         eid = e.get("id")
         if not eid:
             continue
+        ex_owner = (e.get("created_by") or "").strip().lower()
         ex_sub = (e.get("subject") or "").strip().lower()
-        if clean_sub and ex_sub != clean_sub:
-            skipped_other_subject_exams += 1
+        if clean_owner and ex_owner and ex_owner != clean_owner:
+            skipped_other_exams += 1
             continue
+        if clean_sub and not clean_owner and ex_sub != clean_sub:
+            skipped_other_exams += 1
+            continue
+
+        target_owner = allowed_owner if clean_owner else (e.get("created_by") or "admin")
+        e["created_by"] = target_owner
         valid_eids.add(eid)
         try:
             # Ghi ra file JSON
             (EXAMS_DIR / f"{eid}.json").write_text(json.dumps(e, ensure_ascii=False, indent=2), encoding="utf-8")
             # Ghi vào SQLite
             c.execute("""
-                INSERT OR REPLACE INTO exams (id, title, subject, grade, data_json, updated_at)
-                VALUES (?, ?, ?, ?, ?, datetime('now'))
+                INSERT OR REPLACE INTO exams (id, title, subject, grade, data_json, created_by, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
             """, (
                 eid, e.get("title", ""), e.get("subject", ""), str(e.get("grade", "")),
-                json.dumps(e, ensure_ascii=False)
+                json.dumps(e, ensure_ascii=False), target_owner
             ))
             restored_exams += 1
         except Exception as ex:
             logger.warning(f"Lỗi khôi phục đề {eid}: {ex}")
 
-    # Nếu là giáo viên, nạp thêm các đề thi hiện có sẵn trong DB của môn đó
-    if clean_sub:
+    # Nếu là giáo viên, nạp thêm các đề thi hiện có sẵn trong DB của giáo viên đó
+    if clean_owner:
+        c.execute("SELECT id FROM exams WHERE LOWER(created_by) = ?", (clean_owner,))
+        for r in c.fetchall():
+            valid_eids.add(r[0])
+    elif clean_sub:
         c.execute("SELECT id FROM exams WHERE LOWER(subject) = ?", (clean_sub,))
         for r in c.fetchall():
             valid_eids.add(r[0])
@@ -1158,7 +1243,7 @@ def import_full_backup(backup: dict, allowed_subject: str = None) -> dict:
     submissions = backup.get("submissions", [])
     for s in submissions:
         sub_eid = s.get("exam_id")
-        if clean_sub and sub_eid not in valid_eids:
+        if (clean_owner or clean_sub) and sub_eid not in valid_eids:
             continue
         try:
             c.execute("""
@@ -1175,7 +1260,7 @@ def import_full_backup(backup: dict, allowed_subject: str = None) -> dict:
             logger.warning(f"Lỗi khôi phục bài thi {s.get('id')}: {ex}")
 
     # 3. Khôi phục tài khoản (CHỈ Super Admin mới được khôi phục)
-    if not clean_sub:
+    if not clean_owner and not clean_sub:
         users = backup.get("users", [])
         for u in users:
             try:
@@ -1200,8 +1285,7 @@ def import_full_backup(backup: dict, allowed_subject: str = None) -> dict:
             except Exception:
                 pass
 
-    # 4. Khôi phục cấu hình (CHỈ Super Admin mới được khôi phục)
-    if not clean_sub:
+        # 4. Khôi phục cấu hình
         cfg = backup.get("config", {})
         for k, v in cfg.items():
             try:
@@ -1212,12 +1296,13 @@ def import_full_backup(backup: dict, allowed_subject: str = None) -> dict:
     conn.commit()
     conn.close()
 
+    scope_str = f"owner:{allowed_owner}" if clean_owner else (f"subject:{allowed_subject}" if clean_sub else "full")
     return {
         "restored_exams": restored_exams,
         "restored_submissions": restored_subs,
         "restored_users": restored_users,
-        "skipped_other_subject_exams": skipped_other_subject_exams,
-        "scope": f"subject:{allowed_subject}" if clean_sub else "full"
+        "skipped_other_exams": skipped_other_exams,
+        "scope": scope_str
     }
 
 

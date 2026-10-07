@@ -381,7 +381,7 @@ async def remove_api_key(key_suffix: str):
 
 @router.get("/submissions")
 async def get_submissions(request: Request, exam_id: str = None, student_class: str = None, subject: str = None):
-    """Lấy danh sách bài nộp — admin thấy tất cả, giáo viên chỉ thấy bài nộp đề của môn mình. Hỗ trợ lọc theo môn, đề thi và lớp."""
+    """Lấy danh sách bài nộp — Super Admin thấy tất cả, giáo viên chỉ thấy bài nộp đề do chính mình tạo. Hỗ trợ lọc theo môn, đề thi và lớp."""
     from ..routers.exam_builder import _list_exam_files
     current_user = get_current_user_from_request(request)
     clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
@@ -391,7 +391,7 @@ async def get_submissions(request: Request, exam_id: str = None, student_class: 
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
     all_exams = _list_exam_files()
 
-    # Lọc theo quyền giáo viên (chỉ Super Admin mặc định mới thấy tất cả môn)
+    # Lọc theo quyền giáo viên (chỉ Super Admin mặc định mới thấy tất cả các giáo viên khác)
     is_super_admin = bool(
         current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
     )
@@ -409,7 +409,7 @@ async def get_submissions(request: Request, exam_id: str = None, student_class: 
 
 @router.delete("/submissions/{submission_id}")
 async def remove_submission(submission_id: str, request: Request):
-    """Xóa một bài nộp của học sinh khỏi danh sách (tự động kiểm tra phân quyền môn học của giáo viên)."""
+    """Xóa một bài nộp của học sinh khỏi danh sách (tự động kiểm tra quyền sở hữu đề thi của giáo viên)."""
     from ..routers.exam_builder import _list_exam_files
     current_user = get_current_user_from_request(request)
 
@@ -424,7 +424,7 @@ async def remove_submission(submission_id: str, request: Request):
     if not success:
         raise HTTPException(
             status_code=403 if allowed_exam_ids is not None else 404,
-            detail="Không tìm thấy bài nộp hoặc bạn không có quyền xóa bài thi của môn học khác!"
+            detail="Không tìm thấy bài nộp hoặc bạn không có quyền xóa bài thi của đề do giáo viên khác tạo!"
         )
     return {"success": True, "message": f"Đã xóa bài nộp của thí sinh ({submission_id}) thành công!"}
 
@@ -432,9 +432,9 @@ async def remove_submission(submission_id: str, request: Request):
 @router.delete("/submissions/clear/all")
 async def clear_all_submissions(request: Request, exam_id: str = None, subject: str = None):
     """
-    Xóa bài nộp theo đề thi hoặc theo môn học của giáo viên.
-    TỰ ĐỘNG BẢO VỆ: Nếu là giáo viên, BẮT BUỘC chỉ được xóa các bài nộp thuộc môn học mình phụ trách.
-    Tuyệt đối không bao giờ làm ảnh hưởng đến bài nộp của các môn học khác!
+    Xóa bài nộp theo đề thi hoặc các đề thi của giáo viên.
+    TỰ ĐỘNG BẢO VỆ: Nếu là giáo viên, BẮT BUỘC chỉ được xóa các bài nộp thuộc các đề do chính mình tạo.
+    Tuyệt đối không bao giờ làm ảnh hưởng đến bài nộp của giáo viên khác (kể cả dạy cùng môn)!
     """
     from ..routers.exam_builder import _list_exam_files
     current_user = get_current_user_from_request(request)
@@ -449,26 +449,25 @@ async def clear_all_submissions(request: Request, exam_id: str = None, subject: 
     all_exams = _list_exam_files()
 
     if current_user and not is_super_admin:
-        # Giáo viên: BẮT BUỘC chỉ xóa trong phạm vi đề thi môn của mình
+        # Giáo viên: BẮT BUỘC chỉ xóa trong phạm vi đề thi do chính mình tạo
         accessible_exams = _list_exam_files(current_user)
         accessible_ids = [e['id'] for e in accessible_exams]
 
         if clean_eid:
             if clean_eid not in accessible_ids:
-                raise HTTPException(status_code=403, detail="Bạn không có quyền xóa bài thi của môn học khác!")
+                raise HTTPException(status_code=403, detail="Bạn không có quyền xóa bài thi của giáo viên khác!")
             count = delete_all_submissions(exam_id=clean_eid)
         elif clean_sub:
             sub_ids = [e['id'] for e in accessible_exams if (e.get('subject') or '').strip().lower() == clean_sub]
             count = delete_all_submissions(exam_ids=sub_ids)
         else:
-            # Xóa toàn bộ bài nộp trong phạm vi các đề thuộc môn giáo viên phụ trách
+            # Xóa toàn bộ bài nộp trong phạm vi các đề thuộc sở hữu của giáo viên này
             count = delete_all_submissions(exam_ids=accessible_ids)
 
         teacher_name = current_user.get('full_name') or current_user.get('username')
-        teacher_subject = current_user.get('subject') or "môn phụ trách"
         return {
             "success": True,
-            "message": f"Đã xóa {count} bài thi thuộc môn {teacher_subject} của giáo viên {teacher_name}! (Không ảnh hưởng đến môn khác)",
+            "message": f"Đã xóa {count} bài thi thuộc các đề thi của giáo viên {teacher_name}! (Không ảnh hưởng đến đề/bài thi của giáo viên khác)",
             "count": count
         }
 
@@ -550,7 +549,7 @@ async def download_full_backup(request: Request):
     """
     Tải file sao lưu CSDL:
     - Super Admin: Tải toàn bộ hệ thống (Đề thi + Bài thi + Tài khoản).
-    - Giáo viên bộ môn: CHỈ tải đề thi và bài thi thuộc môn học mình phụ trách.
+    - Giáo viên bộ môn (kể cả role='admin' nếu không phải super admin): CHỈ tải đề thi và bài thi do chính mình tạo.
     """
     current_user = get_current_user_from_request(request)
     if not current_user:
@@ -559,14 +558,14 @@ async def download_full_backup(request: Request):
     is_super_admin = bool(
         current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'
     )
-    teacher_sub = None if is_super_admin else current_user.get('subject')
+    teacher_owner = None if is_super_admin else current_user.get('username')
 
-    backup_data = export_full_backup(subject=teacher_sub)
+    backup_data = export_full_backup(owner=teacher_owner)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    if teacher_sub:
+    if teacher_owner:
         import re as _re
-        sub_slug = _re.sub(r'[^a-zA-Z0-9_]', '_', teacher_sub).strip('_')
-        filename = f"sao_luu_mon_{sub_slug}_{timestamp}.json"
+        owner_slug = _re.sub(r'[^a-zA-Z0-9_]', '_', teacher_owner).strip('_')
+        filename = f"sao_luu_gv_{owner_slug}_{timestamp}.json"
     else:
         filename = f"sao_luu_toan_bo_he_thong_{timestamp}.json"
 
@@ -583,8 +582,8 @@ async def restore_full_backup(request: Request, file: UploadFile = File(...)):
     """
     Khôi phục CSDL từ file JSON sao lưu:
     - Super Admin: Phục hồi toàn bộ hệ thống (Đề thi + Bài thi + Tài khoản + Cấu hình).
-    - Giáo viên bộ môn: CHỈ phục hồi các đề thi và bài thi thuộc môn phụ trách.
-      Tuyệt đối KHÔNG ghi đè môn khác và KHÔNG được phục hồi tài khoản/cấu hình chung.
+    - Giáo viên bộ môn (kể cả role='admin' nếu không phải super admin): CHỈ phục hồi các đề thi và bài thi do chính mình tạo.
+      Tuyệt đối KHÔNG ghi đè giáo viên khác và KHÔNG được phục hồi tài khoản/cấu hình chung.
     """
     current_user = get_current_user_from_request(request)
     if not current_user:
@@ -593,7 +592,7 @@ async def restore_full_backup(request: Request, file: UploadFile = File(...)):
     is_super_admin = bool(
         current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'
     )
-    teacher_sub = None if is_super_admin else current_user.get('subject')
+    teacher_owner = None if is_super_admin else current_user.get('username')
 
     try:
         content = await file.read()
@@ -608,9 +607,9 @@ async def restore_full_backup(request: Request, file: UploadFile = File(...)):
                 "details": res_u
             }
 
-        res = import_full_backup(backup_data, allowed_subject=teacher_sub)
-        if teacher_sub:
-            msg = f"Khôi phục CSDL môn {teacher_sub} thành công: Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài thi của học sinh! (Không ảnh hưởng đến môn học khác)"
+        res = import_full_backup(backup_data, allowed_owner=teacher_owner)
+        if teacher_owner:
+            msg = f"Khôi phục CSDL thành công: Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài thi của học sinh thuộc tài khoản {teacher_owner}! (Không ảnh hưởng đến giáo viên khác)"
         else:
             msg = f"Khôi phục toàn bộ CSDL thành công! Đã phục hồi {res['restored_exams']} đề thi, {res['restored_submissions']} bài làm học sinh, {res.get('restored_users', 0)} tài khoản."
 
@@ -629,47 +628,77 @@ async def restore_full_backup(request: Request, file: UploadFile = File(...)):
 # ===================== CÁC ENDPOINT IN ẤN (GIÁO VIÊN & ADMIN) =====================
 
 @router.get("/print/submission/{submission_id}", response_class=HTMLResponse)
-async def print_student_submission(submission_id: str):
+async def print_student_submission(submission_id: str, request: Request):
     """
     In toàn bộ bài thi của học sinh:
     Bao gồm thông tin học sinh, câu hỏi, lựa chọn của học sinh, đáp án đúng của đề, ký hiệu Đúng/Sai, điểm số từng phần và nhận xét.
     """
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
     sub = get_submission(submission_id)
     if not sub:
         raise HTTPException(status_code=404, detail="Không tìm thấy bài nộp của học sinh!")
-    
+
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
+        accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
+        if sub.get("exam_id") not in accessible_ids:
+            raise HTTPException(status_code=403, detail="Bạn không có quyền xem/in bài thi của giáo viên khác!")
+
     exam = sub.get("exam_data") or load_exam(sub.get("exam_id", "exam_001"))
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi tương ứng!")
-        
+
     html = export_student_exam_print_html(sub, exam)
     return HTMLResponse(content=html)
 
 
 @router.get("/print/exam/{exam_id}", response_class=HTMLResponse)
-async def print_clean_exam(exam_id: str):
+async def print_clean_exam(exam_id: str, request: Request):
     """
     In đề thi giấy cho học sinh:
     Bao gồm tiêu đề, khung điền thông tin học sinh/SBD, nội dung đề bài (KHÔNG CÓ ĐÁP ÁN ĐỎ) để photocopy/phát cho học sinh.
     """
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
-        
+
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
+        accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
+        if exam_id not in accessible_ids:
+            raise HTTPException(status_code=403, detail="Bạn không có quyền xem/in đề thi của giáo viên khác!")
+
     html = export_clean_exam_print_html(exam)
     return HTMLResponse(content=html)
 
 
 @router.get("/print/answers/{exam_id}", response_class=HTMLResponse)
-async def print_exam_answers(exam_id: str):
+async def print_exam_answers(exam_id: str, request: Request):
     """
     In ma trận đáp án gốc và hướng dẫn chấm bài thi:
     Bao gồm bảng ma trận đáp án Phần I, Phần II, Phần III và toàn bộ đề thi có đánh dấu đỏ đáp án chuẩn.
     """
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
-        
+
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
+        accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
+        if exam_id not in accessible_ids:
+            raise HTTPException(status_code=403, detail="Bạn không có quyền xem/in đáp án đề thi của giáo viên khác!")
+
     html = export_exam_answers_print_html(exam)
     return HTMLResponse(content=html)
 

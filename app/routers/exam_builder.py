@@ -52,7 +52,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
-                    "created_by": r[5] or "",
+                    "created_by": (r[5] or data.get("created_by") or "").strip(),
                     "is_online_exam": bool(data.get("is_online_exam", False)),
                     "is_published": is_exam_published(data.get("is_published")),
                     "is_bank": is_bank,
@@ -88,7 +88,7 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
-                    "created_by": data.get("created_by", ""),
+                    "created_by": (data.get("created_by") or "").strip(),
                     "is_online_exam": bool(data.get("is_online_exam", False)),
                     "is_published": is_exam_published(data.get("is_published")),
                     "is_bank": is_bank,
@@ -99,24 +99,20 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
 
     exams_list = list(exams_map.values())
 
-    # RBAC: Chỉ tài khoản SUPER ADMIN mặc định ('admin' hoặc is_protected) mới thấy tất cả các môn.
-    # Tài khoản giáo viên (kể cả được cấp quyền quản trị tạo tài khoản) vẫn giữ nguyên môn phụ trách.
+    # RBAC: PHÂN LẬP ĐỀ THI THEO TÀI KHOẢN GIÁO VIÊN
+    # 1. Chỉ tài khoản Super Admin (username='admin' hoặc is_protected) mới có toàn quyền xem đề thi của tất cả giáo viên.
+    # 2. Mọi tài khoản giáo viên (kể cả giáo viên được phân quyền vai trò admin):
+    #    CHỈ xem và quản lý các đề thi do chính tài khoản của mình tạo ra (created_by == username).
+    #    Giáo viên cùng môn tuyệt đối KHÔNG thấy đề thi của giáo viên khác.
     is_super_admin = bool(
         current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
     )
     if current_user and not is_super_admin:
-        user_subject = (current_user.get('subject') or '').strip().lower()
-        user_username = current_user.get('username', '').lower()
-        if user_subject:
-            exams_list = [
-                e for e in exams_list 
-                if (e.get('subject', '').lower() == user_subject 
-                    or (user_subject in e.get('subject', '').lower() and len(user_subject) >= 3)
-                    or (e.get('subject', '').lower() in user_subject and len(e.get('subject', '')) >= 3)) 
-                or (e.get('created_by', '').lower() == user_username)
-            ]
-        else:
-            exams_list = [e for e in exams_list if e.get('created_by', '').lower() == user_username]
+        user_username = (current_user.get('username') or '').strip().lower()
+        exams_list = [
+            e for e in exams_list 
+            if (e.get('created_by') or '').strip().lower() == user_username
+        ]
 
     return exams_list
 
@@ -179,13 +175,15 @@ async def add_sample_exam_to_system():
 @router.post("/bank-config")
 async def save_bank_config(request: Request, payload: dict):
     """Lưu cấu hình Ngân hàng câu hỏi (bốc đề ngẫu nhiên theo từng học sinh)."""
-    exam_id = payload.get("exam_id")
-    if not exam_id:
-        raise HTTPException(400, "Thiếu exam_id!")
-    exam = load_exam(exam_id)
-    if not exam:
-        raise HTTPException(404, "Không tìm thấy đề thi!")
-    
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    is_super_admin = bool(current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'))
+    if current_user and not is_super_admin:
+        owner = (exam.get("created_by") or "").strip().lower()
+        my_name = (current_user.get("username") or "").strip().lower()
+        if owner and owner != my_name:
+            raise HTTPException(403, "Bạn không có quyền chỉnh sửa đề thi của giáo viên khác!")
+
     cfg = payload.get("bank_config") or {}
     enabled = bool(cfg.get("enabled", False))
     exam["is_bank"] = enabled
@@ -932,7 +930,13 @@ async def save_exam(request: Request = None, exam_data: dict = None):
     if exam_data is None and isinstance(request, dict):
         exam_data = request
         request = None
-    elif exam_data is None:
+    elif exam_data is None and request is not None and hasattr(request, "json"):
+        try:
+            exam_data = await request.json()
+        except Exception:
+            pass
+
+    if exam_data is None:
         raise HTTPException(400, "Dữ liệu đề thi không hợp lệ!")
 
     if not exam_data.get("title", "").strip():
@@ -951,11 +955,32 @@ async def save_exam(request: Request = None, exam_data: dict = None):
     if total_qs == 0:
         raise HTTPException(400, "Không nhận diện được câu hỏi nào trong đề thi! Vui lòng kiểm tra lại định dạng file (ví dụ: 'Câu 1:... A. ... B. ...').")
 
+    # Xác định người dùng đang thực hiện
+    current_user = None
+    if request and hasattr(request, "cookies"):
+        try:
+            from ..services.auth_service import get_current_user_from_request
+            current_user = get_current_user_from_request(request)
+        except Exception:
+            pass
+
+    is_super_admin = bool(
+        current_user and (current_user.get("is_protected") or current_user.get("username", "").lower() == "admin")
+    )
+
     # Gán ID nếu chưa có và kiểm tra đề mới hay cập nhật đề cũ
     raw_id = exam_data.get("id")
-    is_new_exam = not raw_id or not load_exam(raw_id)
+    existing = load_exam(raw_id) if raw_id else None
+    is_new_exam = not raw_id or not existing
     if not raw_id:
         exam_data["id"] = f"exam_{uuid.uuid4().hex[:8]}"
+
+    # KIỂM TRA QUYỀN SỞ HỮU KHI CẬP NHẬT ĐỀ CŨ:
+    if existing and not is_super_admin:
+        existing_owner = (existing.get("created_by") or "").strip().lower()
+        my_name = (current_user.get("username") or "").strip().lower() if current_user else ""
+        if existing_owner and existing_owner != my_name:
+            raise HTTPException(403, "Bạn không có quyền chỉnh sửa đề thi của giáo viên khác!")
 
     # Xử lý trạng thái xuất bản (is_published):
     # - Khi thêm mới thì mặc định màu đỏ (Chưa xuất bản / False)
@@ -965,18 +990,13 @@ async def save_exam(request: Request = None, exam_data: dict = None):
     elif is_new_exam:
         exam_data["is_published"] = False
     else:
-        existing = load_exam(exam_data["id"])
         exam_data["is_published"] = bool(existing.get("is_published", True)) if existing else True
 
-    # Stamp created_by nếu chưa có
-    if request:
-        try:
-            from ..services.auth_service import get_current_user_from_request
-            current_user = get_current_user_from_request(request)
-            if current_user and not exam_data.get("created_by"):
-                exam_data["created_by"] = current_user.get("username", "")
-        except Exception:
-            pass
+    # Stamp created_by chuẩn xác
+    if not is_super_admin and current_user:
+        exam_data["created_by"] = current_user.get("username", "")
+    elif not exam_data.get("created_by"):
+        exam_data["created_by"] = (existing.get("created_by") if existing else None) or (current_user.get("username") if current_user else "admin")
 
     # Tính toán thang điểm linh hoạt
     p1_count = len(p1_qs)
@@ -1045,16 +1065,27 @@ async def save_exam(request: Request = None, exam_data: dict = None):
 
     exam_id = exam_data["id"]
     save_exam_record(exam_data)
-    logger.info(f"Đã lưu đề thi vào CSDL và file: {exam_id} - {exam_data['title']} (Thi trực tuyến: {exam_data['is_online_exam']})")
+    logger.info(f"Đã lưu đề thi vào CSDL và file: {exam_id} - {exam_data['title']} (Người tạo: {exam_data['created_by']}, Thi trực tuyến: {exam_data['is_online_exam']})")
     return {"success": True, "exam_id": exam_id, "message": f"Đã lưu đề thi '{exam_data['title']}' thành công!"}
 
 
 @router.post("/toggle-online/{exam_id}")
-async def toggle_exam_online_mode(exam_id: str):
+async def toggle_exam_online_mode(exam_id: str, request: Request):
     """Bật/tắt chế độ thi trực tuyến (có giám sát chống gian lận) hoặc đề luyện tập tự do."""
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    is_super_admin = bool(current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'))
+
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(404, "Không tìm thấy đề thi!")
+
+    if current_user and not is_super_admin:
+        owner = (exam.get("created_by") or "").strip().lower()
+        my_name = (current_user.get("username") or "").strip().lower()
+        if owner and owner != my_name:
+            raise HTTPException(403, "Bạn không có quyền chỉnh sửa đề thi của giáo viên khác!")
+
     current_val = bool(exam.get("is_online_exam", False))
     exam["is_online_exam"] = not current_val
     save_exam_record(exam)
@@ -1067,11 +1098,22 @@ async def toggle_exam_online_mode(exam_id: str):
 
 
 @router.post("/toggle-publish/{exam_id}")
-async def toggle_exam_publish_status(exam_id: str):
+async def toggle_exam_publish_status(exam_id: str, request: Request):
     """Bật/tắt trạng thái xuất bản đề thi (Đỏ: Chưa xuất bản, ẩn khỏi học sinh / Xanh: Đã xuất bản, hiện trên trang làm đề)."""
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    is_super_admin = bool(current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'))
+
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(404, "Không tìm thấy đề thi!")
+
+    if current_user and not is_super_admin:
+        owner = (exam.get("created_by") or "").strip().lower()
+        my_name = (current_user.get("username") or "").strip().lower()
+        if owner and owner != my_name:
+            raise HTTPException(403, "Bạn không có quyền chỉnh sửa đề thi của giáo viên khác!")
+
     current_val = is_exam_published(exam.get("is_published"))
     new_val = not current_val
     exam["is_published"] = new_val
@@ -1101,8 +1143,22 @@ async def export_exam_json(exam_id: str):
 
 
 @router.delete("/delete/{exam_id}")
-async def delete_exam(exam_id: str):
+async def delete_exam(exam_id: str, request: Request):
     """Xóa đề thi (xóa sạch cả trong SQLite database và file JSON trên đĩa)."""
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    is_super_admin = bool(current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'))
+
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi cần xóa!")
+
+    if current_user and not is_super_admin:
+        owner = (exam.get("created_by") or "").strip().lower()
+        my_name = (current_user.get("username") or "").strip().lower()
+        if owner and owner != my_name:
+            raise HTTPException(403, "Bạn không có quyền xóa đề thi của giáo viên khác!")
+
     if exam_id in ("sample_exam", "exam_toan_12_101"):
         raise HTTPException(400, "Không thể xóa đề thi mẫu chuẩn của hệ thống!")
     delete_exam_record(exam_id)
@@ -1110,7 +1166,7 @@ async def delete_exam(exam_id: str):
 
 
 @router.post("/scoring/{exam_id}")
-async def update_exam_scoring(exam_id: str, body: dict):
+async def update_exam_scoring(exam_id: str, body: dict, request: Request):
     """
     Cập nhật cấu hình điểm tùy chỉnh cho đề thi.
     body: {
@@ -1120,9 +1176,19 @@ async def update_exam_scoring(exam_id: str, body: dict):
       part4_per_question: float,   # điểm mỗi câu Tự luận
     }
     """
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    is_super_admin = bool(current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'))
+
     exam = load_exam(exam_id)
     if not exam:
         raise HTTPException(404, "Không tìm thấy đề thi!")
+
+    if current_user and not is_super_admin:
+        owner = (exam.get("created_by") or "").strip().lower()
+        my_name = (current_user.get("username") or "").strip().lower()
+        if owner and owner != my_name:
+            raise HTTPException(403, "Bạn không có quyền chỉnh sửa điểm đề thi của giáo viên khác!")
 
     p1_qs = exam.get("parts", {}).get("part1", {}).get("questions", [])
     p2_qs = exam.get("parts", {}).get("part2", {}).get("questions", [])
