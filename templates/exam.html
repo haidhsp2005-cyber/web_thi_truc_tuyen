@@ -247,7 +247,7 @@
 </div>
 
 <!-- Main Layout -->
-<div class="flex pt-[72px] min-h-screen transition-all duration-150" :class="{'filter blur-3xl opacity-0 pointer-events-none select-none': isOnlineExam && isBlackoutActive}">
+<div class="flex pt-[72px] min-h-screen transition-all duration-150" :class="{'filter blur-3xl opacity-0 pointer-events-none select-none': isOnlineExam && isBlackoutActive, 'pointer-events-none opacity-50 select-none cursor-not-allowed': isTimeUp || submitting || submitted}">
 
   <!-- Sidebar: Bảng điều hướng câu hỏi -->
   <aside class="hidden lg:flex flex-col w-64 fixed top-[72px] bottom-0 bg-white border-r shadow-sm overflow-y-auto p-4">
@@ -939,6 +939,7 @@ function examApp() {
     showTimeUpModal: false,
     timeUpMsg: '',
     isAutoSubmitting: false,
+    isTimeUp: false,
     timeLeft: 45 * 60,
     targetEndTime: null,
     timerInterval: null,
@@ -1141,7 +1142,9 @@ function examApp() {
       window.addEventListener('pageshow', (event) => {
         if (sessionStorage.getItem('exam_submitted_' + this.examId) || localStorage.getItem('exam_submitted_' + this.examId)) {
           window.location.replace('/');
+          return;
         }
+        this.updateTimerTick();
       });
 
       // Lấy thông tin học sinh từ sessionStorage
@@ -1533,13 +1536,18 @@ function examApp() {
         this.timerInterval = null;
       }
       
+      const durationMins = Number(this.examData?.duration_minutes) || 45;
+      const durationSecs = durationMins * 60;
       const endKey = 'exam_end_time_' + this.examId;
-      let storedEnd = sessionStorage.getItem(endKey);
-      const durationSecs = (this.examData?.duration_minutes || 45) * 60;
+      const localEndKey = 'exam_end_' + this.examId + '_' + encodeURIComponent(this.studentName || 'student');
+
+      // Đọc mốc kết thúc từ cả sessionStorage và localStorage (chống việc reload hoặc tắt máy làm mới giờ)
+      let storedEnd = sessionStorage.getItem(endKey) || localStorage.getItem(localEndKey);
       
       if (!storedEnd) {
         this.targetEndTime = Date.now() + durationSecs * 1000;
         sessionStorage.setItem(endKey, this.targetEndTime.toString());
+        try { localStorage.setItem(localEndKey, this.targetEndTime.toString()); } catch(e) {}
       } else {
         this.targetEndTime = parseInt(storedEnd, 10);
       }
@@ -1555,14 +1563,16 @@ function examApp() {
 
     updateTimerTick() {
       if (!this.targetEndTime) return;
-      const diff = Math.ceil((this.targetEndTime - Date.now()) / 1000);
+      const now = Date.now();
+      const diff = Math.ceil((this.targetEndTime - now) / 1000);
       this.timeLeft = Math.max(0, diff);
       if (this.timeLeft <= 0) {
         if (this.timerInterval) {
           clearInterval(this.timerInterval);
           this.timerInterval = null;
         }
-        if (!this.isAutoSubmitting && !this.submitting) {
+        this.isTimeUp = true;
+        if (!this.submitting && !this.submitted) {
           this.autoSubmit();
         }
       }
@@ -2096,16 +2106,22 @@ function examApp() {
     },
     
     async autoSubmit() {
-      if (this.isAutoSubmitting) return;
+      if (this.submitted) return;
+      this.isTimeUp = true;
       this.isAutoSubmitting = true;
       this.submitting = true;
       this.showConfirm = false;
       this.showTimeUpModal = true;
-      this.timeUpMsg = 'Thời gian làm bài đã kết thúc! Hệ thống đang tự động nộp bài và lưu kết quả của bạn...';
+      this.timeUpMsg = 'Thời gian làm bài đã kết thúc! Hệ thống đang tự động thu bài và lưu kết quả của bạn...';
 
+      const examDurationSecs = (Number(this.examData?.duration_minutes) || 45) * 60;
       const submittedAt = new Date().toISOString();
       const startTime = new Date(this.startedAt).getTime();
-      const durationSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+      let durationSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+      // BẢO VỆ CHỐNG TRÀN GIỜ: Tuyệt đối không ghi nhận vượt quá thời lượng tối đa của đề thi
+      if (durationSeconds > examDurationSecs) {
+        durationSeconds = examDurationSecs;
+      }
 
       const p3CleanAnswers = {};
       for (const [k, v] of Object.entries(this.p3Answers || {})) {
@@ -2128,41 +2144,60 @@ function examApp() {
         part3_answers: p3CleanAnswers,
         screen_switch_count: this.screenSwitchCount,
         switch_violations: this.switchViolations,
+        is_online_exam: this.isOnlineExam,
         part4_question_id: this.p4QuestionId || null,
         part4_answer: this.p4Answer || '',
         seed: this.sessionSeed || this.examData?.bank_seed || '',
       };
 
-      try {
-        const resp = await fetch('/api/exam/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (this.timerInterval) clearInterval(this.timerInterval);
-        sessionStorage.removeItem('exam_answers');
-        sessionStorage.removeItem('exam_end_time_' + this.examId);
-        sessionStorage.removeItem('exam_shuffled_' + this.examId);
-        sessionStorage.removeItem('screen_switch_' + this.examId);
-        sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
-        localStorage.setItem('exam_submitted_' + this.examId, 'true');
-        sessionStorage.removeItem('student_name');
-        sessionStorage.removeItem('student_class');
-
-        if (resp.ok) {
-          this.timeUpMsg = '✅ Đã nộp bài thành công! Đang chuyển về màn hình đăng nhập...';
-        } else {
-          this.timeUpMsg = 'Đã hết giờ làm bài! Đang chuyển về màn hình đăng nhập...';
+      // Tự động thử lại (Retry) tối đa 3 lần để đảm bảo không rớt bài khi mạng lag
+      let submitSuccess = false;
+      let submitResult = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const resp = await fetch('/api/exam/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          });
+          if (resp.ok) {
+            submitResult = await resp.json().catch(() => ({}));
+            submitSuccess = true;
+            this.submitted = true;
+            break;
+          }
+        } catch(e) {
+          console.warn(`Lần nộp bài tự động thứ ${attempt} thất bại:`, e);
+          if (attempt < 3) {
+            await new Promise(r => setTimeout(r, 1000));
+          }
         }
-      } catch(e) {
-        this.timeUpMsg = 'Đã hết giờ làm bài! Đang chuyển về màn hình đăng nhập...';
       }
 
-      // Đợi 2 giây để học sinh xem thông báo rồi tắt và chuyển về màn hình đăng nhập /
-      setTimeout(() => {
-        window.location.replace('/');
-      }, 2000);
+      if (this.timerInterval) clearInterval(this.timerInterval);
+      sessionStorage.removeItem('exam_answers');
+      sessionStorage.removeItem('exam_end_time_' + this.examId);
+      sessionStorage.removeItem('exam_shuffled_' + this.examId);
+      sessionStorage.removeItem('screen_switch_' + this.examId);
+      sessionStorage.removeItem('has_started_online_' + this.examId);
+      sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
+      localStorage.setItem('exam_submitted_' + this.examId, 'true');
+      sessionStorage.removeItem('student_name');
+      sessionStorage.removeItem('student_class');
+
+      if (submitSuccess && submitResult?.submission_id) {
+        this.timeUpMsg = '✅ Đã thu bài và nộp thành công! Đang chuyển đến bảng kết quả...';
+        sessionStorage.setItem('submission_id', submitResult.submission_id);
+        setTimeout(() => {
+          window.location.replace(`/result?id=${submitResult.submission_id}`);
+        }, 1500);
+      } else {
+        this.timeUpMsg = 'Đã hết giờ làm bài! Đang chuyển về màn hình chính...';
+        setTimeout(() => {
+          window.location.replace('/');
+        }, 2000);
+      }
     },
     
     async submitExam() {
@@ -2170,9 +2205,14 @@ function examApp() {
       this.submitting = true;
       this.submitted = true;
       
+      const examDurationSecs = (Number(this.examData?.duration_minutes) || 45) * 60;
       const submittedAt = new Date().toISOString();
       const startTime = new Date(this.startedAt).getTime();
-      const durationSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+      let durationSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+      // BẢO VỆ CHỐNG TRÀN GIỜ:
+      if (durationSeconds > examDurationSecs) {
+        durationSeconds = examDurationSecs;
+      }
       
       const p3CleanAnswers = {};
       for (const [k, v] of Object.entries(this.p3Answers || {})) {
@@ -2205,7 +2245,8 @@ function examApp() {
         const resp = await fetch('/api/exam/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          keepalive: true
         });
         
         if (resp.ok) {

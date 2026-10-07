@@ -218,9 +218,32 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     client_submitted = data.get("submitted_at")
     if not client_submitted or not isinstance(client_submitted, str):
         client_submitted = datetime.now(VIETNAM_TZ).isoformat()
-    
+
     is_online_exam = bool(exam.get("is_online_exam", False))
-    
+
+    # BẢO VỆ CHỐNG QUÁ THỜI GIAN LÀM BÀI (Chống học sinh quá giờ / 103 phút):
+    exam_duration_mins = int(exam.get("duration_minutes") or 45)
+    max_allowed_secs = exam_duration_mins * 60
+    raw_duration = int(data.get("duration_seconds") or 0)
+
+    # Nếu client gửi thiếu hoặc âm, tự tính từ started_at và client_submitted
+    if raw_duration <= 0 and data.get("started_at"):
+        try:
+            t_start = datetime.fromisoformat(data["started_at"].replace("Z", "+00:00"))
+            t_sub = datetime.fromisoformat(client_submitted.replace("Z", "+00:00"))
+            raw_duration = int((t_sub - t_start).total_seconds())
+        except Exception:
+            raw_duration = max_allowed_secs
+
+    # Khống chế tuyệt đối không vượt quá thời lượng tối đa của đề thi
+    if raw_duration > max_allowed_secs + 15:
+        final_duration = max_allowed_secs
+        logger.info(f"Học sinh {student_name} ({student_class}) nộp bài quá giờ ({raw_duration}s > {max_allowed_secs}s). Hệ thống đã tự động khóa và chuẩn hóa về {max_allowed_secs}s ({exam_duration_mins} phút).")
+    elif raw_duration > 0:
+        final_duration = min(raw_duration, max_allowed_secs)
+    else:
+        final_duration = max_allowed_secs
+
     submission_data = {
         "submission_id": submission_id,
         "student_name": student_name,
@@ -229,7 +252,7 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         "is_online_exam": is_online_exam,
         "started_at": data.get("started_at", ""),
         "submitted_at": client_submitted,
-        "duration_seconds": data.get("duration_seconds", 0),
+        "duration_seconds": final_duration,
         "screen_switch_count": int(data.get("screen_switch_count", 0)) if is_online_exam else 0,
         "switch_violations": data.get("switch_violations", []) if is_online_exam else [],
         "part1_answers": p1_answers,
