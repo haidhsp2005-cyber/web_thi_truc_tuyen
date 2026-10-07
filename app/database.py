@@ -682,10 +682,17 @@ def heal_exam_data(exam: dict) -> bool:
     return modified
 
 
-def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
+def load_exam(exam_id: str = "exam_001", fallback_to_any: bool = False) -> Optional[dict]:
     """Tải đề thi từ SQLite database hoặc file JSON (tìm theo filename hoặc thuộc tính id)."""
     if not exam_id:
+        if not fallback_to_any:
+            return None
         exam_id = "exam_001"
+
+    def _wrap_exam(d):
+        if d and isinstance(d, dict) and "is_published" not in d:
+            d["is_published"] = True
+        return d
 
     # 1. Thử tìm trong SQLite database (nhanh nhất và không phụ thuộc disk)
     try:
@@ -702,7 +709,7 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
                 c.execute("SELECT id, data_json FROM exams WHERE id = ?", (stripped,))
                 row = c.fetchone()
         if not row:
-            c.execute("SELECT id, data_json FROM exams WHERE title LIKE ? LIMIT 1", (f"%{exam_id}%",))
+            c.execute("SELECT id, data_json FROM exams WHERE title = ? LIMIT 1", (exam_id,))
             row = c.fetchone()
         conn.close()
         if row and row[1]:
@@ -719,22 +726,18 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
                     logger.info(f"Đã tự động chữa lành và cập nhật đề thi {real_id} vào SQLite.")
                 except Exception as update_err:
                     logger.warning(f"Lỗi cập nhật lại đề thi {real_id}: {update_err}")
-            if "is_published" not in exam_data:
-                exam_data["is_published"] = True
-            return exam_data
+            return _wrap_exam(exam_data)
     except Exception as ex:
         logger.warning(f"Lỗi đọc đề {exam_id} từ SQLite: {ex}")
-
-    def _wrap_exam(d):
-        if d and isinstance(d, dict) and "is_published" not in d:
-            d["is_published"] = True
-        return d
 
     # 2. Thử theo tên file trực tiếp
     path = EXAMS_DIR / f"{exam_id}.json"
     if path.exists():
-        with open(path, encoding="utf-8") as f:
-            return _wrap_exam(json.load(f))
+        try:
+            with open(path, encoding="utf-8") as f:
+                return _wrap_exam(json.load(f))
+        except Exception:
+            pass
 
     # 3. Quét các file JSON trong EXAMS_DIR để so khớp theo id hoặc title
     for f in sorted(EXAMS_DIR.glob("*.json")):
@@ -743,29 +746,33 @@ def load_exam(exam_id: str = "exam_001") -> Optional[dict]:
         try:
             with open(f, encoding="utf-8") as jf:
                 data = json.load(jf)
-                if data.get("id") == exam_id or f.stem == exam_id or exam_id in data.get("title", ""):
+                if data.get("id") == exam_id or f.stem == exam_id or data.get("title") == exam_id:
                     return _wrap_exam(data)
         except Exception:
             continue
 
-    # 4. Fallback đề mẫu hoặc đề thi gần nhất nếu có (bảo vệ học sinh không bị lỗi mất bài)
-    try:
-        conn = get_connection()
-        c = conn.cursor()
-        c.execute("SELECT id, data_json FROM exams ORDER BY id DESC LIMIT 1")
-        row = c.fetchone()
-        conn.close()
-        if row and row[1]:
-            return _wrap_exam(json.loads(row[1]))
-    except Exception:
-        pass
+    # 4. CHỈ fallback khi fallback_to_any=True (ví dụ cứu hộ học sinh khi đề bị lỗi)
+    if fallback_to_any:
+        try:
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT id, data_json FROM exams ORDER BY id DESC LIMIT 1")
+            row = c.fetchone()
+            conn.close()
+            if row and row[1]:
+                return _wrap_exam(json.loads(row[1]))
+        except Exception:
+            pass
 
-    fallback = EXAMS_DIR / "exam_toan_12_101.json"
-    if not fallback.exists():
-        fallback = EXAMS_DIR / "sample_exam.json"
-    if fallback.exists():
-        with open(fallback, encoding="utf-8") as f:
-            return _wrap_exam(json.load(f))
+        fallback = EXAMS_DIR / "exam_toan_12_101.json"
+        if not fallback.exists():
+            fallback = EXAMS_DIR / "sample_exam.json"
+        if fallback.exists():
+            try:
+                with open(fallback, encoding="utf-8") as f:
+                    return _wrap_exam(json.load(f))
+            except Exception:
+                pass
 
     return None
 

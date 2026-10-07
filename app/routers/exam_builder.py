@@ -912,6 +912,13 @@ async def upload_exam_file(request: Request, file: UploadFile = File(...)):
         parsed["title"] = Path(filename).stem.replace("_", " ").upper()
     parsed["id"] = f"exam_{uuid.uuid4().hex[:8]}"
 
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    if current_user:
+        parsed["created_by"] = current_user.get("username", "")
+        if not parsed.get("subject") and current_user.get("subject"):
+            parsed["subject"] = current_user.get("subject")
+
     # Lưu vào hệ thống
     await save_exam(request, parsed)
 
@@ -970,10 +977,16 @@ async def save_exam(request: Request = None, exam_data: dict = None):
 
     # Gán ID nếu chưa có và kiểm tra đề mới hay cập nhật đề cũ
     raw_id = exam_data.get("id")
-    existing = load_exam(raw_id) if raw_id else None
+    existing = None
+    if raw_id:
+        candidate = load_exam(raw_id, fallback_to_any=False)
+        if candidate and candidate.get("id") == raw_id:
+            existing = candidate
+
     is_new_exam = not raw_id or not existing
-    if not raw_id:
-        exam_data["id"] = f"exam_{uuid.uuid4().hex[:8]}"
+    if not raw_id or is_new_exam:
+        if not raw_id:
+            exam_data["id"] = f"exam_{uuid.uuid4().hex[:8]}"
 
     # KIỂM TRA QUYỀN SỞ HỮU KHI CẬP NHẬT ĐỀ CŨ:
     if existing and not is_super_admin:
