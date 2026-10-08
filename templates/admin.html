@@ -1328,8 +1328,9 @@ function adminApp() {
     },
 
     get filteredAdminExamList() {
+      const adminSubFilter = this.adminExamFilterSubject ? this.adminExamFilterSubject.trim().toLowerCase() : '';
       return this.examList.filter(e => {
-        if (this.adminExamFilterSubject && e.subject !== this.adminExamFilterSubject) return false;
+        if (adminSubFilter && (e.subject || '').trim().toLowerCase() !== adminSubFilter) return false;
         if (this.adminExamFilterGrade && e.grade !== this.adminExamFilterGrade) return false;
         if (this.adminExamFilterPublish === 'published' && !e.is_published) return false;
         if (this.adminExamFilterPublish === 'unpublished' && e.is_published) return false;
@@ -1890,7 +1891,7 @@ function adminApp() {
           data = { detail: text || `Máy chủ phản hồi mã lỗi ${r.status}` };
         }
         if (r.ok) {
-          this.uploadMsg = data.message || 'Tải file và nạp đề thành công!';
+          this.uploadMsg = (data.message || 'Tải file và nạp đề thành công!') + ' 🔴 Đề đang ẩn (Chưa xuất bản) — Hãy bấm nút 🔴 trong danh sách bên dưới để xuất bản cho học sinh làm bài!';
           this.uploadMsgOk = true;
           await this.loadExamList();
         } else {
