@@ -1667,8 +1667,7 @@ function examApp() {
         if (data.parts[pKey] && Array.isArray(data.parts[pKey].questions)) {
           data.parts[pKey].questions.forEach(q => {
             if (q && q.text) {
-              q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2')
-                             .replace(/(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+              q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2');
             }
           });
         }
@@ -1678,8 +1677,7 @@ function examApp() {
     healQuestion(q) {
       if (!q || !q.text) return;
       // Dọn dẹp ngoặc nhọn mồ côi
-      q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2')
-                     .replace(/(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+      q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2');
 
       const opts = q.options || {};
       const hasValidOpts = (opts.A && opts.A.trim()) || (opts.B && opts.B.trim()) || (opts.C && opts.C.trim()) || (opts.D && opts.D.trim());
@@ -1736,8 +1734,7 @@ function examApp() {
 
     healPart2Question(q) {
       if (!q || !q.text) return;
-      q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2')
-                     .replace(/(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2');
+      q.text = q.text.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2');
 
       const items = q.items || {};
       const hasValidItems = Object.values(items).some(v => (v?.text !== undefined ? v.text.trim() : String(v).trim()));
@@ -1842,7 +1839,6 @@ function examApp() {
 
       // Dọn dẹp lỗi ngoặc nhọn mồ côi trước ngoặc đơn đơn vị và chữ cái: 200{ m^{2} -> 200 m^{2}
       str = str.replace(/(\d+)\s*\{\s*([a-zA-Z])/g, '$1 $2')
-               .replace(/(^|[\s\(\[\$,\.])\{\s*([a-zA-Z](?:\^\{?[^}]*\}?)?)\s*(?=[,\.\s\$\)]|$)/g, '$1$2')
                .replace(/\{(\s*\([^\)]+\))\}?/g, '$1')
                .replace(/\{(\s*\([a-zA-Z0-9_\^\{\}\s+-]+\))\}?/g, '$1');
 

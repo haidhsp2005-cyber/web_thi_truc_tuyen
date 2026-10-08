@@ -78,13 +78,17 @@ def clean_math_for_print(text: str) -> str:
 
     s = re.sub(r'(?<!\$)\{\s*([^{}]*?(?:=|<|>|\\le|\\ge)[^{}]*?\\\\+[^{}]*?)\}(?!\$)', _repl_curly_no_dollar, s)
 
-    # 6. Nếu chuỗi có 2 dòng trở lên và các dòng đều chứa biểu thức phương trình (ví dụ có '=', '<', '>', '\le', '\ge')
-    #    nhưng chưa có \begin{cases}: Tự động bao lại thành \begin{cases} ... \end{cases}
-    if "\\begin{cases}" not in s:
+    # 6. Chỉ bọc \begin{cases} nếu tất cả các dòng là biểu thức toán ngắn gọn (hệ phương trình thật), KHÔNG chứa từ ngữ văn bản tiếng Việt
+    if "\\begin{cases}" not in s and "\\begin{" not in s:
         lines = [line.strip() for line in s.splitlines() if line.strip()]
-        if len(lines) >= 2:
+        if 2 <= len(lines) <= 5:
             eq_pattern = re.compile(r'(=|<|>|\\le|\\ge|\\leq|\\geq)')
-            if all(eq_pattern.search(line) for line in lines):
+            # Nếu có từ ngữ tiếng Việt dài (>= 3 chữ cái) ngoài dấu $ thì đó là đề bài văn xuôi, không phải hệ PT
+            has_narrative_words = any(
+                re.search(r'[a-zA-Z\u00C0-\u1EF9]{3,}', re.sub(r'\$[^$]*\$', '', line))
+                for line in lines
+            )
+            if not has_narrative_words and all(eq_pattern.search(line) for line in lines):
                 inner_lines = []
                 for line in lines:
                     cleaned_line = line.strip().strip('$').strip()
