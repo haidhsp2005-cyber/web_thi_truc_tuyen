@@ -2158,8 +2158,7 @@ function examApp() {
           const resp = await fetch('/api/exam/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            keepalive: true
+            body: JSON.stringify(payload)
           });
           if (resp.ok) {
             submitResult = await resp.json().catch(() => ({}));
@@ -2241,39 +2240,56 @@ function examApp() {
         seed: this.sessionSeed || this.examData?.bank_seed || '',
       };
       
-      try {
-        const resp = await fetch('/api/exam/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          keepalive: true
-        });
-        
-        if (resp.ok) {
-          const result = await resp.json();
-          if (this.timerInterval) clearInterval(this.timerInterval);
-          sessionStorage.removeItem('exam_answers');
-          sessionStorage.removeItem('exam_end_time_' + this.examId);
-          sessionStorage.removeItem('exam_shuffled_' + this.examId);
-          sessionStorage.removeItem('screen_switch_' + this.examId);
-          sessionStorage.removeItem('has_started_online_' + this.examId);
-          if (this.isOnlineExam) {
-            sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
-            localStorage.setItem('exam_submitted_' + this.examId, result.submission_id);
-          }
-          sessionStorage.setItem('submission_id', result.submission_id);
-          sessionStorage.setItem('cached_result_' + result.submission_id, JSON.stringify(result));
+      let submitSuccess = false;
+      let submitResult = null;
+      let lastErrMsg = '';
+
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const resp = await fetch('/api/exam/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
           
-          // Sử dụng replace để không lưu trang làm bài vào lịch sử back của điện thoại
-          window.location.replace(`/result?id=${result.submission_id}`);
-        } else {
-          const err = await resp.json();
-          alert(`Lỗi nộp bài: ${err.detail || 'Không xác định'}`);
-          this.submitting = false;
-          this.submitted = false;
+          if (resp.ok) {
+            submitResult = await resp.json();
+            submitSuccess = true;
+            break;
+          } else {
+            const errData = await resp.json().catch(() => ({}));
+            lastErrMsg = errData.detail || `Mã lỗi HTTP ${resp.status}`;
+            // Nếu là lỗi logic (400, 403, 404), không cần retry
+            if (resp.status >= 400 && resp.status < 500) {
+              break;
+            }
+          }
+        } catch(e) {
+          lastErrMsg = e?.message || 'Lỗi kết nối mạng';
+          if (attempt < 3) {
+            await new Promise(r => setTimeout(r, 1200));
+          }
         }
-      } catch(e) {
-        alert('Không thể nộp bài! Kiểm tra kết nối mạng.');
+      }
+
+      if (submitSuccess && submitResult?.submission_id) {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        sessionStorage.removeItem('exam_answers');
+        sessionStorage.removeItem('exam_end_time_' + this.examId);
+        sessionStorage.removeItem('exam_shuffled_' + this.examId);
+        sessionStorage.removeItem('screen_switch_' + this.examId);
+        sessionStorage.removeItem('has_started_online_' + this.examId);
+        if (this.isOnlineExam) {
+          sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
+          localStorage.setItem('exam_submitted_' + this.examId, submitResult.submission_id);
+        }
+        sessionStorage.setItem('submission_id', submitResult.submission_id);
+        sessionStorage.setItem('cached_result_' + submitResult.submission_id, JSON.stringify(submitResult));
+        
+        // Sử dụng replace để không lưu trang làm bài vào lịch sử back của điện thoại
+        window.location.replace(`/result?id=${submitResult.submission_id}`);
+      } else {
+        alert(lastErrMsg ? `Không thể nộp bài: ${lastErrMsg}\nVui lòng thử nộp lại!` : 'Không thể nộp bài! Kiểm tra kết nối mạng và thử lại.');
         this.submitting = false;
         this.submitted = false;
       }

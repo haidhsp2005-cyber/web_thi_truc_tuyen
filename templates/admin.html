@@ -568,7 +568,7 @@
         <div class="flex flex-wrap items-center gap-3">
           <span class="text-xs font-bold text-yellow-800 flex items-center gap-1">🔍 Lọc đề thi:</span>
           <div class="flex flex-wrap gap-2 flex-1">
-            <div class="flex items-center gap-1.5" x-show="isSuperAdmin()">
+            <div class="flex items-center gap-1.5" x-show="isSuperAdmin() || adminExamSubjectOptions.length > 1">
               <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Môn:</label>
               <select x-model="adminExamFilterSubject"
                 class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-yellow-500 font-medium">
@@ -1404,7 +1404,8 @@ function adminApp() {
           this.currentUser = d.user;
           if (!this.isSuperAdmin() && this.currentUser && this.currentUser.subject) {
             this.selectedSubjectFilter = this.currentUser.subject;
-            this.adminExamFilterSubject = this.currentUser.subject;
+            // Không áp đặt adminExamFilterSubject = currentUser.subject để giáo viên thấy đầy đủ đề của mình
+            this.adminExamFilterSubject = '';
           }
         }
       } catch(e) {}
