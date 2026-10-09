@@ -1668,7 +1668,15 @@ function adminApp() {
     async previewBankDraw() {
       if (!this.bankConfigExam) return;
       try {
-        const r = await fetch(`/api/exam-builder/bank-preview/${encodeURIComponent(this.bankConfigExam.id)}`);
+        const params = new URLSearchParams();
+        if (this.bankConfigForm) {
+          if (this.bankConfigForm.part1_draw != null) params.append('p1', this.bankConfigForm.part1_draw);
+          if (this.bankConfigForm.part2_draw != null) params.append('p2', this.bankConfigForm.part2_draw);
+          if (this.bankConfigForm.part3_draw != null) params.append('p3', this.bankConfigForm.part3_draw);
+          if (this.bankConfigForm.part4_draw != null) params.append('p4', this.bankConfigForm.part4_draw);
+        }
+        const url = `/api/exam-builder/bank-preview/${encodeURIComponent(this.bankConfigExam.id)}` + (params.toString() ? '?' + params.toString() : '');
+        const r = await fetch(url);
         const data = await r.json();
         if (r.ok && data.success) {
           this.bankPreviewInfo = data;

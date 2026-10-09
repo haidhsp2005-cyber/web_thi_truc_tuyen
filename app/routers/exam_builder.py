@@ -175,6 +175,14 @@ async def add_sample_exam_to_system():
 @router.post("/bank-config")
 async def save_bank_config(request: Request, payload: dict):
     """Lưu cấu hình Ngân hàng câu hỏi (bốc đề ngẫu nhiên theo từng học sinh)."""
+    exam_id = payload.get("exam_id")
+    if not exam_id:
+        raise HTTPException(400, "Thiếu mã đề thi (exam_id)!")
+    
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi trên hệ thống!")
+
     from ..services.auth_service import get_current_user_from_request
     current_user = get_current_user_from_request(request)
     is_super_admin = bool(current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'))
@@ -199,8 +207,16 @@ async def save_bank_config(request: Request, payload: dict):
 
 
 @router.get("/bank-preview/{exam_id}")
-async def preview_bank_draw(exam_id: str, seed: Optional[int] = None):
+async def preview_bank_draw(
+    exam_id: str, 
+    seed: Optional[int] = None,
+    p1: Optional[int] = None,
+    p2: Optional[int] = None,
+    p3: Optional[int] = None,
+    p4: Optional[int] = None
+):
     """Xem thử 1 đề mẫu bốc ngẫu nhiên từ Ngân hàng đề thi."""
+    import copy
     from ..services.bank_service import generate_student_exam_from_bank, normalize_bank_config
     exam = load_exam(exam_id)
     if not exam:
@@ -208,8 +224,29 @@ async def preview_bank_draw(exam_id: str, seed: Optional[int] = None):
     if seed is None:
         import random
         seed = random.randint(100000, 999999)
-    drawn = generate_student_exam_from_bank(exam, seed)
-    cfg = normalize_bank_config(exam)
+
+    temp_exam = copy.deepcopy(exam)
+    # Áp dụng số câu tạm thời đang cấu hình trên giao diện nếu có
+    if p1 is not None or p2 is not None or p3 is not None or p4 is not None:
+        cfg = temp_exam.get("bank_config") or {}
+        cfg["enabled"] = True
+        if p1 is not None: cfg["part1_draw"] = p1
+        if p2 is not None: cfg["part2_draw"] = p2
+        if p3 is not None: cfg["part3_draw"] = p3
+        if p4 is not None: cfg["part4_draw"] = p4
+        cfg["total_draw"] = (p1 or 0) + (p2 or 0) + (p3 or 0) + (p4 or 0)
+        temp_exam["is_bank"] = True
+        temp_exam["bank_config"] = cfg
+    else:
+        # Nếu chưa bật is_bank, tạm bật để xem thử đề bốc
+        if not temp_exam.get("is_bank") and not temp_exam.get("bank_config", {}).get("enabled"):
+            temp_exam["is_bank"] = True
+            cfg = temp_exam.get("bank_config") or {}
+            cfg["enabled"] = True
+            temp_exam["bank_config"] = cfg
+
+    drawn = generate_student_exam_from_bank(temp_exam, seed)
+    cfg = normalize_bank_config(temp_exam)
     return {
         "success": True,
         "seed": seed,
