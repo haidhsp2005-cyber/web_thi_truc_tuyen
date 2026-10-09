@@ -1528,6 +1528,13 @@ function examApp() {
       
       // Render LaTeX sau khi tải xong
       this.$nextTick(() => this.renderAllLatex());
+
+      // Tự động giữ ấm máy chủ Render (Keep-alive Heartbeat) mỗi 2.5 phút, chống server ngủ đông khi học sinh làm bài
+      setInterval(() => {
+        if (!this.submitted) {
+          fetch('/ping').catch(() => {});
+        }
+      }, 150000);
     },
 
     startCountdown() {
@@ -2099,6 +2106,8 @@ function examApp() {
     
     confirmSubmit() {
       this.showConfirm = true;
+      // Pre-warm: Mở sẵn kết nối TCP/TLS tới server Render trong lúc học sinh đọc xác nhận
+      fetch('/ping').catch(() => {});
     },
     
     async autoSubmit() {
@@ -2183,14 +2192,15 @@ function examApp() {
       if (submitSuccess && submitResult?.submission_id) {
         this.timeUpMsg = '✅ Đã thu bài và nộp thành công! Đang chuyển đến bảng kết quả...';
         sessionStorage.setItem('submission_id', submitResult.submission_id);
+        sessionStorage.setItem('cached_result_' + submitResult.submission_id, JSON.stringify(submitResult));
         setTimeout(() => {
           window.location.replace(`/result?id=${submitResult.submission_id}`);
-        }, 1500);
+        }, 500);
       } else {
         this.timeUpMsg = 'Đã hết giờ làm bài! Đang chuyển về màn hình chính...';
         setTimeout(() => {
           window.location.replace('/');
-        }, 2000);
+        }, 1000);
       }
     },
     

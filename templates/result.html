@@ -445,6 +445,9 @@ function resultApp() {
         try {
           this.result = JSON.parse(cached);
           this.loading = false;
+          // Đồng bộ ngầm với máy chủ để cập nhật điểm tự luận AI nếu có
+          this.loadResult().then(() => this.scheduleRefresh());
+          return;
         } catch(e) {}
       }
       
