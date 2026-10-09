@@ -458,8 +458,8 @@
                 </template>
               </select>
             </div>
-            <button x-show="(isSuperAdmin() && selectedSubjectFilter) || selectedExamFilter || selectedClassFilter" 
-              @click="if (isSuperAdmin()) selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
+            <button x-show="selectedSubjectFilter || selectedExamFilter || selectedClassFilter" 
+              @click="selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
               class="text-xs text-gray-600 hover:text-gray-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
           </div>
         </div>
@@ -1420,11 +1420,10 @@ function adminApp() {
         if (r.ok) {
           const d = await r.json();
           this.currentUser = d.user;
-          if (!this.isSuperAdmin() && this.currentUser && this.currentUser.subject) {
-            this.selectedSubjectFilter = this.currentUser.subject;
-            // Không áp đặt adminExamFilterSubject = currentUser.subject để giáo viên thấy đầy đủ đề của mình
-            this.adminExamFilterSubject = '';
-          }
+          // Giáo viên được phân lập chặt chẽ theo tài khoản (chỉ xem bài nộp đề do chính mình tạo)
+          // Mặc định selectedSubjectFilter = '' để hiển thị ngay 100% tất cả bài nộp của các đề thuộc giáo viên đó
+          this.selectedSubjectFilter = '';
+          this.adminExamFilterSubject = '';
         }
       } catch(e) {}
     },

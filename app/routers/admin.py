@@ -391,26 +391,26 @@ async def get_submissions(request: Request, exam_id: str = None, student_class: 
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
     all_exams = _list_exam_files()
 
-    # Lọc theo quyền giáo viên (Super Admin thấy tất cả, giáo viên thấy đề do mình tạo HOẶC đề thuộc môn phụ trách)
+    # PHÂN QUYỀN CHẶT CHẼ:
+    # 1. Super Admin: Thấy toàn bộ bài thi của toàn trường.
+    # 2. Giáo viên (kể cả cùng môn): CHỈ THẤY bài thi thuộc các đề do CHÍNH MÌNH tạo (created_by == username).
+    #    Tuyệt đối không thấy bài thi của giáo viên khác, dù dạy cùng một môn.
     is_super_admin = bool(
         current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
     )
     if current_user and not is_super_admin:
         user_username = (current_user.get('username') or '').strip().lower()
-        user_subject = (current_user.get('subject') or '').strip().lower()
         accessible_ids = {
             e['id'] for e in all_exams 
             if (e.get('created_by') or '').strip().lower() == user_username
-            or (user_subject and (e.get('subject') or '').strip().lower() == user_subject)
         }
         submissions = [
             s for s in submissions 
             if s.get('exam_id') in accessible_ids
             or (s.get('exam_created_by') or '').strip().lower() == user_username
-            or (user_subject and (s.get('subject') or '').strip().lower() == user_subject)
         ]
 
-    # Lọc theo môn học nếu có tham số subject
+    # Lọc theo môn học nếu có tham số subject rõ ràng
     if clean_sub:
         subject_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub}
         submissions = [s for s in submissions if s.get('exam_id') in subject_exam_ids or (s.get('subject') or '').strip().lower() == clean_sub]
@@ -430,12 +430,10 @@ async def remove_submission(submission_id: str, request: Request):
     allowed_exam_ids = None
     if current_user and not is_super_admin:
         user_username = (current_user.get('username') or '').strip().lower()
-        user_subject = (current_user.get('subject') or '').strip().lower()
         all_exams = _list_exam_files()
         allowed_exam_ids = list({
             e['id'] for e in all_exams
             if (e.get('created_by') or '').strip().lower() == user_username
-            or (user_subject and (e.get('subject') or '').strip().lower() == user_subject)
         })
 
     success = delete_submission(submission_id, allowed_exam_ids=allowed_exam_ids)
@@ -514,23 +512,21 @@ async def get_stats(request: Request, exam_id: str = None, student_class: str = 
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
     all_exams = _list_exam_files()
 
-    # Lọc theo quyền giáo viên (Super Admin thấy tất cả môn, giáo viên thấy môn của mình hoặc đề của mình)
+    # PHÂN QUYỀN CHẶT CHẼ:
+    # Super Admin: Thống kê toàn trường. Giáo viên (kể cả cùng môn): CHỈ thống kê đề do chính mình tạo.
     is_super_admin = bool(
         current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
     )
     if current_user and not is_super_admin:
         user_username = (current_user.get('username') or '').strip().lower()
-        user_subject = (current_user.get('subject') or '').strip().lower()
         accessible_ids = {
             e['id'] for e in all_exams 
             if (e.get('created_by') or '').strip().lower() == user_username
-            or (user_subject and (e.get('subject') or '').strip().lower() == user_subject)
         }
         submissions = [
             s for s in submissions 
             if s.get('exam_id') in accessible_ids
             or (s.get('exam_created_by') or '').strip().lower() == user_username
-            or (user_subject and (s.get('subject') or '').strip().lower() == user_subject)
         ]
 
     # Lọc theo môn học nếu có tham số subject
