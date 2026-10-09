@@ -175,13 +175,17 @@
             <option value="Địa lí">Địa lí</option>
             <option value="Tiếng Anh">Tiếng Anh</option>
             <option value="Giáo dục kinh tế và pháp luật">GDKT & Pháp luật</option>
+            <option value="Giáo dục công dân">Giáo dục công dân</option>
             <option value="Giáo dục quốc phòng">GD Quốc phòng & An ninh</option>
             <option value="Mỹ thuật">Mỹ thuật</option>
             <option value="Âm nhạc">Âm nhạc</option>
             <option value="Tin học">Tin học</option>
             <option value="Công nghệ">Công nghệ</option>
+            <option value="Giáo dục thể chất">Giáo dục thể chất</option>
+            <option value="Tiếng Việt">Tiếng Việt</option>
             <option value="Khoa học tự nhiên">Khoa học tự nhiên (THCS)</option>
             <option value="Lịch sử và Địa lí">Lịch sử và Địa lí (THCS)</option>
+            <option value="Hoạt động trải nghiệm">Hoạt động trải nghiệm</option>
             <option value="custom">-- Môn khác (tự nhập) --</option>
           </select>
           <input x-show="subjectSelect === 'custom'" x-cloak x-model="exam.subject" type="text" 
@@ -1196,7 +1200,7 @@ function examBuilder() {
             if (!editId && this.currentUser.subject) {
               const subj = this.currentUser.subject.trim();
               if (subj) {
-                if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Giáo dục kinh tế và pháp luật','Giáo dục quốc phòng','Mỹ thuật','Âm nhạc','Tin học','Công nghệ','Khoa học tự nhiên','Lịch sử và Địa lí'].includes(subj)) {
+                if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Giáo dục kinh tế và pháp luật','Giáo dục công dân','Giáo dục quốc phòng','Mỹ thuật','Âm nhạc','Tin học','Công nghệ','Giáo dục thể chất','Tiếng Việt','Khoa học tự nhiên','Lịch sử và Địa lí','Hoạt động trải nghiệm'].includes(subj)) {
                   this.subjectSelect = subj;
                 } else {
                   this.subjectSelect = 'custom';
@@ -1329,7 +1333,7 @@ function examBuilder() {
         this.exam.subject = this.currentUser.subject;
       }
       
-      if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Giáo dục kinh tế và pháp luật','Giáo dục quốc phòng','Mỹ thuật','Âm nhạc','Tin học','Công nghệ','Khoa học tự nhiên','Lịch sử và Địa lí'].includes(data.subject)) {
+      if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Giáo dục kinh tế và pháp luật','Giáo dục công dân','Giáo dục quốc phòng','Mỹ thuật','Âm nhạc','Tin học','Công nghệ','Giáo dục thể chất','Tiếng Việt','Khoa học tự nhiên','Lịch sử và Địa lí','Hoạt động trải nghiệm'].includes(data.subject)) {
         this.subjectSelect = data.subject;
       } else if (data.subject) {
         this.subjectSelect = 'custom';

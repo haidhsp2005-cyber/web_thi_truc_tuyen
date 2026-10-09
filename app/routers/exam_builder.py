@@ -1558,29 +1558,36 @@ async def parse_exam_text(payload: dict):
         if len(first_line) > 5 and not first_line.lower().startswith("câu"):
             parsed["title"] = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", first_line).strip()
 
-    # Tự động nhận diện môn học từ tiêu đề hoặc nội dung
+    # Tự động nhận diện môn học từ tiêu đề hoặc nội dung (Ưu tiên môn ghép dài trước, tránh nhận diện nhầm)
+    search_haystack = ((parsed["title"] or "") + " " + text[:1500]).lower()
     subj_checks = [
-        ("Mỹ thuật", r"(?:Mỹ\s*thu[ậa]t|\bMT\s*1[0-2]\b)"),
-        ("Giáo dục quốc phòng", r"(?:Giáo\s*dục\s*quốc\s*phòng|Quốc\s*phòng|GDQP|QPAN)"),
-        ("Âm nhạc", r"(?:Âm\s*nhạc|\bAN\s*1[0-2]\b)"),
-        ("Sinh học", r"(?:Sinh\s*học|Môn\s*Sinh\b|\bSinh\s*1[0-2]\b)"),
-        ("Toán học", r"(?:Toán\s*học|Môn\s*Toán\b|\bToán\s*1[0-2]\b)"),
-        ("Vật lí", r"(?:Vật\s*l[íy]|Môn\s*L[íy]\b|\bL[íy]\s*1[0-2]\b)"),
-        ("Hóa học", r"(?:Hóa\s*học|Môn\s*Hóa\b|\bHóa\s*1[0-2]\b)"),
-        ("Lịch sử", r"(?:Lịch\s*sử|Môn\s*Sử\b|\bSử\s*1[0-2]\b)"),
-        ("Địa lí", r"(?:Địa\s*l[íy]|Môn\s*Địa\b|\bĐịa\s*1[0-2]\b)"),
-        ("Tiếng Anh", r"(?:Tiếng\s*Anh|English|\bAnh\s*1[0-2]\b)"),
-        ("Ngữ văn", r"(?:Ngữ\s*văn|Văn\s*học|\bVăn\s*1[0-2]\b)"),
-        ("Tin học", r"(?:Tin\s*học|\bTin\s*1[0-2]\b)"),
-        ("Công nghệ", r"(?:Công\s*nghệ|\bCN\s*1[0-2]\b)"),
-        ("Giáo dục kinh tế và pháp luật", r"(?:GDKT|Kinh\s*tế\s*và\s*pháp\s*luật)"),
-        ("Giáo dục thể chất", r"(?:Giáo\s*dục\s*thể\s*chất|Thể\s*dục|GDTC)"),
-        ("Hoạt động trải nghiệm", r"(?:Hoạt\s*động\s*trải\s*nghiệm|HĐTN)"),
-        ("Khoa học tự nhiên", r"(?:Khoa\s*học\s*tự\s*nhiên|KHTN)"),
-        ("Lịch sử và Địa lí", r"(?:Lịch\s*sử\s*và\s*Địa\s*l[íy])"),
+        # 1. Các môn ghép hoặc có thể gây nhầm lẫn nếu xét sau
+        ("Lịch sử và Địa lí", r"(?:lịch\s*sử\s*và\s*địa\s*l[íyý])"),
+        ("Khoa học tự nhiên", r"(?:khoa\s*học\s*tự\s*nhiên|khtn)"),
+        ("Giáo dục kinh tế và pháp luật", r"(?:gdkt|kinh\s*tế\s*và\s*pháp\s*luật)"),
+        ("Tự nhiên và Xã hội", r"(?:tự\s*nhiên\s*và\s*xã\s*hội|tnxh)"),
+        ("Giáo dục quốc phòng", r"(?:giáo\s*dục\s*quốc\s*phòng|quốc\s*phòng|gdqp|qpan)"),
+        ("Giáo dục thể chất", r"(?:giáo\s*dục\s*thể\s*chất|thể\s*dục|gdtc)"),
+        ("Giáo dục công dân", r"(?:gdcd|giáo\s*dục\s*công\s*dân)"),
+        ("Hoạt động trải nghiệm", r"(?:hoạt\s*động\s*trải\s*nghiệm|hđtn)"),
+        # 2. Các môn học đơn (Lưu ý: Vật lí tránh nhầm với Địa lí bằng negative lookbehind)
+        ("Vật lí", r"(?:vật\s*l[íyý]|môn\s*l[íyý]\b|(?<!địa\s)(?<!địa\s\s)\bl[íyý]\s*1[0-2]\b)"),
+        ("Địa lí", r"(?:địa\s*l[íyý]|môn\s*địa\b|\bđịa\s*1[0-2]\b)"),
+        ("Sinh học", r"(?:sinh\s*học|môn\s*sinh\b|\bsinh\s*1[0-2]\b)"),
+        ("Toán học", r"(?:toán\s*học|môn\s*toán\b|\btoán\s*1[0-2]\b)"),
+        ("Hóa học", r"(?:hóa\s*học|môn\s*hóa\b|\bhóa\s*1[0-2]\b)"),
+        ("Lịch sử", r"(?:lịch\s*sử|môn\s*sử\b|\bsử\s*1[0-2]\b)"),
+        ("Tiếng Anh", r"(?:tiếng\s*anh|english|\banh\s*1[0-2]\b)"),
+        ("Ngữ văn", r"(?:ngữ\s*văn|văn\s*học|\bvăn\s*1[0-2]\b)"),
+        ("Tiếng Việt", r"(?:tiếng\s*việt\b)"),
+        ("Tin học", r"(?:tin\s*học|\btin\s*1[0-2]\b)"),
+        ("Mỹ thuật", r"(?:m[ỹĩ]\s*thu[ậa]t|\bmt\s*1[0-2]\b)"),
+        ("Âm nhạc", r"(?:âm\s*nhạc|\ban\s*1[0-2]\b)"),
+        ("Công nghệ", r"(?:công\s*nghệ|\bcn\s*1[0-2]\b)"),
+        ("Đạo đức", r"(?:đạo\s*đức\b)"),
     ]
     for subj_name, pattern in subj_checks:
-        if re.search(pattern, (parsed["title"] or "") + " " + text[:1500], re.IGNORECASE):
+        if re.search(pattern, search_haystack):
             parsed["subject"] = subj_name
             break
 
