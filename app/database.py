@@ -312,12 +312,17 @@ def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[
     conn = get_connection()
     c = conn.cursor()
     
-    # Bản đồ exam_id -> is_online_exam dự phòng
-    exam_online_map = {}
+    # Bản đồ exam_id -> metadata dự phòng
+    exam_meta_map = {}
     try:
-        c.execute("SELECT id, is_online_exam FROM exams")
+        c.execute("SELECT id, is_online_exam, title, subject, created_by FROM exams")
         for row_e in c.fetchall():
-            exam_online_map[row_e[0]] = bool(row_e[1])
+            exam_meta_map[row_e[0]] = {
+                "is_online_exam": bool(row_e[1]),
+                "title": (row_e[2] or "").strip(),
+                "subject": (row_e[3] or "").strip(),
+                "created_by": (row_e[4] or "").strip(),
+            }
     except Exception:
         pass
     
@@ -384,9 +389,13 @@ def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[
             except:
                 pass
                 
-        # 3. Dự phòng đối chiếu theo exam_id
-        if not item["is_online_exam"] and item["exam_id"] in exam_online_map:
-            item["is_online_exam"] = exam_online_map[item["exam_id"]]
+        # 3. Dự phòng đối chiếu theo exam_id để bổ sung môn học, tiêu đề và người tạo đề
+        meta = exam_meta_map.get(item["exam_id"], {})
+        item["exam_title"] = meta.get("title", "")
+        item["subject"] = meta.get("subject", "")
+        item["exam_created_by"] = meta.get("created_by", "")
+        if not item["is_online_exam"] and meta.get("is_online_exam"):
+            item["is_online_exam"] = True
             
         results.append(item)
     

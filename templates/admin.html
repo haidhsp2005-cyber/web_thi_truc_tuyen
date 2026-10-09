@@ -514,6 +514,13 @@
                         class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-black bg-red-100 text-red-700 border border-red-300 shadow-2xs cursor-help"
                         x-text="`⚠️ ${sub.screen_switch_count} lần rời MH`"></span>
                 </div>
+                <div class="text-[11px] text-gray-500 font-normal mt-1" x-show="sub.exam_title || examMap[sub.exam_id]?.title">
+                  <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded text-[10px] font-medium max-w-full" :title="sub.exam_title || examMap[sub.exam_id]?.title">
+                    <span>📝</span>
+                    <span class="truncate max-w-[200px]" x-text="sub.exam_title || examMap[sub.exam_id]?.title"></span>
+                    <span x-show="sub.subject || examMap[sub.exam_id]?.subject" class="text-blue-600 font-semibold text-[9px] px-1 bg-blue-50 rounded" x-text="sub.subject || examMap[sub.exam_id]?.subject"></span>
+                  </span>
+                </div>
               </td>
               <td class="px-4 py-3 text-center text-gray-600" x-text="sub.student_class"></td>
               <td class="px-4 py-3 text-center text-gray-500 text-xs" x-text="sub.submitted_at ? new Date(sub.submitted_at).toLocaleString('vi-VN') : '—'"></td>
@@ -1300,11 +1307,25 @@ function adminApp() {
     scoringMsg: '',
     scoringMsgOk: true,
 
+    get examMap() {
+      const m = {};
+      for (const e of this.examList) {
+        m[e.id] = e;
+      }
+      return m;
+    },
+
     get availableSubjects() {
       const seen = new Set();
       for (const e of this.examList) {
         if (e.subject) {
           const s = e.subject.trim();
+          if (s && !seen.has(s)) seen.add(s);
+        }
+      }
+      for (const sub of this.submissions) {
+        if (sub.subject) {
+          const s = sub.subject.trim();
           if (s && !seen.has(s)) seen.add(s);
         }
       }
@@ -1340,10 +1361,7 @@ function adminApp() {
     },
 
     get filteredSubmissions() {
-      const examMap = {};
-      for (const e of this.examList) {
-        examMap[e.id] = e;
-      }
+      const eMap = this.examMap;
       const subFilter = this.selectedSubjectFilter ? this.selectedSubjectFilter.trim().toLowerCase() : '';
       const clsFilter = this.selectedClassFilter ? this.selectedClassFilter.trim().toUpperCase() : '';
 
@@ -1351,9 +1369,9 @@ function adminApp() {
         if (this.selectedExamFilter && sub.exam_id !== this.selectedExamFilter) return false;
         if (clsFilter && (sub.student_class || '').trim().toUpperCase() !== clsFilter) return false;
         if (subFilter) {
-          const ex = examMap[sub.exam_id];
-          const subSubject = (ex?.subject || '').trim().toLowerCase();
-          if (subSubject !== subFilter) return false;
+          const ex = eMap[sub.exam_id];
+          const subSubject = ((sub.subject || ex?.subject) || '').trim().toLowerCase();
+          if (subSubject && subSubject !== subFilter) return false;
         }
         return true;
       });
