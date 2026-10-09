@@ -916,8 +916,15 @@ async def upload_exam_file(request: Request, file: UploadFile = File(...)):
     current_user = get_current_user_from_request(request)
     if current_user:
         parsed["created_by"] = current_user.get("username", "")
-        if not parsed.get("subject") and current_user.get("subject"):
-            parsed["subject"] = current_user.get("subject")
+        user_subject = (current_user.get("subject") or "").strip()
+        is_super = bool(current_user.get("is_protected") or current_user.get("username", "").lower() == "admin")
+        if user_subject:
+            # Nếu đề chưa nhận diện được môn cụ thể hoặc người tải lên là giáo viên bộ môn chuyên trách
+            if not parsed.get("subject") or not is_super:
+                parsed["subject"] = user_subject
+
+    if not parsed.get("subject"):
+        parsed["subject"] = "Toán học"
 
     # Lưu vào hệ thống
     await save_exam(request, parsed)
@@ -1010,6 +1017,14 @@ async def save_exam(request: Request = None, exam_data: dict = None):
         exam_data["created_by"] = current_user.get("username", "")
     elif not exam_data.get("created_by"):
         exam_data["created_by"] = (existing.get("created_by") if existing else None) or (current_user.get("username") if current_user else "admin")
+
+    # Đảm bảo môn học chuẩn xác:
+    if not is_super_admin and current_user:
+        user_subject = (current_user.get("subject") or "").strip()
+        if user_subject and not exam_data.get("subject"):
+            exam_data["subject"] = user_subject
+    if not exam_data.get("subject"):
+        exam_data["subject"] = (existing.get("subject") if existing else None) or "Toán học"
 
     # Tính toán thang điểm linh hoạt
     p1_count = len(p1_qs)
@@ -1523,7 +1538,7 @@ async def parse_exam_text(payload: dict):
 
     parsed = {
         "title": "",
-        "subject": "Toán học",
+        "subject": "",
         "grade": "12",
         "duration_minutes": 50,
         "parts": {
@@ -1545,6 +1560,9 @@ async def parse_exam_text(payload: dict):
 
     # Tự động nhận diện môn học từ tiêu đề hoặc nội dung
     subj_checks = [
+        ("Mỹ thuật", r"(?:Mỹ\s*thu[ậa]t|\bMT\s*1[0-2]\b)"),
+        ("Giáo dục quốc phòng", r"(?:Giáo\s*dục\s*quốc\s*phòng|Quốc\s*phòng|GDQP|QPAN)"),
+        ("Âm nhạc", r"(?:Âm\s*nhạc|\bAN\s*1[0-2]\b)"),
         ("Sinh học", r"(?:Sinh\s*học|Môn\s*Sinh\b|\bSinh\s*1[0-2]\b)"),
         ("Toán học", r"(?:Toán\s*học|Môn\s*Toán\b|\bToán\s*1[0-2]\b)"),
         ("Vật lí", r"(?:Vật\s*l[íy]|Môn\s*L[íy]\b|\bL[íy]\s*1[0-2]\b)"),
@@ -1556,9 +1574,13 @@ async def parse_exam_text(payload: dict):
         ("Tin học", r"(?:Tin\s*học|\bTin\s*1[0-2]\b)"),
         ("Công nghệ", r"(?:Công\s*nghệ|\bCN\s*1[0-2]\b)"),
         ("Giáo dục kinh tế và pháp luật", r"(?:GDKT|Kinh\s*tế\s*và\s*pháp\s*luật)"),
+        ("Giáo dục thể chất", r"(?:Giáo\s*dục\s*thể\s*chất|Thể\s*dục|GDTC)"),
+        ("Hoạt động trải nghiệm", r"(?:Hoạt\s*động\s*trải\s*nghiệm|HĐTN)"),
+        ("Khoa học tự nhiên", r"(?:Khoa\s*học\s*tự\s*nhiên|KHTN)"),
+        ("Lịch sử và Địa lí", r"(?:Lịch\s*sử\s*và\s*Địa\s*l[íy])"),
     ]
     for subj_name, pattern in subj_checks:
-        if re.search(pattern, (parsed["title"] or "") + " " + text[:800], re.IGNORECASE):
+        if re.search(pattern, (parsed["title"] or "") + " " + text[:1500], re.IGNORECASE):
             parsed["subject"] = subj_name
             break
 

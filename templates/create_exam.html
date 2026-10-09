@@ -1052,6 +1052,7 @@ function examBuilder() {
     messageOk: true,
     savedExamId: '',
     autoSaveMsg: '',
+    currentUser: null,
     subjectSelect: 'Toán học',
     gradeSelect: '12',
     katexReady: false,
@@ -1183,8 +1184,36 @@ function examBuilder() {
              (this.exam.parts.part4.questions.length || 0);
     },
 
+    async loadCurrentUser() {
+      try {
+        const res = await fetch('/api/admin/me');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.user) {
+            this.currentUser = data.user;
+            const editId = new URLSearchParams(window.location.search).get('edit');
+            // Nếu là tạo đề mới và tài khoản giáo viên có môn được phân công
+            if (!editId && this.currentUser.subject) {
+              const subj = this.currentUser.subject.trim();
+              if (subj) {
+                if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Giáo dục kinh tế và pháp luật','Giáo dục quốc phòng','Mỹ thuật','Âm nhạc','Tin học','Công nghệ','Khoa học tự nhiên','Lịch sử và Địa lí'].includes(subj)) {
+                  this.subjectSelect = subj;
+                } else {
+                  this.subjectSelect = 'custom';
+                }
+                this.exam.subject = subj;
+              }
+            }
+          }
+        }
+      } catch(e) {
+        console.error('Không thể tải thông tin tài khoản:', e);
+      }
+    },
+
     init() {
       window.zoomBuilderImage = (url) => { this.zoomImage(url); };
+      this.loadCurrentUser();
       const editId = new URLSearchParams(window.location.search).get('edit');
       if (editId) {
         this.loadExam(editId);
@@ -1290,15 +1319,19 @@ function examBuilder() {
         this.exam.title = (data.title || '').replace(' (Bản sao)', '') + ' (Bản sao)';
         this.exam.is_published = false; // Đề tạo mới nhân bản mặc định màu đỏ
       } else {
-        // Giữ nguyên id và title để khi bấm Lưu sẽ cập nhật đè lên đúng file này
         const editId = new URLSearchParams(window.location.search).get('edit');
         this.exam.id = data.id || editId || '';
         this.exam.title = data.title || '';
       }
+
+      if (!data.subject && this.currentUser && this.currentUser.subject) {
+        data.subject = this.currentUser.subject;
+        this.exam.subject = this.currentUser.subject;
+      }
       
       if (['Toán học','Vật lí','Hóa học','Sinh học','Ngữ văn','Lịch sử','Địa lí','Tiếng Anh','Giáo dục kinh tế và pháp luật','Giáo dục quốc phòng','Mỹ thuật','Âm nhạc','Tin học','Công nghệ','Khoa học tự nhiên','Lịch sử và Địa lí'].includes(data.subject)) {
         this.subjectSelect = data.subject;
-      } else {
+      } else if (data.subject) {
         this.subjectSelect = 'custom';
       }
 
@@ -1708,6 +1741,9 @@ function examBuilder() {
 
     applyParsedData() {
       if (!this.parsedData) return;
+      if (!this.parsedData.subject && this.currentUser && this.currentUser.subject) {
+        this.parsedData.subject = this.currentUser.subject;
+      }
       this.populateExamData(this.parsedData);
       this.showImportModal = false;
       this.showMsg('Đã đưa nội dung phân tích vào form đề thi thành công!', true);
