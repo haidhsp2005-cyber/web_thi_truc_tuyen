@@ -129,6 +129,8 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
     if cfg["part1_draw"] > 0 and p1_qs:
         drawn_p1_qs = rng.sample(p1_qs, min(cfg["part1_draw"], len(p1_qs)))
         p1["questions"] = drawn_p1_qs
+    else:
+        p1["questions"] = []
     
     # 2. Rút câu hỏi Phần II
     p2 = parts.get("part2") or {}
@@ -136,6 +138,8 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
     if cfg["part2_draw"] > 0 and p2_qs:
         drawn_p2_qs = rng.sample(p2_qs, min(cfg["part2_draw"], len(p2_qs)))
         p2["questions"] = drawn_p2_qs
+    else:
+        p2["questions"] = []
 
     # 3. Rút câu hỏi Phần III
     p3 = parts.get("part3") or {}
@@ -143,6 +147,8 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
     if cfg["part3_draw"] > 0 and p3_qs:
         drawn_p3_qs = rng.sample(p3_qs, min(cfg["part3_draw"], len(p3_qs)))
         p3["questions"] = drawn_p3_qs
+    else:
+        p3["questions"] = []
 
     # 4. Rút câu hỏi Phần IV (nếu có)
     p4 = parts.get("part4") or {}
@@ -150,6 +156,8 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
     if cfg["part4_draw"] > 0 and p4_qs:
         drawn_p4_qs = rng.sample(p4_qs, min(cfg["part4_draw"], len(p4_qs)))
         p4["questions"] = drawn_p4_qs
+    else:
+        p4["questions"] = []
 
     # 5. Tự động tính toán lại Thang điểm (Scoring) để luôn đảm bảo tổng 10.0 điểm
     c1 = len(p1.get("questions") or [])
