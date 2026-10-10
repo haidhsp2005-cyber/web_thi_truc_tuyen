@@ -329,8 +329,30 @@ def export_result_html(submission: dict, exam_data: dict) -> str:
   }}
 </style>
 </head>
-<body class="bg-gray-100 p-4 sm:p-6 font-sans">
-<div class="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden print-card border">
+<body class="bg-gray-100 p-0 sm:p-4 font-sans text-gray-800">
+
+  <!-- Thanh điều khiển In phiếu kết quả dính trên cùng (Sticky Header - ẩn khi in) -->
+  <div class="no-print sticky top-0 z-50 bg-gray-900/95 backdrop-blur-md text-white py-3 px-4 sm:px-6 shadow-xl border-b border-gray-700 mb-6">
+    <div class="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🎓</span>
+        <div>
+          <h1 class="text-sm sm:text-base font-bold leading-tight">PHIẾU BÁO ĐIỂM: {submission.get('student_name','')}</h1>
+          <p class="text-xs text-gray-300">Lớp: {submission.get('student_class','')} • Điểm số: <b class="text-amber-300 text-sm">{scores.get('total_score',0)} / 10đ</b> ({scores.get('rank','')})</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer transition-transform active:scale-95">
+          <span>🖨️</span><span>In phiếu kết quả / Xuất PDF (Ctrl + P)</span>
+        </button>
+        <button onclick="window.close()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer transition-colors">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+<div class="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden print-card border mb-8">
   
   <!-- Header Trường & Kỳ thi -->
   <div class="p-6 text-center border-b bg-gradient-to-r from-blue-900 to-indigo-900 text-white">
@@ -864,6 +886,16 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
     """
     inner = render_single_student_exam_inner_html(submission, exam_data)
     student_name = submission.get('student_name', '')
+    student_class = submission.get('student_class', '')
+    res_data = submission.get('result_json') or {}
+    if isinstance(res_data, str):
+        try:
+            res_data = json.loads(res_data)
+        except Exception:
+            res_data = {}
+    scores = res_data.get('scores') or {}
+    total_score = scores.get('total_score', submission.get('total_score', ''))
+    sub_id = submission.get('submission_id') or submission.get('id', '')
 
     html = f"""<!DOCTYPE html>
 <html lang="vi">
@@ -940,13 +972,35 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
   }}
 </style>
 </head>
-<body class="bg-gray-100 p-4 sm:p-6 font-sans">
-<div class="student-exam-card max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-8 border">
+<body class="bg-gray-100 p-0 sm:p-4 font-sans text-gray-800">
+
+  <!-- Thanh điều khiển In bài thi dính trên cùng (Sticky Header - ẩn khi in) -->
+  <div class="no-print sticky top-0 z-50 bg-gray-900/95 backdrop-blur-md text-white py-3 px-4 sm:px-6 shadow-xl border-b border-gray-700 mb-6">
+    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">📝</span>
+        <div>
+          <h1 class="text-sm sm:text-base font-bold leading-tight">BÀI THI: {student_name} — LỚP {student_class}</h1>
+          <p class="text-xs text-gray-300">Điểm tổng kết: <b class="text-amber-300 text-sm">{total_score} đ</b> • Mã nộp: <b>{sub_id}</b></p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer transition-transform active:scale-95">
+          <span>🖨️</span><span>In ra giấy / Lưu file PDF (Ctrl + P)</span>
+        </button>
+        <button onclick="window.close()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer transition-colors">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+<div class="student-exam-card max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-8 border mb-8">
   {inner}
 
-  <!-- Thanh nút bấm in -->
-  <div class="mt-6 pt-4 border-t text-center no-print flex justify-center gap-3">
-    <button onclick="window.print()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-md cursor-pointer flex items-center gap-1.5 text-sm">
+  <!-- Thanh nút bấm in ở cuối trang -->
+  <div class="mt-8 pt-4 border-t text-center no-print flex justify-center gap-3">
+    <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md cursor-pointer flex items-center gap-1.5 text-sm">
       <span>🖨️</span><span>In bài thi học sinh (A4)</span>
     </button>
     <button onclick="window.close()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-5 py-2.5 rounded-xl text-sm cursor-pointer">
