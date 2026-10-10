@@ -1537,6 +1537,29 @@ function examApp() {
       }, 150000);
     },
 
+    resetCountdownStorage() {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+      this.targetEndTime = null;
+      
+      const endKey = 'exam_end_time_' + this.examId;
+      sessionStorage.removeItem(endKey);
+      
+      const localEndKey = 'exam_end_' + this.examId + '_' + encodeURIComponent(this.studentName || 'student');
+      try {
+        localStorage.removeItem(localEndKey);
+        localStorage.removeItem('exam_end_' + this.examId + '_student');
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('exam_end_' + this.examId)) {
+            localStorage.removeItem(k);
+          }
+        }
+      } catch(e) {}
+    },
+
     startCountdown() {
       if (this.timerInterval) {
         clearInterval(this.timerInterval);
@@ -1548,15 +1571,32 @@ function examApp() {
       const endKey = 'exam_end_time_' + this.examId;
       const localEndKey = 'exam_end_' + this.examId + '_' + encodeURIComponent(this.studentName || 'student');
 
-      // Đọc mốc kết thúc từ cả sessionStorage và localStorage (chống việc reload hoặc tắt máy làm mới giờ)
-      let storedEnd = sessionStorage.getItem(endKey) || localStorage.getItem(localEndKey);
-      
-      if (!storedEnd) {
-        this.targetEndTime = Date.now() + durationSecs * 1000;
-        sessionStorage.setItem(endKey, this.targetEndTime.toString());
-        try { localStorage.setItem(localEndKey, this.targetEndTime.toString()); } catch(e) {}
+      // 1. Nếu là Đề luyện tập tự do:
+      // Không bị ràng buộc bởi localStorage của các lần trước.
+      // Nếu đang làm dở mà F5 (có sessionStorage còn hạn) thì tiếp tục đếm tiếp, ngược lại luôn cấp mới 100% thời gian.
+      if (!this.isOnlineExam) {
+        let storedEnd = sessionStorage.getItem(endKey);
+        if (storedEnd && parseInt(storedEnd, 10) > Date.now()) {
+          this.targetEndTime = parseInt(storedEnd, 10);
+        } else {
+          this.targetEndTime = Date.now() + durationSecs * 1000;
+          sessionStorage.setItem(endKey, this.targetEndTime.toString());
+        }
       } else {
-        this.targetEndTime = parseInt(storedEnd, 10);
+        // 2. Nếu là Thi trực tuyến:
+        // Đọc mốc kết thúc từ sessionStorage hoặc localStorage (chống việc reload hoặc tắt máy làm mới giờ khi đang làm)
+        let storedEnd = sessionStorage.getItem(endKey) || localStorage.getItem(localEndKey);
+        
+        // Nếu chưa có mốc hoặc mốc đã quá hạn trong quá khứ (lần thi cũ trước đó đã nộp/kết thúc):
+        // Khởi tạo mốc mới tinh cho lượt thi này
+        if (!storedEnd || parseInt(storedEnd, 10) <= Date.now()) {
+          this.targetEndTime = Date.now() + durationSecs * 1000;
+          sessionStorage.setItem(endKey, this.targetEndTime.toString());
+          try { localStorage.setItem(localEndKey, this.targetEndTime.toString()); } catch(e) {}
+        } else {
+          // Thí sinh đang làm dở bài mà thoát ra/tắt tab rồi vào lại: tiếp tục tính tiếp số phút còn lại
+          this.targetEndTime = parseInt(storedEnd, 10);
+        }
       }
       
       // Cập nhật ngay lập tức theo thời gian thực
@@ -2179,13 +2219,16 @@ function examApp() {
       }
 
       if (this.timerInterval) clearInterval(this.timerInterval);
+      this.resetCountdownStorage();
       sessionStorage.removeItem('exam_answers');
-      sessionStorage.removeItem('exam_end_time_' + this.examId);
       sessionStorage.removeItem('exam_shuffled_' + this.examId);
       sessionStorage.removeItem('screen_switch_' + this.examId);
       sessionStorage.removeItem('has_started_online_' + this.examId);
-      sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
-      localStorage.setItem('exam_submitted_' + this.examId, 'true');
+      sessionStorage.removeItem('started_at');
+      if (this.isOnlineExam) {
+        sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
+        localStorage.setItem('exam_submitted_' + this.examId, 'true');
+      }
       sessionStorage.removeItem('student_name');
       sessionStorage.removeItem('student_class');
 
@@ -2278,11 +2321,12 @@ function examApp() {
 
       if (submitSuccess && submitResult?.submission_id) {
         if (this.timerInterval) clearInterval(this.timerInterval);
+        this.resetCountdownStorage();
         sessionStorage.removeItem('exam_answers');
-        sessionStorage.removeItem('exam_end_time_' + this.examId);
         sessionStorage.removeItem('exam_shuffled_' + this.examId);
         sessionStorage.removeItem('screen_switch_' + this.examId);
         sessionStorage.removeItem('has_started_online_' + this.examId);
+        sessionStorage.removeItem('started_at');
         if (this.isOnlineExam) {
           sessionStorage.setItem('exam_submitted_' + this.examId, 'true');
           localStorage.setItem('exam_submitted_' + this.examId, submitResult.submission_id);

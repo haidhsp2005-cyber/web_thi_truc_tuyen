@@ -333,11 +333,29 @@ function startExam() {
     return;
   }
 
+  // Khi bắt đầu lượt thi mới: dọn sạch sẽ toàn bộ bài cũ và mốc thời gian cũ để cấp lượt mới
   sessionStorage.removeItem('exam_answers');
   sessionStorage.removeItem('exam_shuffled_' + examId);
   sessionStorage.removeItem('exam_submitted_' + examId);
   localStorage.removeItem('exam_submitted_' + examId);
   sessionStorage.removeItem('screen_switch_' + examId);
+  sessionStorage.removeItem('has_started_online_' + examId);
+  sessionStorage.removeItem('exam_end_time_' + examId);
+  sessionStorage.removeItem('exam_seed_' + examId);
+  sessionStorage.removeItem('cached_exam_data_' + examId);
+  sessionStorage.removeItem('started_at');
+
+  try {
+    localStorage.removeItem('exam_end_' + examId + '_' + encodeURIComponent(name));
+    localStorage.removeItem('exam_end_' + examId + '_student');
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('exam_end_' + examId)) {
+        localStorage.removeItem(k);
+      }
+    }
+  } catch(e) {}
+
   sessionStorage.setItem('student_name', name);
   sessionStorage.setItem('student_class', cls);
   sessionStorage.setItem('exam_id', examId);
