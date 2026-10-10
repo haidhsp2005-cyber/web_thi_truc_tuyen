@@ -150,6 +150,26 @@
     </div>
 
     <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+      <!-- Sở GD&ĐT & Trường THPT để in ra -->
+      <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-200 shadow-xs">
+        <div>
+          <label class="block text-xs font-bold text-amber-950 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <span>🏛️</span> <span>Sở GD&ĐT (tiêu đề in ra bài thi):</span>
+          </label>
+          <input x-model="exam.department_name" type="text" placeholder="VD: Sở GD&ĐT Tây Ninh"
+            class="input-base text-sm font-bold text-gray-900 bg-white border-amber-300 focus:border-amber-500 shadow-xs">
+          <p class="text-[11px] text-amber-800 mt-1">Mặc định: <strong>Sở GD&ĐT Tây Ninh</strong> (hoặc tự nhận dạng khi tải file lên)</p>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-amber-950 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <span>🏫</span> <span>Trường / Đơn vị (tiêu đề in ra bài thi):</span>
+          </label>
+          <input x-model="exam.school_name" type="text" placeholder="VD: Trường THPT Long Cang"
+            class="input-base text-sm font-bold text-gray-900 bg-white border-amber-300 focus:border-amber-500 shadow-xs">
+          <p class="text-[11px] text-amber-800 mt-1">Mặc định: <strong>Trường THPT Long Cang</strong> (hoặc tự nhận dạng khi tải file lên)</p>
+        </div>
+      </div>
+
       <!-- Tiêu đề đề thi -->
       <div class="md:col-span-3">
         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
@@ -1154,6 +1174,8 @@ function examBuilder() {
       subject: 'Toán học',
       grade: '12',
       duration_minutes: 50,
+      department_name: 'Sở GD&ĐT Tây Ninh',
+      school_name: 'Trường THPT Long Cang',
       is_online_exam: false,
       is_published: false,
       scoring: {},
@@ -1316,6 +1338,8 @@ function examBuilder() {
         });
       });
       this.exam = data;
+      this.exam.department_name = (data.department_name || '').trim() || 'Sở GD&ĐT Tây Ninh';
+      this.exam.school_name = (data.school_name || '').trim() || 'Trường THPT Long Cang';
       this.exam.is_online_exam = data.is_online_exam !== undefined ? Boolean(data.is_online_exam) : false;
       this.exam.is_published = data.is_published !== undefined ? Boolean(data.is_published) : true;
       if (isClone) {
@@ -1827,6 +1851,9 @@ function examBuilder() {
         rest.id = `p4_q${i+1}`;
         return rest;
       });
+
+      e.department_name = (this.exam.department_name || '').trim() || 'Sở GD&ĐT Tây Ninh';
+      e.school_name = (this.exam.school_name || '').trim() || 'Trường THPT Long Cang';
 
       return e;
     },

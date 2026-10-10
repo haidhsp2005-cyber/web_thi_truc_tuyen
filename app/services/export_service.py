@@ -312,6 +312,9 @@ def export_result_html(submission: dict, exam_data: dict) -> str:
     duration_m = submission.get('duration_seconds', 0) // 60
     duration_s = submission.get('duration_seconds', 0) % 60
 
+    dept_name = (exam_data.get('department_name') or 'SỞ GD&ĐT TÂY NINH').strip().upper()
+    school_name = (exam_data.get('school_name') or 'TRƯỜNG THPT LONG CANG').strip().upper()
+
     html = f"""<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -331,7 +334,7 @@ def export_result_html(submission: dict, exam_data: dict) -> str:
   
   <!-- Header Trường & Kỳ thi -->
   <div class="p-6 text-center border-b bg-gradient-to-r from-blue-900 to-indigo-900 text-white">
-    <p class="text-xs uppercase tracking-widest text-blue-200 font-bold mb-1">SỞ GIÁO DỤC VÀ ĐÀO TẠO • TRƯỜNG THPT</p>
+    <p class="text-xs uppercase tracking-widest text-blue-200 font-bold mb-1">{dept_name} • {school_name}</p>
     <h1 class="text-xl sm:text-2xl font-black">{exam_data.get('title','PHIẾU BÁO ĐIỂM KIỂM TRA')}</h1>
     <p class="mt-1 text-xs text-blue-200">Môn: {exam_data.get('subject','Toán học')} | Khối: {exam_data.get('grade','12')} | Chuẩn GDPT 2026</p>
   </div>
@@ -806,11 +809,14 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
           {p3_details_html}
         </div>"""
 
+    dept_name = (exam_data.get('department_name') or 'SỞ GD&ĐT TÂY NINH').strip().upper()
+    school_name = (exam_data.get('school_name') or 'TRƯỜNG THPT LONG CANG').strip().upper()
+
     return f"""
   <!-- Header Quốc ngữ / Sở GD -->
   <div class="flex justify-between items-start border-b pb-4 mb-4">
     <div>
-      <p class="text-xs font-bold uppercase text-gray-600">SỞ GD&ĐT ... • TRƯỜNG THPT ...</p>
+      <p class="text-xs font-bold uppercase text-gray-600">{dept_name} • {school_name}</p>
       <h1 class="text-lg sm:text-xl font-black text-gray-900 mt-0.5">{exam_data.get('title','BÀI KIỂM TRA HỌC SINH')}</h1>
       <p class="text-xs text-gray-500">Môn: {exam_data.get('subject','Toán')} | Lớp: {exam_data.get('grade','12')} | Mã nộp bài: <b>{submission.get('submission_id','')}</b></p>
     </div>
@@ -1117,6 +1123,8 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
     grade = exam_data.get("grade", "12")
     duration = exam_data.get("duration_minutes", 50)
     exam_id = exam_data.get("id", "101")
+    dept_name = (exam_data.get("department_name") or "SỞ GD&ĐT TÂY NINH").strip().upper()
+    school_name = (exam_data.get("school_name") or "TRƯỜNG THPT LONG CANG").strip().upper()
 
     parts = exam_data.get("parts", {})
 
@@ -1268,7 +1276,7 @@ def export_clean_exam_print_html(exam_data: dict) -> str:
   <!-- Header Đề thi chuẩn -->
   <div class="grid grid-cols-12 gap-3 border-b-2 border-black pb-3 mb-4">
     <div class="col-span-7 text-center border-r pr-3">
-      <p class="text-xs uppercase font-bold tracking-wider">SỞ GIÁO DỤC VÀ ĐÀO TẠO • TRƯỜNG THPT</p>
+      <p class="text-xs uppercase font-bold tracking-wider">{dept_name} • {school_name}</p>
       <h1 class="text-base sm:text-lg font-black uppercase mt-0.5">{title}</h1>
       <p class="text-xs font-semibold">Môn: {subject} — Lớp: {grade}</p>
       <p class="text-xs italic text-gray-600">Thời gian làm bài: {duration} phút (không kể thời gian phát đề)</p>
@@ -1342,6 +1350,8 @@ def export_exam_answers_print_html(exam_data: dict) -> str:
     subject = exam_data.get("subject", "Toán học")
     grade = exam_data.get("grade", "12")
     exam_id = exam_data.get("id", "101")
+    dept_name = (exam_data.get("department_name") or "SỞ GD&ĐT TÂY NINH").strip().upper()
+    school_name = (exam_data.get("school_name") or "TRƯỜNG THPT LONG CANG").strip().upper()
     parts = exam_data.get("parts", {})
 
     p1_qs = parts.get("part1", {}).get("questions", [])
@@ -1445,7 +1455,7 @@ def export_exam_answers_print_html(exam_data: dict) -> str:
   
   <!-- Header -->
   <div class="text-center border-b-2 border-black pb-4 mb-5">
-    <p class="text-xs uppercase font-bold tracking-widest text-gray-600">SỞ GIÁO DỤC VÀ ĐÀO TẠO • TRƯỜNG THPT</p>
+    <p class="text-xs uppercase font-bold tracking-widest text-gray-600">{dept_name} • {school_name}</p>
     <h1 class="text-lg sm:text-2xl font-black uppercase text-red-700 mt-1">ĐÁP ÁN GỐC & HƯỚNG DẪN CHẤM BÀI</h1>
     <p class="text-sm font-semibold text-gray-800">{title} — Môn: {subject} — Khối: {grade}</p>
     <p class="text-xs text-gray-500 mt-0.5">Mã đề: <b>{exam_id[:6].upper()}</b> • Chuẩn Bộ Giáo Dục và Đào Tạo 2026</p>

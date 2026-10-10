@@ -699,8 +699,13 @@ def load_exam(exam_id: str = "exam_001", fallback_to_any: bool = False) -> Optio
         exam_id = "exam_001"
 
     def _wrap_exam(d):
-        if d and isinstance(d, dict) and "is_published" not in d:
-            d["is_published"] = True
+        if d and isinstance(d, dict):
+            if "is_published" not in d:
+                d["is_published"] = True
+            if not d.get("department_name"):
+                d["department_name"] = "Sở GD&ĐT Tây Ninh"
+            if not d.get("school_name"):
+                d["school_name"] = "Trường THPT Long Cang"
         return d
 
     # 1. Thử tìm trong SQLite database (nhanh nhất và không phụ thuộc disk)

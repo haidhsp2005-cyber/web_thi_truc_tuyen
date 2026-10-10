@@ -1063,6 +1063,19 @@ async def save_exam(request: Request = None, exam_data: dict = None):
     if not exam_data.get("subject"):
         exam_data["subject"] = (existing.get("subject") if existing else None) or "Toán học"
 
+    # Đảm bảo Sở GD&ĐT và Trường học chuẩn xác (dùng để in đề thi / phiếu điểm)
+    dept_val = (exam_data.get("department_name") or "").strip()
+    if not dept_val:
+        exam_data["department_name"] = (existing.get("department_name") if existing else None) or "Sở GD&ĐT Tây Ninh"
+    else:
+        exam_data["department_name"] = dept_val
+
+    school_val = (exam_data.get("school_name") or "").strip()
+    if not school_val:
+        exam_data["school_name"] = (existing.get("school_name") if existing else None) or "Trường THPT Long Cang"
+    else:
+        exam_data["school_name"] = school_val
+
     # Tính toán thang điểm linh hoạt
     p1_count = len(p1_qs)
     p2_count = len(p2_qs)
@@ -1578,6 +1591,8 @@ async def parse_exam_text(payload: dict):
         "subject": "",
         "grade": "12",
         "duration_minutes": 50,
+        "department_name": "Sở GD&ĐT Tây Ninh",
+        "school_name": "Trường THPT Long Cang",
         "parts": {
             "part1": {"name": "Phần I. Trắc nghiệm nhiều lựa chọn", "instruction": "", "questions": []},
             "part2": {"name": "Phần II. Trắc nghiệm Đúng / Sai", "instruction": "", "questions": []},
@@ -1585,6 +1600,30 @@ async def parse_exam_text(payload: dict):
             "part4": {"name": "Phần IV. Tự luận", "instruction": "", "questions": []}
         }
     }
+
+    # 0. Tự động nhận diện Tên Sở GD&ĐT và Tên Trường từ phần đầu tài liệu (header)
+    head_text = text[:1500]
+    dept_match = re.search(
+        r"(S[ỞO]\s*(?:GI[ÁA]O\s*D[ỤU]C\s*(?:V[ÀA]|&)\s*Đ[ÀA]O\s*T[ẠA]O|GD\s*[\&và+-]\s*ĐT|GD-ĐT|GDĐT)[^\n\r,•|─\-_]+)",
+        head_text,
+        re.IGNORECASE
+    )
+    if dept_match:
+        cand_dept = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", dept_match.group(1)).strip()
+        cand_dept = re.sub(r"[\.]{2,}|[─\-_]+", "", cand_dept).strip()
+        if len(cand_dept) >= 6 and not cand_dept.endswith("..."):
+            parsed["department_name"] = cand_dept
+
+    school_match = re.search(
+        r"((?:TR[ƯU][ỜO]NG\s+)?(?:THPT|THCS|TI[ỂE]U\s*H[ỌO]C|PTDTNT|TRUNG\s*H[ỌO]C\s*(?:PH[ỔO]\s*TH[ÔO]NG|C[ƠO]\s*S[ỞO]))\s+[^\n\r,•|─\-_]+)",
+        head_text,
+        re.IGNORECASE
+    )
+    if school_match:
+        cand_school = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", school_match.group(1)).strip()
+        cand_school = re.sub(r"[\.]{2,}|[─\-_]+", "", cand_school).strip()
+        if len(cand_school) >= 6 and not cand_school.endswith("..."):
+            parsed["school_name"] = cand_school
 
     # 1. Trích xuất tiêu đề nếu có
     title_match = re.search(r"(?:ĐỀ KIỂM TRA|BÀI KIỂM TRA|ĐỀ THI)[^\n]+", text, re.IGNORECASE)
@@ -2062,7 +2101,7 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         # Tiêu đề trường/sở
         p_head = doc.add_paragraph()
         p_head.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run_h1 = p_head.add_run("SỞ GD&ĐT ... - TRƯỜNG THPT ...\n")
+        run_h1 = p_head.add_run("SỞ GD&ĐT TÂY NINH - TRƯỜNG THPT LONG CANG\n")
         run_h1.bold = True
         run_h1.font.size = Pt(13)
         run_h2 = p_head.add_run("ĐỀ KIỂM TRA ĐỊNH KỲ (CHUẨN CẤU TRÚC BỘ GD&ĐT 2026)\n")
@@ -2182,7 +2221,7 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
     else:
         # Mẫu TXT chuẩn 22 câu + tự luận
         txt_lines = [
-            "SỞ GD&ĐT ... - TRƯỜNG THPT ...",
+            "SỞ GD&ĐT TÂY NINH - TRƯỜNG THPT LONG CANG",
             "ĐỀ KIỂM TRA ĐỊNH KỲ (CHUẨN CẤU TRÚC BỘ GD&ĐT 2026)",
             "Môn: TOÁN HỌC - Lớp: 12 - Thời gian làm bài: 50 phút",
             "",
