@@ -395,7 +395,10 @@
       <div class="flex gap-3">
         <button @click="prevQuestion()" :disabled="currentIdx === 0" class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold disabled:opacity-40 hover:border-gray-400 transition-colors">← Câu trước</button>
         <button @click="nextQuestion()" :disabled="currentIdx >= p1Questions.length - 1" class="flex-1 py-3 rounded-xl bg-blue-900 text-white font-semibold disabled:opacity-40 hover:bg-blue-800 transition-colors">Câu sau →</button>
-        <button x-show="currentIdx === p1Questions.length - 1" @click="currentPart='p2'; currentIdx=0" class="flex-1 py-3 rounded-xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-colors">Sang Phần II →</button>
+        <button x-show="currentIdx === p1Questions.length - 1" 
+          @click="p2Questions.length > 0 ? (currentPart='p2', currentIdx=0) : (p3Questions.length > 0 ? (currentPart='p3', currentIdx=0) : (p4Questions.length > 0 ? (currentPart='p4', currentIdx=0) : confirmSubmit()))" 
+          class="flex-1 py-3 rounded-xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-colors"
+          x-text="p2Questions.length > 0 ? 'Sang Phần II →' : (p3Questions.length > 0 ? 'Sang Phần III →' : (p4Questions.length > 0 ? 'Sang Phần IV →' : 'Nộp bài ngay →'))"></button>
       </div>
     </div>
 
@@ -407,7 +410,7 @@
             <span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full">PHẦN II</span>
             <span class="ml-2 text-gray-500 text-sm">Câu <span x-text="currentIdx + 1"></span>/<span x-text="p2Questions.length"></span></span>
           </div>
-          <div class="text-xs text-gray-400 bg-purple-50 px-3 py-1 rounded-full">0.5 điểm/câu</div>
+          <div class="text-xs text-purple-700 bg-purple-50 font-bold px-3 py-1 rounded-full">1.0 điểm/câu</div>
         </div>
         
         <template x-if="p2Questions[currentIdx]">
@@ -461,8 +464,8 @@
             
             <!-- Barem điểm -->
             <div class="mt-4 p-3 bg-purple-50 rounded-xl border border-purple-100 text-xs text-purple-700">
-              <span class="font-semibold">Barem điểm: </span>
-              1 ý đúng = 0.1đ | 2 ý đúng = 0.25đ | 3 ý đúng = 0.5đ | 4 ý đúng = 0.5đ
+              <span class="font-semibold">Barem điểm chuẩn Bộ GD&ĐT: </span>
+              1 ý đúng = 0.1đ | 2 ý đúng = 0.25đ | 3 ý đúng = 0.5đ | 4 ý đúng = 1.0đ (Tối đa 1.0đ/câu)
             </div>
           </div>
         </template>
@@ -471,7 +474,10 @@
       <div class="flex gap-3">
         <button @click="prevQuestion()" :disabled="currentIdx === 0" class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold disabled:opacity-40 hover:border-gray-400 transition-colors">← Câu trước</button>
         <button @click="nextQuestion()" :disabled="currentIdx >= p2Questions.length - 1" class="flex-1 py-3 rounded-xl bg-blue-900 text-white font-semibold disabled:opacity-40 hover:bg-blue-800 transition-colors">Câu sau →</button>
-        <button x-show="currentIdx === p2Questions.length - 1" @click="currentPart='p3'; currentIdx=0" class="flex-1 py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors">Sang Phần III →</button>
+        <button x-show="currentIdx === p2Questions.length - 1" 
+          @click="p3Questions.length > 0 ? (currentPart='p3', currentIdx=0) : (p4Questions.length > 0 ? (currentPart='p4', currentIdx=0) : confirmSubmit())" 
+          class="flex-1 py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors"
+          x-text="p3Questions.length > 0 ? 'Sang Phần III →' : (p4Questions.length > 0 ? 'Sang Phần IV →' : 'Nộp bài ngay →')"></button>
       </div>
     </div>
 
@@ -483,7 +489,7 @@
             <span class="bg-teal-100 text-teal-700 text-xs font-bold px-3 py-1 rounded-full">PHẦN III</span>
             <span class="ml-2 text-gray-500 text-sm">Câu <span x-text="currentIdx + 1"></span>/<span x-text="p3Questions.length"></span></span>
           </div>
-          <div class="text-xs text-gray-400 bg-teal-50 px-3 py-1 rounded-full">~0.33 điểm/câu</div>
+          <div class="text-xs text-teal-700 bg-teal-50 font-bold px-3 py-1 rounded-full" x-text="`${examData?.scoring?.part3_per_question ? roundScore(examData.scoring.part3_per_question) : 'Chia đều'} điểm/câu`"></div>
         </div>
         
         <template x-if="p3Questions[currentIdx]">
@@ -1638,7 +1644,22 @@ function examApp() {
           const hasLowerP2 = parsed?.parts?.part2?.questions?.some(q => 
             q.displayItems?.some(it => ['a','b','c','d'].includes(it.displayLabel))
           );
-          if (!hasBrokenOptions && !hasLowerP2) {
+
+          // Kiểm tra xem số lượng câu hỏi từng phần trong cache có khớp chính xác với examData vừa tải về không
+          const p1Len = this.examData?.parts?.part1?.questions?.length ?? 0;
+          const p2Len = this.examData?.parts?.part2?.questions?.length ?? 0;
+          const p3Len = this.examData?.parts?.part3?.questions?.length ?? 0;
+          const p4Len = this.examData?.parts?.part4?.questions?.length ?? 0;
+
+          const parsedP1 = parsed?.parts?.part1?.questions?.length ?? 0;
+          const parsedP2 = parsed?.parts?.part2?.questions?.length ?? 0;
+          const parsedP3 = parsed?.parts?.part3?.questions?.length ?? 0;
+          const parsedP4 = parsed?.parts?.part4?.questions?.length ?? 0;
+
+          const countMatched = (!this.examData?.parts) || (p1Len === parsedP1 && p2Len === parsedP2 && p3Len === parsedP3 && p4Len === parsedP4);
+          const seedMatched = (!this.examData?.bank_seed) || (String(this.examData.bank_seed) === String(parsed?.bank_seed));
+
+          if (!hasBrokenOptions && !hasLowerP2 && countMatched && seedMatched) {
             this.examData = parsed;
             this.healExamData(this.examData);
             return;

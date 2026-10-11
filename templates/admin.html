@@ -1600,15 +1600,15 @@ function adminApp() {
       const p3 = exam.part3_count || 0;
       const p4 = exam.part4_count || 0;
 
-      let p1_draw = cfg.part1_draw != null ? cfg.part1_draw : (p1 >= 18 ? 18 : p1);
-      let p2_draw = cfg.part2_draw != null ? cfg.part2_draw : (p2 >= 6 ? 6 : p2);
-      let p3_draw = cfg.part3_draw != null ? cfg.part3_draw : (p3 >= 6 ? 6 : p3);
-      let p4_draw = cfg.part4_draw != null ? cfg.part4_draw : 0;
-      let total_draw = cfg.total_draw || (p1_draw + p2_draw + p3_draw + p4_draw);
+      let p1_draw = cfg.part1_draw != null ? Number(cfg.part1_draw) : (p1 >= 18 ? 18 : p1);
+      let p2_draw = cfg.part2_draw != null ? Number(cfg.part2_draw) : (p2 >= 6 ? 6 : p2);
+      let p3_draw = cfg.part3_draw != null ? Number(cfg.part3_draw) : (p3 >= 6 ? 6 : p3);
+      let p4_draw = cfg.part4_draw != null ? Number(cfg.part4_draw) : 0;
+      let total_draw = cfg.total_draw != null ? Number(cfg.total_draw) : (p1_draw + p2_draw + p3_draw + p4_draw);
 
       this.bankConfigForm = {
-        enabled: Boolean(exam.is_bank || cfg.enabled),
-        total_draw: total_draw || 30,
+        enabled: Boolean(exam.is_bank || cfg.enabled || total_draw > 0),
+        total_draw: total_draw,
         part1_draw: p1_draw,
         part2_draw: p2_draw,
         part3_draw: p3_draw,
@@ -1624,6 +1624,7 @@ function adminApp() {
       const p2 = this.bankConfigExam.part2_count || 0;
       const p3 = this.bankConfigExam.part3_count || 0;
       
+      this.bankConfigForm.enabled = true;
       this.bankConfigForm.part1_draw = Math.min(p1, 18);
       this.bankConfigForm.part2_draw = Math.min(p2, 6);
       this.bankConfigForm.part3_draw = Math.min(p3, 6);
@@ -1635,19 +1636,26 @@ function adminApp() {
       if (!this.bankConfigExam) return;
       this.bankSaving = true;
       try {
+        const p1_val = Number(this.bankConfigForm.part1_draw) || 0;
+        const p2_val = Number(this.bankConfigForm.part2_draw) || 0;
+        const p3_val = Number(this.bankConfigForm.part3_draw) || 0;
+        const p4_val = Number(this.bankConfigForm.part4_draw) || 0;
+        const total_val = p1_val + p2_val + p3_val + p4_val;
+        const is_enabled = Boolean(this.bankConfigForm.enabled && total_val > 0);
+
         const r = await fetch('/api/exam-builder/bank-config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             exam_id: this.bankConfigExam.id,
             bank_config: {
-              enabled: Boolean(this.bankConfigForm.enabled),
+              enabled: is_enabled,
               draw_mode: 'per_student',
-              total_draw: Number(this.bankConfigForm.total_draw) || 30,
-              part1_draw: Number(this.bankConfigForm.part1_draw) || 0,
-              part2_draw: Number(this.bankConfigForm.part2_draw) || 0,
-              part3_draw: Number(this.bankConfigForm.part3_draw) || 0,
-              part4_draw: Number(this.bankConfigForm.part4_draw) || 0
+              total_draw: total_val,
+              part1_draw: p1_val,
+              part2_draw: p2_val,
+              part3_draw: p3_val,
+              part4_draw: p4_val
             }
           })
         });

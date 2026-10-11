@@ -1116,6 +1116,12 @@ async def save_exam(request: Request = None, exam_data: dict = None):
             p4_total   = round(p34_per_q * p4_count, 3)
             p3_per_q   = p34_per_q if p3_count > 0 else 0.0
             p4_per_q   = p34_per_q if p4_count > 0 else 0.0
+            diff = round(10.0 - (p1_total + p2_total + p3_total + p4_total), 2)
+            if abs(diff) > 0:
+                if p3_count > 0:
+                    p3_total = round(p3_total + diff, 2)
+                elif p4_count > 0:
+                    p4_total = round(p4_total + diff, 2)
         else:
             p3_total = 0.0
             p4_total = 0.0
@@ -1140,6 +1146,12 @@ async def save_exam(request: Request = None, exam_data: dict = None):
 
     if exam_data.get("is_online_exam") is None:
         exam_data["is_online_exam"] = False
+
+    # Giữ nguyên cờ Ngân hàng đề thi (is_bank & bank_config) nếu sửa đề thi từ giao diện soạn đề
+    if "is_bank" not in exam_data and existing and existing.get("is_bank") is not None:
+        exam_data["is_bank"] = existing.get("is_bank")
+    if "bank_config" not in exam_data and existing and existing.get("bank_config") is not None:
+        exam_data["bank_config"] = existing.get("bank_config")
 
     exam_id = exam_data["id"]
     save_exam_record(exam_data)

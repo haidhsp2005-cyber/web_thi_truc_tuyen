@@ -62,26 +62,41 @@ def normalize_bank_config(exam_data: Dict[str, Any]) -> Dict[str, Any]:
 
     enabled = bool(cfg.get("enabled", exam_data.get("is_bank", False)))
     
-    # Số câu rút cho từng phần
-    p1_draw = int(cfg.get("part1_draw") or 0)
-    p2_draw = int(cfg.get("part2_draw") or 0)
-    p3_draw = int(cfg.get("part3_draw") or 0)
-    p4_draw = int(cfg.get("part4_draw") or 0)
+    # Kiểm tra xem cấu hình đã từng được thiết lập tường minh cho từng phần hay chưa
+    has_explicit_part_cfg = any(k in cfg for k in ("part1_draw", "part2_draw", "part3_draw", "part4_draw"))
     
-    total_draw = int(cfg.get("total_draw") or 0)
-    
-    # Nếu chưa cài đặt chi tiết từng phần nhưng có total_draw (ví dụ: rút 30 câu từ 100 câu)
-    if total_draw > 0 and (p1_draw + p2_draw + p3_draw + p4_draw == 0) and bank_total_qs > 0:
-        # Tự động chia theo tỷ lệ số câu có sẵn trong từng phần
-        ratio = min(1.0, total_draw / bank_total_qs)
-        p1_draw = max(1, round(p1_total * ratio)) if p1_total > 0 else 0
-        p2_draw = max(1, round(p2_total * ratio)) if p2_total > 0 else 0
-        p4_draw = min(p4_total, round(p4_total * ratio)) if p4_total > 0 else 0
-        # Phần III nhận số câu còn lại để vừa đúng total_draw
-        p3_draw = max(0, total_draw - (p1_draw + p2_draw + p4_draw))
-        if p3_total > 0 and p3_draw > p3_total:
+    # Số câu rút cho từng phần (ép kiểu int an toàn, nếu là 0 hoặc "0" thì nhận đúng 0)
+    def _parse_draw(val, fallback):
+        if val is None or val == "":
+            return fallback
+        try:
+            return max(0, int(val))
+        except (ValueError, TypeError):
+            return fallback
+
+    if has_explicit_part_cfg:
+        p1_draw = _parse_draw(cfg.get("part1_draw"), p1_total)
+        p2_draw = _parse_draw(cfg.get("part2_draw"), p2_total)
+        p3_draw = _parse_draw(cfg.get("part3_draw"), 0)
+        p4_draw = _parse_draw(cfg.get("part4_draw"), 0)
+    else:
+        # Nếu chưa từng cấu hình: kiểm tra total_draw
+        total_draw = int(cfg.get("total_draw") or 0)
+        if total_draw > 0 and bank_total_qs > 0:
+            ratio = min(1.0, total_draw / bank_total_qs)
+            p1_draw = max(1, round(p1_total * ratio)) if p1_total > 0 else 0
+            p2_draw = max(1, round(p2_total * ratio)) if p2_total > 0 else 0
+            p4_draw = min(p4_total, round(p4_total * ratio)) if p4_total > 0 else 0
+            p3_draw = max(0, total_draw - (p1_draw + p2_draw + p4_draw))
+            if p3_total > 0 and p3_draw > p3_total:
+                p3_draw = p3_total
+        else:
+            # Mặc định lấy toàn bộ đề
+            p1_draw = p1_total
+            p2_draw = p2_total
             p3_draw = p3_total
-    
+            p4_draw = p4_total
+
     # Giới hạn không vượt quá số câu thực có trong ngân hàng
     p1_draw = min(p1_draw, p1_total)
     p2_draw = min(p2_draw, p2_total)
@@ -89,7 +104,8 @@ def normalize_bank_config(exam_data: Dict[str, Any]) -> Dict[str, Any]:
     p4_draw = min(p4_draw, p4_total)
     
     actual_total = p1_draw + p2_draw + p3_draw + p4_draw
-    if actual_total == 0 and bank_total_qs > 0:
+    # Chỉ fallback toàn bộ nếu cả 4 phần đều là 0 VÀ không có cấu hình tường minh
+    if actual_total == 0 and not has_explicit_part_cfg and bank_total_qs > 0:
         actual_total = bank_total_qs
         p1_draw, p2_draw, p3_draw, p4_draw = p1_total, p2_total, p3_total, p4_total
 
@@ -141,7 +157,7 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
     else:
         p2["questions"] = []
 
-    # 3. Rút câu hỏi Phần III
+    # 3. Rút câu hỏi Phần III (Nếu chọn 0 câu thì danh sách là rỗng [])
     p3 = parts.get("part3") or {}
     p3_qs = p3.get("questions") or []
     if cfg["part3_draw"] > 0 and p3_qs:
@@ -159,47 +175,53 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
     else:
         p4["questions"] = []
 
-    # 5. Tự động tính toán lại Thang điểm (Scoring) để luôn đảm bảo tổng 10.0 điểm
+    # 5. Tự động tính toán lại Thang điểm (Scoring) theo chuẩn GDPT 2026:
+    # - Phần I (TNKQ): Cố định 0.25 điểm / câu
+    # - Phần II (Đúng/Sai): Cố định 1.0 điểm / câu (barem: 0.1 - 0.25 - 0.5 - 1.0)
+    # - Phần còn lại (Phần III Trả lời ngắn & Phần IV Tự luận): Lấy (10 - P1 - P2) chia đều cho mỗi câu
     c1 = len(p1.get("questions") or [])
     c2 = len(p2.get("questions") or [])
     c3 = len(p3.get("questions") or [])
     c4 = len(p4.get("questions") or [])
 
-    scoring = drawn_exam.get("scoring") or {}
-    
-    # Định mức điểm cơ sở chuẩn GDPT 2026:
-    p1_per_q = scoring.get("part1_per_question", 0.25) or 0.25
-    p2_per_q = scoring.get("part2_per_question", 1.0) or 1.0
-    p3_per_q = scoring.get("part3_per_question", 0.5) or 0.5
-    p4_per_q = scoring.get("part4_per_question", 1.0) or 1.0
-
-    raw_sum = (c1 * p1_per_q) + (c2 * p2_per_q) + (c3 * p3_per_q) + (c4 * p4_per_q)
-    
-    if raw_sum > 0:
-        factor = 10.0 / raw_sum
-        p1_per_q = round(p1_per_q * factor, 3)
-        p2_per_q = round(p2_per_q * factor, 3)
-        p3_per_q = round(p3_per_q * factor, 3) if c3 > 0 else 0.0
-        p4_per_q = round(p4_per_q * factor, 3) if c4 > 0 else 0.0
-    
-    rubric = {
-        "1_correct": round(p2_per_q * 0.1, 2),
-        "2_correct": round(p2_per_q * 0.25, 2),
-        "3_correct": round(p2_per_q * 0.5, 2),
-        "4_correct": round(p2_per_q, 2)
-    }
-
+    # Định mức điểm chuẩn Bộ GD&ĐT:
+    p1_per_q = 0.25
     p1_total = round(c1 * p1_per_q, 2)
+
+    p2_per_q = 1.0
+    rubric = {
+        "1_correct": 0.10,
+        "2_correct": 0.25,
+        "3_correct": 0.50,
+        "4_correct": 1.00
+    }
     p2_total = round(c2 * p2_per_q, 2)
-    p3_total = round(c3 * p3_per_q, 2)
-    p4_total = round(c4 * p4_per_q, 2)
-    total = round(p1_total + p2_total + p3_total + p4_total, 2)
-    
-    # Cân đối sai số làm tròn nếu lệch 0.01 - 0.05 để tròn đúng 10.0 điểm
-    diff = round(10.0 - total, 2)
-    if abs(diff) > 0 and c1 > 0:
-        p1_total = round(p1_total + diff, 2)
+
+    # Điểm còn lại dành cho Phần III và Phần IV
+    remaining_score = max(0.0, round(10.0 - p1_total - p2_total, 3))
+    c34 = c3 + c4
+
+    if c34 > 0:
+        p34_per_q = round(remaining_score / c34, 4)
+        p3_per_q = p34_per_q if c3 > 0 else 0.0
+        p4_per_q = p34_per_q if c4 > 0 else 0.0
+        p3_total = round(p3_per_q * c3, 2)
+        p4_total = round(p4_per_q * c4, 2)
+
+        # Cân đối sai số làm tròn nếu lệch 0.01 - 0.05 để tròn đúng 10.0 điểm
+        diff = round(10.0 - (p1_total + p2_total + p3_total + p4_total), 2)
+        if abs(diff) > 0:
+            if c3 > 0:
+                p3_total = round(p3_total + diff, 2)
+            elif c4 > 0:
+                p4_total = round(p4_total + diff, 2)
         total = 10.0
+    else:
+        p3_per_q = 0.0
+        p3_total = 0.0
+        p4_per_q = 0.0
+        p4_total = 0.0
+        total = round(p1_total + p2_total, 2)
 
     drawn_exam["scoring"] = {
         "part1_per_question": p1_per_q,
@@ -221,6 +243,6 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
 
     logger.info(
         f"Đã bốc đề ngẫu nhiên từ Ngân hàng '{exam_data.get('title')}' (seed={seed}): "
-        f"P1={c1}, P2={c2}, P3={c3}, P4={c4} | Tổng={c1+c2+c3+c4} câu hỏi."
+        f"P1={c1} ({p1_total}đ), P2={c2} ({p2_total}đ), P3={c3} ({p3_total}đ), P4={c4} ({p4_total}đ) | Tổng={c1+c2+c3+c4} câu hỏi, Thang điểm={total}đ."
     )
     return drawn_exam
