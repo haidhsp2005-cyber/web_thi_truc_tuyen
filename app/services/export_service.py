@@ -585,6 +585,12 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
     # Tự động tái tạo đầy đủ đề bài và đáp án chi tiết nếu dữ liệu bài nộp bị thiếu details
     if exam_data and exam_data.get("parts"):
         from .grading_service import grade_part1, grade_part2, grade_part3
+        
+        bank_cfg = exam_data.get("bank_config") or {}
+        is_bank_active = bool(exam_data.get("is_bank") or exam_data.get("is_bank_drawn") or bank_cfg.get("enabled"))
+        p3_draw = bank_cfg.get("part3_draw")
+        p3_scoring_total = exam_data.get("scoring", {}).get("part3_total", 0)
+
         if (not p1_res.get("details")) and exam_data.get("parts", {}).get("part1", {}).get("questions"):
             try:
                 p1_res = grade_part1(exam_data, p1_ans)
@@ -599,7 +605,11 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
             except Exception as e:
                 logger.debug(f"Không thể tái tạo part2_result: {e}")
 
-        if (not p3_res.get("details")) and exam_data.get("parts", {}).get("part3", {}).get("questions"):
+        # Xử lý an toàn Phần III: Nếu đề ngân hàng rút 0 câu Phần III hoặc thang điểm P3 = 0, tuyệt đối KHÔNG tự lôi câu gốc ra chấm
+        if (is_bank_active and p3_draw == 0) or (p3_scoring_total == 0 and p3_res.get("max_score", 0) == 0 and not p3_ans):
+            p3_res = {"score": 0.0, "max_score": 0.0, "details": [], "correct_count": 0, "total_count": 0}
+            submission["part3_result"] = p3_res
+        elif (not p3_res.get("details")) and exam_data.get("parts", {}).get("part3", {}).get("questions"):
             try:
                 p3_res = grade_part3(exam_data, p3_ans)
                 submission["part3_result"] = p3_res
@@ -818,11 +828,11 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
           {p2_details_html}
         </div>"""
 
-    # Phần III HTML block
+    # Phần III HTML block (Chỉ hiển thị khi có câu hỏi thực tế > 0 câu)
     p3_count = len(p3_res.get("details", []))
     p3_correct = p3_res.get("correct_count", sum(1 for d in p3_res.get("details", []) if d.get("is_correct")))
     p3_section_html = ""
-    if p3_details_html:
+    if p3_details_html and p3_count > 0:
         p3_section_html = f"""
         <div class="mb-5">
           <h2 class="text-sm font-black uppercase text-teal-900 mb-2 border-b-2 border-teal-200 pb-1">
@@ -833,6 +843,18 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
 
     dept_name = (exam_data.get('department_name') or 'SỞ GD&ĐT TÂY NINH').strip().upper()
     school_name = (exam_data.get('school_name') or 'TRƯỜNG THPT LONG CANG').strip().upper()
+
+    p1_s = scores.get('part1_score', 0)
+    p2_s = scores.get('part2_score', 0)
+    p3_s = scores.get('part3_score', 0)
+    p4_s = scores.get('part4_score', 0)
+    
+    score_p_items = [f"P1: {p1_s}đ", f"P2: {p2_s}đ"]
+    if p3_count > 0 or p3_s > 0:
+        score_p_items.append(f"P3: {p3_s}đ")
+    if p4_html or p4_s > 0:
+        score_p_items.append(f"P4: {p4_s}đ")
+    parts_score_summary_str = " · ".join(score_p_items)
 
     return f"""
   <!-- Header Quốc ngữ / Sở GD -->
@@ -855,7 +877,7 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
     <div><span>Học sinh:</span> <strong class="text-sm block text-gray-900">{submission.get('student_name','')}</strong></div>
     <div><span>Lớp:</span> <strong class="text-sm block text-gray-900">{submission.get('student_class','')}</strong></div>
     <div><span>Thời gian nộp:</span> <strong class="block text-gray-800">{submitted_at}</strong></div>
-    <div><span>Điểm từng phần:</span> <strong class="block text-indigo-900">P1: {scores.get('part1_score',0)}đ · P2: {scores.get('part2_score',0)}đ · P3: {scores.get('part3_score',0)}đ</strong></div>
+    <div><span>Điểm từng phần:</span> <strong class="block text-indigo-900">{parts_score_summary_str}</strong></div>
   </div>
 
   {p1_section_html}
@@ -1046,7 +1068,9 @@ def export_class_submissions_print_html(
     cards_html = []
     for idx, sub in enumerate(sorted_subs):
         eid = sub.get("exam_id", "exam_001")
-        exam_data = sub.get("exam_data") or exams_cache.get(eid) or {"title": exam_title or "BÀI KIỂM TRA", "subject": subject or "Toán", "grade": "12"}
+        base_e = exams_cache.get(eid) or {"title": exam_title or "BÀI KIỂM TRA", "subject": subject or "Toán", "grade": "12"}
+        from .bank_service import resolve_student_exam
+        exam_data = resolve_student_exam(sub, base_e)
         inner = render_single_student_exam_inner_html(sub, exam_data)
         
         page_break_style = "page-break-before: always; break-before: page;" if idx > 0 else ""

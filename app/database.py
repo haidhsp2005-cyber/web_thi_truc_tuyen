@@ -224,6 +224,12 @@ def save_submission(submission_data: dict, result_data: dict = None):
         result_data["is_online_exam"] = is_online
         result_data["screen_switch_count"] = switch_count
         result_data["switch_violations"] = switch_viols
+        if submission_data.get("exam_data"):
+            result_data["exam_data"] = submission_data["exam_data"]
+        if submission_data.get("bank_seed"):
+            result_data["bank_seed"] = submission_data["bank_seed"]
+        if submission_data.get("is_bank"):
+            result_data["is_bank"] = submission_data["is_bank"]
     
     c.execute("""
         INSERT OR REPLACE INTO submissions 
@@ -295,6 +301,12 @@ def get_submission(submission_id: str) -> Optional[dict]:
                 result["screen_switch_count"] = int(result_data["screen_switch_count"])
             if "switch_violations" in result_data:
                 result["switch_violations"] = result_data["switch_violations"]
+            if "exam_data" in result_data:
+                result["exam_data"] = result_data["exam_data"]
+            if "bank_seed" in result_data:
+                result["bank_seed"] = result_data["bank_seed"]
+            if "is_bank" in result_data:
+                result["is_bank"] = result_data["is_bank"]
         except:
             pass
             

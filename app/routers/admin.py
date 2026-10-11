@@ -672,9 +672,12 @@ async def print_student_submission(submission_id: str, request: Request):
         if sub.get("exam_id") not in accessible_ids:
             raise HTTPException(status_code=403, detail="Bạn không có quyền xem/in bài thi của giáo viên khác!")
 
-    exam = sub.get("exam_data") or load_exam(sub.get("exam_id", "exam_001"))
-    if not exam:
+    raw_exam = sub.get("exam_data") or load_exam(sub.get("exam_id", "exam_001"))
+    if not raw_exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi tương ứng!")
+
+    from ..services.bank_service import resolve_student_exam
+    exam = resolve_student_exam(sub, raw_exam)
 
     html = export_student_exam_print_html(sub, exam)
     return HTMLResponse(content=html)

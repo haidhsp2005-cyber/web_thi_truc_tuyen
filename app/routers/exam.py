@@ -369,9 +369,12 @@ async def get_result_print(submission_id: str):
     if not result:
         raise HTTPException(status_code=404, detail="Không tìm thấy kết quả bài thi!")
     
-    exam = load_exam(result.get("exam_id", "exam_001"))
-    if not exam:
+    raw_exam = result.get("exam_data") or load_exam(result.get("exam_id", "exam_001"))
+    if not raw_exam:
         raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
+    
+    from ..services.bank_service import resolve_student_exam
+    exam = resolve_student_exam(result, raw_exam)
     
     html = export_result_html(result, exam)
     return HTMLResponse(content=html)

@@ -246,3 +246,36 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
         f"P1={c1} ({p1_total}đ), P2={c2} ({p2_total}đ), P3={c3} ({p3_total}đ), P4={c4} ({p4_total}đ) | Tổng={c1+c2+c3+c4} câu hỏi, Thang điểm={total}đ."
     )
     return drawn_exam
+
+
+def resolve_student_exam(submission: dict, base_exam: Optional[dict] = None) -> dict:
+    """
+    Tái tạo chính xác bộ câu hỏi thực tế của học sinh để in bài thi hoặc xem kết quả.
+    Đảm bảo:
+    - Nếu bài nộp đã lưu exam_data: trả về chính xác bộ câu hỏi đó.
+    - Nếu là đề ngân hàng: tái tạo đúng bộ câu hỏi theo seed của học sinh từ base_exam.
+    - Nếu không phải ngân hàng: trả về base_exam.
+    """
+    if submission and isinstance(submission.get("exam_data"), dict) and submission["exam_data"].get("parts"):
+        return submission["exam_data"]
+    
+    if not base_exam or not isinstance(base_exam, dict):
+        return {}
+
+    if is_bank_exam(base_exam):
+        seed_val = (submission or {}).get("bank_seed") or (submission or {}).get("seed")
+        numeric_seed = None
+        if seed_val:
+            try:
+                numeric_seed = int(seed_val)
+            except ValueError:
+                pass
+        if numeric_seed is None:
+            numeric_seed = get_student_seed(
+                (submission or {}).get("student_name", ""),
+                (submission or {}).get("student_class", ""),
+                base_exam.get("id", "")
+            )
+        return generate_student_exam_from_bank(base_exam, numeric_seed)
+    
+    return base_exam
