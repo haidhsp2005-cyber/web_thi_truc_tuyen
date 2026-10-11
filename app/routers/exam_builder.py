@@ -1327,9 +1327,15 @@ async def update_exam_scoring(exam_id: str, body: dict, request: Request):
     save_exam_record(exam)
     s = exam["scoring"]
     total = round(s["part1_total"] + s["part2_total"] + s["part3_total"] + s["part4_total"], 2)
+    
+    if total > 10.0:
+        msg = f"Đã lưu thang điểm thành công cho đề '{exam.get('title','')}'. (Tổng điểm các câu trong kho: {total}đ. Điểm từng câu sẽ áp dụng chính xác khi bốc ngẫu nhiên làm bài)"
+    else:
+        msg = f"Đã lưu thang điểm thành công cho đề '{exam.get('title','')}'. (Tổng điểm: {total}đ)"
+
     return {
         "success": True,
-        "message": f"Đã cập nhật thang điểm cho đề '{exam.get('title','')}'. Tổng: {total}đ",
+        "message": msg,
         "scoring": exam["scoring"],
         "total": total,
     }

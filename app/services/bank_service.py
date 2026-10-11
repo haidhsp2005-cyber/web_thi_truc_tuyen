@@ -175,53 +175,85 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
     else:
         p4["questions"] = []
 
-    # 5. Tự động tính toán lại Thang điểm (Scoring) theo chuẩn GDPT 2026:
-    # - Phần I (TNKQ): Cố định 0.25 điểm / câu
-    # - Phần II (Đúng/Sai): Cố định 1.0 điểm / câu (barem: 0.1 - 0.25 - 0.5 - 1.0)
-    # - Phần còn lại (Phần III Trả lời ngắn & Phần IV Tự luận): Lấy (10 - P1 - P2) chia đều cho mỗi câu
+    # 5. Tự động tính toán lại Thang điểm (Scoring) theo chuẩn GDPT 2026 hoặc theo thang điểm tùy chỉnh:
     c1 = len(p1.get("questions") or [])
     c2 = len(p2.get("questions") or [])
     c3 = len(p3.get("questions") or [])
     c4 = len(p4.get("questions") or [])
 
-    # Định mức điểm chuẩn Bộ GD&ĐT:
-    p1_per_q = 0.25
-    p1_total = round(c1 * p1_per_q, 2)
+    orig_scoring = exam_data.get("scoring") or {}
+    has_custom_scoring = bool(orig_scoring.get("custom_scoring"))
 
-    p2_per_q = 1.0
-    rubric = {
-        "1_correct": 0.10,
-        "2_correct": 0.25,
-        "3_correct": 0.50,
-        "4_correct": 1.00
-    }
-    p2_total = round(c2 * p2_per_q, 2)
+    if has_custom_scoring:
+        # Giáo viên đã tùy chỉnh thang điểm cho từng câu (kể cả đề nạp vào có tổng vượt quá 10 điểm)
+        p1_per_q = float(orig_scoring.get("part1_per_question", 0.25))
+        p1_total = round(c1 * p1_per_q, 2)
 
-    # Điểm còn lại dành cho Phần III và Phần IV
-    remaining_score = max(0.0, round(10.0 - p1_total - p2_total, 3))
-    c34 = c3 + c4
+        orig_rubric = orig_scoring.get("part2_rubric")
+        if isinstance(orig_rubric, dict) and "4_correct" in orig_rubric:
+            rubric = {
+                "1_correct": float(orig_rubric.get("1_correct", 0.1)),
+                "2_correct": float(orig_rubric.get("2_correct", 0.25)),
+                "3_correct": float(orig_rubric.get("3_correct", 0.5)),
+                "4_correct": float(orig_rubric.get("4_correct", 1.0)),
+            }
+            p2_per_q = rubric["4_correct"]
+        else:
+            p2_per_q = float(orig_scoring.get("part2_per_question", 1.0))
+            rubric = {
+                "1_correct": round(p2_per_q * 0.10, 3),
+                "2_correct": round(p2_per_q * 0.25, 3),
+                "3_correct": round(p2_per_q * 0.50, 3),
+                "4_correct": round(p2_per_q * 1.00, 3),
+            }
+        p2_total = round(c2 * p2_per_q, 2)
 
-    if c34 > 0:
-        p34_per_q = round(remaining_score / c34, 4)
-        p3_per_q = p34_per_q if c3 > 0 else 0.0
-        p4_per_q = p34_per_q if c4 > 0 else 0.0
-        p3_total = round(p3_per_q * c3, 2)
-        p4_total = round(p4_per_q * c4, 2)
+        p3_per_q = float(orig_scoring.get("part3_per_question", 0.0))
+        p3_total = round(c3 * p3_per_q, 2)
 
-        # Cân đối sai số làm tròn nếu lệch 0.01 - 0.05 để tròn đúng 10.0 điểm
-        diff = round(10.0 - (p1_total + p2_total + p3_total + p4_total), 2)
-        if abs(diff) > 0:
-            if c3 > 0:
-                p3_total = round(p3_total + diff, 2)
-            elif c4 > 0:
-                p4_total = round(p4_total + diff, 2)
-        total = 10.0
+        p4_per_q = float(orig_scoring.get("part4_per_question", 0.0))
+        p4_total = round(c4 * p4_per_q, 2)
+
+        total = round(p1_total + p2_total + p3_total + p4_total, 2)
     else:
-        p3_per_q = 0.0
-        p3_total = 0.0
-        p4_per_q = 0.0
-        p4_total = 0.0
-        total = round(p1_total + p2_total, 2)
+        # Định mức điểm chuẩn Bộ GD&ĐT:
+        p1_per_q = 0.25
+        p1_total = round(c1 * p1_per_q, 2)
+
+        p2_per_q = 1.0
+        rubric = {
+            "1_correct": 0.10,
+            "2_correct": 0.25,
+            "3_correct": 0.50,
+            "4_correct": 1.00
+        }
+        p2_total = round(c2 * p2_per_q, 2)
+
+        # Điểm còn lại dành cho Phần III và Phần IV
+        remaining_score = max(0.0, round(10.0 - p1_total - p2_total, 3))
+        c34 = c3 + c4
+
+        if c34 > 0:
+            p34_per_q = round(remaining_score / c34, 4)
+            p3_per_q = p34_per_q if c3 > 0 else 0.0
+            p4_per_q = p34_per_q if c4 > 0 else 0.0
+            p3_total = round(p3_per_q * c3, 2)
+            p4_total = round(p4_per_q * c4, 2)
+
+            # Cân đối sai số làm tròn nếu lệch 0.01 - 0.05 để tròn đúng 10.0 điểm
+            diff = round(10.0 - (p1_total + p2_total + p3_total + p4_total), 2)
+            if abs(diff) > 0:
+                if c3 > 0:
+                    p3_total = round(p3_total + diff, 2)
+                elif c4 > 0:
+                    p4_total = round(p4_total + diff, 2)
+            total = 10.0
+        else:
+            p3_per_q = 0.0
+            p3_total = 0.0
+            p4_per_q = 0.0
+            p4_total = 0.0
+            total = round(p1_total + p2_total, 2)
 
     drawn_exam["scoring"] = {
         "part1_per_question": p1_per_q,
@@ -233,7 +265,8 @@ def generate_student_exam_from_bank(exam_data: Dict[str, Any], seed: int) -> Dic
         "part3_total": p3_total,
         "part4_per_question": p4_per_q,
         "part4_total": p4_total,
-        "total": total
+        "total": total,
+        "custom_scoring": has_custom_scoring
     }
 
     # Đánh dấu đã bốc từ ngân hàng

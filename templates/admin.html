@@ -280,13 +280,22 @@
 
           <!-- Tổng điểm preview -->
           <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3 border">
-            <span class="text-sm font-semibold text-gray-700">Tổng điểm toàn bài:</span>
+            <div>
+              <span class="text-sm font-semibold text-gray-700">Tổng điểm các câu hỏi:</span>
+              <div x-show="scoringPreviewTotal > 10" class="text-[11px] text-indigo-600 font-medium mt-0.5">
+                Kho câu hỏi nạp vào / bốc ngẫu nhiên: Điểm từng câu sẽ áp dụng chính xác khi làm bài
+              </div>
+            </div>
             <span class="text-xl font-black"
-              :class="Math.abs(scoringPreviewTotal - 10) < 0.01 ? 'text-green-600' : 'text-red-600'"
-              x-text="scoringPreviewTotal.toFixed(2) + 'đ / 10đ'"></span>
+              :class="Math.abs(scoringPreviewTotal - 10) < 0.01 ? 'text-green-600' : (scoringPreviewTotal > 10 ? 'text-indigo-600' : 'text-amber-600')"
+              x-text="scoringPreviewTotal.toFixed(2) + 'đ' + (Math.abs(scoringPreviewTotal - 10) < 0.01 ? ' / 10đ (Chuẩn 10đ)' : '')"></span>
           </div>
-          <div x-show="Math.abs(scoringPreviewTotal - 10) > 0.01" class="text-xs text-red-600 font-semibold">
-            ⚠️ Tổng điểm không đúng 10đ — hệ thống vẫn lưu nhưng bạn nên kiểm tra lại.
+          <div x-show="scoringPreviewTotal > 10" class="text-xs text-indigo-700 bg-indigo-50 border border-indigo-200 p-2.5 rounded-lg flex items-center gap-1.5 font-medium">
+            <span>💡</span>
+            <span>Tổng điểm các câu nạp vào là <strong x-text="scoringPreviewTotal.toFixed(2) + 'đ'"></strong> (vượt quá 10 điểm). Bạn hoàn toàn có thể lưu bình thường, điểm của từng câu sẽ được giữ nguyên khi bốc ngẫu nhiên!</span>
+          </div>
+          <div x-show="scoringPreviewTotal < 10 && Math.abs(scoringPreviewTotal - 10) > 0.01" class="text-xs text-amber-700 bg-amber-50 border border-amber-200 p-2.5 rounded-lg font-medium">
+            ⚠️ Tổng điểm hiện tại là <span class="font-bold" x-text="scoringPreviewTotal.toFixed(2) + 'đ'"></span> (dưới 10đ). Hệ thống vẫn cho phép lưu theo cấu hình của bạn.
           </div>
 
           <!-- Nút lưu -->
@@ -2060,14 +2069,18 @@ function adminApp() {
         let p3_per_q = s.part3_per_question != null ? s.part3_per_question : 0;
         let p4_per_q = s.part4_per_question != null ? s.part4_per_question : 0;
 
-        // Nếu P3/P4 chưa có điểm và có câu hỏi, tự động chia đều phần còn lại
+        // Nếu P3/P4 chưa có điểm và có câu hỏi, tự động chia đều phần còn lại hoặc gán mặc định nếu kho lớn
         if (p3_per_q === 0 && p4_per_q === 0 && (p3_count > 0 || p4_count > 0)) {
-          const rem = Math.max(0, 10.0 - (p1_count * p1_per_q + p2_count * p2_c4));
+          const rem = 10.0 - (p1_count * p1_per_q + p2_count * p2_c4);
           const p34 = p3_count + p4_count;
-          if (p34 > 0) {
+          if (p34 > 0 && rem > 0) {
             const each = +(rem / p34).toFixed(4);
             if (p3_count > 0) p3_per_q = each;
             if (p4_count > 0) p4_per_q = each;
+          } else {
+            // Kho câu hỏi nạp vào lớn vượt quá 10 điểm:
+            if (p3_count > 0) p3_per_q = 0.5;
+            if (p4_count > 0) p4_per_q = 1.0;
           }
         }
 
@@ -2101,9 +2114,14 @@ function adminApp() {
       if (!this.scoringInfo.loaded) return;
       const p1_per_q = 0.25;
       const p2_c4 = 1.0;
-      const rem = Math.max(0, 10.0 - (this.scoringInfo.p1_count * p1_per_q + this.scoringInfo.p2_count * p2_c4));
+      const rem = 10.0 - (this.scoringInfo.p1_count * p1_per_q + this.scoringInfo.p2_count * p2_c4);
       const p34 = (this.scoringInfo.p3_count || 0) + (this.scoringInfo.p4_count || 0);
-      const each = p34 > 0 ? +(rem / p34).toFixed(4) : 0;
+      let each = 0;
+      if (rem > 0 && p34 > 0) {
+        each = +(rem / p34).toFixed(4);
+      } else if (p34 > 0) {
+        each = 0.5; // Mặc định cho câu TLN với đề kho lớn vượt quá 10đ
+      }
 
       this.scoringForm = {
         p1_per_q: p1_per_q,
@@ -2113,10 +2131,10 @@ function adminApp() {
         p2_c3: 0.5,
         p2_c4: 1.0,
         p3_per_q: this.scoringInfo.p3_count > 0 ? each : 0,
-        p4_per_q: this.scoringInfo.p4_count > 0 ? each : 0
+        p4_per_q: this.scoringInfo.p4_count > 0 ? (rem > 0 ? each : 1.0) : 0
       };
       this.updateScoringPreview();
-      this.scoringMsg = 'Đã đặt lại về thang điểm chuẩn GDPT 2025 (TNKQ 0.25đ/câu, Đ/S 1.0đ/câu, còn lại chia đều). Vui lòng bấm "Lưu cấu hình điểm".';
+      this.scoringMsg = 'Đã đặt lại về thang điểm chuẩn (TNKQ 0.25đ/câu, Đ/S 1.0đ/câu). Vui lòng bấm "Lưu cấu hình điểm".';
       this.scoringMsgOk = true;
     },
 
