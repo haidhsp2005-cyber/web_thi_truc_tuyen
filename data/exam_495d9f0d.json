@@ -1,0 +1,614 @@
+{
+  "title": "TIN 12 - BÀI 7",
+  "subject": "Tin học",
+  "grade": "12",
+  "duration_minutes": 30,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Đông Thạnh",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "HTML là viết tắt của cụm từ nào?",
+          "options": {
+            "A": "Hyper Text Markup Language",
+            "B": "High Text Machine Language",
+            "C": "Hyperlink and Text Markup Language",
+            "D": "Home Tool Markup Language"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Thực chất, trang web mà trình duyệt hiển thị được tạo ra từ đâu?",
+          "options": {
+            "A": "Từ ảnh chụp màn hình",
+            "B": "Từ các tệp văn bản (tệp nguồn/mã nguồn)",
+            "C": "Từ phần mềm Notepad",
+            "D": "Từ máy chủ DNS"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Tệp HTML thường có phần mở rộng là gì?",
+          "options": {
+            "A": ".txt",
+            "B": ".doc",
+            "C": ".html hoặc .htm",
+            "D": ".web"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Các kí tự nào dùng để đánh dấu thẻ HTML?",
+          "options": {
+            "A": "{   }",
+            "B": "(   )",
+            "C": "[   ]",
+            "D": "<  >"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Phát biểu nào về thẻ HTML là sai?",
+          "options": {
+            "A": "Tên thẻ không phân biệt chữ hoa, chữ thường",
+            "B": "Các thẻ có thể lồng nhau",
+            "C": "Mọi thẻ đều phải có thẻ kết thúc",
+            "D": "Thẻ có thể có thuộc tính đi kèm"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Thẻ nào dùng để tạo đoạn văn bản?",
+          "options": {
+            "A": "< h1 >",
+            "B": "<   p  >",
+            "C": "< div >",
+            "D": "< em >"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Thẻ  <  h1 > có ý nghĩa gì?",
+          "options": {
+            "A": "Đoạn văn bản",
+            "B": "Tiêu đề cấp 1",
+            "C": "Dòng kẻ ngang",
+            "D": "Nhấn mạnh"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Thẻ nào là thẻ đơn (chỉ có thẻ bắt đầu)?",
+          "options": {
+            "A": "<  p  >",
+            "B": "<  title  >",
+            "C": "<  hr  >",
+            "D": "<  body  >"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Phần tử HTML gồm những thành phần nào?",
+          "options": {
+            "A": "Chỉ thẻ bắt đầu",
+            "B": "Thẻ bắt đầu, nội dung, thẻ kết thúc",
+            "C": "Chỉ nội dung",
+            "D": "Chỉ thuộc tính"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Dòng < !DOCTYPE  html > có vai trò gì?",
+          "options": {
+            "A": "Là phần tử gốc",
+            "B": "Là dòng chú thích",
+            "C": "Thông báo cho trình duyệt biết đây là tệp định dạng HTML, không phải là phần tử HTML",
+            "D": "Đặt tên trang web"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Phần tử gốc (root) của cây HTML là:",
+          "options": {
+            "A": "<  head  >",
+            "B": "<  body  >",
+            "C": "<  div  >",
+            "D": "<  html  >"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Phần tử <  html  > thường chứa hai phần tử con nào?",
+          "options": {
+            "A": "<  title  > và <  meta  >",
+            "B": "<  head  > và <  body  >",
+            "C": "<  div  > và <  p  >",
+            "D": "<  h1  > và <  p  >"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Phần tử nào chứa các thông tin liên quan đến toàn bộ trang web (tên trang, mã hoá\\ldots )?",
+          "options": {
+            "A": "<  body  >",
+            "B": "<  head  >",
+            "C": "<  div  >",
+            "D": "<  p  >"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Nội dung hiển thị chính của trang web được đặt trong phần tử nào?",
+          "options": {
+            "A": "<  head  >",
+            "B": "<  meta  >",
+            "C": "<  body  >",
+            "D": "<  title  >"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "< meta charset = \"utf-8\" > dùng để làm gì?",
+          "options": {
+            "A": "Đặt tên trang",
+            "B": "Mô tả cách mã hoá văn bản trên trang web (Unicode UTF-8)",
+            "C": "Tạo tiêu đề",
+            "D": "Chèn ảnh"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Phần tử <  title  > có đặc điểm nào sau đây?",
+          "options": {
+            "A": "Nằm trong",
+            "B": "Có thể chứa phần tử con",
+            "C": "Nằm trong , chỉ chứa văn bản thường",
+            "D": "Hiển thị ngay trên trang web"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Các thẻ định dạng tiêu đề giảm cấp dần theo thứ tự nào?",
+          "options": {
+            "A": "< h6 >, …, < h1 >",
+            "B": "< h1 >, < h2 >, …, < h6 >",
+            "C": "< h1 >, < h3 >, < h2 >",
+            "D": "Không có thứ tự"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Cú pháp nào là dòng chú thích trong HTML?",
+          "options": {
+            "A": "//  chú thích",
+            "B": "/*  chú thích   */",
+            "C": "< ! --  chú thích  --",
+            "D": "#  chú thích"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Cấu trúc các phần tử của một tệp HTML có dạng:",
+          "options": {
+            "A": "Bảng",
+            "B": "Danh sách",
+            "C": "Cây thông tin (quan hệ cha – con)",
+            "D": "Vòng tròn"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Nếu gõ nội dung trong tệp HTML rồi nhấn Enter xuống dòng nhiều lần thì trình duyệt sẽ:",
+          "options": {
+            "A": "Ngắt thành nhiều đoạn",
+            "B": "Không nhận biết dấu xuống dòng, chỉ coi là một dòng",
+            "C": "Báo lỗi",
+            "D": "Tự thêm thẻ"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q20"
+        },
+        {
+          "text": "Phần mềm nào không phải phần mềm soạn thảo HTML?",
+          "options": {
+            "A": "Notepad++",
+            "B": "Sublime Text",
+            "C": "Notepad",
+            "D": "Cốc Cốc"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q21"
+        },
+        {
+          "text": "Để Notepad++ hiển thị và hỗ trợ đúng ngôn ngữ HTML, ta chọn:",
+          "options": {
+            "A": "View \\rightarrow  Syntax \\rightarrow  HTML",
+            "B": "Language \\rightarrow  H \\rightarrow  HTML",
+            "C": "File \\rightarrow  HTML",
+            "D": "Edit \\rightarrow  HTML"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q22"
+        },
+        {
+          "text": "Trên hệ điều hành macOS, phần mềm tương tự Notepad là:",
+          "options": {
+            "A": "Word",
+            "B": "TextEdit",
+            "C": "Pages",
+            "D": "Sublime Text"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q23"
+        },
+        {
+          "text": "Để xem kết quả khi soạn HTML trên trang web trực tuyến, ta nhấn nút:",
+          "options": {
+            "A": "Save",
+            "B": "Open",
+            "C": "Run",
+            "D": "Print"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q24"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Về trang web và HTML:",
+          "items": {
+            "a": {
+              "text": "Trang web hiển thị trên trình duyệt được tạo ra từ các tệp văn bản gọi là tệp nguồn (mã nguồn).",
+              "answer": true
+            },
+            "b": {
+              "text": "HTML là ngôn ngữ lập trình dùng để tính toán dữ liệu.  \\rightarrow",
+              "answer": false
+            },
+            "c": {
+              "text": "Trình duyệt web đọc mã nguồn HTML để hiển thị nội dung trang web.  \\rightarrow",
+              "answer": true
+            },
+            "d": {
+              "text": "Tệp HTML chỉ có thể có phần mở rộng .html, không thể là .htm.  \\rightarrow",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Về thẻ HTML:",
+          "items": {
+            "a": {
+              "text": "Tên thẻ HTML không phân biệt chữ hoa, chữ thường.  \\rightarrow",
+              "answer": true
+            },
+            "b": {
+              "text": "Mọi thẻ HTML đều phải có đủ thẻ bắt đầu và thẻ kết thúc.  \\rightarrow",
+              "answer": false
+            },
+            "c": {
+              "text": "và  là các thẻ đơn.  \\rightarrow",
+              "answer": true
+            },
+            "d": {
+              "text": "Thông tin thuộc tính của thẻ được ghi trong thẻ kết thúc.  \\rightarrow",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Về phần tử HTML:",
+          "items": {
+            "a": {
+              "text": "Phần tử HTML gồm thẻ bắt đầu, nội dung và thẻ kết thúc.  \\rightarrow",
+              "answer": true
+            },
+            "b": {
+              "text": "Các phần tử HTML không thể lồng nhau.  \\rightarrow",
+              "answer": false
+            },
+            "c": {
+              "text": "là một phần tử HTML.  \\rightarrow",
+              "answer": false
+            },
+            "d": {
+              "text": "là cú pháp viết chú thích trong HTML.  \\rightarrow",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Về cấu trúc cơ bản của tệp HTML:",
+          "items": {
+            "a": {
+              "text": "là phần tử gốc của cây HTML.  \\rightarrow",
+              "answer": true
+            },
+            "b": {
+              "text": "Phần tử  được đặt trong phần tử .  \\rightarrow",
+              "answer": false
+            },
+            "c": {
+              "text": "và  là hai phần tử con của .  \\rightarrow",
+              "answer": true
+            },
+            "d": {
+              "text": "Phần tử  có thể chứa các phần tử con.  \\rightarrow",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        },
+        {
+          "text": "Quan sát tệp newpage.html (Hình 7.2):",
+          "items": {
+            "a": {
+              "text": "cho biết văn bản được mã hoá theo Unicode UTF-8.  \\rightarrow",
+              "answer": true
+            },
+            "b": {
+              "text": "Nội dung trong  hiển thị ngay trong vùng nội dung của trang web.  \\rightarrow",
+              "answer": false
+            },
+            "c": {
+              "text": "Phần tử  chứa các phần tử , , , .  \\rightarrow",
+              "answer": true
+            },
+            "d": {
+              "text": "Nhấn Enter trong tệp HTML sẽ tạo ra một đoạn văn bản mới trên trang web.  \\rightarrow",
+              "answer": false
+            }
+          },
+          "id": "p2_q5"
+        },
+        {
+          "text": "Về phần mềm soạn thảo HTML:",
+          "items": {
+            "a": {
+              "text": "Notepad là phần mềm soạn thảo văn bản đơn giản có sẵn trên Windows.  \\rightarrow",
+              "answer": true
+            },
+            "b": {
+              "text": "Cốc Cốc là phần mềm soạn thảo HTML chuyên nghiệp.  \\rightarrow",
+              "answer": false
+            },
+            "c": {
+              "text": "Notepad++ là phần mềm miễn phí, mã nguồn mở.  \\rightarrow",
+              "answer": true
+            },
+            "d": {
+              "text": "Soạn thảo HTML trực tuyến cần máy tính có kết nối Internet và trình duyệt.  \\rightarrow",
+              "answer": true
+            }
+          },
+          "id": "p2_q6"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "HTML là viết tắt của cụm từ tiếng Anh nào?",
+          "answer": "Hypertext Markup Language",
+          "accepted_answers": [
+            "Hypertext Markup Language"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Ngoài .htm, phần mở rộng nào thường dùng cho tệp HTML?",
+          "answer": ".html",
+          "accepted_answers": [
+            ".html"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Phần tử nào là phần tử gốc của cây HTML?",
+          "answer": "<  html  >",
+          "accepted_answers": [
+            "<  html  >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Kể tên hai phần tử con trực tiếp của phần tử <html>.",
+          "answer": "< head > và < body >",
+          "accepted_answers": [
+            "< head > và < body >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Thẻ nào dùng để tạo tiêu đề cấp 1?",
+          "answer": "< h1 >",
+          "accepted_answers": [
+            "< h1 >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Có tất cả bao nhiêu thẻ định dạng tiêu đề (từ < h1 > đến < h6 >)?",
+          "answer": "6",
+          "accepted_answers": [
+            "6"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        },
+        {
+          "text": "Thẻ nào dùng để tạo một đoạn văn bản?",
+          "answer": "< p >",
+          "accepted_answers": [
+            "< p >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q7"
+        },
+        {
+          "text": "Thẻ đơn nào dùng để tạo dòng kẻ ngang?",
+          "answer": "< hr >",
+          "accepted_answers": [
+            "< hr >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q8"
+        },
+        {
+          "text": "Phần tử nào chứa tên trang web (hiển thị trên thẻ trình duyệt và trong kết quả tìm kiếm)?",
+          "answer": "< title >",
+          "accepted_answers": [
+            "< title >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q9"
+        },
+        {
+          "text": "Phần tử nào chứa toàn bộ nội dung hiển thị của trang web?",
+          "answer": "< body >",
+          "accepted_answers": [
+            "< body >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q10"
+        },
+        {
+          "text": "Dòng nào ở đầu tệp HTML thông báo cho trình duyệt biết đây là tệp HTML?",
+          "answer": "< !DOCTYPE html >",
+          "accepted_answers": [
+            "< !DOCTYPE html >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q11"
+        },
+        {
+          "text": "Đoạn < p >Thông tin này in < b > đậm < /b >, in < I > nghiêng < /I >  in < u > gạch dưới < /u >, in bình thường .< /p > có bao nhiêu phần tử HTML?",
+          "answer": "4 (p, b, i, u)",
+          "accepted_answers": [
+            "4 (p, b, i, u)"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q12"
+        },
+        {
+          "text": "Trong cây HTML của đoạn văn bản ở câu trên, phần tử nào là gốc?",
+          "answer": "< p >",
+          "accepted_answers": [
+            "< p >"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q13"
+        },
+        {
+          "text": "Để Notepad++ hỗ trợ ngôn ngữ HTML, ta chọn lệnh nào?",
+          "answer": "Language \\rightarrow  H \\rightarrow  HTML",
+          "accepted_answers": [
+            "Language \\rightarrow  H \\rightarrow  HTML"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q14"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_495d9f0d",
+  "created_by": "thanhtruc",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 6.0,
+    "part1_per_question": 0.25,
+    "part2_total": 6,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": -2.0,
+    "part3_per_question": 0.0,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": true
+}

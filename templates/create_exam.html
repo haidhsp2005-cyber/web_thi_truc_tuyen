@@ -353,6 +353,305 @@
     </div>
   </div>
 
+  <!-- ======= BỘ CÔNG CỤ SOẠN THẢO CÔNG THỨC TOÁN - LÝ - HÓA TRỰC QUAN (KHÔNG CẦN NHỚ LATEX) ======= -->
+  <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-200 mb-6 transition-all">
+    <div class="flex items-center justify-between cursor-pointer select-none" @click="showFormulaToolbar = !showFormulaToolbar">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🧮</span>
+        <div>
+          <h2 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2 flex-wrap">
+            <span>Công cụ đánh trực tiếp công thức Toán - Lý - Hóa</span>
+            <span class="text-[11px] bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full font-bold">1-Click Chèn Nhanh • Không Cần Gõ LaTeX</span>
+          </h2>
+          <p class="text-xs text-gray-500 mt-0.5">Click vào ô câu hỏi/phương án cần sửa, sau đó bấm nút ký hiệu/công thức bên dưới để chèn tự động</p>
+        </div>
+      </div>
+      <button type="button" class="text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 flex items-center gap-1 cursor-pointer">
+        <span x-text="showFormulaToolbar ? 'Thu gọn ▲' : 'Mở rộng ▼'"></span>
+      </button>
+    </div>
+
+    <!-- Nội dung thanh công cụ -->
+    <div x-show="showFormulaToolbar" x-cloak class="mt-4 pt-4 border-t border-gray-100 space-y-3">
+      <!-- Tabs chuyên môn -->
+      <div class="flex gap-2 border-b pb-2.5 overflow-x-auto text-xs font-bold">
+        <button type="button" @click="formulaTab = 'math'" 
+          :class="formulaTab === 'math' ? 'bg-blue-600 text-white shadow-xs' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          class="px-3.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5">
+          <span>📐</span> <span>Môn Toán</span>
+        </button>
+        <button type="button" @click="formulaTab = 'physics'" 
+          :class="formulaTab === 'physics' ? 'bg-amber-600 text-white shadow-xs' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          class="px-3.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5">
+          <span>⚡</span> <span>Môn Vật Lí</span>
+        </button>
+        <button type="button" @click="formulaTab = 'chem'" 
+          :class="formulaTab === 'chem' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          class="px-3.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5">
+          <span>🧪</span> <span>Môn Hóa Học</span>
+        </button>
+        <button type="button" @click="formulaTab = 'builder'" 
+          :class="formulaTab === 'builder' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          class="px-3.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5">
+          <span>✨</span> <span>Soạn trực quan (Tự sinh công thức)</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: TOÁN HỌC -->
+      <div x-show="formulaTab === 'math'" class="space-y-3">
+        <!-- Nhóm công thức cấu trúc -->
+        <div>
+          <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Công thức cấu trúc & Đại số:</div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" @click="insertFormula('$\\frac{a}{b}$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Phân số a/b">
+              a/b (Phân số)
+            </button>
+            <button type="button" @click="insertFormula('$\\sqrt{x}$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Căn bậc hai">
+              √x (Căn bậc 2)
+            </button>
+            <button type="button" @click="insertFormula('$\\sqrt[3]{x}$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Căn bậc 3">
+              ∛x (Căn bậc 3)
+            </button>
+            <button type="button" @click="insertFormula('x^{2}')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Số mũ x bình phương">
+              x² (Mũ 2)
+            </button>
+            <button type="button" @click="insertFormula('x^{n}')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Số mũ n">
+              xⁿ (Mũ n)
+            </button>
+            <button type="button" @click="insertFormula('x_{1}')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Chỉ số dưới">
+              x₁ (Chỉ số dưới)
+            </button>
+            <button type="button" @click="insertFormula('$\\vec{a}$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Vectơ a">
+              a⃗ (Vectơ)
+            </button>
+            <button type="button" @click="insertFormula('$\\vec{AB}$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Vectơ AB">
+              AB⃗ (Vectơ AB)
+            </button>
+            <button type="button" @click="insertFormula('$\\int_{a}^{b} f(x)dx$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Tích phân từ a đến b">
+              ∫ Tích phân
+            </button>
+            <button type="button" @click="insertFormula('$\\lim_{x \\to x_0} f(x)$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Giới hạn lim">
+              lim (Giới hạn)
+            </button>
+            <button type="button" @click="insertFormula('$\\begin{cases} ax + by = c \\\\ dx + ey = f \\end{cases}$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Hệ 2 phương trình">
+              { Hệ PT
+            </button>
+            <button type="button" @click="insertFormula('f\'(x)')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Đạo hàm f'(x)">
+              f'(x) Đạo hàm
+            </button>
+            <button type="button" @click="insertFormula('^\\circ')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Độ">
+              ° (Độ)
+            </button>
+            <button type="button" @click="insertFormula('$\\widehat{ABC}$')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg text-xs font-semibold cursor-pointer" title="Góc ABC">
+              ABĈ (Góc)
+            </button>
+          </div>
+        </div>
+
+        <!-- Nhóm quan hệ & Ký hiệu toán học -->
+        <div>
+          <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Ký hiệu so sánh, tập hợp & hình học:</div>
+          <div class="flex flex-wrap gap-1">
+            <template x-for="sym in ['\\le', '\\ge', '\\ne', '\\approx', '\\pm', '\\in', '\\notin', '\\subset', '\\cup', '\\cap', '\\emptyset', '\\mathbb{R}', '\\mathbb{N}', '\\mathbb{Z}', '\\mathbb{Q}', '\\perp', '\\parallel', '\\Delta', '\\infty', '\\pi', '\\alpha', '\\beta']" :key="sym">
+              <button type="button" @click="insertFormula(sym.startsWith('\\mathbb') ? `$${sym}$` : (sym.startsWith('\\') ? `$${sym}$` : sym))"
+                class="px-2 py-1 bg-gray-50 hover:bg-blue-100 hover:text-blue-900 text-gray-800 border border-gray-200 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                x-text="sym.replace('\\mathbb{', '').replace('}', '').replace('\\', '')"></button>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: VẬT LÍ -->
+      <div x-show="formulaTab === 'physics'" class="space-y-3">
+        <div>
+          <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Điện - Từ & Dao động cơ:</div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" @click="insertFormula('$\\Omega$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              Ω (Điện trở Ohm)
+            </button>
+            <button type="button" @click="insertFormula('$\\text{k}\\Omega$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              kΩ (Kilo-Ohm)
+            </button>
+            <button type="button" @click="insertFormula('$\\mu\\text{F}$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              μF (Micro-Fara)
+            </button>
+            <button type="button" @click="insertFormula('$\\mu\\text{m}$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              μm (Micrômét)
+            </button>
+            <button type="button" @click="insertFormula('$\\lambda$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              λ (Bước sóng)
+            </button>
+            <button type="button" @click="insertFormula('$\\omega$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              ω (Tần số góc)
+            </button>
+            <button type="button" @click="insertFormula('$\\varphi$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              φ (Pha dao động)
+            </button>
+            <button type="button" @click="insertFormula('$\\Delta\\varphi$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              Δφ (Độ lệch pha)
+            </button>
+            <button type="button" @click="insertFormula('x = A\\cos(\\omega t + \\varphi)')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              x = A.cos(ωt+φ)
+            </button>
+            <button type="button" @click="insertFormula('$\\vec{F}$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              F⃗ (Lực)
+            </button>
+            <button type="button" @click="insertFormula('$\\vec{v}$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              v⃗ (Vận tốc)
+            </button>
+            <button type="button" @click="insertFormula('$\\vec{a}$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              a⃗ (Gia tốc)
+            </button>
+            <button type="button" @click="insertFormula('$\\vec{B}$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              B⃗ (Từ trường)
+            </button>
+            <button type="button" @click="insertFormula('$\\mathcal{E}$')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              ℰ (Suất điện động)
+            </button>
+            <button type="button" @click="insertFormula('^\\circ\\text{C}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold cursor-pointer">
+              °C (Nhiệt độ)
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Đơn vị đo lường chuẩn:</div>
+          <div class="flex flex-wrap gap-1">
+            <template x-for="unit in ['m/s', 'm/s^2', 'rad/s', 'Hz', 'N', 'J', 'W', 'V', 'A', 'kg', 'pF', 'nF']" :key="unit">
+              <button type="button" @click="insertFormula(unit)"
+                class="px-2 py-1 bg-gray-50 hover:bg-amber-100 hover:text-amber-900 text-gray-800 border border-gray-200 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                x-text="unit"></button>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: HÓA HỌC -->
+      <div x-show="formulaTab === 'chem'" class="space-y-3">
+        <div>
+          <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mũi tên phản ứng & Ký hiệu trạng thái:</div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" @click="insertFormula(' $\\rightarrow$ ')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-lg text-xs font-semibold cursor-pointer">
+              → (Mũi tên phản ứng)
+            </button>
+            <button type="button" @click="insertFormula(' $\\rightleftharpoons$ ')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-lg text-xs font-semibold cursor-pointer">
+              ⇌ (Thuận nghịch)
+            </button>
+            <button type="button" @click="insertFormula(' $\\xrightarrow{t^\\circ}$ ')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-lg text-xs font-semibold cursor-pointer">
+              →(t°) Có nhiệt độ
+            </button>
+            <button type="button" @click="insertFormula(' $\\xrightarrow{\\text{xt}, t^\\circ}$ ')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-lg text-xs font-semibold cursor-pointer">
+              →(xt, t°) Xúc tác
+            </button>
+            <button type="button" @click="insertFormula('$\\downarrow$')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-lg text-xs font-semibold cursor-pointer">
+              ↓ (Kết tủa)
+            </button>
+            <button type="button" @click="insertFormula('$\\uparrow$')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-lg text-xs font-semibold cursor-pointer">
+              ↑ (Khí bay lên)
+            </button>
+            <button type="button" @click="insertFormula('(s)')" class="px-2 py-1 bg-gray-50 hover:bg-emerald-100 text-gray-800 border rounded-lg text-xs font-medium cursor-pointer">(s) rắn</button>
+            <button type="button" @click="insertFormula('(l)')" class="px-2 py-1 bg-gray-50 hover:bg-emerald-100 text-gray-800 border rounded-lg text-xs font-medium cursor-pointer">(l) lỏng</button>
+            <button type="button" @click="insertFormula('(g)')" class="px-2 py-1 bg-gray-50 hover:bg-emerald-100 text-gray-800 border rounded-lg text-xs font-medium cursor-pointer">(g) khí</button>
+            <button type="button" @click="insertFormula('(aq)')" class="px-2 py-1 bg-gray-50 hover:bg-emerald-100 text-gray-800 border rounded-lg text-xs font-medium cursor-pointer">(aq) dung dịch</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Ion & Chất hóa học mẫu:</div>
+          <div class="flex flex-wrap gap-1.5">
+            <template x-for="item in [
+              {lbl: 'Fe²⁺', val: '$\\text{Fe}^{2+}$'},
+              {lbl: 'Fe³⁺', val: '$\\text{Fe}^{3+}$'},
+              {lbl: 'Cu²⁺', val: '$\\text{Cu}^{2+}$'},
+              {lbl: 'Al³⁺', val: '$\\text{Al}^{3+}$'},
+              {lbl: 'SO₄²⁻', val: '$\\text{SO}_4^{2-}$'},
+              {lbl: 'NO₃⁻', val: '$\\text{NO}_3^-$'},
+              {lbl: 'OH⁻', val: '$\\text{OH}^-$'},
+              {lbl: 'Cl⁻', val: '$\\text{Cl}^-$'},
+              {lbl: 'H⁺', val: '$\\text{H}^+$'},
+              {lbl: 'H₂SO₄', val: '$\\text{H}_2\\text{SO}_4$'},
+              {lbl: 'CO₂', val: '$\\text{CO}_2$'},
+              {lbl: 'H₂O', val: '$\\text{H}_2\\text{O}$'},
+              {lbl: 'CaCO₃', val: '$\\text{CaCO}_3$'},
+              {lbl: 'Fe₂O₃', val: '$\\text{Fe}_2\\text{O}_3$'},
+              {lbl: 'CuSO₄', val: '$\\text{CuSO}_4$'},
+              {lbl: 'KMnO₄', val: '$\\text{KMnO}_4$'},
+              {lbl: 'NaOH', val: '$\\text{NaOH}$'}
+            ]" :key="item.lbl">
+              <button type="button" @click="insertFormula(item.val)"
+                class="px-2.5 py-1 bg-emerald-50/60 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                x-text="item.lbl"></button>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: SOẠN TRỰC QUAN (TỰ SINH CÔNG THỨC) -->
+      <div x-show="formulaTab === 'builder'" class="space-y-4 bg-gray-50/80 p-4 rounded-2xl border border-gray-200">
+        <!-- Chuyển đổi công thức Hóa học tự nhiên -->
+        <div class="bg-white p-3.5 rounded-xl border border-emerald-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+              <span>🧪</span> <span>Bộ chuyển đổi phương trình Hóa học tự động (Không cần gõ LaTeX)</span>
+            </span>
+            <span class="text-[11px] text-gray-500">Ví dụ: 2Fe + 3Cl2 -> 2FeCl3</span>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" x-model="builderChem" placeholder="Nhập chất hoặc phương trình, ví dụ: CaCO3 + 2HCl -> CaCl2 + CO2^ + H2O"
+              class="flex-1 bg-gray-50 border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-medium focus:bg-white focus:outline-none focus:border-emerald-500">
+            <button type="button" @click="insertChemFromBuilder()"
+              class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer whitespace-nowrap">
+              Chèn vào câu hỏi
+            </button>
+          </div>
+          <div x-show="builderChem.trim()" class="text-xs text-emerald-800 bg-emerald-50/70 p-2 rounded-lg border border-emerald-100 flex items-center gap-2">
+            <span class="font-bold">Xem trước:</span>
+            <span x-html="renderMathHtml(convertNaturalToChem(builderChem))"></span>
+          </div>
+        </div>
+
+        <!-- Trình tạo phân số & Căn thức nhanh -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <!-- Phân số -->
+          <div class="bg-white p-3 rounded-xl border border-blue-200 space-y-2">
+            <span class="text-xs font-bold text-blue-900 block">📐 Tạo phân số:</span>
+            <div class="space-y-1">
+              <input type="text" x-model="builderNum" placeholder="Tử số (trên)" class="w-full border rounded-lg px-2.5 py-1 text-xs">
+              <div class="border-b border-gray-400 my-0.5"></div>
+              <input type="text" x-model="builderDen" placeholder="Mẫu số (dưới)" class="w-full border rounded-lg px-2.5 py-1 text-xs">
+            </div>
+            <button type="button" @click="insertFractionFromBuilder()" class="w-full py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer">
+              Chèn phân số
+            </button>
+          </div>
+
+          <!-- Căn thức -->
+          <div class="bg-white p-3 rounded-xl border border-indigo-200 space-y-2">
+            <span class="text-xs font-bold text-indigo-900 block">📐 Tạo căn bậc 2:</span>
+            <input type="text" x-model="builderRad" placeholder="Biểu thức dưới căn" class="w-full border rounded-lg px-2.5 py-1 text-xs">
+            <div class="text-[11px] text-gray-500">Xem trước: √(<span x-text="builderRad || 'x'"></span>)</div>
+            <button type="button" @click="insertSqrtFromBuilder()" class="w-full py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold cursor-pointer">
+              Chèn căn thức
+            </button>
+          </div>
+
+          <!-- Số mũ / Lũy thừa -->
+          <div class="bg-white p-3 rounded-xl border border-purple-200 space-y-2">
+            <span class="text-xs font-bold text-purple-900 block">📐 Tạo số mũ (xⁿ):</span>
+            <div class="flex gap-1.5">
+              <input type="text" x-model="builderBase" placeholder="Cơ số (x)" class="w-1/2 border rounded-lg px-2 py-1 text-xs">
+              <input type="text" x-model="builderExp" placeholder="Số mũ (2)" class="w-1/2 border rounded-lg px-2 py-1 text-xs">
+            </div>
+            <div class="text-[11px] text-gray-500">Xem trước: <span x-text="builderBase || 'x'"></span>^<span x-text="builderExp || '2'"></span></div>
+            <button type="button" @click="insertPowerFromBuilder()" class="w-full py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold cursor-pointer">
+              Chèn số mũ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ======= TABS CHUYỂN PHẦN ======= -->
   <div class="flex gap-2 overflow-x-auto pb-1">
     <button @click="activeTab='p1'" :class="activeTab==='p1' ? 'active':''" class="tab-btn whitespace-nowrap">
@@ -421,6 +720,9 @@
                 <input type="file" accept="image/*" class="hidden" :id="'p1_img_' + q._id" @change="uploadQuestionImage($event, q)">
                 <button type="button" @click="document.getElementById('p1_img_' + q._id).click()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2.5 py-1 rounded-lg border border-indigo-200 flex items-center gap-1 cursor-pointer transition-colors">
                   <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
+                </button>
+                <button type="button" @click="showFormulaToolbar = true; window.scrollTo({top: 300, behavior: 'smooth'})" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold px-2.5 py-1 rounded-lg border border-blue-200 flex items-center gap-1 cursor-pointer transition-colors" title="Mở bảng ký hiệu & công thức Toán - Lý - Hóa">
+                  <span>🧮</span> <span>Bảng công thức</span>
                 </button>
                 <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
                   <span>🗑️ Xóa ảnh</span>
@@ -553,6 +855,9 @@
                 <button type="button" @click="document.getElementById('p2_img_' + q._id).click()" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold px-2.5 py-1 rounded-lg border border-purple-200 flex items-center gap-1 cursor-pointer transition-colors">
                   <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
                 </button>
+                <button type="button" @click="showFormulaToolbar = true; window.scrollTo({top: 300, behavior: 'smooth'})" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold px-2.5 py-1 rounded-lg border border-purple-200 flex items-center gap-1 cursor-pointer transition-colors" title="Mở bảng ký hiệu & công thức Toán - Lý - Hóa">
+                  <span>🧮</span> <span>Bảng công thức</span>
+                </button>
                 <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
                   <span>🗑️ Xóa ảnh</span>
                 </button>
@@ -668,6 +973,9 @@
                 <button type="button" @click="document.getElementById('p3_img_' + q._id).click()" class="text-xs bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-2.5 py-1 rounded-lg border border-teal-200 flex items-center gap-1 cursor-pointer transition-colors">
                   <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
                 </button>
+                <button type="button" @click="showFormulaToolbar = true; window.scrollTo({top: 300, behavior: 'smooth'})" class="text-xs bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-2.5 py-1 rounded-lg border border-teal-200 flex items-center gap-1 cursor-pointer transition-colors" title="Mở bảng ký hiệu & công thức Toán - Lý - Hóa">
+                  <span>🧮</span> <span>Bảng công thức</span>
+                </button>
                 <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
                   <span>🗑️ Xóa ảnh</span>
                 </button>
@@ -754,6 +1062,9 @@
                 <input type="file" accept="image/*" class="hidden" :id="'p4_img_' + q._id" @change="uploadQuestionImage($event, q)">
                 <button type="button" @click="document.getElementById('p4_img_' + q._id).click()" class="text-xs bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold px-2.5 py-1 rounded-lg border border-orange-200 flex items-center gap-1 cursor-pointer transition-colors">
                   <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
+                </button>
+                <button type="button" @click="showFormulaToolbar = true; window.scrollTo({top: 300, behavior: 'smooth'})" class="text-xs bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold px-2.5 py-1 rounded-lg border border-orange-200 flex items-center gap-1 cursor-pointer transition-colors" title="Mở bảng ký hiệu & công thức Toán - Lý - Hóa">
+                  <span>🧮</span> <span>Bảng công thức</span>
                 </button>
                 <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
                   <span>🗑️ Xóa ảnh</span>
@@ -1161,6 +1472,16 @@ function examBuilder() {
       });
     },
     
+    // Toolbar công thức Toán - Lý - Hóa trực quan
+    showFormulaToolbar: true,
+    formulaTab: 'math',
+    builderNum: '',
+    builderDen: '',
+    builderRad: '',
+    builderBase: '',
+    builderExp: '',
+    builderChem: '',
+
     // Import modal state
     showImportModal: false,
     importText: '',
@@ -1569,9 +1890,77 @@ function examBuilder() {
       }
     },
 
+    insertFormula(code) {
+      if (!code) return;
+      const el = window.__activeEditorElement;
+      if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
+        const start = el.selectionStart ?? el.value.length;
+        const end = el.selectionEnd ?? el.value.length;
+        const val = el.value || '';
+        el.value = val.substring(0, start) + code + val.substring(end);
+        el.selectionStart = el.selectionEnd = start + code.length;
+        // Kích hoạt event input để Alpine.js cập nhật reactive model hai chiều
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.focus();
+        this.showMsg(`Đã chèn ký hiệu: ${code}`, true);
+      } else {
+        // Sao chép vào clipboard nếu chưa chọn ô nào
+        navigator.clipboard.writeText(code).then(() => {
+          this.showMsg(`Đã sao chép "${code}". Thầy cô hãy click vào ô câu hỏi cần sửa rồi nhấn Ctrl + V để dán!`, true);
+        }).catch(() => {
+          this.showMsg(`Công thức: ${code} (Hãy click vào ô câu hỏi trước khi bấm chèn)`, true);
+        });
+      }
+    },
+
+    insertFractionFromBuilder() {
+      const n = (this.builderNum || '').trim() || 'a';
+      const d = (this.builderDen || '').trim() || 'b';
+      this.insertFormula(`$\\frac{${n}}{${d}}$`);
+      this.builderNum = '';
+      this.builderDen = '';
+    },
+
+    insertSqrtFromBuilder() {
+      const r = (this.builderRad || '').trim() || 'x';
+      this.insertFormula(`$\\sqrt{${r}}$`);
+      this.builderRad = '';
+    },
+
+    insertPowerFromBuilder() {
+      const b = (this.builderBase || '').trim() || 'x';
+      const e = (this.builderExp || '').trim() || '2';
+      this.insertFormula(`${b}^{${e}}`);
+      this.builderBase = '';
+      this.builderExp = '';
+    },
+
+    insertChemFromBuilder() {
+      const raw = (this.builderChem || '').trim();
+      if (!raw) return;
+      const code = this.convertNaturalToChem(raw);
+      this.insertFormula(code);
+      this.builderChem = '';
+    },
+
+    convertNaturalToChem(raw) {
+      if (!raw) return '';
+      let s = String(raw).trim();
+      // Chuyển đổi các mũi tên & điều kiện tự nhiên
+      s = s.replace(/<->|<=>|⇄|⇌/g, ' \\rightleftharpoons ')
+           .replace(/->|-->|→/g, ' \\rightarrow ')
+           .replace(/\^|↑/g, ' \\uparrow ')
+           .replace(/(?:v|↓)(?=\s|$|\+|\))/g, ' \\downarrow ');
+      // Tự động chuyển số sau chữ cái hoặc sau ngoặc thành chỉ số dưới: H2SO4 -> H_2SO_4
+      s = s.replace(/([A-Za-z\)])(\d+)/g, '$1_{$2}');
+      // Ion điện tích: Fe3+ -> Fe^{3+}, SO4 2- -> SO_4^{2-}
+      s = s.replace(/(\d+)\+/g, '^{$1+}').replace(/(\d+)\-/g, '^{$1-}');
+      return `$\\text{${s.replace(/ /g, '~')}}$`.replace(/~\\rightarrow~/g, ' \\rightarrow ').replace(/~\\rightleftharpoons~/g, ' \\rightleftharpoons ').replace(/~\\uparrow~/g, ' \\uparrow ').replace(/~\\downarrow~/g, ' \\downarrow ');
+    },
+
     hasMath(str) {
       if (!str) return false;
-      return /[\$\\_{}\^]|\\frac|\\sqrt|\\vec|\\int|\\lim|\\alpha|\\beta|\\gamma|\\pi|\\le|\\ge|\\neq|\\pm|\\times|\\cdot|\\mathbf|\\mathbb|\\mathcal|\\left|\\right|\\\(|\\\[/.test(String(str));
+      return /[\$\\_{}\^]|\\frac|\\sqrt|\\vec|\\int|\\lim|\\alpha|\\beta|\\gamma|\\pi|\\le|\\ge|\\neq|\\pm|\\times|\\cdot|\\mathbf|\\mathbb|\\mathcal|\\left|\\right|\\\(|\\\[|\\ce|\\Omega|\\mu|\\lambda|\\omega|\\varphi|\\rightarrow|\\rightleftharpoons|\\downarrow|\\uparrow|\\perp|\\parallel|°C|℃|°|→|⇌|↓|↑/.test(String(str));
     },
 
     renderMathHtml(rawText) {
@@ -1929,6 +2318,13 @@ function examBuilder() {
     }
   };
 }
+
+// Lắng nghe sự kiện focus toàn cục trên bất kỳ ô nhập liệu nào để thanh công cụ chèn đúng vị trí
+document.addEventListener('focusin', (e) => {
+  if (e.target && (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')) {
+    window.__activeEditorElement = e.target;
+  }
+});
 </script>
 </body>
 </html>

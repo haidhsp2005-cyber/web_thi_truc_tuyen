@@ -319,8 +319,8 @@ def get_submission(submission_id: str) -> Optional[dict]:
     return result
 
 
-def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[dict]:
-    """Lấy tất cả bài nộp (cho admin), hỗ trợ lọc linh hoạt theo Đề thi và theo Lớp."""
+def get_all_submissions(exam_id: str = None, student_class: str = None, submission_date: str = None) -> List[dict]:
+    """Lấy tất cả bài nộp (cho admin), hỗ trợ lọc linh hoạt theo Đề thi, theo Lớp và theo Ngày nộp (YYYY-MM-DD)."""
     conn = get_connection()
     c = conn.cursor()
     
@@ -348,6 +348,10 @@ def get_all_submissions(exam_id: str = None, student_class: str = None) -> List[
     if student_class and student_class.strip():
         conditions.append("UPPER(student_class) = UPPER(?)")
         params.append(student_class.strip())
+    if submission_date and submission_date.strip():
+        clean_date = submission_date.strip()
+        conditions.append("submitted_at LIKE ?")
+        params.append(f"{clean_date}%")
         
     if conditions:
         query += " WHERE " + " AND ".join(conditions)

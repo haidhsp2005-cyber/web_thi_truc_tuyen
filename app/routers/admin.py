@@ -380,15 +380,17 @@ async def remove_api_key(key_suffix: str):
 
 
 @router.get("/submissions")
-async def get_submissions(request: Request, exam_id: str = None, student_class: str = None, subject: str = None):
-    """Lấy danh sách bài nộp — Super Admin thấy tất cả, giáo viên chỉ thấy bài nộp đề do chính mình tạo. Hỗ trợ lọc theo môn, đề thi và lớp."""
+async def get_submissions(request: Request, exam_id: str = None, student_class: str = None, subject: str = None, date: str = None, teacher: str = None):
+    """Lấy danh sách bài nộp — Super Admin thấy tất cả, giáo viên chỉ thấy bài nộp đề do chính mình tạo. Hỗ trợ lọc theo môn, đề thi, lớp, ngày nộp và giáo viên tạo."""
     from ..routers.exam_builder import _list_exam_files
     current_user = get_current_user_from_request(request)
     clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
     clean_cls = student_class.strip().upper() if student_class and student_class.strip() and student_class.strip() != "all" else None
     clean_sub = subject.strip().lower() if subject and subject.strip() and subject.strip() != "all" else None
+    clean_date = date.strip() if date and date.strip() and date.strip() != "all" else None
+    clean_teacher = teacher.strip().lower() if teacher and teacher.strip() and teacher.strip() != "all" else None
 
-    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
+    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls, submission_date=clean_date)
     all_exams = _list_exam_files()
 
     # PHÂN QUYỀN CHẶT CHẼ:
@@ -414,6 +416,11 @@ async def get_submissions(request: Request, exam_id: str = None, student_class: 
     if clean_sub:
         subject_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub}
         submissions = [s for s in submissions if s.get('exam_id') in subject_exam_ids or (s.get('subject') or '').strip().lower() == clean_sub]
+
+    # Lọc theo giáo viên tạo đề thi nếu có
+    if clean_teacher:
+        teacher_exam_ids = {e['id'] for e in all_exams if (e.get('created_by') or '').strip().lower() == clean_teacher}
+        submissions = [s for s in submissions if s.get('exam_id') in teacher_exam_ids or (s.get('exam_created_by') or '').strip().lower() == clean_teacher]
 
     return {"submissions": submissions, "total": len(submissions)}
 
@@ -501,15 +508,17 @@ async def clear_all_submissions(request: Request, exam_id: str = None, subject: 
 
 
 @router.get("/stats")
-async def get_stats(request: Request, exam_id: str = None, student_class: str = None, subject: str = None):
-    """Thống kê nhanh cho dashboard — admin thấy tất cả, giáo viên chỉ thấy đề của môn mình. Hỗ trợ lọc theo môn, đề thi và lớp."""
+async def get_stats(request: Request, exam_id: str = None, student_class: str = None, subject: str = None, date: str = None, teacher: str = None):
+    """Thống kê nhanh cho dashboard — admin thấy tất cả, giáo viên chỉ thấy đề của môn mình. Hỗ trợ lọc theo môn, đề thi, lớp, ngày nộp và giáo viên tạo."""
     from ..routers.exam_builder import _list_exam_files
     current_user = get_current_user_from_request(request)
     clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
     clean_cls = student_class.strip().upper() if student_class and student_class.strip() and student_class.strip() != "all" else None
     clean_sub = subject.strip().lower() if subject and subject.strip() and subject.strip() != "all" else None
+    clean_date = date.strip() if date and date.strip() and date.strip() != "all" else None
+    clean_teacher = teacher.strip().lower() if teacher and teacher.strip() and teacher.strip() != "all" else None
 
-    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
+    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls, submission_date=clean_date)
     all_exams = _list_exam_files()
 
     # PHÂN QUYỀN CHẶT CHẼ:
@@ -533,6 +542,11 @@ async def get_stats(request: Request, exam_id: str = None, student_class: str = 
     if clean_sub:
         subject_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub}
         submissions = [s for s in submissions if s.get('exam_id') in subject_exam_ids or (s.get('subject') or '').strip().lower() == clean_sub]
+
+    # Lọc theo giáo viên tạo đề thi nếu có
+    if clean_teacher:
+        teacher_exam_ids = {e['id'] for e in all_exams if (e.get('created_by') or '').strip().lower() == clean_teacher}
+        submissions = [s for s in submissions if s.get('exam_id') in teacher_exam_ids or (s.get('exam_created_by') or '').strip().lower() == clean_teacher]
 
     if not submissions:
         return {
@@ -736,10 +750,12 @@ async def print_class_submissions(
     request: Request,
     student_class: Optional[str] = Query(None),
     exam_id: Optional[str] = Query(None),
-    subject: Optional[str] = Query(None)
+    subject: Optional[str] = Query(None),
+    date: Optional[str] = Query(None),
+    teacher: Optional[str] = Query(None)
 ):
     """
-    In toàn bộ bài thi đã nộp của tất cả học sinh theo Lớp (hoặc theo đề thi / bộ lọc hiện tại):
+    In toàn bộ bài thi đã nộp của tất cả học sinh theo Lớp (hoặc theo đề thi / ngày / giáo viên / bộ lọc hiện tại):
     Tự động phân trang chuẩn A4 (mỗi học sinh 1 trang in riêng biệt) để in ra giấy hoặc lưu thành 1 file PDF trọn bộ.
     """
     from ..routers.exam_builder import _list_exam_files
@@ -747,8 +763,10 @@ async def print_class_submissions(
     clean_eid = exam_id.strip() if exam_id and exam_id.strip() and exam_id.strip() != "all" else None
     clean_cls = student_class.strip().upper() if student_class and student_class.strip() and student_class.strip() != "all" else None
     clean_sub = subject.strip().lower() if subject and subject.strip() and subject.strip() != "all" else None
+    clean_date = date.strip() if date and date.strip() and date.strip() != "all" else None
+    clean_teacher = teacher.strip().lower() if teacher and teacher.strip() and teacher.strip() != "all" else None
 
-    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls)
+    submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls, submission_date=clean_date)
     all_exams = _list_exam_files()
 
     # Lọc theo quyền giáo viên (chỉ Super Admin mặc định mới thấy tất cả môn)
@@ -763,6 +781,11 @@ async def print_class_submissions(
     if clean_sub:
         subject_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub}
         submissions = [s for s in submissions if s.get('exam_id') in subject_exam_ids]
+
+    # Lọc theo giáo viên tạo đề thi nếu có
+    if clean_teacher:
+        teacher_exam_ids = {e['id'] for e in all_exams if (e.get('created_by') or '').strip().lower() == clean_teacher}
+        submissions = [s for s in submissions if s.get('exam_id') in teacher_exam_ids or (s.get('exam_created_by') or '').strip().lower() == clean_teacher]
 
     if not submissions:
         return HTMLResponse(

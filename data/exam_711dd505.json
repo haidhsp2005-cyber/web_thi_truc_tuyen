@@ -1,0 +1,344 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN MĨ THUẬT LỚP 10",
+  "subject": "Mỹ thuật",
+  "grade": "10",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Phù điêu 'Krishna diệt quỷ Kesi' (thế kỉ 5) sử dụng chất liệu gì?",
+          "options": {
+            "A": "Sơn mài",
+            "B": "Đá",
+            "C": "Đất nung",
+            "D": "Đồng"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Nhà thờ Đức Bà Paris là công trình kiến trúc thuộc phong cách nào?",
+          "options": {
+            "A": "Hiện đại",
+            "B": "Byzantine",
+            "C": "Gothic",
+            "D": "Phục hưng"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Tượng 'Bất động Minh Vương' (thế kỉ 13, Nhật Bản) được giới thiệu trong sách giáo khoa Mĩ thuật 10 sử dụng chất liệu chính nào?",
+          "options": {
+            "A": "Đất nung",
+            "B": "Đồng",
+            "C": "Đá",
+            "D": "Gỗ sơn mài"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Trống đồng Ngọc Lũ là hiện vật tiêu biểu của nền văn hóa nào?",
+          "options": {
+            "A": "Văn hóa Lưỡng Hà",
+            "B": "Văn hóa Maya",
+            "C": "Văn hóa Đông Sơn",
+            "D": "Văn hóa Phục hưng"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Đặc điểm nào sau đây thuộc về mĩ thuật hậu hiện đại?",
+          "options": {
+            "A": "Tuân thủ nghiêm ngặt tỉ lệ cơ thể người",
+            "B": "Chỉ tập trung vào hội họa sơn dầu",
+            "C": "Chỉ sử dụng chất liệu đá và đồng",
+            "D": "Mở rộng phương tiện như trình diễn, sắp đặt, video art"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Khi nghiên cứu một tác phẩm mĩ thuật, yếu tố nào sau đây cần được xem xét?",
+          "options": {
+            "A": "Chỉ cần biết giá trị kinh tế",
+            "B": "Tên, tác giả, chất liệu, niên đại, bối cảnh và ngôn ngữ tạo hình",
+            "C": "Chỉ cần biết tên tác giả",
+            "D": "Chỉ cần biết kích thước tác phẩm"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Tác phẩm 'Ấn tượng mặt trời mọc' (1872) của Claude Monet thuộc trường phái nào?",
+          "options": {
+            "A": "Cổ điển",
+            "B": "Hậu hiện đại",
+            "C": "Trừu tượng",
+            "D": "Ấn tượng"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Bảo tàng Louvre, nơi lưu giữ nhiều di sản mĩ thuật thế giới, nằm tại quốc gia nào?",
+          "options": {
+            "A": "Anh",
+            "B": "Ý",
+            "C": "Pháp",
+            "D": "Đức"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Công trình kiến trúc nào là tiêu biểu cho mĩ thuật Hy Lạp cổ đại?",
+          "options": {
+            "A": "Vạn Lý Trường Thành",
+            "B": "Nhà thờ Đức Bà Paris",
+            "C": "Kim tự tháp Ai Cập",
+            "D": "Đền Parthenon"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Đặc điểm nào sau đây là đặc trưng của mĩ thuật thời kì tiền sử?",
+          "options": {
+            "A": "Kiến trúc Gothic với cửa sổ hoa hồng",
+            "B": "Sử dụng kĩ thuật sơn dầu hiện đại",
+            "C": "Tạo hình tượng trưng, khái quát, tận dụng bề mặt tự nhiên",
+            "D": "Sử dụng chất liệu sơn mài tinh xảo"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Tác phẩm 'Chống chiến tranh' (Guernica, 1937) là của họa sĩ nào?",
+          "options": {
+            "A": "Auguste Rodin",
+            "B": "Pablo Picasso",
+            "C": "Wassily Kandinsky",
+            "D": "Claude Monet"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Tác phẩm 'Sự ra đời của thần Vệ nữ' (1486) thuộc thời kì nào?",
+          "options": {
+            "A": "Trung cổ",
+            "B": "Phục hưng",
+            "C": "Hậu hiện đại",
+            "D": "Cận đại"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Nhóm học sinh thực hiện bảng so sánh các nền văn minh cổ đại: Lưỡng Hà, Trung Hoa, Ai Cập và Hy Lạp. Các bạn thảo luận về đặc điểm tạo hình và bối cảnh của từng nền văn minh.",
+          "items": {
+            "a": {
+              "text": "Kiến trúc Hy Lạp cổ đại đề cao tỉ lệ và cơ thể con người.",
+              "answer": true
+            },
+            "b": {
+              "text": "Phù điêu Lưỡng Hà không liên quan đến quyền lực và tín ngưỡng.",
+              "answer": false
+            },
+            "c": {
+              "text": "Vạn Lý Trường Thành là công trình kiến trúc tiêu biểu của nền văn minh Lưỡng Hà.",
+              "answer": false
+            },
+            "d": {
+              "text": "Mĩ thuật Ai Cập cổ đại gắn liền với quan niệm về sự vĩnh cửu.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Trong buổi thảo luận chuyên đề 'Sự chuyển giao từ mĩ thuật Trung cổ sang Phục hưng', một nhóm học sinh lớp 10 đã sưu tầm tư liệu về hai công trình/tác phẩm tiêu biểu: Nhà thờ Đức Bà Paris (phong cách Gothic) và bức tranh 'Sự ra đời của thần Vệ nữ' (Sandro Botticelli). Nhóm đưa ra các nhận định sau để cả lớp cùng tranh luận.",
+          "items": {
+            "a": {
+              "text": "Nhà thờ Đức Bà Paris là một kiệt tác tiêu biểu cho phong cách kiến trúc Gothic thời kì Trung cổ.",
+              "answer": true
+            },
+            "b": {
+              "text": "Sự khác biệt lớn nhất về mặt tư duy tạo hình giữa mĩ thuật Phục hưng và Trung cổ là thời Phục hưng đã khôi phục các giá trị nhân văn cổ đại và ứng dụng khoa học vào nghệ thuật (như luật xa gần, giải phẫu họ",
+              "answer": true
+            },
+            "c": {
+              "text": "Bức tranh 'Sự ra đời của thần Vệ nữ' của Botticelli sử dụng chất liệu sơn dầu trên toan, một chất liệu hoàn toàn thống trị và duy nhất được sử dụng trong suốt thời kì Phục hưng Ý.",
+              "answer": false
+            },
+            "d": {
+              "text": "Việc chuyển dịch đề tài từ tôn giáo độc tôn ở thời Trung cổ sang đề tài thần thoại Hy Lạp - La Mã và vẻ đẹp con người thời Phục hưng cho thấy nghệ thuật đã hoàn toàn thoát ly khỏi tầm ảnh hưởng của Giáo hội và không còn phục vụ cho các mục đích tôn giáo.",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Học sinh thảo luận về sự thay đổi trong mĩ thuật từ thế kỉ 19 đến nay, bao gồm các trường phái Ấn tượng, hiện đại và hậu hiện đại.",
+          "items": {
+            "a": {
+              "text": "Mĩ thuật hậu hiện đại giới hạn không gian sáng tạo trong các bảo tàng truyền thống.",
+              "answer": false
+            },
+            "b": {
+              "text": "Pablo Picasso là họa sĩ tiêu biểu của trường phái Ấn tượng.",
+              "answer": false
+            },
+            "c": {
+              "text": "",
+              "answer": true
+            },
+            "d": {
+              "text": "Tác phẩm 'Vượt qua bức tường' của Jason deCaires Taylor là nghệ thuật sắp đặt dưới nướ",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Trong giờ học Mĩ thuật, nhóm học sinh được giao nhiệm vụ tìm hiểu về bảo tàng Louvre và cách đọc hình một tác phẩm. Các bạn cần xác định các thông tin cơ bản để giới thiệu hiện vật.",
+          "items": {
+            "a": {
+              "text": "Bảo tàng Metropolitan nằm tại Paris, Pháp.",
+              "answer": false
+            },
+            "b": {
+              "text": "Việc ghi nguồn hình ảnh là trách nhiệm số cần thiết để tôn trọng bản quyền.",
+              "answer": true
+            },
+            "c": {
+              "text": "Tên tác phẩm, tác giả, niên đại là những thông tin cần thiết khi giới thiệu hiện vật.",
+              "answer": true
+            },
+            "d": {
+              "text": "Chỉ cần quan sát hình ảnh mà không cần đọc chú thích để hiểu về bối cảnh lịch sử.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Trường phái Lập thể (Cubism) do Pablo Picasso và Georges Braque khởi xướng được ra đời và phát triển vào thế kỉ thứ bao nhiêu?",
+          "answer": "20",
+          "accepted_answers": [
+            "20"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Bức tranh phong cảnh nổi tiếng 'Ấn tượng mặt trời mọc' (Impression, Sunrise) của danh họa Claude Monet được sáng tác vào năm nào?",
+          "answer": "1872",
+          "accepted_answers": [
+            "1872"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Mĩ thuật thời kì Tiền sử trên thế giới thường được chia làm bao nhiêu thời đại đồ đá chính (gồm Đồ đá cũ, Đồ đá giữa và Đồ đá mới)?",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Tác phẩm 'Sự ra đời của thần Vệ nữ' (1486) của danh họa Sandro Botticelli thuộc thế kỉ thứ bao nhiêu?",
+          "answer": "15",
+          "accepted_answers": [
+            "15"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tác phẩm hoành tráng 'Guernica' của danh họa Pablo Picasso được sáng tác vào năm nào để tố cáo tội ác chiến tranh?",
+          "answer": "1937",
+          "accepted_answers": [
+            "1937"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Phù điêu 'Krishna diệt quỷ Kesi' - một kiệt tác của mĩ thuật Ấn Độ cổ đại bằng chất liệu đất nung - thuộc thế kỉ thứ bao nhiêu?",
+          "answer": "5",
+          "accepted_answers": [
+            "5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_711dd505",
+  "created_by": "gv_mythuat",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4.0,
+    "part2_per_question": 1.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

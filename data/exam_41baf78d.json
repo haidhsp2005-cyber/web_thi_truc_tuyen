@@ -2,7 +2,7 @@
   "title": "KIỂM TRA TX LẦN 1 KHỐI 12",
   "subject": "Tin học",
   "grade": "12",
-  "duration_minutes": 50,
+  "duration_minutes": 45,
   "parts": {
     "part1": {
       "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
@@ -1339,5 +1339,8 @@
     "part2_draw": 3,
     "part3_draw": 0,
     "part4_draw": 0
-  }
+  },
+  "is_published": false,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Long Cang"
 }

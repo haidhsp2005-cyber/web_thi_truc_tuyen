@@ -910,11 +910,11 @@
               "answer": false
             },
             "b": {
-              "text": " Nếu số hoá, sẽ cần 100GB để lưu trữ.",
+              "text": "Nếu số hoá, sẽ cần 100GB để lưu trữ.",
               "answer": false
             },
             "c": {
-              "text": " Có thể chứa nội dung số hoá trong thẻ nhớ 256GB.",
+              "text": "Có thể chứa nội dung số hoá trong thẻ nhớ 256GB.",
               "answer": true
             },
             "d": {
@@ -940,7 +940,7 @@
               "answer": true
             },
             "d": {
-              "text": " Theo độ lớn trung bình của các ảnh trên, thẻ 2GB có thể chứa tối đa 81 ảnh.",
+              "text": "Theo độ lớn trung bình của các ảnh trên, thẻ 2GB có thể chứa tối đa 81 ảnh.",
               "answer": true
             }
           },
@@ -951,19 +951,19 @@
           "text": "Thiết bị thông minh như điện thoại di động, máy tính bảng, và các thiết bị IoT (Internet of Things) đã trở thành một phần không thể thiếu trong đời sống hàng ngày. Chúng giúp con người quản lý công việc, giao tiếp, giải trí và thậm chí điều khiển các thiết bị gia dụng từ xa.",
           "items": {
             "a": {
-              "text": " Thiết bị thông minh chỉ được sử dụng để giải trí và không có nhiều ứng dụng thực tiễn trong cuộc sống hàng ngày.",
+              "text": "Thiết bị thông minh chỉ được sử dụng để giải trí và không có nhiều ứng dụng thực tiễn trong cuộc sống hàng ngày.",
               "answer": false
             },
             "b": {
-              "text": " Điện thoại di động thông minh có thể được sử dụng để điều khiển các thiết bị gia dụng từ xa.",
+              "text": "Điện thoại di động thông minh có thể được sử dụng để điều khiển các thiết bị gia dụng từ xa.",
               "answer": true
             },
             "c": {
-              "text": " Thiết bị thông minh không ảnh hưởng gì đến cách con người giao tiếp trong xã hội hiện đại.",
+              "text": "Thiết bị thông minh không ảnh hưởng gì đến cách con người giao tiếp trong xã hội hiện đại.",
               "answer": false
             },
             "d": {
-              "text": " Sự phổ biến của thiết bị thông minh đã làm giảm sự cần thiết của các thiết bị truyền thống như máy tính bàn trong đời sống hàng ngày.",
+              "text": "Sự phổ biến của thiết bị thông minh đã làm giảm sự cần thiết của các thiết bị truyền thống như máy tính bàn trong đời sống hàng ngày.",
               "answer": true
             }
           },
@@ -973,19 +973,19 @@
           "text": "Tin học đóng vai trò quan trọng trong việc tối ưu hóa các quy trình sản xuất, quản lý doanh nghiệp, và cung cấp các dịch vụ công nghệ cao. Hệ thống quản lý dữ liệu, phần mềm quản lý doanh nghiệp (ERP), và các công nghệ tự động hóa là những ví dụ điển hình.",
           "items": {
             "a": {
-              "text": " Tin học không có ảnh hưởng gì đến việc tối ưu hóa quy trình sản xuất trong các doanh nghiệp.",
+              "text": "Tin học không có ảnh hưởng gì đến việc tối ưu hóa quy trình sản xuất trong các doanh nghiệp.",
               "answer": false
             },
             "b": {
-              "text": " Các phần mềm quản lý doanh nghiệp (ERP) giúp doanh nghiệp quản lý hiệu quả các nguồn lực như nhân lực, tài chính và vật liệu.",
+              "text": "Các phần mềm quản lý doanh nghiệp (ERP) giúp doanh nghiệp quản lý hiệu quả các nguồn lực như nhân lực, tài chính và vật liệu.",
               "answer": true
             },
             "c": {
-              "text": " Ứng dụng tin học trong sản xuất không giúp doanh nghiệp tăng tính cạnh tranh trên thị trường.",
+              "text": "Ứng dụng tin học trong sản xuất không giúp doanh nghiệp tăng tính cạnh tranh trên thị trường.",
               "answer": false
             },
             "d": {
-              "text": " Tin học giúp tạo ra các hệ thống tự động hóa trong sản xuất, từ đó giảm thiểu sự can thiệp của con người và giảm rủi ro sai sót.",
+              "text": "Tin học giúp tạo ra các hệ thống tự động hóa trong sản xuất, từ đó giảm thiểu sự can thiệp của con người và giảm rủi ro sai sót.",
               "answer": true
             }
           },
@@ -995,15 +995,15 @@
           "text": "Tin học và các thiết bị thông minh đã cách mạng hóa lĩnh vực giáo dục, từ việc tạo ra các phương pháp học tập mới đến việc cung cấp các nguồn tài nguyên học tập trực tuyến và hỗ trợ học tập từ xa.",
           "items": {
             "a": {
-              "text": " Các thiết bị thông minh chỉ được sử dụng để giải trí trong giáo dục, không có giá trị học tập thực tiễn.",
+              "text": "Các thiết bị thông minh chỉ được sử dụng để giải trí trong giáo dục, không có giá trị học tập thực tiễn.",
               "answer": false
             },
             "b": {
-              "text": " Học tập từ xa qua mạng không bao giờ hiệu quả bằng việc học trực tiếp tại lớp học.",
+              "text": "Học tập từ xa qua mạng không bao giờ hiệu quả bằng việc học trực tiếp tại lớp học.",
               "answer": false
             },
             "c": {
-              "text": " Tin học cho phép giáo viên tạo ra các phương pháp giảng dạy sáng tạo và cá nhân hóa việc học tập cho từng học sinh.",
+              "text": "Tin học cho phép giáo viên tạo ra các phương pháp giảng dạy sáng tạo và cá nhân hóa việc học tập cho từng học sinh.",
               "answer": true
             },
             "d": {
@@ -1047,7 +1047,7 @@
               "answer": false
             },
             "c": {
-              "text": " Kết nối wifi không là kết nối của trợ thủ số cá nhân.",
+              "text": "Kết nối wifi không là kết nối của trợ thủ số cá nhân.",
               "answer": false
             },
             "d": {
@@ -1061,11 +1061,11 @@
           "text": "Quan sát hình: Trong đó 4 cụm tròn tương đương A, B, C, D\n\n\n\n\n  A        B  \n\n            \n\n  C        D",
           "items": {
             "a": {
-              "text": " A, B, C, D là các mạng LAN, là mạng quy mô nhỏ có chủ sở hữu.",
+              "text": "A, B, C, D là các mạng LAN, là mạng quy mô nhỏ có chủ sở hữu.",
               "answer": true
             },
             "b": {
-              "text": " Internet là mạng toàn cầu, thuộc quyền sở hữu của tất cả mọi người.",
+              "text": "Internet là mạng toàn cầu, thuộc quyền sở hữu của tất cả mọi người.",
               "answer": false
             },
             "c": {
@@ -1137,7 +1137,7 @@
               "answer": true
             },
             "c": {
-              "text": " Các thiết bị thông minh như đèn thông minh, camera thông minh, chuông báo động thông minh,\\ldots không có khả năng kết nối với nhau.",
+              "text": "Các thiết bị thông minh như đèn thông minh, camera thông minh, chuông báo động thông minh,\\ldots không có khả năng kết nối với nhau.",
               "answer": false
             },
             "d": {
@@ -1189,5 +1189,6 @@
     "part2_draw": 3,
     "part3_draw": 0,
     "part4_draw": 0
-  }
+  },
+  "is_published": false
 }

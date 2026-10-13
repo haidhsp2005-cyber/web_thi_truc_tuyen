@@ -1,0 +1,292 @@
+{
+  "title": "KTTX1_10SH",
+  "subject": "Tin học",
+  "grade": "10",
+  "duration_minutes": 20,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT CHUYÊN TRẦN VĂN GIÀU",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Biểu thức (14 > 7) and (18 < 9) trả về giá trị:",
+          "options": {
+            "A": "True",
+            "B": "False",
+            "C": "Báo lỗi",
+            "D": "None"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Vòng lặp for i in range(5, 13): thực hiện khối lệnh bên trong bao nhiêu lần?",
+          "options": {
+            "A": "13 lần",
+            "B": "7 lần",
+            "C": "8 lần",
+            "D": "9 lần"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Hàm range(4, 16, 4) sinh ra dãy số gồm:",
+          "options": {
+            "A": "8, 12",
+            "B": "4, 8, 12",
+            "C": "4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15",
+            "D": "4, 8, 12, 16"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Vòng lặp for i in range(1, 10): thực hiện khối lệnh bên trong bao nhiêu lần?",
+          "options": {
+            "A": "8 lần",
+            "B": "11 lần",
+            "C": "9 lần",
+            "D": "10 lần"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Phép toán logic and trả về giá trị True khi nào?",
+          "options": {
+            "A": "Khi chỉ cần một biểu thức thành phần là True.",
+            "B": "Khi cả hai biểu thức thành phần đều True.",
+            "C": "Khi biểu thức thứ nhất là False.",
+            "D": "Khi cả hai biểu thức thành phần đều False."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Kết quả của đoạn mã lệnh sau là gì?\nS = 0\nfor i in range(2, 6):\n    S = S + i\nprint(S)",
+          "options": {
+            "A": "14",
+            "B": "5",
+            "C": "6",
+            "D": "20"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Biểu thức (8 > 4) and (12 < 20) trả về giá trị:",
+          "options": {
+            "A": "Báo lỗi",
+            "B": "None",
+            "C": "True",
+            "D": "False"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Biểu thức (3 > 9) and (15 < 6) trả về giá trị:",
+          "options": {
+            "A": "False",
+            "B": "True",
+            "C": "None",
+            "D": "Báo lỗi"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Chọn phát biểu ĐÚNG khi nói về câu lệnh lặp for trong Python:",
+          "options": {
+            "A": "Biến lặp i tự động tăng lên sau mỗi lần thực hiện xong khối lệnh lặp.",
+            "B": "Lệnh range(10, 1) sinh ra dãy các số từ 10 giảm về 1.",
+            "C": "Khối lệnh thuộc vòng lặp for không cần thụt lề.",
+            "D": "Số lần lặp của câu lệnh for là không giới hạn."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Vòng lặp for i in range(3, 12): thực hiện khối lệnh bên trong bao nhiêu lần?",
+          "options": {
+            "A": "12 lần",
+            "B": "10 lần",
+            "C": "8 lần",
+            "D": "9 lần"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Câu lệnh range(5) sinh ra dãy số nguyên gồm các số nào?",
+          "options": {
+            "A": "0, 1, 2, 3, 4",
+            "B": "0, 1, 2, 3, 4, 5",
+            "C": "1, 2, 3, 4, 5",
+            "D": "1, 2, 3, 4"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Để duyệt qua các số chẵn từ 4 đến 24 (bao gồm cả 24), lệnh range nào là ĐÚNG?",
+          "options": {
+            "A": "range(4, 25, 2)",
+            "B": "range(4, 24)",
+            "C": "range(0, 24, 2)",
+            "D": "range(4, 24, 2)"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Biểu thức (6 > 11) and (4 < 13) trả về giá trị:",
+          "options": {
+            "A": "None",
+            "B": "False",
+            "C": "Báo lỗi",
+            "D": "True"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Kí hiệu phép so sánh BẰNG NHAU trong Python là:",
+          "options": {
+            "A": ":=",
+            "B": "==",
+            "C": "=",
+            "D": "=>"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Câu lệnh range(7) sinh ra dãy số nguyên gồm các số nào?",
+          "options": {
+            "A": "1, 2, 3, 4, 5, 6",
+            "B": "1, 2, 3, 4, 5, 6, 7",
+            "C": "0, 1, 2, 3, 4, 5, 6",
+            "D": "0, 1, 2, 3, 4, 5, 6, 7"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Biểu thức (5 > 3) and (10 < 2) trả về giá trị:",
+          "options": {
+            "A": "False",
+            "B": "Báo lỗi",
+            "C": "None",
+            "D": "True"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Hàm range(2, 10, 2) sinh ra dãy số gồm:",
+          "options": {
+            "A": "4, 6, 8",
+            "B": "2, 4, 6, 8",
+            "C": "2, 3, 4, 5, 6, 7, 8, 9",
+            "D": "2, 4, 6, 8, 10"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Để duyệt qua các số chẵn từ 2 đến 20 (bao gồm cả 20), lệnh range nào là ĐÚNG?",
+          "options": {
+            "A": "range(2, 20, 2)",
+            "B": "range(2, 21, 2)",
+            "C": "range(2, 20)",
+            "D": "range(0, 20, 2)"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Cú pháp câu lệnh rẽ nhánh dạng đủ nào sau đây là ĐÚNG?",
+          "options": {
+            "A": "if \n    \nelse",
+            "B": "if :\n    \nelse:\n    <khối 2",
+            "C": "if ;\n    ;\nelse;",
+            "D": "if  then\n    \nelse"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Biểu thức logic nào sau đây kiểm tra số n là số chẵn?",
+          "options": {
+            "A": "n / 2 == 0",
+            "B": "n // 2 == 0",
+            "C": "n % 2 == 1",
+            "D": "n % 2 == 0"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": []
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": []
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_0ba3c5f1",
+  "created_by": "nhuphuong",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 10.0,
+    "part1_per_question": 0.5,
+    "part2_total": 0.0,
+    "part2_per_question": 1.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 0.0,
+    "part3_per_question": 0.0,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": true
+  },
+  "is_online_exam": true
+}

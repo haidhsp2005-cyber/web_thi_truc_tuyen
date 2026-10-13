@@ -93,7 +93,7 @@
           "id": "p1_q7"
         },
         {
-          "text": "Biết rằng  $lim_{x\\rightarrow +\\infty }f(x)=2$  và  $lim_{x\\rightarrow -\\infty }f(x)=-2$ . Khẳng định nào sau đây là đúng về đồ thị hàm số  $y=f(x)$ ?",
+          "text": "Biết rằng  $\\lim _{x\\rightarrow +\\infty }f(x)=2$  và  $\\lim _{x\\rightarrow -\\infty }f(x)=-2$ . Khẳng định nào sau đây là đúng về đồ thị hàm số  $y=f(x)$ ?",
           "options": {
             "A": "Đồ thị hàm số có đúng một tiệm cận ngang.",
             "B": "Đồ thị hàm số có hai tiệm cận ngang là  $y=2$  và  $y=-2$ .",

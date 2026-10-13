@@ -1,0 +1,344 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN HỌC LỚP 11 ĐỀ 2",
+  "subject": "Toán học",
+  "grade": "11",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Nghiệm của phương trình  $sinx=-1$  là",
+          "options": {
+            "A": "$x=k\\pi$",
+            "B": "$x=\\frac{\\pi }{2}+k2\\pi$",
+            "C": "$x=\\pi +k2\\pi$",
+            "D": "$x=-\\frac{\\pi }{2}+k2\\pi$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Công thức cộng  $\\sin (a+b)$  là",
+          "options": {
+            "A": "$cosacosb+sinasinb$",
+            "B": "$cosacosb-sinasinb$",
+            "C": "$sinacosb+cosasinb$",
+            "D": "$sinacosb-cosasinb$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Điều kiện xác định của phương trình  $cotx=1$  là",
+          "options": {
+            "A": "$x\\neq k2\\pi$",
+            "B": "$x\\neq \\frac{\\pi }{2}+k2\\pi$",
+            "C": "$x\\neq \\frac{\\pi }{2}+k\\pi$",
+            "D": "$x\\neq k\\pi$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Nghiệm của phương trình  $tanx=\\sqrt{3}$  là",
+          "options": {
+            "A": "$x=\\frac{\\pi }{3}+k2\\pi$",
+            "B": "$x=\\frac{\\pi }{6}+k\\pi$",
+            "C": "$x=\\frac{2\\pi }{3}+k\\pi$",
+            "D": "$x=\\frac{\\pi }{3}+k\\pi$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Giá trị của  $\\sin ^{2}x+\\cos ^{2}x$  bằng",
+          "options": {
+            "A": "2",
+            "B": "0",
+            "C": "-1",
+            "D": "1"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Nghiệm của phương trình  $sinx=\\frac{1}{2}$  là",
+          "options": {
+            "A": "$x=\\frac{\\pi }{3}+k2\\pi ,x=\\frac{2\\pi }{3}+k2\\pi$",
+            "B": "$x=\\frac{\\pi }{6}+k\\pi ,x=\\frac{5\\pi }{6}+k\\pi$",
+            "C": "$x=\\pm \\frac{\\pi }{6}+k2\\pi$",
+            "D": "$x=\\frac{\\pi }{6}+k2\\pi ,x=\\frac{5\\pi }{6}+k2\\pi$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Công thức phụ nhau nào sau đây đúng?",
+          "options": {
+            "A": "$\\cos (\\frac{\\pi }{2}-x)=-sinx$",
+            "B": "$\\cos (\\frac{\\pi }{2}-x)=tanx$",
+            "C": "$\\cos (\\frac{\\pi }{2}-x)=cosx$",
+            "D": "$\\cos (\\frac{\\pi }{2}-x)=sinx$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Phương trình  $cosx=0$  có tập nghiệm là",
+          "options": {
+            "A": "$x=\\frac{\\pi }{2}+k\\pi$",
+            "B": "$x=\\frac{\\pi }{2}+k2\\pi$",
+            "C": "$x=\\pi +k2\\pi$",
+            "D": "$x=k2\\pi$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Biểu thức  $tanx$  được xác định bởi",
+          "options": {
+            "A": "$\\frac{1}{cosx}$",
+            "B": "$\\frac{1}{sinx}$",
+            "C": "$\\frac{cosx}{sinx}$",
+            "D": "$\\frac{sinx}{cosx}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Nghiệm của phương trình  $cosx=\\frac{1}{2}$  là",
+          "options": {
+            "A": "$x=\\pm \\frac{\\pi }{3}+k2\\pi$",
+            "B": "$x=\\pm \\frac{\\pi }{6}+k2\\pi$",
+            "C": "$x=\\frac{\\pi }{3}+k\\pi$",
+            "D": "$x=\\pm \\frac{2\\pi }{3}+k2\\pi$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Biểu thức  $\\cos 2x$  bằng",
+          "options": {
+            "A": "$2 \\cos ^{2}x-1$",
+            "B": "$1-2 \\cos ^{2}x$",
+            "C": "$2 \\sin ^{2}x-1$",
+            "D": "$\\cos ^{2}x+\\sin ^{2}x$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Công thức nào sau đây là đúng?",
+          "options": {
+            "A": "$\\sin 2x=sinxcosx$",
+            "B": "$\\sin 2x=2sinxcosx$",
+            "C": "$\\sin 2x=2sinx$",
+            "D": "$\\sin 2x=\\cos ^{2}x-\\sin ^{2}x$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một vòng quay mặt trời có bán kính  $50$  m, tâm vòng quay ở độ cao  $55$  m so với mặt đất. Một cabin chuyển động theo hàm số  $h(t)=55+50\\sin (\\frac{\\pi }{10}t)$  với  $t$  là thời gian (phút).",
+          "items": {
+            "a": {
+              "text": "Tại thời điểm  $t=0$ , cabin đang ở độ cao 55 m.",
+              "answer": true
+            },
+            "b": {
+              "text": "Độ cao tối đa của cabin là 105 m.",
+              "answer": true
+            },
+            "c": {
+              "text": "Cabin đạt độ cao 80 m lần đầu tiên tại  $t=5$  phút.",
+              "answer": false
+            },
+            "d": {
+              "text": "Chu kỳ quay của vòng quay là 10 phút.",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Trong một phòng thí nghiệm điện tử, cường độ dòng điện xoay chiều chạy qua một cuộn cảm được mô hình hóa bởi hàm số  $i(t)=5\\sin (100\\pi t+\\frac{\\pi }{6})$  (Ampe), với  $t$  là thời gian tính bằng giây. Các kỹ sư cần kiểm tra các thông số kỹ thuật của mạch điện này.",
+          "items": {
+            "a": {
+              "text": "Tần số góc của dòng điện là  $100\\pi$  rad/s.",
+              "answer": true
+            },
+            "b": {
+              "text": "Để dòng điện đạt giá trị cực đại lần đầu tiên, ta cần giải phương trình  $100\\pi t+\\frac{\\pi }{6}=\\frac{\\pi }{2}$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Tại thời điểm  $t=0$ , cường độ dòng điện trong mạch là 2,5 A.",
+              "answer": true
+            },
+            "d": {
+              "text": "Cường độ dòng điện cực đại trong mạch là 5 A.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Số giờ có ánh sáng mặt trời tại một thành phố được mô hình hóa bởi  $L(t)=12+3\\sin (\\frac{\\pi }{6}(t-80))$ , trong đó  $t$  là tháng trong năm.",
+          "items": {
+            "a": {
+              "text": "Số giờ có ánh sáng mặt trời trung bình là 12 giờ.",
+              "answer": true
+            },
+            "b": {
+              "text": "Biên độ dao động của số giờ nắng là 6 giờ.",
+              "answer": false
+            },
+            "c": {
+              "text": "Hàm số có chu kỳ là 6 ngày.",
+              "answer": false
+            },
+            "d": {
+              "text": "Số giờ nắng tối đa là 15 giờ.",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Một vận động viên ném một quả bóng rổ từ độ cao 1 m so với mặt đất. Quỹ đạo của quả bóng được mô tả bởi hàm số  $h(t)=-5 t^{2}+10t+1$ , trong đó  $h$  là độ cao (mét) và  $t$  là thời gian (giây). Huấn luyện viên cần phân tích quỹ đạo này để tối ưu hóa kỹ thuật ném.",
+          "items": {
+            "a": {
+              "text": "Quả bóng chạm đất sau đúng 2 giây.",
+              "answer": false
+            },
+            "b": {
+              "text": "Độ cao lớn nhất mà quả bóng đạt được là 6 m.",
+              "answer": true
+            },
+            "c": {
+              "text": "Quả bóng đạt độ cao lớn nhất tại thời điểm  $t=1$  giây.",
+              "answer": true
+            },
+            "d": {
+              "text": "Tại thời điểm  $t=0$ , quả bóng bắt đầu rời tay ở độ cao 1 m.",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tính tổng các nghiệm của phương trình  $sinx=\\frac{1}{2}$  trên đoạn  $[0;\\pi ]$ .",
+          "answer": "pi",
+          "accepted_answers": [
+            "pi"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Số nghiệm của phương trình  $\\cos 2x=1$  trên đoạn  $[0;\\pi ]$  là bao nhiêu?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Tìm nghiệm dương nhỏ nhất của phương trình  $tanx=1$ .",
+          "answer": "pi/4",
+          "accepted_answers": [
+            "pi/4"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Phương trình  $cosx=-\\frac{1}{2}$  có bao nhiêu nghiệm trên đoạn  $[0;2\\pi ]$ ?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tìm nghiệm của phương trình  $sinx=1$  trên đoạn  $[0;2\\pi ]$ .",
+          "answer": "pi/2",
+          "accepted_answers": [
+            "pi/2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Tìm nghiệm của phương trình  $sinx=0$  trong khoảng  $(0;2\\pi )$ .",
+          "answer": "pi",
+          "accepted_answers": [
+            "pi"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_31027909",
+  "is_published": true,
+  "created_by": "admin",
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

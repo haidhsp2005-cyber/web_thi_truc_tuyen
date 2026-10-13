@@ -297,5 +297,6 @@
     "custom_scoring": false
   },
   "is_online_exam": true,
-  "created_by": "haidhsp2005"
+  "is_published": true,
+  "created_by": "admin"
 }

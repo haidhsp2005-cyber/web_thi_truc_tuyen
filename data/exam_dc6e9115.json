@@ -1,0 +1,344 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TIN HỌC LỚP 5",
+  "subject": "Tin học",
+  "grade": "5",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Để nhân vật di chuyển về phía trước một khoảng cách nhất định, em sử dụng khối lệnh nào?",
+          "options": {
+            "A": "quay phải 15 độ",
+            "B": "đi tới điểm x: 0 y: 0",
+            "C": "lướt trong 1 giây tới điểm ngẫu nhiên",
+            "D": "di chuyển 10 bước"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Khối lệnh 'nếu <điều kiện> thì' được sử dụng khi nào?",
+          "options": {
+            "A": "Khi muốn xóa tất cả các nét vẽ trên sân khấu",
+            "B": "Khi muốn lặp lại một hành động mãi mãi",
+            "C": "Khi muốn thực hiện hành động chỉ khi một điều kiện được thỏa mãn",
+            "D": "Khi muốn kết thúc hoàn toàn chương trình"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Để nhân vật không bị đi ra ngoài khỏi màn hình khi chạm vào mép sân khấu, ta dùng lệnh nào?",
+          "options": {
+            "A": "nếu tiếp xúc với cạnh, bật lại",
+            "B": "thay đổi x một lượng 10",
+            "C": "đặt hướng bằng 90",
+            "D": "xóa các hiệu ứng đồ họa"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Khối lệnh nào giúp nhân vật hiển thị một bóng thoại chứa lời chào trong một khoảng thời gian?",
+          "options": {
+            "A": "nói 'Xin chào!' trong 2 giây",
+            "B": "đổi kích thước một lượng 10",
+            "C": "phát âm thanh Meow",
+            "D": "nghĩ 'Hmm...' trong 2 giây"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Khối lệnh 'lặp lại 10 lần' thuộc nhóm lệnh nào sau đây?",
+          "options": {
+            "A": "Chuyển động (Motion)",
+            "B": "Hiển thị (Looks)",
+            "C": "Điều khiển (Control)",
+            "D": "Cảm biến (Sensing)"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Khối lệnh nào sau đây thuộc nhóm lệnh Âm thanh (Sound)?",
+          "options": {
+            "A": "phát âm thanh Meow đến hết",
+            "B": "thay đổi hiệu ứng màu một lượng 25",
+            "C": "hướng về phía đối tượng con trỏ chuột",
+            "D": "bật lại nếu chạm cạnh"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Trong phần mềm Scratch, khối lệnh nào thường được dùng để bắt đầu chạy chương trình khi người dùng nhấn vào biểu tượng lá cờ xanh?",
+          "options": {
+            "A": "đợi 1 giây",
+            "B": "khi phím cách được bấm",
+            "C": "khi bấm vào nhân vật này",
+            "D": "khi bấm vào lá cờ xanh"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Khi khởi động một dự án mới trong Scratch, nhân vật mặc định xuất hiện trên sân khấu là gì?",
+          "options": {
+            "A": "Chú chim cánh cụt",
+            "B": "Chú chó",
+            "C": "Quả táo",
+            "D": "Chú mèo Scratch"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Để nhân vật thay đổi hình dáng tiếp theo nhằm tạo cảm giác nhân vật đang bước đi, em sử dụng lệnh nào?",
+          "options": {
+            "A": "ẩn",
+            "B": "hiện",
+            "C": "trang phục kế tiếp",
+            "D": "phông nền tiếp theo"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Khu vực hiển thị kết quả hoạt động của các nhân vật và diễn biến của chương trình trong Scratch được gọi là gì?",
+          "options": {
+            "A": "Thanh bảng chọn",
+            "B": "Sân khấu (Stage)",
+            "C": "Khu vực chứa khối lệnh",
+            "D": "Vùng lập trình"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Để làm chậm hoạt động của chương trình và giúp người xem kịp quan sát, em sử dụng khối lệnh nào?",
+          "options": {
+            "A": "lặp lại cho đến khi",
+            "B": "dừng lại tất cả",
+            "C": "đợi 1 giây",
+            "D": "nếu thì"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Vị trí chính giữa trung tâm của sân khấu trong Scratch có tọa độ là bao nhiêu?",
+          "options": {
+            "A": "$x=0,y=0$",
+            "B": "$x=0,y=180$",
+            "C": "$x=-240,y=180$",
+            "D": "$x=100,y=100$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Bạn Bình lập trình trò chơi hứng táo rơi. Quả táo xuất hiện ở vị trí trên cao có tọa độ ban đầu là  $x=0,y=150$ . Trong vòng lặp 'liên tục', quả táo thực hiện các lệnh: 'thay đổi y một lượng -10' và 'đợi 0.1 giây' để tạo hiệu ứng rơi từ từ xuống đáy sân khấu. Hãy đánh giá các phát biểu sau:",
+          "items": {
+            "a": {
+              "text": "Sau 5 lần thực hiện lệnh thay đổi tọa độ, vị trí y mới của quả táo sẽ là 100.",
+              "answer": true
+            },
+            "b": {
+              "text": "Khối lệnh 'liên tục' sẽ chỉ thực hiện hành động rơi đúng 1 lần rồi tự động dừng lại.",
+              "answer": false
+            },
+            "c": {
+              "text": "Để quả táo rơi nhanh hơn gấp đôi, Bình nên đổi giá trị thay đổi y thành -5.",
+              "answer": false
+            },
+            "d": {
+              "text": "Khối lệnh 'thay đổi y một lượng -10' làm cho quả táo chuyển động dần xuống phía dưới sân khấu.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Bạn Cúc lập trình trò chơi đố vui toán học: Nhân vật đưa ra câu hỏi '5 + 7 bằng bao nhiêu?' và chờ người chơi nhập đáp án. Ban đầu biến số 'Điểm' được đặt bằng 0. Chương trình sử dụng khối lệnh 'nếu \n thì [thay đổi Điểm một lượng 1, nói Đúng rồi! trong 2 giây] ngược lại [nói Sai rồi! trong 2 giây]'. Hãy đánh giá các phát biểu sau:",
+          "items": {
+            "a": {
+              "text": "Biến số 'Điểm' được sử dụng để ghi nhớ và cập nhật kết quả điểm số của người chơi.",
+              "answer": true
+            },
+            "b": {
+              "text": "Nếu người chơi gõ vào câu trả lời là '10', giá trị của biến 'Điểm' sẽ tăng lên thành 1.",
+              "answer": false
+            },
+            "c": {
+              "text": "Khi người chơi nhập số '12', nhân vật sẽ hiển thị bóng thoại nói 'Đúng rồi!' trong thời gian 2 giây.",
+              "answer": true
+            },
+            "d": {
+              "text": "Khối lệnh 'nếu ... thì ... ngược lại' là cấu trúc điều khiển rẽ nhánh đầy đủ.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Bạn An thiết kế một chương trình để chú mèo vẽ một hình vuông có độ dài mỗi cạnh là  $100$  bước trên sân khấu. Đoạn lệnh được An xây dựng gồm: 'khi bấm vào cờ xanh', 'xóa tất cả', 'đặt bút', và lặp lại  $4$  lần khối lệnh: 'di chuyển 100 bước', 'quay phải 90 độ'.",
+          "items": {
+            "a": {
+              "text": "Tổng quãng đường chú mèo đã di chuyển để vẽ xong  $4$  cạnh của hình vuông là  $400$  bước.",
+              "answer": true
+            },
+            "b": {
+              "text": "Mỗi lần chú mèo quay phải  ${90}^{∘}$  là để tạo thành một góc vuông của hình vuông.",
+              "answer": true
+            },
+            "c": {
+              "text": "Nếu An đổi góc quay thành  ${60}^{∘}$  mà vẫn giữ nguyên số lần lặp là  $4$ , chú mèo sẽ vẽ được một hình lục giác đều hoàn chỉnh.",
+              "answer": false
+            },
+            "d": {
+              "text": "Khối lệnh 'lặp lại 4 lần' thuộc nhóm lệnh Điều khiển (Control).",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Trong dự án bể cá mini, bạn Mai lập trình cho chú cá chuyển động qua lại sinh động. Khối lệnh điều khiển chú cá gồm: 'đặt kiểu xoay trái - phải', và trong vòng lặp 'liên tục' gồm các lệnh: 'di chuyển 10 bước', 'nếu tiếp xúc với cạnh, bật lại', 'trang phục kế tiếp', 'đợi 0.2 giây'.",
+          "items": {
+            "a": {
+              "text": "Khối lệnh 'khi bấm vào cờ xanh' thuộc nhóm lệnh Sự kiện dùng để kích hoạt chương trình hoạt động.",
+              "answer": true
+            },
+            "b": {
+              "text": "Nếu bỏ khối lệnh 'nếu tiếp xúc với cạnh, bật lại', chú cá khi bơi tới mép màn hình sẽ tự động dịch chuyển về chính giữa sân khấu.",
+              "answer": false
+            },
+            "c": {
+              "text": "Lệnh 'trang phục kế tiếp' kết hợp với 'đợi 0.2 giây' giúp tạo hiệu ứng vẫy đuôi bơi mềm mại cho chú cá.",
+              "answer": true
+            },
+            "d": {
+              "text": "Lệnh 'đặt kiểu xoay trái - phải' giúp chú cá không bị lộn ngược bụng lên trời khi quay đầu lại.",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Ban đầu biến 'Điểm' có giá trị bằng 0. Sau khi thực hiện 5 lần lệnh 'thay đổi Điểm một lượng 2', giá trị cuối cùng của biến 'Điểm' là bao nhiêu?",
+          "answer": "10",
+          "accepted_answers": [
+            "10"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Một nhân vật ban đầu đứng ở vị trí có tọa độ  $x=0$ . Nhân vật thực hiện đoạn lệnh: 'lặp lại 5 lần: di chuyển 20 bước' theo hướng sang phải. Tọa độ  $x$  cuối cùng của nhân vật là bao nhiêu?",
+          "answer": "100",
+          "accepted_answers": [
+            "100"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Một nhân vật thực hiện đoạn lệnh: 'lặp lại 4 lần [di chuyển 50 bước, đợi 1 giây]'. Hỏi sau khi kết thúc đoạn lệnh, nhân vật đã di chuyển được tổng cộng bao nhiêu bước?",
+          "answer": "200",
+          "accepted_answers": [
+            "200"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Để nhân vật vẽ được một hình tam giác đều bằng khối lệnh 'lặp lại 3 lần [di chuyển 100 bước, xoay phải ... độ]', em cần điền số nào vào chỗ ba chấm?",
+          "answer": "120",
+          "accepted_answers": [
+            "120"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Để vẽ một hình tam giác đều khép kín bằng cách lặp lại  $3$  lần hành động vẽ một cạnh rồi quay một góc, nhân vật cần quay một góc bao nhiêu độ sau mỗi cạnh?",
+          "answer": "120",
+          "accepted_answers": [
+            "120"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Sân khấu trong Scratch có tâm ở tọa độ  $(0;0)$ . Giá trị tọa độ x lớn nhất khi nhân vật ở mép phải của sân khấu là bao nhiêu?",
+          "answer": "240",
+          "accepted_answers": [
+            "240"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_dc6e9115",
+  "created_by": "haidhsp2005",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

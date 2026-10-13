@@ -349,7 +349,7 @@
         },
         {
           "id": "p2_q4",
-          "text": "Một tấm tôn hình chữ nhật có kích thước $80\\text{ cm} \\times 50\\text{ cm}$. Người ta cắt bỏ ở bốn góc của tấm tôn bốn hình vuông bằng nhau, mỗi hình có cạnh bằng $x\\text{ (cm)}$ rồi gập lại thành một cái thùng không nắp.",
+          "text": "Một tấm tôn hình chữ nhật có kích thước $80\\text{ cm} \\times 50\\text{ cm}$. Người ta cắt bỏ ở bốn góc của tấm tôn bốn hình vuông bằng nhau, mỗi hình có cạnh bằng $x\\text (cm)$ rồi gập lại thành một cái thùng không nắp.",
           "items": {
             "a": {
               "text": "Điều kiện của biến $x$ để thể tích thùng xác định là $0 < x < 25$.",
@@ -440,5 +440,6 @@
     }
   },
   "is_online_exam": false,
+  "is_published": true,
   "created_by": "admin"
 }

@@ -1383,6 +1383,9 @@ function examApp() {
         document.title = origDocTitle;
         this.updateTimerTick();
 
+        // Tắt ngay màn hình đen khi quay lại bài thi
+        this.isBlackoutActive = false;
+
         // Khi thí sinh thực sự đã rời màn hình và giờ quay trở lại:
         if (isAway) {
           isAway = false;
@@ -1411,7 +1414,10 @@ function examApp() {
         }
       });
       window.addEventListener('blur', () => {
-        onScreenLeave();
+        // Chỉ kích hoạt rời màn hình nếu trang thực sự bị ẩn hoặc rời tiêu điểm
+        if (document.visibilityState === 'hidden') {
+          onScreenLeave();
+        }
       });
       window.addEventListener('focus', () => {
         onScreenReturn();

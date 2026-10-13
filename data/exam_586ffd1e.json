@@ -47,17 +47,17 @@
         {
           "text": "Cho hai góc nhọn  $\\alpha$  và  $\\beta$  phụ nhau. Đẳng thức nào sau đây là sai?",
           "options": {
-            "A": "$sin\\alpha =sin\\beta$",
-            "B": "$tan\\alpha =cot\\beta$",
-            "C": "$sin\\alpha =cos\\beta$",
-            "D": "$cos\\alpha =sin\\beta$"
+            "A": "$\\sin\\alpha =\\sin\\beta$",
+            "B": "$\\tan\\alpha =\\cot\\beta$",
+            "C": "$\\sin\\alpha =\\cos\\beta$",
+            "D": "$\\cos\\alpha =\\sin\\beta$"
           },
           "answer": "A",
           "explanation": "",
           "id": "p1_q4"
         },
         {
-          "text": "Cho tam giác  $ABC$  vuông tại  $A$  có  $AB=3 cm$  và  $AC=4 cm$ . Giá trị của  $sinB$  bằng",
+          "text": "Cho tam giác  $ABC$  vuông tại  $A$  có  $AB=3 cm$  và  $AC=4 cm$ . Giá trị của  $\\sin B$  bằng",
           "options": {
             "A": "$\\frac{4}{5}$",
             "B": "$\\frac{3}{4}$",
@@ -83,10 +83,10 @@
         {
           "text": "Với góc nhọn  $\\alpha$  tùy ý, khẳng định nào sau đây là đúng?",
           "options": {
-            "A": "$tan\\alpha =\\frac{sin\\alpha }{cos\\alpha }$",
-            "B": "$sin^{2}\\alpha -cos^{2}\\alpha =1$",
-            "C": "$tan\\alpha =\\frac{cos\\alpha }{sin\\alpha }$",
-            "D": "$tan\\alpha \\cdot cot\\alpha =-1$"
+            "A": "$\\tan\\alpha =\\frac{\\sin\\alpha }{\\cos\\alpha }$",
+            "B": "$\\sin ^{2}\\alpha -\\cos ^{2}\\alpha =1$",
+            "C": "$\\tan\\alpha =\\frac{\\cos\\alpha }{\\sin\\alpha }$",
+            "D": "$\\tan\\alpha \\cdot \\cot\\alpha =-1$"
           },
           "answer": "A",
           "explanation": "",
@@ -95,17 +95,17 @@
         {
           "text": "Hai bạn An và Bình có tổng cộng 15 quyển vở. Số vở của An gấp đôi số vở của Bình. Gọi  $x,y$  lần lượt là số vở của An và Bình ( $x,y\\in {\\mathbb{N}}^{*}$ ). Hệ phương trình diễn đạt bài toán là",
           "options": {
-            "A": "$x+y=15 \\\\ x-2y=0$",
-            "B": "$x+y=15 \\\\ 2x-y=0$",
-            "C": "$x+y=15 \\\\ x+2y=0$",
-            "D": "$x-y=15 \\\\ x=2y$"
+            "A": "$\\begin{cases} x+y=15 \\\\ x-2y=0 \\end{cases}$",
+            "B": "$\\begin{cases} x+y=15 \\\\ 2x-y=0 \\end{cases}$",
+            "C": "$\\begin{cases} x+y=15 \\\\ x+2y=0 \\end{cases}$",
+            "D": "$\\begin{cases} x-y=15 \\\\ x=2y \\end{cases}$"
           },
           "answer": "A",
           "explanation": "",
           "id": "p1_q8"
         },
         {
-          "text": "Cho tam giác vuông có một góc nhọn  $\\alpha$  thỏa mãn  $cos\\alpha =\\frac{1}{2}$ . Số đo góc  $\\alpha$  là",
+          "text": "Cho tam giác vuông có một góc nhọn  $\\alpha$  thỏa mãn  $\\cos\\alpha =\\frac{1}{2}$ . Số đo góc  $\\alpha$  là",
           "options": {
             "A": "${45}^{∘}$",
             "B": "${90}^{∘}$",
@@ -117,7 +117,7 @@
           "id": "p1_q9"
         },
         {
-          "text": "Giá trị của biểu thức  $P=sin^{2}{35}^{∘}+sin^{2}{55}^{∘}$  là",
+          "text": "Giá trị của biểu thức  $P=\\sin ^{2}{35}^{∘}+\\sin ^{2}{55}^{∘}$  là",
           "options": {
             "A": "0",
             "B": "2",
@@ -141,7 +141,7 @@
           "id": "p1_q11"
         },
         {
-          "text": "Hệ phương trình  $x+my=2 \\\\ 2x+4y=4$  có vô số nghiệm khi giá trị của  $m$  bằng",
+          "text": "Hệ phương trình  $\\begin{cases} x+my=2 \\\\ 2x+4y=4 \\end{cases}$  có vô số nghiệm khi giá trị của  $m$  bằng",
           "options": {
             "A": "$m=-2$",
             "B": "$m=2$",
@@ -159,22 +159,22 @@
       "instruction": "",
       "questions": [
         {
-          "text": "Một thiết bị cảm biến đo góc nhọn  $\\alpha$  trong hệ thống điều khiển tự động cho kết quả  $sin\\alpha =0,6$ . Kỹ sư cần xác định các thông số lượng giác khác để lập trình cho bộ vi xử lý.",
+          "text": "Một thiết bị cảm biến đo góc nhọn  $\\alpha$  trong hệ thống điều khiển tự động cho kết quả  $\\sin\\alpha =0,6$ . Kỹ sư cần xác định các thông số lượng giác khác để lập trình cho bộ vi xử lý.",
           "items": {
             "a": {
-              "text": "Giá trị của  $tan\\alpha$  bằng  $0,75$ .",
+              "text": "Giá trị của  $\\tan\\alpha$  bằng  $0,75$ .",
               "answer": true
             },
             "b": {
-              "text": "Biểu thức  $M=sin^{2}\\alpha +cos^{2}\\alpha +tan\\alpha \\cdot cot\\alpha$  có giá trị bằng  $2$ .",
+              "text": "Biểu thức  $M=\\sin ^{2}\\alpha +\\cos ^{2}\\alpha +\\tan\\alpha \\cdot \\cot\\alpha$  có giá trị bằng  $2$ .",
               "answer": false
             },
             "c": {
-              "text": "Giá trị của  $cot\\alpha$  bằng  $1,25$ .",
+              "text": "Giá trị của  $\\cot\\alpha$  bằng  $1,25$ .",
               "answer": true
             },
             "d": {
-              "text": "Giá trị của  $cos\\alpha$  bằng  $0,8$ .",
+              "text": "Giá trị của  $\\cos\\alpha$  bằng  $0,8$ .",
               "answer": true
             }
           },
@@ -218,7 +218,7 @@
               "answer": true
             },
             "d": {
-              "text": "Giá trị của  $tanC$  bằng  $\\sqrt{3}$ .",
+              "text": "Giá trị của  $\\tan C$  bằng  $\\sqrt{3}$ .",
               "answer": true
             }
           },
@@ -253,7 +253,7 @@
       "instruction": "",
       "questions": [
         {
-          "text": "Tính giá trị của biểu thức  $A=2sin{30}^{∘}+4cos{60}^{∘}-tan{45}^{∘}$ .",
+          "text": "Tính giá trị của biểu thức  $A=2\\sin{30}^{∘}+4\\cos{60}^{∘}-\\tan{45}^{∘}$ .",
           "answer": "2",
           "accepted_answers": [
             "2"
@@ -293,7 +293,7 @@
           "id": "p3_q4"
         },
         {
-          "text": "Tính giá trị của biểu thức  $B=sin^{2}{20}^{∘}+sin^{2}{70}^{∘}+tan{35}^{∘}\\cdot tan{55}^{∘}$ .",
+          "text": "Tính giá trị của biểu thức  $B=\\sin ^{2}{20}^{∘}+\\sin ^{2}{70}^{∘}+\\tan{35}^{∘}\\cdot \\tan{55}^{∘}$ .",
           "answer": "2",
           "accepted_answers": [
             "2"

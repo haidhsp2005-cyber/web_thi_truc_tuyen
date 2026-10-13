@@ -1,0 +1,650 @@
+{
+  "title": "KTTX-12",
+  "subject": "Tin học",
+  "grade": "12",
+  "duration_minutes": 15,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Đông Thạnh",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Dữ liệu trên đường truyền mạng được mang bởi các tín hiệu vật lí nào?",
+          "options": {
+            "A": "Chỉ có dao động điện trong mạng cục bộ",
+            "B": "Chỉ có sóng vô tuyến điện trong mạng không dây",
+            "C": "Chỉ có tín hiệu ánh sáng trong cáp quang",
+            "D": "Dao động điện, sóng vô tuyến điện, tín hiệu ánh sáng"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Thiết bị nào sau đây KHÔNG phải là thiết bị mạng thông dụng nêu trong bài?",
+          "options": {
+            "A": "Hub",
+            "B": "Máy quét (scanner)",
+            "C": "Router",
+            "D": "Modem"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Khi một máy tính gửi dữ liệu qua một cổng của hub, tín hiệu sẽ được",
+          "options": {
+            "A": "gửi đến tất cả các cổng còn lại",
+            "B": "chỉ gửi đến cổng của máy nhận",
+            "C": "chuyển thành tín hiệu tương tự",
+            "D": "huỷ ngay sau khi gửi"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Switch hoạt động theo cách nào?",
+          "options": {
+            "A": "Phát tán tín hiệu đến tất cả các cổng",
+            "B": "Chuyển đổi tín hiệu số thành tín hiệu tương tự",
+            "C": "Xác định cổng của thiết bị gửi và thiết bị nhận, thiết lập tạm thời kênh truyền giữa hai cổng và huỷ sau khi truyền xong",
+            "D": "Dẫn đường dữ liệu qua nhiều mạng LAN"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Hiện tượng nhiều máy đồng thời gửi dữ liệu lên đường truyền chung làm tín hiệu bị hỏng, máy nhận không nhận biết được dữ liệu gọi là",
+          "options": {
+            "A": "định tuyến",
+            "B": "điều chế",
+            "C": "xung đột (collision)",
+            "D": "giải điều chế"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Wi-Fi là chữ viết tắt của cụm từ nào?",
+          "options": {
+            "A": "Wireless Fidelity",
+            "B": "Wide Fiber",
+            "C": "Wireless Fiber",
+            "D": "Wide Frequency"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Thuật ngữ WAP (hay AP) trong mạng máy tính là viết tắt của",
+          "options": {
+            "A": "Wide Area Provider",
+            "B": "Wireless Area Protocol",
+            "C": "Web Access Port",
+            "D": "Wireless Access Point"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Thiết bị nào dùng để dẫn đường cho dữ liệu khi kết nối trên mạng rộng như Internet?",
+          "options": {
+            "A": "Hub",
+            "B": "Router",
+            "C": "Switch",
+            "D": "Modem"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Cổng của router kết nối trực tiếp vào mạng cục bộ được gọi là",
+          "options": {
+            "A": "cổng LAN",
+            "B": "cổng WAN",
+            "C": "cổng USB",
+            "D": "cổng RJ11"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Cổng của router dùng để kết nối với các router khác (hay với nhà cung cấp dịch vụ Internet) được gọi là",
+          "options": {
+            "A": "cổng LAN",
+            "B": "cổng WAN",
+            "C": "cổng Wi-Fi",
+            "D": "cổng SIM"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Tín hiệu trong mạng LAN của máy tính là loại tín hiệu nào?",
+          "options": {
+            "A": "Tín hiệu tương tự (analog)",
+            "B": "Tín hiệu âm thanh",
+            "C": "Tín hiệu sóng mang điện thoại",
+            "D": "Tín hiệu số (digital) thể hiện các giá trị logic 0 hoặc 1"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Thiết bị có chức năng chuyển đổi tín hiệu số thành tín hiệu tương tự và ngược lại là",
+          "options": {
+            "A": "router",
+            "B": "switch",
+            "C": "modem",
+            "D": "hub"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Tên gọi \"modem\" bắt nguồn từ hai công việc nào?",
+          "options": {
+            "A": "Mã hoá và giải mã",
+            "B": "Điều chế (modulation) và giải điều chế (demodulation)",
+            "C": "Định tuyến và chuyển mạch",
+            "D": "Phát và thu sóng Wi-Fi"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Loại modem cho phép nối hai máy tính qua hệ thống chuyển mạch của mạng điện thoại công cộng, dữ liệu được mã hoá thành tín hiệu thoại là",
+          "options": {
+            "A": "modem ADSL",
+            "B": "modem quang",
+            "C": "modem GSM",
+            "D": "modem quay số"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Loại modem có khe cắm SIM để truy cập Internet qua hệ thống điện thoại di động (3G, 4G, 5G) là",
+          "options": {
+            "A": "modem GSM",
+            "B": "modem ADSL",
+            "C": "modem quay số",
+            "D": "modem quang"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Modem nào chuyển đổi tín hiệu số sang tín hiệu quang và ngược lại?",
+          "options": {
+            "A": "Modem ADSL",
+            "B": "Modem GSM",
+            "C": "Modem quang",
+            "D": "Modem quay số"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Cổng trên máy tính dùng để cắm cáp mạng UTP có tên là",
+          "options": {
+            "A": "cổng USB",
+            "B": "cổng RJ45",
+            "C": "cổng HDMI",
+            "D": "cổng VGA"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Cáp mạng UTP thường dùng trong LAN có bao nhiêu đôi dây xoắn?",
+          "options": {
+            "A": "Một",
+            "B": "Hai",
+            "C": "Ba",
+            "D": "Bốn"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Vì sao mạng gia đình chỉ có ít thiết bị đầu cuối có thể dùng hub thay cho switch?",
+          "options": {
+            "A": "Vì hub không bao giờ gây xung đột",
+            "B": "Vì hub có chi phí rẻ hơn nhiều so với switch cùng số cổng, còn ít máy thì nguy cơ xung đột thấp",
+            "C": "Vì hub có thể kết nối nhiều LAN qua Internet",
+            "D": "Vì hub chuyển được tín hiệu số thành tín hiệu tương tự"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Với LAN có hàng trăm máy tính, nên ưu tiên dùng thiết bị nào? Vì sao?",
+          "options": {
+            "A": "Dùng hub vì phát tán tín hiệu đến mọi máy nên nhanh hơn",
+            "B": "Dùng modem vì có nhiều cổng",
+            "C": "Dùng switch (nhiều tầng), vì switch chỉ chuyển tín hiệu đến đúng cổng nhận nên giảm xung đột",
+            "D": "Dùng WAP vì không cần dây dẫn"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q20"
+        },
+        {
+          "text": "Điểm khác nhau cơ bản giữa hub và switch là",
+          "options": {
+            "A": "hub dùng cho mạng không dây, switch dùng cho mạng có dây",
+            "B": "hub phát tín hiệu đến tất cả các cổng còn lại, switch chỉ gửi đến cổng của thiết bị nhận",
+            "C": "hub chọn đường đi, switch không chọn đường đi",
+            "D": "hub kết nối Internet, switch kết nối LAN"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q21"
+        },
+        {
+          "text": "Cách tổ chức LAN lớn như Hình 3.2 (sơ đồ mạng nhiều tầng) là",
+          "options": {
+            "A": "chỉ dùng hub ở mọi tầng",
+            "B": "dùng nhiều switch kết nối thành nhiều tầng, kết hợp hub ở tầng cuối cùng",
+            "C": "dùng router ở mọi tầng",
+            "D": "dùng modem để nối các tầng"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q22"
+        },
+        {
+          "text": "Vì sao không thể chỉ dùng hub hay switch để kết nối hai máy tính thuộc hai LAN khác nhau qua Internet?",
+          "options": {
+            "A": "Vì hub và switch chỉ hoạt động với dữ liệu văn bản",
+            "B": "Vì hub và switch không có cổng kết nối",
+            "C": "Vì cần dùng dịch vụ truyền dẫn của nhà cung cấp viễn thông và router để chuyển tiếp dữ liệu giữa các LAN",
+            "D": "Vì hub và switch chỉ dùng được với cáp quang"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q23"
+        },
+        {
+          "text": "\"Định tuyến\" (routing) có nghĩa là",
+          "options": {
+            "A": "chuyển tín hiệu số thành tín hiệu tương tự",
+            "B": "phát tín hiệu đến tất cả các thiết bị trong mạng",
+            "C": "router chọn cổng thích hợp để gửi dữ liệu đi sao cho tới được LAN của máy nhận",
+            "D": "thiết lập tạm thời kênh truyền giữa hai cổng của switch"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q24"
+        },
+        {
+          "text": "Vì sao router của các mạng gia đình thường không cần định tuyến?",
+          "options": {
+            "A": "Vì router gia đình không có cổng LAN",
+            "B": "Vì router gia đình chỉ dùng cáp quang",
+            "C": "Vì chỉ có một cổng WAN kết nối đến nhà cung cấp dịch vụ Internet, không có nhiều cổng để lựa chọn",
+            "D": "Vì router gia đình không truyền được dữ liệu"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q25"
+        },
+        {
+          "text": "Vì sao cần có modem đặt giữa router và nhà cung cấp dịch vụ Internet?",
+          "options": {
+            "A": "Vì router không có cổng WAN",
+            "B": "Vì router chỉ hướng luồng dữ liệu tới đích, không chuyển đổi tín hiệu",
+            "C": "Vì modem có chức năng định tuyến thay router",
+            "D": "Vì modem làm tăng dung lượng dữ liệu truyền"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q26"
+        },
+        {
+          "text": "Phát biểu nào sau đây về modem là ĐÚNG?",
+          "options": {
+            "A": "Modem thay đổi dữ liệu được mang bởi tín hiệu",
+            "B": "Modem chỉ thay đổi tín hiệu mà không làm thay đổi dữ liệu được mang bởi tín hiệu",
+            "C": "Modem ADSL dùng chung tần số với đường thoại",
+            "D": "Ngày nay modem luôn là thiết bị độc lập, không thể tích hợp vào router"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q27"
+        },
+        {
+          "text": "Ý nghĩa của thiết bị thu phát Wi-Fi (WAP) là",
+          "options": {
+            "A": "thay thế hoàn toàn router trong mạng Internet",
+            "B": "giúp giảm chi phí thiết lập LAN, mở rộng phạm vi kết nối không dây cho thiết bị di động",
+            "C": "chuyển tín hiệu số thành tín hiệu quang",
+            "D": "giúp phát tán tín hiệu đến mọi cổng của hub"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q28"
+        },
+        {
+          "text": "Máy tính để bàn thường không có sẵn khả năng kết nối Wi-Fi. Để kết nối Wi-Fi cho máy này, cần",
+          "options": {
+            "A": "thay bằng cáp quang",
+            "B": "lắp thêm bảng mạch mở rộng (card Wi-Fi)",
+            "C": "cài thêm hub",
+            "D": "đổi cổng RJ45 thành cổng WAN"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q29"
+        },
+        {
+          "text": "Để máy tính xách tay không có SIM kết nối Internet qua mạng điện thoại di động, giải pháp phù hợp là",
+          "options": {
+            "A": "cắm trực tiếp cáp mạng UTP vào điện thoại",
+            "B": "dùng thiết bị có khe SIM (modem GSM/điện thoại) phát lại Wi-Fi để máy tính kết nối",
+            "C": "dùng hub kết nối với điện thoại",
+            "D": "dùng switch kết nối với sóng 4G"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q30"
+        },
+        {
+          "text": "Trong thao tác kết nối Wi-Fi, khi trạm phát được bảo mật (có biểu tượng ổ khoá) thì",
+          "options": {
+            "A": "kết nối được ngay không cần làm gì",
+            "B": "phải dùng cáp mạng thay thế",
+            "C": "phải nhập đúng mật khẩu mới kết nối được",
+            "D": "phải chọn chế độ hub"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q31"
+        },
+        {
+          "text": "Lựa chọn \"Connect automatically\" (Tự động kết nối lại) có tác dụng gì?",
+          "options": {
+            "A": "Lần sau máy tự kết nối với trạm Wi-Fi đó mà không cần chọn lại hay nhập lại mật khẩu",
+            "B": "Tăng tốc độ đường truyền",
+            "C": "Tự động đổi mật khẩu Wi-Fi",
+            "D": "Tắt chế độ bảo mật của trạm phát"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q32"
+        },
+        {
+          "text": "Thực chất, trang web mà trình duyệt hiển thị được tạo ra từ đâu?",
+          "options": {
+            "A": "Từ ảnh chụp màn hình",
+            "B": "Từ các tệp văn bản (tệp nguồn/mã nguồn)",
+            "C": "Từ phần mềm Notepad",
+            "D": "Từ máy chủ DNS"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q33"
+        },
+        {
+          "text": "Tệp HTML thường có phần mở rộng là gì?",
+          "options": {
+            "A": ".txt",
+            "B": ".doc",
+            "C": ".html hoặc .htm",
+            "D": ".web"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q34"
+        },
+        {
+          "text": "Các kí tự nào dùng để đánh dấu thẻ HTML?",
+          "options": {
+            "A": "{  }",
+            "B": "(    )",
+            "C": "[  ]",
+            "D": "< >"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q35"
+        },
+        {
+          "text": "Phát biểu nào về thẻ HTML là sai?",
+          "options": {
+            "A": "Tên thẻ không phân biệt chữ hoa, chữ thường",
+            "B": "Các thẻ có thể lồng nhau",
+            "C": "Mọi thẻ đều phải có thẻ kết thúc",
+            "D": "Thẻ có thể có thuộc tính đi kèm"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q36"
+        },
+        {
+          "text": "Thẻ nào dùng để tạo đoạn văn bản?",
+          "options": {
+            "A": "< meta >",
+            "B": "< p >",
+            "C": "< title >",
+            "D": "< body >"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q37"
+        },
+        {
+          "text": "Thẻ <h1> có ý nghĩa gì?",
+          "options": {
+            "A": "Đoạn văn bản",
+            "B": "Tiêu đề cấp 1",
+            "C": "Dòng kẻ ngang",
+            "D": "Nhấn mạnh"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q38"
+        },
+        {
+          "text": "Thẻ nào là thẻ đơn (chỉ có thẻ bắt đầu)?",
+          "options": {
+            "A": "< em >",
+            "B": "< p >",
+            "C": "< hr >",
+            "D": "< title >"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q39"
+        },
+        {
+          "text": "Phần tử HTML gồm những thành phần nào?",
+          "options": {
+            "A": "Chỉ thẻ bắt đầu",
+            "B": "Thẻ bắt đầu, nội dung, thẻ kết thúc",
+            "C": "Chỉ nội dung",
+            "D": "Chỉ thuộc tính"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q40"
+        },
+        {
+          "text": "Dòng <!DOCTYPE html> có vai trò gì?",
+          "options": {
+            "A": "Là phần tử gốc",
+            "B": "Là dòng chú thích",
+            "C": "Thông báo cho trình duyệt biết đây là tệp định dạng HTML, không phải là phần tử HTML",
+            "D": "Đặt tên trang web"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q41"
+        },
+        {
+          "text": "Phần tử gốc (root) của cây HTML là:",
+          "options": {
+            "A": "< head >",
+            "B": "< body >",
+            "C": "< div >",
+            "D": "< html >"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q42"
+        },
+        {
+          "text": "Phần tử <html> thường chứa hai phần tử con nào?",
+          "options": {
+            "A": "< title > và < meta >",
+            "B": "< head > và < body >",
+            "C": "< div > và < p >",
+            "D": "< h1 >  và < p >"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q43"
+        },
+        {
+          "text": "Phần tử nào chứa các thông tin liên quan đến toàn bộ trang web (tên trang, mã hoá\\ldots )?",
+          "options": {
+            "A": "< body >",
+            "B": "< head >",
+            "C": "< div >",
+            "D": "< p >"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q44"
+        },
+        {
+          "text": "Nội dung hiển thị chính của trang web được đặt trong phần tử nào?",
+          "options": {
+            "A": "< head >",
+            "B": "< meta >",
+            "C": "< body >",
+            "D": "< title >"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q45"
+        },
+        {
+          "text": "<meta charset=\"utf-8\"> dùng để làm gì?",
+          "options": {
+            "A": "Đặt tên trang",
+            "B": "Mô tả cách mã hoá văn bản trên trang web (Unicode UTF-8)",
+            "C": "Tạo tiêu đề",
+            "D": "Chèn ảnh"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q46"
+        },
+        {
+          "text": "Phần tử <title> có đặc điểm nào sau đây?",
+          "options": {
+            "A": "Nằm trong",
+            "B": "Có thể chứa phần tử con",
+            "C": "Nằm trong , chỉ chứa văn bản thường",
+            "D": "Hiển thị ngay trên trang web"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q47"
+        },
+        {
+          "text": "Các thẻ định dạng tiêu đề giảm cấp dần theo thứ tự nào?",
+          "options": {
+            "A": "< h6 >,  … ,  < h1 >",
+            "B": "< h1 >, < h2 >, …, < h6 >",
+            "C": "< h1 >, < h3 >, < h2 >",
+            "D": "Không có thứ tự"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q48"
+        },
+        {
+          "text": "Nếu gõ nội dung trong tệp HTML rồi nhấn Enter xuống dòng nhiều lần thì trình duyệt sẽ:",
+          "options": {
+            "A": "Ngắt thành nhiều đoạn",
+            "B": "Không nhận biết dấu xuống dòng",
+            "C": "Báo lỗi",
+            "D": "Tự thêm thẻ"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q49"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": []
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": []
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_f5cb8f61",
+  "created_by": "thanhtruc",
+  "is_published": false,
+  "scoring": {
+    "part1_total": 24.5,
+    "part1_per_question": 0.5,
+    "part2_total": 0.0,
+    "part2_per_question": 1.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 0.0,
+    "part3_per_question": 0.0,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": true
+  },
+  "is_online_exam": true,
+  "is_bank": true,
+  "bank_config": {
+    "enabled": true,
+    "draw_mode": "per_student",
+    "total_draw": 20,
+    "part1_draw": 20,
+    "part2_draw": 0,
+    "part3_draw": 0,
+    "part4_draw": 0
+  }
+}

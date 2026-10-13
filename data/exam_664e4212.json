@@ -1,0 +1,346 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN HỌC LỚP 11 Đề 3",
+  "subject": "Toán học",
+  "grade": "11",
+  "duration_minutes": 50,
+  "department_name": "SỞ GD&ĐT",
+  "school_name": "TRƯỜNG THPT",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tập xác định của hàm số  $y=tanx$  là",
+          "options": {
+            "A": "$\\mathbb{R}⧵{\\frac{\\pi }{2}+k\\pi ,k\\in \\mathbb{Z}}$",
+            "B": "$\\mathbb{R}$",
+            "C": "$[-1;1]$",
+            "D": "$\\mathbb{R}⧵{k\\pi ,k\\in \\mathbb{Z}}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Phương trình  $tanx=1$  có họ nghiệm là",
+          "options": {
+            "A": "$x=\\frac{\\pi }{4}+k2\\pi ,k\\in \\mathbb{Z}$",
+            "B": "$x=-\\frac{\\pi }{4}+k\\pi ,k\\in \\mathbb{Z}$",
+            "C": "$x=\\frac{\\pi }{4}+k\\pi ,k\\in \\mathbb{Z}$",
+            "D": "$x=\\frac{\\pi }{2}+k\\pi ,k\\in \\mathbb{Z}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Khẳng định nào dưới đây là công thức nhân đôi đúng?",
+          "options": {
+            "A": "$\\cos (2a)=2 \\cos ^{2}a-1$",
+            "B": "$\\cos (2a)=2cosa$",
+            "C": "$\\sin (2a)=sinacosa$",
+            "D": "$\\sin (2a)=2sina$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Tập xác định của hàm số  $y=sinx$  là",
+          "options": {
+            "A": "$\\mathbb{R}⧵{\\frac{\\pi }{2}+k\\pi ,k\\in \\mathbb{Z}}$",
+            "B": "$\\mathbb{R}⧵{0}$",
+            "C": "$\\mathbb{R}$",
+            "D": "$[-1;1]$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Phương trình  $sinx=0$  có nghiệm là",
+          "options": {
+            "A": "$x=\\frac{\\pi }{2}+k\\pi ,k\\in \\mathbb{Z}$",
+            "B": "$x=k2\\pi ,k\\in \\mathbb{Z}$",
+            "C": "$x=k\\pi ,k\\in \\mathbb{Z}$",
+            "D": "$x=\\frac{\\pi }{2}+k2\\pi ,k\\in \\mathbb{Z}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Tập giá trị của hàm số  $y=cosx$  là đoạn",
+          "options": {
+            "A": "$[-1;1]$",
+            "B": "$\\mathbb{R}$",
+            "C": "$[-2;2]$",
+            "D": "$[0;1]$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Chu kì tuần hoàn của hàm số  $y=sinx$  là",
+          "options": {
+            "A": "$\\frac{\\pi }{2}$",
+            "B": "$\\pi$",
+            "C": "$2\\pi$",
+            "D": "$4\\pi$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Với mọi góc lượng giác  $\\alpha$ , khẳng định nào sau đây luôn đúng?",
+          "options": {
+            "A": "$\\tan ^{2}\\alpha +\\cot ^{2}\\alpha =1$",
+            "B": "$\\sin ^{2}\\alpha -\\cos ^{2}\\alpha =1$",
+            "C": "$\\sin\\alpha +\\cos\\alpha =1$",
+            "D": "$\\sin ^{2}\\alpha +\\cos ^{2}\\alpha =1$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Công thức cộng lượng giác nào sau đây đúng?",
+          "options": {
+            "A": "$\\sin (a+b)=sinacosb-cosasinb$",
+            "B": "$\\cos (a+b)=cosacosb+sinasinb$",
+            "C": "$\\cos (a-b)=cosacosb-sinasinb$",
+            "D": "$\\sin (a+b)=sinacosb+cosasinb$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Nghiệm của phương trình  $cosx=-\\frac{1}{2}$  là",
+          "options": {
+            "A": "$x=\\frac{2\\pi }{3}+k\\pi ,k\\in \\mathbb{Z}$",
+            "B": "$x=\\pm \\frac{2\\pi }{3}+k2\\pi ,k\\in \\mathbb{Z}$",
+            "C": "$x=\\pm \\frac{\\pi }{3}+k2\\pi ,k\\in \\mathbb{Z}$",
+            "D": "$x=\\pm \\frac{5\\pi }{6}+k2\\pi ,k\\in \\mathbb{Z}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Góc lượng giác có số đo  ${60}^{∘}$  khi đổi sang đơn vị radian bằng",
+          "options": {
+            "A": "$\\frac{\\pi }{2}$",
+            "B": "$\\frac{\\pi }{4}$",
+            "C": "$\\frac{\\pi }{6}$",
+            "D": "$\\frac{\\pi }{3}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Nghiệm của phương trình  $cosx=1$  là",
+          "options": {
+            "A": "$x=k\\pi ,k\\in \\mathbb{Z}$",
+            "B": "$x=\\pi +k2\\pi ,k\\in \\mathbb{Z}$",
+            "C": "$x=\\frac{\\pi }{2}+k\\pi ,k\\in \\mathbb{Z}$",
+            "D": "$x=k2\\pi ,k\\in \\mathbb{Z}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Nhiệt độ không khí trung bình  $T(t)$  (đơn vị:  ${}^{∘}C$ ) tại một trạm quan trắc khí tượng ở vùng đồng bằng vào ngày nắng được mô phỏng bởi công thức  $T(t)=24+4\\sin (\\frac{\\pi }{12}(t-9))$ , trong đó  $t$  là thời gian tính bằng giờ trong ngày ( $0\\le t\\le 24$ ).",
+          "items": {
+            "a": {
+              "text": "Nhiệt độ thấp nhất trong ngày theo mô hình này là  ${20}^{∘}C$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Hàm số mô tả nhiệt độ có tập xác định về mặt thời gian là đoạn  $[0;24]$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Lúc  $12$  giờ trưa ( $t=12$ ), nhiệt độ đo được theo mô hình đạt cực đại là  ${28}^{∘}C$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "Nhiệt độ trong ngày đạt giá trị cao nhất tại thời điểm  $15$  giờ ( $3$  giờ chiều).",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Một cabin của vòng quay đu quay tại công viên giải trí chuyển động tròn đều. Độ cao  $H(t)$  (tính bằng mét) của cabin so với mặt đất tại thời điểm  $t$  giây ( $t\\ge 0$ ) kể từ khi vòng quay bắt đầu vận hành được cho bởi công thức  $H(t)=20-15\\cos (\\frac{\\pi t}{15})$ .",
+          "items": {
+            "a": {
+              "text": "Lần đầu tiên cabin đạt độ cao  $27,5$  mét là ở giây thứ  $10$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Độ cao ban đầu của cabin khi bắt đầu quay ( $t=0$ ) là  $5$  mét so với mặt đất.",
+              "answer": true
+            },
+            "c": {
+              "text": "Cabin hoàn thành một vòng quay trọn vẹn trong thời gian  $15$  giây.",
+              "answer": false
+            },
+            "d": {
+              "text": "Độ cao lớn nhất mà cabin đạt được trong quá trình quay là  $35$  mét.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Tại một cảng biển, độ sâu của mực nước  $h(t)$  (đơn vị: mét) theo thời gian  $t$  (đơn vị: giờ, với  $0\\le t\\le 24$ ) tính từ nửa đêm ( $t=0$ ) được mô hình hóa bởi hàm số lượng giác  $h(t)=3+2\\cos (\\frac{\\pi t}{6})$ . Nhờ mô hình này, ban quản lý cảng có thể điều phối tàu thuyền ra vào một cách an toàn.",
+          "items": {
+            "a": {
+              "text": "Trong  $12$  giờ đầu tiên ( $0\\le t\\le 12$ ), có đúng  $2$  thời điểm mực nước đạt độ sâu  $4$  mét.",
+              "answer": true
+            },
+            "b": {
+              "text": "Độ sâu lớn nhất của mực nước tại cảng biển đạt  $5$  mét.",
+              "answer": true
+            },
+            "c": {
+              "text": "Biến số  $t$  trong mô hình biểu thị thời gian tính bằng giờ kể từ nửa đêm.",
+              "answer": true
+            },
+            "d": {
+              "text": "Tại thời điểm nửa đêm ( $t=0$ ), độ sâu của mực nước tại cảng là  $3$  mét.",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Trong mạng điện dân dụng tại Việt Nam, điện áp tức thời  $u(t)$  (đơn vị: vôn) giữa hai đầu dây dẫn biến thiên điều hòa theo thời gian  $t$  (đơn vị: giây) tuân theo phương trình  $u(t)=220\\sqrt{2}\\cos (100\\pi t)$ . Đây là mô hình chuẩn được các kỹ sư điện sử dụng để tính toán phụ tải.",
+          "items": {
+            "a": {
+              "text": "Điện áp hiệu dụng của dòng điện dân dụng trên là  $220$  V.",
+              "answer": true
+            },
+            "b": {
+              "text": "Tần số của dòng điện xoay chiều này bằng  $50$  Hz.",
+              "answer": true
+            },
+            "c": {
+              "text": "Tại thời điểm ban đầu  $t=0$ , điện áp tức thời giữa hai đầu dây dẫn bằng  $0$  V.",
+              "answer": false
+            },
+            "d": {
+              "text": "Trong khoảng thời gian  $1$  giây đầu tiên, điện áp tức thời  $u(t)$  bằng  $0$  V đúng  $50$  lần.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tìm giá trị lớn nhất của hàm số  $y=3sinx-4$ .",
+          "answer": "-1",
+          "accepted_answers": [
+            "-1"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Tìm giá trị nhỏ nhất của hàm số  $y=5-2cosx$ .",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Phương trình  $sinx=0$  có bao nhiêu nghiệm trên đoạn  $[0;3\\pi ]$ ?",
+          "answer": "4",
+          "accepted_answers": [
+            "4"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Cho góc  $x$  thỏa mãn  $0<x<\\frac{\\pi }{2}$  và  $sinx=0,6$ . Tính giá trị của  $cosx$ .",
+          "answer": "0.8",
+          "accepted_answers": [
+            "0.8"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Số nghiệm của phương trình  $cosx=\\frac{1}{2}$  trên đoạn  $[0;2\\pi ]$  bằng bao nhiêu?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Cho  $sinx=0,6$  và  $cosx=0,8$ . Tính giá trị của  $\\sin (2x)$ .",
+          "answer": "0.96",
+          "accepted_answers": [
+            "0.96"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_664e4212",
+  "created_by": "admin",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

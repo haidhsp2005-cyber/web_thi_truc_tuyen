@@ -1,0 +1,346 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN GIÁO DỤC QUỐC PHÒNG VÀ AN NINH LỚP 10",
+  "subject": "Giáo dục quốc phòng",
+  "grade": "10",
+  "duration_minutes": 45,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cấp hiệu sĩ quan Quân đội nhân dân Việt Nam có  $1$  vạch ngang và  $3$  ngôi sao vàng là cấp bậc quân hàm nào?",
+          "options": {
+            "A": "Trung úy",
+            "B": "Thượng úy",
+            "C": "Đại úy",
+            "D": "Thiếu úy"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Khi gặp người bị say nắng, say nóng, biện pháp sơ cứu ban đầu nào sau đây là đúng?",
+          "options": {
+            "A": "Cho nạn nhân uống ngay nước đá thật lạnh để hạ nhiệt nhanh chóng",
+            "B": "Cho nạn nhân uống thuốc hạ sốt liều cao ngay lập tức",
+            "C": "Đưa ngay nạn nhân vào nơi thoáng mát, bóng râm và nới lỏng quần áo",
+            "D": "Đắp chăn ấm cho nạn nhân để tránh bị cảm lạnh đột ngột"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Theo Luật Dân quân tự vệ, công dân nam trong độ tuổi nào sau đây có nghĩa vụ tham gia Dân quân tự vệ trong điều kiện bình thường?",
+          "options": {
+            "A": "Từ đủ  $18$  tuổi đến hết  $45$  tuổi",
+            "B": "Từ đủ  $18$  tuổi đến hết  $50$  tuổi",
+            "C": "Từ đủ  $18$  tuổi đến hết  $40$  tuổi",
+            "D": "Từ đủ  $20$  tuổi đến hết  $45$  tuổi"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Nguyên tắc cơ bản nhất khi tiến hành cố định xương gãy tạm thời là gì?",
+          "options": {
+            "A": "Cố định được cả khớp trên và khớp dưới vùng xương bị gãy",
+            "B": "Bôi dầu nóng hoặc đắp thuốc lá trực tiếp lên vết thương hở",
+            "C": "Băng thật chặt nẹp vào sát da thịt để tránh di lệch tuyệt đối",
+            "D": "Kéo nắn thật mạnh để đưa xương gãy về vị trí ban đầu trước khi băng bó"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Hành vi nào sau đây bị nghiêm cấm thực hiện trên không gian mạng theo Luật An ninh mạng?",
+          "options": {
+            "A": "Chia sẻ các bài viết khoa học công nghệ của nước ngoài",
+            "B": "Đăng tải thông tin tuyên truyền xuyên tạc, phỉ báng chính quyền nhân dân",
+            "C": "Mua sắm hàng hóa trực tuyến trên các trang thương mại điện tử hợp pháp",
+            "D": "Sử dụng dịch vụ thư điện tử cá nhân để trao đổi công việc học tập"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Số điện thoại gọi khẩn cấp để báo cháy và cứu nạn, cứu hộ tại Việt Nam là số nào?",
+          "options": {
+            "A": "111",
+            "B": "113",
+            "C": "115",
+            "D": "114"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Theo Luật Quốc phòng, 'nền quốc phòng toàn dân' là gì?",
+          "options": {
+            "A": "Hệ thống các công trình phòng thủ biên giới và hải đảo",
+            "B": "Lực lượng vũ trang nhân dân làm nòng cốt để bảo vệ độc lập chủ quyền",
+            "C": "Hoạt động vũ trang của quân đội phối hợp với công an để giữ gìn trật tự xã hội",
+            "D": "Sức mạnh quốc phòng của đất nước, được xây dựng trên nền tảng nhân lực, vật lực, tinh thần mang tính chất toàn dân, toàn diện, độc lập, tự chủ, tự cường"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Ngày truyền thống của lực lượng Công an nhân dân Việt Nam là ngày nào?",
+          "options": {
+            "A": "Ngày  $19/08/1945$",
+            "B": "Ngày  $22/12/1944$",
+            "C": "Ngày  $02/09/1945$",
+            "D": "Ngày  $15/05/1941$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Nội dung nào sau đây thuộc phạm vi thách thức của an ninh phi truyền thống?",
+          "options": {
+            "A": "Xung đột vũ trang tranh chấp biên giới lãnh thổ giữa các quốc gia",
+            "B": "Bạo loạn lật đổ chính quyền bằng lực lượng quân sự nội địa",
+            "C": "Chiến tranh xâm lược bằng vũ khí công nghệ cao của nước ngoài",
+            "D": "Biến đổi khí hậu, dịch bệnh nguy hiểm và tội phạm mạng xuyên quốc gia"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Ngày thành lập Quân đội nhân dân Việt Nam là ngày nào?",
+          "options": {
+            "A": "Ngày  $22/12/1944$",
+            "B": "Ngày  $30/04/1975$",
+            "C": "Ngày  $19/08/1945$",
+            "D": "Ngày  $22/12/1946$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Trong điều lệnh đội ngũ đi đều của Quân đội nhân dân Việt Nam, độ dài của một bước đi thông thường là bao nhiêu?",
+          "options": {
+            "A": "$85$  cm",
+            "B": "$60$  cm",
+            "C": "$75$  cm",
+            "D": "$100$  cm"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Theo Luật Biển Việt Nam, lãnh hải của nước Cộng hòa xã hội chủ nghĩa Việt Nam có chiều rộng bao nhiêu hải lý?",
+          "options": {
+            "A": "$350$  hải lý",
+            "B": "$12$  hải lý",
+            "C": "$200$  hải lý",
+            "D": "$24$  hải lý"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Trong giờ ra chơi, bạn Nam (học sinh lớp 10) nhận được một tin nhắn từ tài khoản lạ trên mạng xã hội với nội dung: 'Chúc mừng bạn đã trúng thưởng một chiếc điện thoại trị giá  $15$  triệu đồng. Hãy truy cập vào đường link www.quatangmayman-nhanngay.com và nhập mã OTP gửi về điện thoại của bạn để hoàn tất thủ tục nhận giải'. Nam phân vân và hỏi ý kiến các bạn trong lớp.",
+          "items": {
+            "a": {
+              "text": "Hành vi gửi tin nhắn giả mạo trúng thưởng kèm đường link lạ nhằm chiếm đoạt thông tin cá nhân là hành vi vi phạm Luật An ninh mạng năm  $2018$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Nam có thể yên tâm nhập mã OTP vào đường link trên vì mã OTP chỉ dùng để xác nhận nhận quà, không ảnh hưởng đến tài khoản ngân hàng hay thông tin cá nhân.",
+              "answer": false
+            },
+            "c": {
+              "text": "Học sinh THPT chưa có tài khoản ngân hàng riêng nên không cần thiết phải học tập và tìm hiểu về Luật An ninh mạng cũng như các kỹ năng phòng chống tội phạm công nghệ cao.",
+              "answer": false
+            },
+            "d": {
+              "text": "Nếu Nam lỡ nhập thông tin và phát hiện bị lừa đảo, hành động đúng đắn là báo ngay cho cha mẹ, nhà trường và cơ quan Công an nơi gần nhất để được hỗ trợ xử lý.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Gia đình bạn Mai sống tại tầng  $8$  của một tòa nhà chung cư. Vào lúc nửa đêm, hệ thống chuông báo cháy của tòa nhà vang lên dồn dập. Mai mở cửa phòng ra hành lang thì thấy khói đen bắt đầu lan tỏa và có mùi khét lẹt. Trong tình huống khẩn cấp này, Mai cần cùng gia đình thực hiện các biện pháp thoát nạn an toàn.",
+          "items": {
+            "a": {
+              "text": "Mai cần nhanh chóng gọi điện thoại đến số  $114$  để báo cháy và cung cấp thông tin chính xác về địa chỉ tòa nhà, vị trí đám cháy.",
+              "answer": true
+            },
+            "b": {
+              "text": "Nếu lối thoát hiểm ra cầu thang bộ đã bị lửa và khói bao vây không thể đi xuống, Mai nên đóng chặt cửa ra vào, dùng chăn ướt chèn các khe cửa và ra ban công vẫy khăn sáng màu hoặc dùng đèn pin ra hiệu cầu cứu.",
+              "answer": true
+            },
+            "c": {
+              "text": "Khi di chuyển qua hành lang đầy khói, Mai cần dùng khăn ướt che mũi, miệng và cúi khom người hoặc bò sát mặt đất để tránh hít phải khí độc.",
+              "answer": true
+            },
+            "d": {
+              "text": "Để thoát thân nhanh nhất từ tầng  $8$ , Mai và gia đình nên di chuyển bằng thang máy của tòa nhà vì thang máy di chuyển nhanh hơn thang bộ.",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Trong chuyến tham quan học tập ngoại khóa tại vùng biên giới phía Bắc, nhóm học sinh lớp 10 quan sát thấy một nhóm người lạ mặt đang có hành vi dùng búa đục phá và sơn vẽ bậy lên cột mốc chủ quyền biên giới quốc gia. Một số bạn định lờ đi vì cho rằng đây không phải việc của mình.",
+          "items": {
+            "a": {
+              "text": "Hành vi phá hoại, làm sai lệch cột mốc biên giới chỉ bị xử phạt hành chính nhẹ vì không gây thiệt hại lớn về kinh tế.",
+              "answer": false
+            },
+            "b": {
+              "text": "Nhiệm vụ bảo vệ đường biên, mốc giới hoàn toàn là trách nhiệm riêng của lực lượng Biên phòng, học sinh không có nghĩa vụ phải quan tâm.",
+              "answer": false
+            },
+            "c": {
+              "text": "Nhóm học sinh cần lập tức tìm cách báo tin cho Đồn Biên phòng gần nhất hoặc chính quyền địa phương để kịp thời ngăn chặn hành vi phá hoại.",
+              "answer": true
+            },
+            "d": {
+              "text": "Cột mốc biên giới là công trình quốc gia đặc biệt, thể hiện chủ quyền lãnh thổ thiêng liêng của Tổ quốc.",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Vào mùa hè, nhóm bạn trẻ rủ nhau đi tắm sông. Không may, bạn Quân bị chuột rút và chìm dần. Sau khi được các bạn đưa lên bờ, Quân đã ngưng thở, tim ngừng đập và mặt tím tái. Nhóm bạn cần tiến hành các bước sơ cứu khẩn cấp tại chỗ trước khi nhân viên y tế đến.",
+          "items": {
+            "a": {
+              "text": "Khi tiến hành ép tim ngoài lồng ngực cho nạn nhân, chu kỳ chuẩn là thực hiện liên tục  $30$  lần ép tim phối hợp với  $2$  lần hà hơi thổi ngạt.",
+              "answer": true
+            },
+            "b": {
+              "text": "Phương pháp sơ cứu hiệu quả nhất là vác ngược nạn nhân lên vai và chạy vòng quanh để nước trong phổi chảy hết ra ngoài.",
+              "answer": false
+            },
+            "c": {
+              "text": "Việc trang bị kỹ năng bơi lội và sơ cứu đuối nước là yêu cầu bắt buộc đối với học sinh để chủ động phòng tránh tai nạn thương tích cho bản thân và cộng đồng.",
+              "answer": true
+            },
+            "d": {
+              "text": "Việc đầu tiên cần làm ngay sau khi đưa nạn nhân lên bờ là đặt nạn nhân nằm ngửa trên nền phẳng cứng, khai thông đường thở bằng cách lấy sạch đờm dãi, dị vật trong miệng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Theo Luật Nghĩa vụ quân sự năm 2015, thời hạn phục vụ tại ngũ trong thời bình của hạ sĩ quan, binh sĩ là bao nhiêu tháng?",
+          "answer": "24 tháng",
+          "accepted_answers": [
+            "24 tháng"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Theo Luật Biển Việt Nam, chiều rộng của lãnh hải nước ta đo từ đường cơ sở ra phía ngoài là bao nhiêu hải lý? (Chỉ điền số)",
+          "answer": "12",
+          "accepted_answers": [
+            "12"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Lực lượng vũ trang nhân dân Việt Nam gồm ba bộ phận cấu thành là: Quân đội nhân dân, Công an nhân dân và lực lượng nào?",
+          "answer": "Dân quân tự vệ",
+          "accepted_answers": [
+            "Dân quân tự vệ"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Hãy cho biết ngày, tháng, năm thành lập của Đội Việt Nam Tuyên truyền Giải phóng quân (tiền thân của Quân đội nhân dân Việt Nam)? (Viết dưới dạng dd/mm/yyyy)",
+          "answer": "22/12/1944",
+          "accepted_answers": [
+            "22/12/1944"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Theo Luật Nghĩa vụ quân sự năm 2015, độ tuổi gọi nhập ngũ trong thời bình của công dân nam (không tính trường hợp được tạm hoãn gọi nhập ngũ để học đại học, cao đẳng) là từ đủ bao nhiêu tuổi đến hết bao nhiêu tuổi? (Viết đáp án dưới dạng 'từ x đến y tuổi')",
+          "answer": "từ 18 đến 25 tuổi",
+          "accepted_answers": [
+            "từ 18 đến 25 tuổi"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Tại Việt Nam, số điện thoại gọi khẩn cấp để báo cháy và yêu cầu cứu nạn cứu hộ là số nào? (Chỉ điền số)",
+          "answer": "114",
+          "accepted_answers": [
+            "114"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_f1052f3b",
+  "created_by": "gv_qp",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Long Cang"
+}

@@ -1,0 +1,453 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TIN HỌC LỚP 11 THỬ",
+  "subject": "Tin học",
+  "grade": "11",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Đặc điểm đặc trưng của giao diện dòng lệnh (Command Line Interface - CLI) là gì?",
+          "options": {
+            "A": "Người dùng tương tác bằng cách nhấp chuột vào các biểu tượng đồ họa",
+            "B": "Người dùng tương tác qua màn hình cảm ứng đa điểm",
+            "C": "Người dùng chỉ có thể điều khiển bằng giọng nói",
+            "D": "Người dùng gõ các câu lệnh bằng văn bản từ bàn phím để điều khiển"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Hệ điều hành nào sau đây được phát triển bởi Apple dành riêng cho dòng máy tính Macintosh của họ?",
+          "options": {
+            "A": "macOS",
+            "B": "Windows",
+            "C": "Android",
+            "D": "Ubuntu"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Phần mềm nguồn mở (Open Source Software) là phần mềm như thế nào?",
+          "options": {
+            "A": "Phần mềm miễn phí hoàn toàn và không ai có quyền sửa đổi",
+            "B": "Phần mềm thương mại bắt buộc phải mua bản quyền sử dụng",
+            "C": "Phần mềm chỉ chạy được trên hệ điều hành Windows",
+            "D": "Phần mềm công bố mã nguồn để người dùng tự do nghiên cứu, sửa đổi và chia sẻ"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Hệ điều hành nào dưới đây là hệ điều hành mã nguồn mở?",
+          "options": {
+            "A": "macOS",
+            "B": "Linux",
+            "C": "iOS",
+            "D": "Windows 11"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Hệ điều hành nào sau đây được phát triển bởi Apple dành riêng cho máy tính cá nhân của họ?",
+          "options": {
+            "A": "macOS",
+            "B": "Windows",
+            "C": "Linux",
+            "D": "Android"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Hệ điều hành di động phổ biến nhất hiện nay được phát triển dựa trên nhân Linux là gì?",
+          "options": {
+            "A": "iOS",
+            "B": "Android",
+            "C": "Windows Phone",
+            "D": "Symbian"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Thiết bị nào sau đây là thiết bị lưu trữ dữ liệu lâu dài (không bị mất khi tắt nguồn)?",
+          "options": {
+            "A": "Bộ nhớ đệm Cache",
+            "B": "Thanh ghi Register",
+            "C": "RAM",
+            "D": "Ổ cứng SSD"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Đâu là vai trò chính của hệ điều hành đối với hệ thống máy tính?",
+          "options": {
+            "A": "Tăng dung lượng lưu trữ vật lý của ổ đĩa cứng lên gấp đôi",
+            "B": "Làm trung gian giao tiếp giữa người dùng, phần mềm ứng dụng và",
+            "C": "Dịch các chương trình viết bằng ngôn ngữ lập trình bậc cao sang ngôn ngữ máy",
+            "D": "Tự động phát hiện và tiêu diệt mọi loại virus xâm nhập vào máy tính"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Cổng kết nối nào sau đây thường được dùng để truyền cả tín hiệu hình ảnh và âm thanh chất lượng cao từ máy tính ra màn hình ngoài?",
+          "options": {
+            "A": "USB 2.0",
+            "B": "VGA",
+            "C": "HDMI",
+            "D": "PS/2"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Chức năng nào sau đây KHÔNG phải là chức năng cốt lõi của hệ điều hành?",
+          "options": {
+            "A": "Quản lý các thiết bị ngoại vi",
+            "B": "Quản lý và phân bổ bộ nhớ cho các tiến trình",
+            "C": "Soạn thảo và định dạng văn bản",
+            "D": "Quản lý tệp và thư mục"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Hệ điều hành đa nhiệm là hệ điều hành có khả năng gì?",
+          "options": {
+            "A": "Chỉ cho phép một người dùng đăng nhập tại một thời điểm",
+            "B": "Tự động sửa mọi lỗi",
+            "C": "Chỉ hoạt động được khi không có kết nối mạng",
+            "D": "Cho phép chạy đồng thời nhiều chương trình ứng dụng"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Chức năng nào sau đây không phải của hệ điều hành?",
+          "options": {
+            "A": "Quản lý và phân bổ tài nguyên",
+            "B": "Quản lý tệp và thư mục trên thiết bị lưu trữ",
+            "C": "Cung cấp giao diện tương tác giữa người dùng và máy tính",
+            "D": "Soạn thảo văn bản và thiết kế đồ họa chuyên nghiệp"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Thành phần nào của hệ điều hành chịu trách nhiệm tổ chức, lưu trữ và truy xuất dữ liệu trên các thiết bị nhớ?",
+          "options": {
+            "A": "Giao diện dòng lệnh",
+            "B": "Hệ thống quản lý thiết bị ngoại vi",
+            "C": "Hệ thống quản lý tệp",
+            "D": "Hệ thống quản lý tiến trình"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Hệ điều hành MS-DOS lịch sử thuộc loại hệ điều hành nào?",
+          "options": {
+            "A": "Đa nhiệm, nhiều người dùng",
+            "B": "Đa nhiệm, một người dùng",
+            "C": "Đơn nhiệm, một người dùng",
+            "D": "Đơn nhiệm, nhiều người dùng"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Bộ nhớ RAM có đặc điểm quan trọng nào sau đây?",
+          "options": {
+            "A": "Dữ liệu bị mất hoàn toàn khi tắt nguồn điện",
+            "B": "Là bộ nhớ chỉ đọc, không thể ghi dữ liệu mới",
+            "C": "Lưu trữ dữ liệu vĩnh viễn ngay cả khi mất điện",
+            "D": "Có dung lượng lưu trữ lớn hơn ổ đĩa cứng rất nhiều"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Phần mềm nguồn mở (Open Source Software) là loại phần mềm như thế nào?",
+          "options": {
+            "A": "Phần mềm công bố mã nguồn công khai, cho phép cộng đồng nghiên cứu, sửa đổi và phát triển tiếp",
+            "B": "Phần mềm miễn phí hoàn toàn nhưng tuyệt đối không được phép sửa đổi mã nguồn",
+            "C": "Phần mềm thương mại bị bẻ khóa (crack) để sử dụng trái phép",
+            "D": "Phần mềm chỉ chạy được trên các siêu máy tính chuyên dụng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Hệ điều hành đa nhiệm (Multi-tasking) được hiểu là hệ điều hành có khả năng gì?",
+          "options": {
+            "A": "Chạy được trên các máy tính không có bộ xử lý trung tâm (CPU)",
+            "B": "Chỉ cho phép một người dùng duy nhất đăng nhập tại một thời điểm",
+            "C": "Xử lý đồng thời hoặc luân phiên nhanh chóng nhiều tiến trình khác nhau",
+            "D": "Tự động sửa chữa mọi lỗi vật lý xảy ra trên bo mạch chủ"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Giấy phép nào sau đây là giấy phép phần mềm nguồn mở phổ biến nhất?",
+          "options": {
+            "A": "GNU GPL",
+            "B": "Adobe EULA",
+            "C": "MS-EULA",
+            "D": "Windows License Agreement"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Bộ nhớ ROM (Read-Only Memory) trong máy tính thường dùng để làm gì?",
+          "options": {
+            "A": "Lưu trữ hệ điều hành và các phần mềm ứng dụng của người dùng",
+            "B": "Làm bộ nhớ đệm trung gian cho CPU xử lý đồ họa",
+            "C": "Lưu trữ tạm thời các tệp tin đang mở",
+            "D": "Lưu trữ các chương trình khởi động hệ thống (BIOS/UEFI) do nhà sản xuất nạp sẵn"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Phần mềm thương mại (Proprietary Software) thường có đặc điểm nào sau đây?",
+          "options": {
+            "A": "Người dùng có quyền tự do sửa đổi mã nguồn theo ý muốn",
+            "B": "Cung cấp mã nguồn miễn phí cho cộng đồng",
+            "C": "Bản quyền thuộc về nhà sản xuất, người dùng thường phải trả phí để được cấp quyền sử dụng",
+            "D": "Không được bảo hộ bởi luật sở hữu trí tuệ"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q20"
+        },
+        {
+          "text": "Điểm khác biệt cơ bản về mặt triết lý giữa phần mềm tự do (Free Software) và phần mềm nguồn mở (Open Source Software) là gì?",
+          "options": {
+            "A": "Phần mềm tự do nhấn mạnh vào quyền tự do của người dùng, còn phần mềm nguồn mở nhấn mạnh vào lợi ích phát triển và chất lượng phần mềm",
+            "B": "Phần mềm nguồn mở luôn phải trả phí, còn phần mềm tự do luôn miễn phí",
+            "C": "Phần mềm tự do không có mã nguồn, còn phần mềm nguồn mở có mã nguồn",
+            "D": "Phần mềm tự do chỉ dành cho hệ điều hành Linux"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q21"
+        },
+        {
+          "text": "Nhận định nào sau đây là SAI về phần mềm nguồn mở?",
+          "options": {
+            "A": "Phần mềm nguồn mở luôn luôn miễn phí hoàn toàn cho mọi dịch vụ đi kèm",
+            "B": "Hệ điều hành Linux là một ví dụ tiêu biểu của phần mềm nguồn mở",
+            "C": "Người dùng có thể đóng góp ý kiến và mã nguồn để cải tiến phần mềm",
+            "D": "Phần mềm nguồn mở cho phép người dùng tự do phân phối lại các bản sao"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q22"
+        },
+        {
+          "text": "Hệ điều hành nào dưới đây là hệ điều hành mã nguồn mở phổ biến nhất cho thiết bị di động?",
+          "options": {
+            "A": "Windows Phone",
+            "B": "BlackBerry OS",
+            "C": "iOS",
+            "D": "Android"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q23"
+        },
+        {
+          "text": "Giấy phép công cộng GNU GPL (General Public License) thường được áp dụng cho loại phần mềm nào?",
+          "options": {
+            "A": "Phần mềm dùng thử có giới hạn thời gian (Shareware)",
+            "B": "Phần mềm độc hại (Malware)",
+            "C": "Phần mềm nguồn mở tự do",
+            "D": "Phần mềm thương mại đóng nguồn"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q24"
+        },
+        {
+          "text": "Giao diện dòng lệnh (CLI) có đặc điểm nổi bật nào sau đây?",
+          "options": {
+            "A": "Hỗ trợ cảm ứng đa điểm trên màn hình",
+            "B": "Chỉ xuất hiện trên các hệ điều hành di động hiện đại",
+            "C": "Người dùng tương tác bằng cách gõ các câu lệnh từ bàn phím",
+            "D": "Sử dụng chuột để nhấp vào các biểu tượng đồ họa"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q25"
+        },
+        {
+          "text": "Tốc độ xung nhịp của CPU thường được đo bằng đơn vị nào?",
+          "options": {
+            "A": "GHz hoặc MHz",
+            "B": "GB hoặc TB",
+            "C": "Mbps hoặc Gbps",
+            "D": "RPM"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q26"
+        },
+        {
+          "text": "Bộ phận nào được coi là 'bộ não' của máy tính, thực hiện các phép tính toán và điều khiển hoạt động của hệ thống?",
+          "options": {
+            "A": "Mainboard",
+            "B": "ROM",
+            "C": "RAM",
+            "D": "CPU"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q27"
+        },
+        {
+          "text": "Phát biểu nào sau đây là ĐÚNG khi nói về phần mềm thương mại nguồn đóng?",
+          "options": {
+            "A": "Người dùng luôn được cung cấp toàn bộ mã nguồn để tự do chỉnh sửa theo nhu cầu",
+            "B": "Phần mềm thương mại không được pháp luật bảo hộ quyền sở hữu trí tuệ",
+            "C": "Người dùng phải trả phí mua bản quyền sử dụng và không được tự ý sao chép, phân phối lại trái phép",
+            "D": "Phần mềm thương mại luôn luôn miễn phí cho mọi tổ chức và đối tượng sử dụng"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q28"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Trường THPT X triển khai dự án chuyển đổi số phòng máy tính học đường gồm 40 máy tính để bàn. Ban giám hiệu đang cân nhắc giải pháp cài đặt hệ điều hành mã nguồn mở Ubuntu (nhân Linux) cùng bộ ứng dụng văn phòng LibreOffice (phát hành theo giấy phép GNU GPL) thay vì mua gói bản quyền hệ điều hành thương mại đóng nguồn Windows 11 và Microsoft Office. Khi thẩm định tính khả thi và pháp lý của dự án, các nhận định sau đây đúng hay sai?",
+          "items": {
+            "a": {
+              "text": "Theo điều khoản của giấy phép GNU GPL, nếu nhà trường tùy biến mã nguồn LibreOffice để tạo ra phần mềm mới thì bắt buộc sản phẩm phái sinh này cũng phải công bố mã nguồn theo giấy phép GNU GPL.",
+              "answer": true
+            },
+            "b": {
+              "text": "Mọi phần mềm được cấp phép sử dụng miễn phí (Freeware) trong dự án đều đương nhiên là phần mềm mã nguồn mở cho phép người dùng can thiệp vào mã nguồn.",
+              "answer": false
+            },
+            "c": {
+              "text": "Hệ điều hành Windows 11 được phát hành dưới dạng mã nguồn mở vì Microsoft cho phép người dùng tải tệp cài đặt (ISO) miễn phí từ trang web chính thức.",
+              "answer": false
+            },
+            "d": {
+              "text": "Hệ điều hành Ubuntu là một bản phân phối dựa trên nhân Linux và được xếp vào nhóm phần mềm mã nguồn mở.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Bạn An được cấp ngân sách 15 triệu đồng để tự lắp ráp một bộ máy tính phục vụ học tập Tin học 11 và xử lý đồ họa cơ bản. Cấu hình được đề xuất bao gồm: CPU 6 nhân 12 luồng có xung nhịp cơ bản 3.6 GHz, bo mạch chủ (Mainboard) chuẩn B760, thanh nhớ RAM DDR4 dung lượng 16 GB bus 3200 MHz, và một ổ cứng thể rắn SSD chuẩn NVMe dung lượng 512 GB. Khi phân tích vai trò và thông số kỹ thuật của các linh kiện này, các phát biểu sau đây đúng hay sai?",
+          "items": {
+            "a": {
+              "text": "Bo mạch chủ (Mainboard) đóng vai trò là bảng mạch nền tảng cung cấp các khe cắm, đường dẫn truyền dữ liệu và điều phối năng lượng để kết nối CPU, RAM và SSD hoạt động đồng bộ.",
+              "answer": true
+            },
+            "b": {
+              "text": "Ổ cứng SSD NVMe trong cấu hình trên có tốc độ đọc ghi dữ liệu thấp hơn so với ổ đĩa từ HDD truyền thống nhưng có khả năng chống sốc cơ học tốt hơn.",
+              "answer": false
+            },
+            "c": {
+              "text": "Nếu chỉ dựa vào thông số xung nhịp 3.6 GHz, ta có thể khẳng định chắc chắn rằng CPU này luôn có hiệu năng xử lý cao hơn mọi CPU đời cũ có xung nhịp 3.0 GHz trong mọi tác vụ.",
+              "answer": false
+            },
+            "d": {
+              "text": "RAM là bộ nhớ trong có tốc độ truy xuất nhanh và toàn bộ dữ liệu đang lưu trên RAM sẽ bị xóa sạch khi máy tính ngắt nguồn điện.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Một công ty công nghệ vừa mua 50 máy tính xách tay thế hệ mới kèm ổ cứng SSD dung lượng 512 GB và tích hợp chip nhớ ROM chứa hệ thống khởi động UEFI. Bộ phận CNTT của công ty đang xem xét các chính sách sử dụng phần mềm và quản trị dữ liệu nhằm đảm bảo tính an toàn và tuân thủ bản quyền. Khi xem xét các thành phần lưu trữ và chính sách phần mềm cho doanh nghiệp, các nhận định sau đây đúng hay sai?",
+          "items": {
+            "a": {
+              "text": "Bộ nhớ ROM (Read-Only Memory) trên bo mạch chủ là bộ nhớ bất biến, chứa chương trình khởi động cơ bản UEFI giúp kiểm tra",
+              "answer": true
+            },
+            "b": {
+              "text": "Doanh nghiệp có thể tự do cài đặt bản dùng thử có giới hạn thời gian (Trialware/Shareware) của phần mềm thương mại lên toàn bộ 50 máy tính và tiếp tục sử dụng vô thời hạn mà không vi phạm pháp luật sở hữu trí tuệ.",
+              "answer": false
+            },
+            "c": {
+              "text": "Dung lượng 512 GB của ổ cứng SSD trong máy tính tương đương với  $512\\times 1024$  MB theo chuẩn tính toán lũy thừa cơ số 2 trong hệ điều hành.",
+              "answer": true
+            },
+            "d": {
+              "text": "Hệ điều hành Android được sử dụng trên điện thoại công vụ của nhân viên là hệ điều hành mã nguồn đóng độc quyền hoàn toàn thuộc sở hữu của Apple.\n---------- HẾT ----------",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": []
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_0f0f710d",
+  "is_published": true,
+  "created_by": "haidhsp2005",
+  "scoring": {
+    "part1_total": 7.0,
+    "part1_per_question": 0.25,
+    "part2_total": 3,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 0.0,
+    "part3_per_question": 0.0,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": true
+}

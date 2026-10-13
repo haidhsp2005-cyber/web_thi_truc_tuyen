@@ -1,0 +1,346 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN HỌC LỚP 11 ĐỀ 4",
+  "subject": "Toán học",
+  "grade": "11",
+  "duration_minutes": 50,
+  "department_name": "SỞ GD&ĐT",
+  "school_name": "TRƯỜNG THPT",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Hàm số  $y=tanx$  là hàm số tuần hoàn với chu kỳ bằng:",
+          "options": {
+            "A": "$2\\pi$",
+            "B": "$\\pi$",
+            "C": "$4\\pi$",
+            "D": "$\\frac{\\pi }{2}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Phương trình  $sinx=\\sin\\alpha$  có các nghiệm là:",
+          "options": {
+            "A": "$x=\\alpha +k2\\pi$  và  $x=-\\alpha +k2\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "B": "$x=\\alpha +k\\pi$  và  $x=-\\alpha +k\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "C": "$x=\\alpha +k2\\pi$  và  $x=\\pi -\\alpha +k2\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "D": "$x=\\alpha +k\\pi$  và  $x=\\pi -\\alpha +k\\pi$  ( $k\\in \\mathbb{Z}$ )"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Phương trình  $cosx=0$  có tập nghiệm là:",
+          "options": {
+            "A": "$S=\\left\\{ k2\\pi \\mid k\\in \\mathbb{Z} \\right\\}$",
+            "B": "$S=\\left\\{ \\pi +k2\\pi \\mid k\\in \\mathbb{Z} \\right\\}$",
+            "C": "$S=\\left\\{ k\\pi \\mid k\\in \\mathbb{Z} \\right\\}$",
+            "D": "$S=\\left\\{ \\frac{\\pi }{2}+k\\pi \\mid k\\in \\mathbb{Z} \\right\\}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Với mọi góc lượng giác  $a$  và  $b$ , mệnh đề nào dưới đây đúng?",
+          "options": {
+            "A": "$\\sin (a+b)=sinacosb-cosasinb$",
+            "B": "$\\sin (a-b)=sinacosb+cosasinb$",
+            "C": "$\\cos (a-b)=cosacosb-sinasinb$",
+            "D": "$\\cos (a-b)=cosacosb+sinasinb$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Nghiệm của phương trình  $tanx=\\tan\\alpha$  (với điều kiện xác định) là:",
+          "options": {
+            "A": "$x=\\alpha +k\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "B": "$x=-\\alpha +k2\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "C": "$x=\\alpha +k2\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "D": "$x=\\pi -\\alpha +k\\pi$  ( $k\\in \\mathbb{Z}$ )"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Điều kiện xác định của hàm số  $y=tanx$  là:",
+          "options": {
+            "A": "$x\\neq \\frac{\\pi }{2}+k\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "B": "$x\\neq \\frac{\\pi }{4}+k\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "C": "$x\\neq k2\\pi$  ( $k\\in \\mathbb{Z}$ )",
+            "D": "$x\\neq k\\pi$  ( $k\\in \\mathbb{Z}$ )"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Khẳng định nào sau đây là đúng về công thức nhân đôi của hàm số lượng giác?",
+          "options": {
+            "A": "$\\cos 2a=\\sin ^{2}a-\\cos ^{2}a$",
+            "B": "$\\sin 2a=\\cos ^{2}a-\\sin ^{2}a$",
+            "C": "$\\sin 2a=2sinacosa$",
+            "D": "$\\cos 2a=1-\\sin ^{2}a$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Tập giá trị của hàm số  $y=3sinx-1$  là:",
+          "options": {
+            "A": "$[-1;1]$",
+            "B": "$[-4;2]$",
+            "C": "$[-2;4]$",
+            "D": "$[-3;3]$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Nghiệm của phương trình  $sinx=1$  là:",
+          "options": {
+            "A": "$x=\\frac{\\pi }{2}+k\\pi$",
+            "B": "$x=\\frac{\\pi }{2}+k2\\pi$",
+            "C": "$x=\\pi +k2\\pi$",
+            "D": "$x=k2\\pi$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Giá trị của biểu thức  $P=\\cos (\\frac{\\pi }{3})$  là:",
+          "options": {
+            "A": "$-\\frac{1}{2}$",
+            "B": "$\\frac{\\sqrt{3}}{2}$",
+            "C": "$\\frac{1}{2}$",
+            "D": "$\\frac{\\sqrt{2}}{2}$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Đổi số đo  ${150}^{∘}$  sang đơn vị rad ta được kết quả là:",
+          "options": {
+            "A": "$\\frac{3\\pi }{4}$",
+            "B": "$\\frac{5\\pi }{12}$",
+            "C": "$\\frac{2\\pi }{3}$",
+            "D": "$\\frac{5\\pi }{6}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Tập xác định của hàm số  $y=cosx$  là:",
+          "options": {
+            "A": "$\\mathbb{R}$",
+            "B": "$\\mathbb{R}⧵{\\frac{\\pi }{2}+k\\pi \\mid k\\in \\mathbb{Z}}$",
+            "C": "$[0;\\pi ]$",
+            "D": "$[-1;1]$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Bác Bình gửi tiết kiệm vào ngân hàng số tiền 100 triệu đồng với hình thức lãi kép, lãi suất  $6%/năm$ , tiền lãi sau mỗi năm được cộng gộp vào vốn ban đầu để tính lãi cho năm tiếp theo. Số tiền cả gốc lẫn lãi sau  $n$  năm được tính theo công thức cấp số nhân:  $S_{n}=100\\cdot (1+0,06{)}^{n}$  (triệu đồng).",
+          "items": {
+            "a": {
+              "text": "Số tiền cả gốc lẫn lãi bác Bình nhận được sau 1 năm đầu tiên là 106 triệu đồng.",
+              "answer": true
+            },
+            "b": {
+              "text": "Dãy số  $(S_{n})$  là một cấp số nhân với công bội  $q=1,06$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Sau đúng 2 năm, tổng số tiền bác Bình nhận được vượt quá 115 triệu đồng.",
+              "answer": false
+            },
+            "d": {
+              "text": "Sau 10 năm gửi tiết kiệm, số tiền bác Bình thu về lớn hơn 170 triệu đồng (biết  $1,06^{10}\\approx 1,7908$ ).",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Bác Bình gửi tiết kiệm vào ngân hàng số tiền 100 triệu đồng với hình thức lãi kép, lãi suất  $6%/năm$ , tiền lãi sau mỗi năm được cộng gộp vào vốn ban đầu để tính lãi cho năm tiếp theo. Số tiền cả gốc lẫn lãi sau  $n$  năm được tính theo công thức cấp số nhân:  $S_{n}=100\\cdot (1+0,06{)}^{n}$  (triệu đồng).",
+          "items": {
+            "a": {
+              "text": "Sau 10 năm gửi tiết kiệm, số tiền bác Bình thu về lớn hơn 170 triệu đồng (biết  $1,06^{10}\\approx 1,7908$ ).",
+              "answer": true
+            },
+            "b": {
+              "text": "Dãy số  $(S_{n})$  là một cấp số nhân với công bội  $q=1,06$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Sau đúng 2 năm, tổng số tiền bác Bình nhận được vượt quá 115 triệu đồng.",
+              "answer": false
+            },
+            "d": {
+              "text": "Số tiền cả gốc lẫn lãi bác Bình nhận được sau 1 năm đầu tiên là 106 triệu đồng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Bác Bình gửi tiết kiệm vào ngân hàng số tiền 100 triệu đồng với hình thức lãi kép, lãi suất  $6%/năm$ , tiền lãi sau mỗi năm được cộng gộp vào vốn ban đầu để tính lãi cho năm tiếp theo. Số tiền cả gốc lẫn lãi sau  $n$  năm được tính theo công thức cấp số nhân:  $S_{n}=100\\cdot (1+0,06{)}^{n}$  (triệu đồng).",
+          "items": {
+            "a": {
+              "text": "Sau 10 năm gửi tiết kiệm, số tiền bác Bình thu về lớn hơn 170 triệu đồng (biết  $1,06^{10}\\approx 1,7908$ ).",
+              "answer": true
+            },
+            "b": {
+              "text": "Số tiền cả gốc lẫn lãi bác Bình nhận được sau 1 năm đầu tiên là 106 triệu đồng.",
+              "answer": true
+            },
+            "c": {
+              "text": "Dãy số  $(S_{n})$  là một cấp số nhân với công bội  $q=1,06$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Sau đúng 2 năm, tổng số tiền bác Bình nhận được vượt quá 115 triệu đồng.",
+              "answer": false
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Bác Bình gửi tiết kiệm vào ngân hàng số tiền 100 triệu đồng với hình thức lãi kép, lãi suất  $6%/năm$ , tiền lãi sau mỗi năm được cộng gộp vào vốn ban đầu để tính lãi cho năm tiếp theo. Số tiền cả gốc lẫn lãi sau  $n$  năm được tính theo công thức cấp số nhân:  $S_{n}=100\\cdot (1+0,06{)}^{n}$  (triệu đồng).",
+          "items": {
+            "a": {
+              "text": "Dãy số  $(S_{n})$  là một cấp số nhân với công bội  $q=1,06$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Số tiền cả gốc lẫn lãi bác Bình nhận được sau 1 năm đầu tiên là 106 triệu đồng.",
+              "answer": true
+            },
+            "c": {
+              "text": "Sau đúng 2 năm, tổng số tiền bác Bình nhận được vượt quá 115 triệu đồng.",
+              "answer": false
+            },
+            "d": {
+              "text": "Sau 10 năm gửi tiết kiệm, số tiền bác Bình thu về lớn hơn 170 triệu đồng (biết  $1,06^{10}\\approx 1,7908$ ).",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tìm giá trị lớn nhất  $M$  của hàm số  $y=3cosx+4sinx$ .",
+          "answer": "5",
+          "accepted_answers": [
+            "5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Phương trình  $cosx=0$  có bao nhiêu nghiệm thuộc đoạn  $[0;3\\pi ]$ ?",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Tìm nghiệm dương nhỏ nhất của phương trình  $tanx=\\sqrt{3}$  (làm tròn kết quả đến chữ số thập phân thứ hai).",
+          "answer": "1.05",
+          "accepted_answers": [
+            "1.05"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Tính giá trị của biểu thức  $P=\\sin (\\frac{\\pi }{4})\\cdot \\cos (\\frac{\\pi }{4})$  (viết dưới dạng số thập phân gọn nhất).",
+          "answer": "0.5",
+          "accepted_answers": [
+            "0.5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tính tổng tất cả các nghiệm của phương trình  $2sinx-1=0$  trên đoạn  $[0;2\\pi ]$  (làm tròn kết quả đến chữ số thập phân thứ hai bằng cách lấy giá trị  $\\pi \\approx 3,14$ ).",
+          "answer": "3.14",
+          "accepted_answers": [
+            "3.14"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Tìm giá trị nhỏ nhất của hàm số  $y=2 \\sin ^{2}x-3$ .",
+          "answer": "-3",
+          "accepted_answers": [
+            "-3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_471cac06",
+  "created_by": "admin",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

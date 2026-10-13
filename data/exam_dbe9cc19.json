@@ -1,0 +1,346 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN LỚP 9  Đề 3",
+  "subject": "Toán học",
+  "grade": "9",
+  "duration_minutes": 50,
+  "department_name": "SỞ GD&ĐT Tây Ninh",
+  "school_name": "TRƯỜNG THCS Long Cang",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho một tam giác vuông có cạnh huyền bằng  $10 cm$  và một góc nhọn  $\\alpha$  thỏa mãn  $\\sin\\alpha =0,6$ . Độ dài cạnh đối diện với góc  $\\alpha$  bằng",
+          "options": {
+            "A": "$6 cm$",
+            "B": "$8 m$",
+            "C": "$4 cm$",
+            "D": "$6 m$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Tập nghiệm của phương trình  $(x-3)(2x+4)=0$  là",
+          "options": {
+            "A": "$S=\\left\\{ -2;3 \\right\\}$",
+            "B": "$S=\\left\\{ -3;2 \\right\\}$",
+            "C": "$S=\\left\\{ 2;3 \\right\\}$",
+            "D": "$S=\\left\\{ -2;-3 \\right\\}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Cho tam giác  $ABC$  vuông tại  $A$  có  $AB=3 cm$ ,  $AC=4 cm$ . Giá trị của  $\\tan B$  bằng",
+          "options": {
+            "A": "$\\frac{4}{3}$",
+            "B": "$\\frac{3}{4}$",
+            "C": "$\\frac{4}{5}$",
+            "D": "$\\frac{3}{5}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Cho tam giác ABC vuông tại A, có AB = 3cm, AC = 4cm. Giá trị của  $\\sin B$  là:",
+          "options": {
+            "A": "3/4",
+            "B": "4/3",
+            "C": "4/5",
+            "D": "3/5"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Nghiệm của phương trình  $(x-2)(x+3)=0$  là:",
+          "options": {
+            "A": "x = -2; x = -3",
+            "B": "x = -2; x = 3",
+            "C": "x = 2; x = -3",
+            "D": "x = 2; x = 3"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Phương trình  $x^{2}-5x=0$  có các nghiệm là",
+          "options": {
+            "A": "$x=0$  và  $x=-5$",
+            "B": "$x=1$  và  $x=5$",
+            "C": "$x=5$",
+            "D": "$x=0$  và  $x=5$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Nghiệm của phương trình  $\\frac{3x-1}{x+1}=2$  là",
+          "options": {
+            "A": "$x=-3$",
+            "B": "$x=1$",
+            "C": "$x=3$",
+            "D": "$x=2$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Giá trị của biểu thức  $\\sin ^{2}{30}^{∘}+\\cos ^{2}{30}^{∘}$  bằng:",
+          "options": {
+            "A": "$\\sqrt{3}$ /2",
+            "B": "1",
+            "C": "1/2",
+            "D": "0"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Nghiệm của phương trình  $x^{2}-9=0$  là",
+          "options": {
+            "A": "$x=9$",
+            "B": "$x=3$",
+            "C": "$x=3$  hoặc  $x=-3$",
+            "D": "$x=-3$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Cho một tam giác vuông có góc nhọn  $\\alpha$ . Biết  $\\sin\\alpha =0,6$ . Khi đó giá trị của  $\\cos\\alpha$  là",
+          "options": {
+            "A": "0,5",
+            "B": "0,6",
+            "C": "0,8",
+            "D": "0,4"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Điều kiện xác định của phương trình  $\\frac{x+1}{x-2}=3$  là",
+          "options": {
+            "A": "$x\\neq -2$",
+            "B": "$x\\neq -1$",
+            "C": "$x\\neq 2$",
+            "D": "$x\\neq 0$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Điều kiện xác định của phương trình  $\\frac{1}{x-1}+2=\\frac{3}{x}$  là:",
+          "options": {
+            "A": "$x\\neq 1$  hoặc  $x\\neq 0$",
+            "B": "$x\\neq 0$",
+            "C": "$x\\neq 1$",
+            "D": "$x\\neq 1$  và  $x\\neq 0$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một người quan sát đứng trên đài quan sát của một ngọn hải đăng cao 40 m so với mực nước biển, nhìn thấy một con tàu chở hàng đang neo đậu ngoài khơi với góc hạ là  ${30}^{∘}$ . Cùng thời điểm đó, một chiếc ca nô tuần tra đang di chuyển hướng thẳng về phía chân ngọn hải đăng và người quan sát nhìn thấy chiếc ca nô dưới góc hạ là  ${45}^{∘}$ . Giả sử chân ngọn hải đăng, con tàu và ca nô cùng nằm trên một mặt phẳng nằm ngang mặt biển.",
+          "items": {
+            "a": {
+              "text": "Khoảng cách từ chân ngọn hải đăng đến chiếc ca nô tại thời điểm quan sát là  $40 m$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Khoảng cách giữa chiếc ca nô và con tàu tại thời điểm quan sát đúng bằng  $20 m$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Khoảng cách từ chân ngọn hải đăng đến con tàu đang neo đậu là  $40\\sqrt{3} m$  (khoảng  $69,28 m$ ).",
+              "answer": true
+            },
+            "d": {
+              "text": "Nếu ca nô tiếp tục di chuyển với vận tốc đều  $8 m/s$  hướng về hải đăng thì sau đúng 5 giây ca nô sẽ cập sát chân hải đăng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Một ca nô du lịch xuôi dòng từ bến A đến bến B trên một khúc sông dài 36 km, sau đó lập tức quay đầu chạy ngược dòng từ B trở về bến A. Tổng thời gian cả đi lẫn về hết đúng 5 giờ. Biết vận tốc của dòng nước chảy không đổi là 3 km/h. Gọi vận tốc thực của ca nô khi nước yên lặng là  $x$  (đơn vị: km/h,  $x>3$ ).",
+          "items": {
+            "a": {
+              "text": "Phương trình biểu diễn mối quan hệ thời gian của bài toán là  $\\frac{36}{x+3}+\\frac{36}{x-3}=5$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Giải phương trình trên ta tìm được vận tốc thực của ca nô là  $x=15 km/h$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Thời gian ca nô đi ngược dòng từ B về A ít hơn thời gian ca nô đi xuôi dòng từ A đến B là 1 giờ.",
+              "answer": false
+            },
+            "d": {
+              "text": "Vận tốc của ca nô khi xuôi dòng là  $x+3 km/h$  và khi ngược dòng là  $x-3 km/h$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Trong một buổi thực hành đo đạc ngoài trời của học sinh lớp 9, các em tiến hành đo các thông số hình học của một khung mái nhà tam giác  $ABC$  có dạng tam giác vuông tại  $A$ , biết góc nhọn  $B={60}^{∘}$  để thiết kế vì kèo.",
+          "items": {
+            "a": {
+              "text": "Giá trị của  $\\cos B$  bằng  $\\frac{\\sqrt{3}}{2}$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Hệ thức lượng giác  $\\sin B=\\cos C$  luôn đúng với mọi tam giác vuông.",
+              "answer": true
+            },
+            "c": {
+              "text": "Số đo góc  $C$  của tam giác  $ABC$  bằng  ${30}^{∘}$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Giá trị của  $\\tan B$  trong trường hợp này bằng  $\\sqrt{3}$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Một xí nghiệp sản xuất các bồn chứa nước bằng inox hình trụ có nắp đậy kín phục vụ các hộ gia đình. Mỗi bồn chứa có chiều cao  $h=2 m$  và bán kính đáy  $R=0,6 m$ . Lấy giá trị xấp xỉ  $\\pi \\approx 3,14$ .",
+          "items": {
+            "a": {
+              "text": "Dung tích chứa nước tối đa của mỗi bồn nước là lớn hơn  $2,5 m^{3}$  (tương đương 2.500 lít).",
+              "answer": false
+            },
+            "b": {
+              "text": "Diện tích xung quanh của bồn chứa hình trụ được tính theo công thức  $S_{xq}=2\\pi Rh$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Diện tích tôn inox tối thiểu cần dùng để làm toàn bộ thân và hai nắp của bồn chứa (diện tích toàn phần) là khoảng  $9,7968 m^{2}$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Nếu tăng gấp đôi bán kính đáy  $R$  và giữ nguyên chiều cao  $h$  thì thể tích của bồn nước sẽ tăng gấp 4 lần.",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho tam giác ABC vuông tại A, AB = 6, BC = 10. Tính tan B.",
+          "answer": "4/3",
+          "accepted_answers": [
+            "4/3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Tìm nghiệm của phương trình  $(2x-4)(x+5)=0$ .",
+          "answer": "2, -5",
+          "accepted_answers": [
+            "2, -5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Một cột đèn cao 7m có bóng trên mặt đất dài 4m. Tính góc tạo bởi tia nắng mặt trời và mặt đất (làm tròn đến độ).",
+          "answer": "60",
+          "accepted_answers": [
+            "60"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Tính giá trị biểu thức  $A=\\tan{45}^{∘}+\\cot{45}^{∘}$ .",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Tìm nghiệm dương của phương trình  $x^{2}-9=0$ .",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Giải phương trình  $\\frac{x+1}{x-1}=3$ .",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_dbe9cc19",
+  "created_by": "admin",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

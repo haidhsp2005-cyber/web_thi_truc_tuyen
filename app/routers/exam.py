@@ -412,9 +412,11 @@ async def export_excel(
     request: Request,
     exam_id: Optional[str] = None,
     student_class: Optional[str] = None,
-    subject: Optional[str] = None
+    subject: Optional[str] = None,
+    date: Optional[str] = None,
+    teacher: Optional[str] = None
 ):
-    """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Môn thi, Đề thi và theo Lớp."""
+    """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Môn thi, Đề thi, theo Lớp, Ngày nộp và Giáo viên tạo."""
     try:
         from ..services.auth_service import get_current_user_from_request
         from .exam_builder import _list_exam_files
@@ -426,8 +428,10 @@ async def export_excel(
         clean_class = student_class.strip().upper() if student_class and student_class.strip() else None
         clean_exam_id = exam_id.strip() if exam_id and exam_id.strip() else None
         clean_subject = subject.strip() if subject and subject.strip() and subject.strip() != "all" else None
+        clean_date = date.strip() if date and date.strip() and date.strip() != "all" else None
+        clean_teacher = teacher.strip().lower() if teacher and teacher.strip() and teacher.strip() != "all" else None
         
-        submissions = get_all_submissions(exam_id=clean_exam_id, student_class=clean_class)
+        submissions = get_all_submissions(exam_id=clean_exam_id, student_class=clean_class, submission_date=clean_date)
         all_exams = _list_exam_files()
 
         # Lọc theo quyền giáo viên (chỉ Super Admin mới xuất điểm tất cả các môn)
@@ -438,18 +442,29 @@ async def export_excel(
             sub_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_subject.lower()}
             submissions = [s for s in submissions if s.get('exam_id') in sub_exam_ids]
 
+        if clean_teacher:
+            teacher_exam_ids = {e['id'] for e in all_exams if (e.get('created_by') or '').strip().lower() == clean_teacher}
+            submissions = [s for s in submissions if s.get('exam_id') in teacher_exam_ids or (s.get('exam_created_by') or '').strip().lower() == clean_teacher]
+
         exam = load_exam(clean_exam_id) if clean_exam_id else None
         title = exam.get("title", "BẢNG ĐIỂM KIỂM TRA TRỰC TUYẾN") if exam else "BẢNG ĐIỂM TỔNG HỢP KIỂM TRA TRỰC TUYẾN"
         if clean_subject and not clean_exam_id:
             title += f" - MÔN {clean_subject.upper()}"
         if clean_class:
             title += f" - LỚP {clean_class}"
+        if clean_date:
+            title += f" - NGÀY {clean_date}"
+        if clean_teacher:
+            title += f" - GV {clean_teacher.upper()}"
         
         excel_bytes = export_class_results_excel(submissions, title)
         
         # Tạo tên file an toàn chuẩn RFC 5987 (tránh lỗi Header Unicode latin-1 của Starlette/Uvicorn)
         fn_ascii_parts = ["bangdiem"]
         fn_utf8_parts = ["bangdiem"]
+        if clean_teacher:
+            fn_ascii_parts.append(to_ascii_slug(clean_teacher).lower())
+            fn_utf8_parts.append(clean_teacher)
         if clean_subject:
             fn_ascii_parts.append(to_ascii_slug(clean_subject).lower())
             fn_utf8_parts.append(clean_subject.replace(" ", "_"))
@@ -459,6 +474,9 @@ async def export_excel(
         if clean_class:
             fn_ascii_parts.append(to_ascii_slug(clean_class))
             fn_utf8_parts.append(clean_class)
+        if clean_date:
+            fn_ascii_parts.append(clean_date)
+            fn_utf8_parts.append(clean_date)
             
         ascii_filename = "_".join(fn_ascii_parts) + ".xlsx"
         utf8_filename = "_".join(fn_utf8_parts) + ".xlsx"

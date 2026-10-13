@@ -1,0 +1,346 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN LỚP 9 - HỌC KÌ I",
+  "subject": "Toán học",
+  "grade": "9",
+  "duration_minutes": 50,
+  "department_name": "SỞ GD&ĐT Tây Ninh",
+  "school_name": "TRƯỜNG THCS Long Cang",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Cho tam giác  $ABC$  vuông tại  $A$ , có  $AB=3 cm$  và  $AC=4 cm$ . Giá trị của  $\\cos B$  bằng",
+          "options": {
+            "A": "$\\frac{3}{4}$",
+            "B": "$\\frac{4}{3}$",
+            "C": "$\\frac{4}{5}$",
+            "D": "$\\frac{3}{5}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Phương trình  $x^{2}-9=0$  có tập nghiệm là",
+          "options": {
+            "A": "$S={9}$",
+            "B": "$S=\\left\\{ -3;3 \\right\\}$",
+            "C": "$S=\\left\\{ -9;9 \\right\\}$",
+            "D": "$S={3}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Điều kiện xác định của phương trình  $\\frac{x-1}{x}+\\frac{1}{x+2}=0$  là",
+          "options": {
+            "A": "$x\\neq 1$  và  $x\\neq -2$",
+            "B": "$x\\neq -2$",
+            "C": "$x\\neq 0$  và  $x\\neq 2$",
+            "D": "$x\\neq 0$  và  $x\\neq -2$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Tập nghiệm của phương trình  $x(x-5)+2(x-5)=0$  là",
+          "options": {
+            "A": "$S=\\left\\{ -2;5 \\right\\}$",
+            "B": "$S=\\left\\{ 2;-5 \\right\\}$",
+            "C": "$S=\\left\\{ 2;5 \\right\\}$",
+            "D": "$S=\\left\\{ -2;-5 \\right\\}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Cho tam giác  $ABC$  vuông tại  $A$  có  $AB=3 cm$ ,  $AC=4 cm$ ,  $BC=5 cm$ . Tỉ số lượng giác  $\\sin B$  bằng",
+          "options": {
+            "A": "$\\frac{4}{5}$",
+            "B": "$\\frac{3}{4}$",
+            "C": "$\\frac{4}{3}$",
+            "D": "$\\frac{3}{5}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Cho tam giác  $ABC$  vuông tại  $A$ . Tỉ số lượng giác  $\\tan B$  được tính theo công thức nào sau đây?",
+          "options": {
+            "A": "$\\tan B=\\frac{AB}{BC}$",
+            "B": "$\\tan B=\\frac{AB}{AC}$",
+            "C": "$\\tan B=\\frac{AC}{BC}$",
+            "D": "$\\tan B=\\frac{AC}{AB}$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Nghiệm của phương trình  $3x(x-2)-(x-2)=0$  là",
+          "options": {
+            "A": "$x=3$  hoặc  $x=2$",
+            "B": "$x=\\frac{1}{3}$  hoặc  $x=2$",
+            "C": "$x=-\\frac{1}{3}$  hoặc  $x=2$",
+            "D": "$x=1$  hoặc  $x=2$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Nghiệm của phương trình  $(x-3)(2x+4)=0$  là",
+          "options": {
+            "A": "$x=3$  hoặc  $x=-2$",
+            "B": "$x=-3$  hoặc  $x=2$",
+            "C": "$x=-3$  hoặc  $x=-2$",
+            "D": "$x=3$  hoặc  $x=2$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Nghiệm của phương trình  $\\frac{2x}{x+1}=1$  là",
+          "options": {
+            "A": "$x=-1$",
+            "B": "$x=2$",
+            "C": "$x=0$",
+            "D": "$x=1$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Điều kiện xác định của phương trình  $\\frac{x+1}{x-2}=3$  là",
+          "options": {
+            "A": "$x\\neq -2$",
+            "B": "$x\\neq 2$",
+            "C": "$x\\neq -1$",
+            "D": "$x\\neq 0$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Khẳng định nào dưới đây là đúng?",
+          "options": {
+            "A": "$\\tan{30}^{∘}=\\tan{60}^{∘}$",
+            "B": "$\\sin{30}^{∘}=\\cos{60}^{∘}$",
+            "C": "$\\sin{30}^{∘}=\\sin{60}^{∘}$",
+            "D": "$\\cos{30}^{∘}=\\sin{30}^{∘}$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Một chiếc thang dài  $4 m$  dựa vào bức tường thẳng đứng và tạo với mặt đất một góc  ${60}^{∘}$ . Khoảng cách từ chân thang đến chân tường bằng",
+          "options": {
+            "A": "$3 m$",
+            "B": "$1 m$",
+            "C": "$2\\sqrt{3} m$",
+            "D": "$2 m$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Một xí nghiệp sản xuất các bồn chứa nước bằng inox hình trụ có nắp đậy kín phục vụ các hộ gia đình. Mỗi bồn chứa có chiều cao  $h=2 m$  và bán kính đáy  $R=0,6 m$ . Lấy giá trị xấp xỉ  $\\pi \\approx 3,14$ .",
+          "items": {
+            "a": {
+              "text": "Dung tích chứa nước tối đa của mỗi bồn nước là lớn hơn  $2,5 m^{3}$  (tương đương 2.500 lít).",
+              "answer": false
+            },
+            "b": {
+              "text": "Diện tích xung quanh của bồn chứa hình trụ được tính theo công thức  $S_{xq}=2\\pi Rh$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Nếu tăng gấp đôi bán kính đáy  $R$  và giữ nguyên chiều cao  $h$  thì thể tích của bồn nước sẽ tăng gấp 4 lần.",
+              "answer": true
+            },
+            "d": {
+              "text": "Diện tích tôn inox tối thiểu cần dùng để làm toàn bộ thân và hai nắp của bồn chứa (diện tích toàn phần) là khoảng  $9,7968 m^{2}$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Hai máy bơm cùng làm việc để hút nước ngập úng tại một công trường xây dựng. Theo thông số kỹ thuật, thời gian máy thứ hai hút cạn lượng nước nhiều hơn máy thứ nhất là  $3$  giờ. Nếu gọi thời gian máy thứ nhất làm một mình để hút cạn nước là  $x$  (giờ,  $x>1$ ), năng suất mỗi giờ của máy thứ nhất là  $\\frac{1}{x-1}$  (bể) và của máy thứ hai là  $\\frac{2}{x+2}$  (bể). Kỹ sư trưởng cần so sánh năng suất hoạt động giữa hai máy để điều phối công việc.",
+          "items": {
+            "a": {
+              "text": "Giá trị  $x=4$  là nghiệm duy nhất của phương trình  $\\frac{1}{x-1}=\\frac{2}{x+2}$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Phương trình  $\\frac{1}{x-1}=\\frac{2}{x+2}$  tương đương với phương trình bậc nhất  $x+2=2(x-1)$  trên tập xác định.",
+              "answer": true
+            },
+            "c": {
+              "text": "Khi  $x=4$ , năng suất bơm mỗi giờ của máy thứ nhất nhỏ hơn năng suất của máy thứ hai.",
+              "answer": false
+            },
+            "d": {
+              "text": "Điều kiện xác định của phương trình so sánh năng suất  $\\frac{1}{x-1}=\\frac{2}{x+2}$  là  $x\\neq 1$  và  $x\\neq -2$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Một khu đất hình chữ nhật phục vụ dự án nông nghiệp công nghệ cao ban đầu có chiều dài hơn chiều rộng  $5 m$ . Ban quản lý dự án quyết định mở rộng khu đất bằng cách tăng chiều rộng thêm  $2 m$  và giữ nguyên chiều dài, khi đó diện tích khu đất mới đạt  $36 m^{2}$ . Gọi  $x$  (mét) là chiều rộng ban đầu của khu đất ( $x>0$ ).",
+          "items": {
+            "a": {
+              "text": "Phương trình biểu thị diện tích khu đất sau khi mở rộng là  $(x+2)(x+5)=36$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Chiều rộng ban đầu của khu đất là  $4 m$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Chiều dài ban đầu của khu đất được biểu diễn theo  $x$  là  $x+5 (m)$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Phương trình xác định chiều rộng  $x$  sau khi thu gọn là  $x^{2}+7x-26=0$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Để đo chiều cao của một cột phát sóng viễn thông  $AC$  thẳng đứng trên mặt đất, một kỹ sư trắc địa đặt giác kế tại vị trí  $B$  cách chân cột  $A$  một khoảng  $AB=5 m$ . Từ vị trí này, góc nâng nhìn lên đỉnh  $C$  của cột phát sóng được đo bằng  ${60}^{∘}$  (coi mắt ngắm đặt sát mặt đất, tam giác  $ABC$  vuông tại  $A$ ).",
+          "items": {
+            "a": {
+              "text": "Chiều cao cột phát sóng  $AC$  được tính bởi công thức  $AC=AB\\cdot \\tan{60}^{∘}$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Trong tam giác vuông  $ABC$ , góc nhìn từ đỉnh  $C$  xuống chân đo  $B$  có số đo là  $ACB^={30}^{∘}$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Khoảng cách đường ngắm từ giác kế đến đỉnh cột phát sóng  $BC$  bằng  $10 m$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Nếu kỹ sư lùi giác kế xa chân cột thêm  $5 m$  (khoảng cách mới là  $10 m$ ) thì góc nâng nhìn lên đỉnh cột giảm đi đúng một nửa còn  ${30}^{∘}$ .",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Giải phương trình 2/(x - 3) = 1. Nghiệm của phương trình là?",
+          "answer": "5",
+          "accepted_answers": [
+            "5"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Cho tam giác ABC vuông tại A, biết  $\\sin B=0.6$ . Tính cos C.",
+          "answer": "0.6",
+          "accepted_answers": [
+            "0.6"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Tính giá trị biểu thức A = sin^2 20 độ + sin^2 70 độ.",
+          "answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Một cái thang dài 5m dựa vào tường, chân thang cách tường 3m. Góc tạo bởi thang và mặt đất là alpha. Tính cos alpha.",
+          "answer": "0.6",
+          "accepted_answers": [
+            "0.6"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Giải phương trình (x - 5)(2x + 4) = 0. Tổng các nghiệm là?",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Giải phương trình x^2 - 9 = 0. Nghiệm dương là?",
+          "answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_172c3631",
+  "created_by": "admin",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

@@ -1,0 +1,344 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN HỌC LỚP 11 ĐỀ 1",
+  "subject": "Toán học",
+  "grade": "11",
+  "duration_minutes": 50,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Chu kỳ tuần hoàn của hàm số  $y=sinx$  là:",
+          "options": {
+            "A": "$4\\pi$",
+            "B": "$\\pi$",
+            "C": "$\\frac{\\pi }{2}$",
+            "D": "$2\\pi$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Nghiệm của phương trình  $tanx=1$  là:",
+          "options": {
+            "A": "$x=\\frac{\\pi }{4}+k\\pi$",
+            "B": "$x=k\\pi$",
+            "C": "$x=\\frac{\\pi }{2}+k\\pi$",
+            "D": "$x=\\frac{\\pi }{4}+k2\\pi$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Công thức cộng nào sau đây đúng?",
+          "options": {
+            "A": "$\\sin (a+b)=sinacosb-cosasinb$",
+            "B": "$\\sin (a+b)=sinasinb+cosacosb$",
+            "C": "$\\cos (a+b)=cosacosb-sinasinb$",
+            "D": "$\\cos (a+b)=cosacosb+sinasinb$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Phương trình  $cosx=0$  có tập nghiệm là:",
+          "options": {
+            "A": "$x=\\frac{\\pi }{2}+k\\pi$",
+            "B": "$x=k\\pi$",
+            "C": "$x=k2\\pi$",
+            "D": "$x=\\frac{\\pi }{2}+k2\\pi$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Mối liên hệ giữa  $cotx$  và  $tanx$  là:",
+          "options": {
+            "A": "$cotx=\\tan (x+\\frac{\\pi }{2})$",
+            "B": "$cotx=tanx$",
+            "C": "$cotx=\\frac{1}{tanx}$",
+            "D": "$cotx=-tanx$"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Tập xác định của hàm số  $y=tanx$  là gì?",
+          "options": {
+            "A": "$\\mathbb{R}⧵{\\frac{\\pi }{2}+k\\pi ,k\\in \\mathbb{Z}}$",
+            "B": "$\\mathbb{R}⧵{\\frac{\\pi }{2}+k2\\pi ,k\\in \\mathbb{Z}}$",
+            "C": "$\\mathbb{R}$",
+            "D": "$\\mathbb{R}⧵{k\\pi ,k\\in \\mathbb{Z}}$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Giá trị của  $\\cos (\\pi -x)$  bằng:",
+          "options": {
+            "A": "$-cosx$",
+            "B": "$-sinx$",
+            "C": "$sinx$",
+            "D": "$cosx$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Nghiệm của phương trình  $sinx=\\frac{1}{2}$  là:",
+          "options": {
+            "A": "$x=\\frac{\\pi }{6}+k2\\pi$  hoặc  $x=\\frac{5\\pi }{6}+k2\\pi$",
+            "B": "$x=\\frac{\\pi }{3}+k2\\pi$  hoặc  $x=\\frac{2\\pi }{3}+k2\\pi$",
+            "C": "$x=\\frac{\\pi }{6}+k\\pi$",
+            "D": "$x=\\pm \\frac{\\pi }{6}+k2\\pi$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Hàm số nào sau đây là hàm số lẻ?",
+          "options": {
+            "A": "$y=sinx$",
+            "B": "$y=\\sin ^{2}x$",
+            "C": "$y=cosx$",
+            "D": "$y=tanx+1$"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Giá trị của biểu thức  $\\sin ^{2}x+\\cos ^{2}x$  bằng:",
+          "options": {
+            "A": "0",
+            "B": "1",
+            "C": "-1",
+            "D": "2"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Công thức nhân đôi nào sau đây đúng?",
+          "options": {
+            "A": "$\\sin 2x=sinxcosx$",
+            "B": "$\\sin 2x=2sinxcosx$",
+            "C": "$\\cos 2x=1-\\sin ^{2}x$",
+            "D": "$\\cos 2x=\\cos ^{2}x+\\sin ^{2}x$"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Giá trị của  $\\sin (\\frac{\\pi }{2}-x)$  bằng:",
+          "options": {
+            "A": "$sinx$",
+            "B": "$-sinx$",
+            "C": "$-cosx$",
+            "D": "$cosx$"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Mực nước tại một cảng biển thay đổi theo thời gian  $t$  (giờ) được mô hình hóa bởi hàm số  $h(t)=3\\sin (\\frac{\\pi }{6}t)+10$  với  $0\\le t\\le 24$ .",
+          "items": {
+            "a": {
+              "text": "Chu kỳ của hàm số là 6 giờ.",
+              "answer": false
+            },
+            "b": {
+              "text": "Tại thời điểm  $t=0$ , mực nước là 10 mét.",
+              "answer": true
+            },
+            "c": {
+              "text": "Mực nước đạt giá trị nhỏ nhất là 8 mét.",
+              "answer": false
+            },
+            "d": {
+              "text": "Tại thời điểm  $t=3$ , mực nước là 13 mét.",
+              "answer": true
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Trong một dự án xây dựng công viên giải trí ven biển, các kỹ sư lắp đặt một vòng quay khổng lồ có bán kính  $10 m$ . Trục quay đặt cách mặt đất  $15 m$ . Khi vòng quay chuyển động đều, độ cao  $h(t)$  (tính bằng mét) so với mặt đất của một cabin quan sát tại thời điểm  $t$  phút ( $t\\ge 0$ ) kể từ khi bắt đầu vận hành được mô hình hóa bởi hàm số:  $h(t)=10\\sin (\\frac{\\pi }{10}t)+15$ .",
+          "items": {
+            "a": {
+              "text": "Vòng quay thực hiện trọn vẹn một vòng quay trong thời gian  $10 phút$ .",
+              "answer": false
+            },
+            "b": {
+              "text": "Trong mỗi chu kỳ quay  $20 phút$ , thời gian cabin ở độ cao từ  $20 m$  trở lên là  $10 phút$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Độ cao lớn nhất mà cabin có thể đạt được trong quá trình quay là  $25 m$ .",
+              "answer": true
+            },
+            "d": {
+              "text": "Tại thời điểm bắt đầu quan sát ( $t=0$ ), cabin đang ở độ cao  $15 m$  so với mặt đất.",
+              "answer": true
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Trong phòng thí nghiệm kỹ thuật điện tử, một nhóm sinh viên khảo sát dòng điện xoay chiều một pha cấp cho động cơ bước. Cường độ dòng điện tức thời  $i(t)$  (tính bằng Ampe,  $A$ ) chạy qua cuộn cảm tại thời điểm  $t$  (giây,  $t\\ge 0$ ) được xác định theo phương trình:  $i(t)=5\\sin (100\\pi t)$ .",
+          "items": {
+            "a": {
+              "text": "Cường độ dòng điện cực đại chạy qua mạch là  $5 A$ .",
+              "answer": true
+            },
+            "b": {
+              "text": "Tần số dao động của dòng điện xoay chiều này là  $100 Hz$ .",
+              "answer": false
+            },
+            "c": {
+              "text": "Trong giây đầu tiên ( $0\\le t\\le 1$ ), có đúng  $50$  lần cường độ dòng điện tức thời đạt giá trị cực đại.",
+              "answer": true
+            },
+            "d": {
+              "text": "Tại thời điểm  $t=\\frac{1}{200} s$ , cường độ dòng điện tức thời đạt cực đại  $5 A$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Trong thiết kế kết cấu nhà khung thép tiền chế chống bão tại miền Trung, kỹ sư thiết kế phần mái dốc dạng tam giác cân có chiều cao đỉnh mái  $h=2 m$  và nửa chiều rộng mặt sàn  $d=3 m$ . Góc dốc  $\\alpha$  ( ${0}^{∘}<\\alpha <{90}^{∘}$ ) của mái nhà so với phương nằm ngang thỏa mãn  $\\tan\\alpha =\\frac{2}{3}$ .",
+          "items": {
+            "a": {
+              "text": "Để đảm bảo tiêu chuẩn thoát nước mưa nhanh khi giông bão, quy chuẩn kỹ thuật yêu cầu góc dốc  $\\alpha \\ge {35}^{∘}$ . Thiết kế hiện tại của kỹ sư đã đáp ứng được yêu cầu này.",
+              "answer": false
+            },
+            "b": {
+              "text": "Giá trị của  $\\cos\\alpha$  bằng  $\\frac{3}{\\sqrt{13}}$ .",
+              "answer": true
+            },
+            "c": {
+              "text": "Góc dốc  $\\alpha$  của mái nhà lớn hơn  ${45}^{∘}$ .",
+              "answer": false
+            },
+            "d": {
+              "text": "Hệ số góc dốc  $\\tan\\alpha$  của mái nhà xấp xỉ bằng  $0,67$ .",
+              "answer": true
+            }
+          },
+          "id": "p2_q4"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tổng các nghiệm của phương trình  $sinx=\\frac{1}{2}$  trên đoạn  $[0;\\pi ]$  có dạng  $a\\pi$ . Giá trị của  $a$  bằng bao nhiêu?",
+          "answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Giá trị của  $\\sin (\\frac{\\pi }{2})$  là bao nhiêu?",
+          "answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Nghiệm dương nhỏ nhất của phương trình  $tanx=\\sqrt{3}$  bằng bao nhiêu độ?",
+          "answer": "60",
+          "accepted_answers": [
+            "60"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Số nghiệm của phương trình  $cosx=\\frac{1}{2}$  trên đoạn  $[0;2\\pi ]$  là bao nhiêu?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Giá trị của  $\\cos (0)$  là bao nhiêu?",
+          "answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Giá trị của biểu thức  $A=2 \\sin ^{2}x+2 \\cos ^{2}x$  là bao nhiêu?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_cc71e433",
+  "is_published": true,
+  "created_by": "admin",
+  "scoring": {
+    "part1_total": 3.0,
+    "part1_per_question": 0.25,
+    "part2_total": 4,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 3.0,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

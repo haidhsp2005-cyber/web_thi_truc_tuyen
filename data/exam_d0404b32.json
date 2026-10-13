@@ -33,7 +33,7 @@
           "id": "p1_q2"
         },
         {
-          "text": "Cho góc nhọn  $\\alpha$  biết  $sin\\alpha =\\frac{3}{5}$ . Tính  $cos\\alpha$ .",
+          "text": "Cho góc nhọn  $\\alpha$  biết  $\\sin\\alpha =\\frac{3}{5}$ . Tính  $\\cos\\alpha$ .",
           "options": {
             "A": "$\\frac{4}{5}$",
             "B": "$\\frac{3}{4}$",
@@ -45,7 +45,7 @@
           "id": "p1_q3"
         },
         {
-          "text": "Nghiệm của hệ phương trình  ${\\frac{1}{x}+\\frac{1}{y}=\\frac{5}{6} \\\\ \\frac{1}{x}-\\frac{1}{y}=\\frac{1}{6}}$  là:",
+          "text": "Nghiệm của hệ phương trình  $\\begin{cases} \\frac{1}{x}+\\frac{1}{y}=\\frac{5}{6} \\\\ \\frac{1}{x}-\\frac{1}{y}=\\frac{1}{6} \\end{cases}$  là:",
           "options": {
             "A": "$(3;2)$",
             "B": "$(2;3)$",
@@ -57,7 +57,7 @@
           "id": "p1_q4"
         },
         {
-          "text": "Cho tam giác  $ABC$  vuông tại  $A$  có  $AB=3$  cm,  $AC=4$  cm. Giá trị của  $sinB$  bằng:",
+          "text": "Cho tam giác  $ABC$  vuông tại  $A$  có  $AB=3$  cm,  $AC=4$  cm. Giá trị của  $\\sin B$  bằng:",
           "options": {
             "A": "0.75",
             "B": "0.6",
@@ -83,10 +83,10 @@
         {
           "text": "Một lớp học có 40 học sinh, trong đó số học sinh nam nhiều hơn số học sinh nữ là 4 bạn. Gọi  $x$  là số học sinh nam,  $y$  là số học sinh nữ. Hệ phương trình nào sau đây biểu diễn bài toán trên?",
           "options": {
-            "A": "$x+y=40 \\\\ y-x=4$",
-            "B": "$x+y=40 \\\\ x-y=4$",
-            "C": "$x+y=44 \\\\ x-y=4$",
-            "D": "$x-y=40 \\\\ x+y=4$"
+            "A": "$\\begin{cases} x+y=40 \\\\ y-x=4 \\end{cases}$",
+            "B": "$\\begin{cases} x+y=40 \\\\ x-y=4 \\end{cases}$",
+            "C": "$\\begin{cases} x+y=44 \\\\ x-y=4 \\end{cases}$",
+            "D": "$\\begin{cases} x-y=40 \\\\ x+y=4 \\end{cases}$"
           },
           "answer": "B",
           "explanation": "",
@@ -105,7 +105,7 @@
           "id": "p1_q8"
         },
         {
-          "text": "Tìm giá trị của  $a$  để hệ phương trình  $ax-y=2 \\\\ x+y=3$  có nghiệm  $(x;y)=(1;2)$ .",
+          "text": "Tìm giá trị của  $a$  để hệ phương trình  $\\begin{cases} ax-y=2 \\\\ x+y=3 \\end{cases}$  có nghiệm  $(x;y)=(1;2)$ .",
           "options": {
             "A": "2",
             "B": "-2",
@@ -117,7 +117,7 @@
           "id": "p1_q9"
         },
         {
-          "text": "Trong tam giác  $ABC$  vuông tại  $A$ , nếu  $tanB=\\sqrt{3}$  thì số đo góc  $B$  là:",
+          "text": "Trong tam giác  $ABC$  vuông tại  $A$ , nếu  $\\tan B=\\sqrt{3}$  thì số đo góc  $B$  là:",
           "options": {
             "A": "${45}^{∘}$",
             "B": "${90}^{∘}$",
@@ -129,7 +129,7 @@
           "id": "p1_q10"
         },
         {
-          "text": "Hệ phương trình  $x+y=1 \\\\ mx+y=2$  có nghiệm duy nhất khi và chỉ khi:",
+          "text": "Hệ phương trình  $\\begin{cases} x+y=1 \\\\ mx+y=2 \\end{cases}$  có nghiệm duy nhất khi và chỉ khi:",
           "options": {
             "A": "$m\\neq 1$",
             "B": "$m=1$",
@@ -141,7 +141,7 @@
           "id": "p1_q11"
         },
         {
-          "text": "Rút gọn biểu thức  $A=sin^{2}{35}^{∘}+sin^{2}{55}^{∘}$  ta được kết quả:",
+          "text": "Rút gọn biểu thức  $A=\\sin ^{2}{35}^{∘}+\\sin ^{2}{55}^{∘}$  ta được kết quả:",
           "options": {
             "A": "2",
             "B": "0",
@@ -240,7 +240,7 @@
               "answer": true
             },
             "d": {
-              "text": "Hệ phương trình biểu diễn bài toán là  $x+y=20 \\\\ 10x+15y=240$  (với đơn vị số tiền là nghìn đồng).",
+              "text": "Hệ phương trình biểu diễn bài toán là  $\\begin{cases} x+y=20 \\\\ 10x+15y=240 \\end{cases}$  (với đơn vị số tiền là nghìn đồng).",
               "answer": true
             }
           },
@@ -263,7 +263,7 @@
           "id": "p3_q1"
         },
         {
-          "text": "Trong tam giác  $ABC$  vuông tại  $A$  có  $AB=5 cm$  và  $BC=13 cm$ . Tính giá trị của biểu thức  $5\\cdot tanB$ .",
+          "text": "Trong tam giác  $ABC$  vuông tại  $A$  có  $AB=5 cm$  và  $BC=13 cm$ . Tính giá trị của biểu thức  $5\\cdot \\tan B$ .",
           "answer": "12",
           "accepted_answers": [
             "12"
@@ -303,7 +303,7 @@
           "id": "p3_q5"
         },
         {
-          "text": "Cho hệ phương trình  $x+y=m \\\\ 2x-y=3$ . Tìm giá trị của tham số  $m$  để hệ phương trình có nghiệm  $(x;y)$  thỏa mãn  $x=2$ .",
+          "text": "Cho hệ phương trình  $\\begin{cases} x+y=m \\\\ 2x-y=3 \\end{cases}$ . Tìm giá trị của tham số  $m$  để hệ phương trình có nghiệm  $(x;y)$  thỏa mãn  $x=2$ .",
           "answer": "3",
           "accepted_answers": [
             "3"

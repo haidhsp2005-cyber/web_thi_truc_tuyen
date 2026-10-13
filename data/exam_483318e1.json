@@ -1,6 +1,6 @@
 {
   "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN VẬT LÝ 12",
-  "subject": "Toán học",
+  "subject": "Vật lí",
   "grade": "12",
   "duration_minutes": 50,
   "parts": {
@@ -93,7 +93,7 @@
           "id": "p1_q7"
         },
         {
-          "text": "Một vật dao động điều hòa theo phương trình  $x=5cos(10t-\\frac{\\pi }{3})$  (cm). Pha ban đầu của dao động là",
+          "text": "Một vật dao động điều hòa theo phương trình  $x=5\\cos (10t-\\frac{\\pi }{3})$  (cm). Pha ban đầu của dao động là",
           "options": {
             "A": "$5$  cm",
             "B": "$-\\frac{\\pi }{3}$  rad",
@@ -257,7 +257,7 @@
       "instruction": "",
       "questions": [
         {
-          "text": "Xét một vật nhỏ dao động điều hòa dọc theo trục  $Ox$  có phương trình li độ là  $x=4cos(5\\pi t-\\frac{\\pi }{6})$  (cm). Các phát biểu sau đây là đúng hay sai?",
+          "text": "Xét một vật nhỏ dao động điều hòa dọc theo trục  $Ox$  có phương trình li độ là  $x=4\\cos (5\\pi t-\\frac{\\pi }{6})$  (cm). Các phát biểu sau đây là đúng hay sai?",
           "items": {
             "a": {
               "text": "Pha ban đầu của dao động là  $-\\frac{\\pi }{6}$  rad.",
@@ -422,18 +422,23 @@
   },
   "id": "exam_483318e1",
   "scoring": {
-    "part1_total": 5,
+    "part1_total": 5.0,
     "part1_per_question": 0.25,
-    "part2_total": 4,
+    "part2_total": 4.0,
+    "part2_per_question": 1.0,
     "part2_rubric": {
       "1_correct": 0.1,
       "2_correct": 0.25,
       "3_correct": 0.5,
       "4_correct": 1
     },
-    "part3_total": 1,
+    "part3_total": 1.0,
     "part3_per_question": 0.1667,
-    "part4_total": 0
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
   },
+  "is_published": true,
+  "is_online_exam": false,
   "created_by": "admin"
 }

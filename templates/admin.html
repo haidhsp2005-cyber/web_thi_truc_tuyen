@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trang Quản lý - Giáo viên</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+  [x-cloak] { display: none !important; }
+</style>
 </head>
 <body class="bg-gray-100 min-h-screen" x-data="adminApp()" x-init="init()">
 
@@ -355,15 +358,15 @@
           </div>
         </div>
 
-        <!-- BỘ LỌC MÔN, LỚP & ĐỀ THI CHO THỐNG KÊ & EXCEL -->
+        <!-- BỘ LỌC MÔN, LỚP, ĐỀ THI, NGÀY & GIÁO VIÊN CHO THỐNG KÊ & EXCEL -->
         <div class="mt-4 pt-4 border-t space-y-2.5">
           <div class="text-xs font-bold uppercase text-gray-700 flex items-center justify-between">
             <span class="flex items-center gap-1.5"><span>🎯</span><span>Lọc thống kê & Excel:</span></span>
-            <button x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter" @click="selectedSubjectFilter=''; selectedClassFilter=''; selectedExamFilter=''; onFilterChange();" class="text-blue-600 hover:underline font-bold text-[11px] cursor-pointer" x-cloak>
+            <button x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter || filterDate || selectedTeacherFilter" @click="selectedSubjectFilter=''; selectedClassFilter=''; selectedExamFilter=''; filterDate=''; selectedTeacherFilter=''; onFilterChange();" class="text-blue-600 hover:underline font-bold text-[11px] cursor-pointer" x-cloak>
               ✕ Bỏ lọc
             </button>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
             <div>
               <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">📚 Môn thi:</label>
               <select x-model="selectedSubjectFilter" @change="onSubjectFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
@@ -391,6 +394,19 @@
                 </template>
               </select>
             </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">📅 Ngày nộp bài:</label>
+              <input type="date" x-model="filterDate" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">👨‍🏫 GV tạo đề:</label>
+              <select x-model="selectedTeacherFilter" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
+                <option value="">-- Tất cả GV --</option>
+                <template x-for="t in availableTeachers" :key="t.username">
+                  <option :value="t.username" x-text="t.label"></option>
+                </template>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -398,7 +414,7 @@
         <a :href="excelExportUrl" class="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-md hover:scale-[1.01] active:scale-98">
           <span>📥</span>
           <span>Xuất bảng điểm Excel (.xlsx)</span>
-          <span x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter" class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-cloak>(Theo bộ lọc)</span>
+          <span x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter || filterDate || selectedTeacherFilter" class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-cloak>(Theo bộ lọc)</span>
         </a>
 
         <!-- In PDF tất cả bài thi theo lớp -->
@@ -409,6 +425,8 @@
           <span>🖨️</span>
           <span x-text="selectedClassFilter ? `In PDF tất cả bài thi Lớp ${selectedClassFilter}` : 'In PDF tất cả bài thi theo lớp'"></span>
           <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-text="`(${filteredSubmissions.length} bài)`"></span>
+          <span x-show="filterDate" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full" x-text="`Ngày: ${filterDate}`" x-cloak></span>
+          <span x-show="selectedTeacherFilter" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full" x-text="`GV: ${selectedTeacherFilter}`" x-cloak></span>
         </a>
       </div>
     </div>
@@ -428,7 +446,7 @@
       </div>
     </div>
 
-    <!-- Bộ lọc Môn, Lớp & Đề thi cho bài nộp -->
+    <!-- Bộ lọc Môn, Lớp, Đề thi, Ngày & Giáo viên cho bài nộp -->
     <div x-show="submissions.length > 0" class="px-4 pt-4 pb-0">
       <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
         <div class="flex flex-wrap items-center gap-3">
@@ -467,8 +485,23 @@
                 </template>
               </select>
             </div>
-            <button x-show="selectedSubjectFilter || selectedExamFilter || selectedClassFilter" 
-              @click="selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; onFilterChange();" x-cloak
+            <div class="flex items-center gap-1.5">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">📅 Ngày:</label>
+              <input type="date" x-model="filterDate" @change="onFilterChange()"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-gray-500 font-medium">
+            </div>
+            <div class="flex items-center gap-1.5" x-show="isSuperAdmin() || availableTeachers.length > 1">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">👨‍🏫 GV tạo:</label>
+              <select x-model="selectedTeacherFilter" @change="onFilterChange()"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-gray-500 font-medium">
+                <option value="">-- Tất cả GV --</option>
+                <template x-for="t in availableTeachers" :key="t.username">
+                  <option :value="t.username" x-text="t.label"></option>
+                </template>
+              </select>
+            </div>
+            <button x-show="selectedSubjectFilter || selectedExamFilter || selectedClassFilter || filterDate || selectedTeacherFilter" 
+              @click="selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; filterDate=''; selectedTeacherFilter=''; onFilterChange();" x-cloak
               class="text-xs text-gray-600 hover:text-gray-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
           </div>
         </div>
@@ -528,6 +561,7 @@
                     <span>📝</span>
                     <span class="truncate max-w-[200px]" x-text="sub.exam_title || examMap[sub.exam_id]?.title"></span>
                     <span x-show="sub.subject || examMap[sub.exam_id]?.subject" class="text-blue-600 font-semibold text-[9px] px-1 bg-blue-50 rounded" x-text="sub.subject || examMap[sub.exam_id]?.subject"></span>
+                    <span x-show="sub.exam_created_by || examMap[sub.exam_id]?.created_by" class="text-slate-600 font-semibold text-[9px] px-1 bg-slate-100 rounded" x-text="'GV: ' + (sub.exam_created_by || examMap[sub.exam_id]?.created_by)"></span>
                   </span>
                 </div>
               </td>
@@ -614,7 +648,17 @@
                 <option value="bank">🎲 Đề trộn ngẫu nhiên</option>
               </select>
             </div>
-            <button x-show="adminExamFilterSubject || adminExamFilterGrade || adminExamFilterPublish" @click="adminExamFilterSubject=''; adminExamFilterGrade=''; adminExamFilterPublish='';" x-cloak
+            <div class="flex items-center gap-1.5" x-show="isSuperAdmin() || adminExamTeacherOptions.length > 1">
+              <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">👨‍🏫 GV tạo:</label>
+              <select x-model="adminExamFilterTeacher"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-yellow-500 font-medium">
+                <option value="">-- Tất cả GV --</option>
+                <template x-for="t in adminExamTeacherOptions" :key="t.username">
+                  <option :value="t.username" x-text="t.label"></option>
+                </template>
+              </select>
+            </div>
+            <button x-show="adminExamFilterSubject || adminExamFilterGrade || adminExamFilterPublish || adminExamFilterTeacher" @click="adminExamFilterSubject=''; adminExamFilterGrade=''; adminExamFilterPublish=''; adminExamFilterTeacher='';" x-cloak
               class="text-xs text-yellow-700 hover:text-yellow-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
           </div>
         </div>
@@ -1280,10 +1324,13 @@ function adminApp() {
     selectedSubjectFilter: '',
     selectedExamFilter: '',
     selectedClassFilter: '',
+    filterDate: '',
+    selectedTeacherFilter: '',
     availableClasses: [],
     adminExamFilterSubject: '',
     adminExamFilterGrade: '',
     adminExamFilterPublish: '',
+    adminExamFilterTeacher: '',
     restoringBackup: false,
     restoringUserBackup: false,
     backupMsg: '',
@@ -1341,10 +1388,47 @@ function adminApp() {
       return Array.from(seen).sort();
     },
 
+    get availableTeachers() {
+      const seen = new Set();
+      const list = [];
+      const userMap = {};
+      for (const u of (this.userList || [])) {
+        if (u.username) userMap[u.username.toLowerCase()] = u.full_name || u.username;
+      }
+      for (const e of this.examList) {
+        const creator = (e.created_by || '').trim();
+        if (creator && !seen.has(creator.toLowerCase())) {
+          seen.add(creator.toLowerCase());
+          const name = userMap[creator.toLowerCase()] || creator;
+          list.push({ username: creator, label: name !== creator ? `${name} (${creator})` : creator });
+        }
+      }
+      for (const sub of this.submissions) {
+        const creator = (sub.exam_created_by || '').trim();
+        if (creator && !seen.has(creator.toLowerCase())) {
+          seen.add(creator.toLowerCase());
+          const name = userMap[creator.toLowerCase()] || creator;
+          list.push({ username: creator, label: name !== creator ? `${name} (${creator})` : creator });
+        }
+      }
+      return list.sort((a, b) => a.label.localeCompare(b.label));
+    },
+
+    get adminExamTeacherOptions() {
+      return this.availableTeachers;
+    },
+
     get filteredExamsForFilter() {
-      if (!this.selectedSubjectFilter) return this.examList;
-      const sub = this.selectedSubjectFilter.trim().toLowerCase();
-      return this.examList.filter(e => (e.subject || '').trim().toLowerCase() === sub);
+      let list = this.examList;
+      if (this.selectedSubjectFilter) {
+        const sub = this.selectedSubjectFilter.trim().toLowerCase();
+        list = list.filter(e => (e.subject || '').trim().toLowerCase() === sub);
+      }
+      if (this.selectedTeacherFilter) {
+        const creator = this.selectedTeacherFilter.trim().toLowerCase();
+        list = list.filter(e => (e.created_by || '').trim().toLowerCase() === creator);
+      }
+      return list;
     },
 
     get adminExamSubjectOptions() {
@@ -1359,12 +1443,14 @@ function adminApp() {
 
     get filteredAdminExamList() {
       const adminSubFilter = this.adminExamFilterSubject ? this.adminExamFilterSubject.trim().toLowerCase() : '';
+      const teacherFilter = this.adminExamFilterTeacher ? this.adminExamFilterTeacher.trim().toLowerCase() : '';
       return this.examList.filter(e => {
         if (adminSubFilter && (e.subject || '').trim().toLowerCase() !== adminSubFilter) return false;
         if (this.adminExamFilterGrade && e.grade !== this.adminExamFilterGrade) return false;
         if (this.adminExamFilterPublish === 'published' && !e.is_published) return false;
         if (this.adminExamFilterPublish === 'unpublished' && e.is_published) return false;
         if (this.adminExamFilterPublish === 'bank' && !e.is_bank) return false;
+        if (teacherFilter && (e.created_by || '').trim().toLowerCase() !== teacherFilter) return false;
         return true;
       });
     },
@@ -1373,10 +1459,21 @@ function adminApp() {
       const eMap = this.examMap;
       const subFilter = this.selectedSubjectFilter ? this.selectedSubjectFilter.trim().toLowerCase() : '';
       const clsFilter = this.selectedClassFilter ? this.selectedClassFilter.trim().toUpperCase() : '';
+      const dateFilter = this.filterDate ? this.filterDate.trim() : '';
+      const teacherFilter = this.selectedTeacherFilter ? this.selectedTeacherFilter.trim().toLowerCase() : '';
 
       return this.submissions.filter(sub => {
         if (this.selectedExamFilter && sub.exam_id !== this.selectedExamFilter) return false;
         if (clsFilter && (sub.student_class || '').trim().toUpperCase() !== clsFilter) return false;
+        if (dateFilter) {
+          const subDate = (sub.submitted_at || '').substring(0, 10);
+          if (subDate !== dateFilter) return false;
+        }
+        if (teacherFilter) {
+          const ex = eMap[sub.exam_id];
+          const creator = ((sub.exam_created_by || ex?.created_by) || '').trim().toLowerCase();
+          if (creator !== teacherFilter) return false;
+        }
         if (subFilter) {
           const ex = eMap[sub.exam_id];
           const subSubject = ((sub.subject || ex?.subject) || '').trim().toLowerCase();
@@ -1391,6 +1488,8 @@ function adminApp() {
       if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
       if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
       if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
+      if (this.filterDate) params.append('date', this.filterDate);
+      if (this.selectedTeacherFilter) params.append('teacher', this.selectedTeacherFilter);
       return '/api/exam/export/excel' + (params.toString() ? '?' + params.toString() : '');
     },
 
@@ -1399,6 +1498,8 @@ function adminApp() {
       if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
       if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
       if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
+      if (this.filterDate) params.append('date', this.filterDate);
+      if (this.selectedTeacherFilter) params.append('teacher', this.selectedTeacherFilter);
       return '/api/admin/print/submissions/class' + (params.toString() ? '?' + params.toString() : '');
     },
 
@@ -1741,6 +1842,8 @@ function adminApp() {
         if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
         if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
         if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
+        if (this.filterDate) params.append('date', this.filterDate);
+        if (this.selectedTeacherFilter) params.append('teacher', this.selectedTeacherFilter);
         const url = '/api/admin/stats' + (params.toString() ? '?' + params.toString() : '');
         const r = await fetch(url);
         if (r.ok) this.stats = await r.json();
@@ -1760,6 +1863,8 @@ function adminApp() {
         if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
         if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
         if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
+        if (this.filterDate) params.append('date', this.filterDate);
+        if (this.selectedTeacherFilter) params.append('teacher', this.selectedTeacherFilter);
         const url = '/api/admin/submissions' + (params.toString() ? '?' + params.toString() : '');
         const r = await fetch(url);
         if (r.ok) {

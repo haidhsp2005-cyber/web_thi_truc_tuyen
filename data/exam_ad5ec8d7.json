@@ -1,0 +1,1670 @@
+{
+  "title": "ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TIN HỌC LỚP 11 CT",
+  "subject": "Tin học",
+  "grade": "11",
+  "duration_minutes": 45,
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Tiện ích Disk Cleanup trên Windows có chức năng chính là gì?",
+          "options": {
+            "A": "Cài đặt lại driver cho bàn phím",
+            "B": "Cập nhật hệ điều hành lên phiên bản mới",
+            "C": "Tìm và xóa các tệp tin tạm, tệp rác để giải phóng dung lượng",
+            "D": "Quét và diệt mã độc máy tính"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Hệ điều hành nào dưới đây là hệ điều hành mã nguồn mở cho máy tính cá nhân?",
+          "options": {
+            "A": "Apple macOS",
+            "B": "Ubuntu Linux",
+            "C": "Google ChromeOS",
+            "D": "Microsoft Windows 11"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Tổ hợp phím nào dùng để mở nhanh công cụ quản lý tiến trình Task Manager?",
+          "options": {
+            "A": "Ctrl + Shift + Esc",
+            "B": "Alt + F4",
+            "C": "Ctrl + C",
+            "D": "Windows + P"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Tính năng nào dưới đây là ví dụ về ứng dụng AI tích hợp trong hệ điều hành hiện đại?",
+          "options": {
+            "A": "Nhận diện khuôn mặt Windows Hello và trợ lý ảo Copilot",
+            "B": "Sao chép tệp tin bằng phím Ctrl+C",
+            "C": "Định dạng ổ đĩa NTFS",
+            "D": "Quản lý cây thư mục tệp tin"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Phần mềm nào dưới đây là phần mềm chạy trên Internet (SaaS)?",
+          "options": {
+            "A": "Notepad trên Windows",
+            "B": "Paint trên máy tính",
+            "C": "Google Docs",
+            "D": "Microsoft Office 2003 cài trên đĩa CD"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Khi sử dụng các dịch vụ AI trực tuyến công cộng, hành động nào dưới đây tiềm ẩn nguy cơ cao nhất làm lộ bí mật riêng tư và an toàn thông tin cá nhân?",
+          "options": {
+            "A": "Cung cấp số Căn cước công dân, mật khẩu hoặc dữ liệu nội bộ vào ô chat",
+            "B": "Tra cứu thông tin về các sự kiện thể thao quốc tế",
+            "C": "Nhờ AI gợi ý dàn ý cho một bài thuyết trình lịch sử",
+            "D": "Nhập văn bản nhờ AI giải thích công thức toán học"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Để nén một thư mục bài tập thành tệp .zip trong Windows, em thực hiện thao tác nào?",
+          "options": {
+            "A": "Chuột phải vào thư mục -> Properties -> Optimize",
+            "B": "Kéo thả thư mục vào Recycle Bin",
+            "C": "Chuột phải vào thư mục -> Send to -> Compressed (zipped) folder",
+            "D": "Nháy đúp chuột vào thư mục"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Đặc điểm nổi bật nhất của phần mềm nguồn mở là gì?",
+          "options": {
+            "A": "Luôn luôn có giá bán đắt hơn phần mềm thương mại",
+            "B": "Cung cấp mã nguồn công khai, cho phép tự do sử dụng và sửa đổi",
+            "C": "Chỉ chạy được trên điện thoại di động",
+            "D": "Người dùng không được phép chỉnh sửa mã nguồn"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Cơ chế 'Plug & Play' của hệ điều hành có ý nghĩa gì?",
+          "options": {
+            "A": "Tự động quét virus trên Internet",
+            "B": "Tự động tắt máy tính khi không sử dụng",
+            "C": "Tự động cài đặt trò chơi điện tử",
+            "D": "Tự động nhận diện thiết bị ngoại vi và nạp driver phù hợp"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Mục đích của việc đồng bộ danh bạ lên đám mây là gì?",
+          "options": {
+            "A": "Để làm đầy bộ nhớ",
+            "B": "Để thay đổi số điện thoại",
+            "C": "Để tránh mất dữ liệu khi đổi thiết bị",
+            "D": "Để tăng tốc độ mạng"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Tại sao cần đặt tên thư mục khoa học?",
+          "options": {
+            "A": "Để máy tính chạy nhanh hơn",
+            "B": "Để dễ dàng quản lý, tìm kiếm và chia sẻ dữ liệu",
+            "C": "Để làm đẹp màn hình",
+            "D": "Để tránh bị virus"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Công cụ nào trong Windows giúp sắp xếp lại các khối dữ liệu rời rạc trên ổ đĩa?",
+          "options": {
+            "A": "Control Panel",
+            "B": "Task Manager",
+            "C": "Optimize Drives",
+            "D": "Disk Cleanup"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Khi sử dụng AI trực tuyến, cần kiểm tra điều gì trong chính sách bảo mật?",
+          "options": {
+            "A": "Tốc độ tải trang",
+            "B": "Số lượng người dùng khác",
+            "C": "Màu sắc giao diện",
+            "D": "Dữ liệu có bị dùng để huấn luyện mô hình công khai không"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Đâu là một ví dụ về phần mềm nguồn mở thay thế cho Microsoft Office?",
+          "options": {
+            "A": "LibreOffice",
+            "B": "Windows Media Player",
+            "C": "Adobe Photoshop",
+            "D": "Google Chrome"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Hệ điều hành nào sau đây thường được sử dụng trên máy tính Apple?",
+          "options": {
+            "A": "macOS",
+            "B": "Windows",
+            "C": "Linux",
+            "D": "Android"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Khi một ứng dụng bị treo, thao tác nào sau đây là phù hợp nhất?",
+          "options": {
+            "A": "Cài đặt lại hệ điều hành",
+            "B": "Sử dụng Task Manager để kết thúc tiến trình (End Task)",
+            "C": "Xóa toàn bộ ổ cứng",
+            "D": "Rút dây nguồn máy tính"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Hệ điều hành nào sau đây phổ biến trên thiết bị di động?",
+          "options": {
+            "A": "Unix",
+            "B": "MS-DOS",
+            "C": "Android",
+            "D": "Windows Server"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Tại sao cần định kỳ dọn dẹp bộ nhớ đệm (Cache) trên điện thoại?",
+          "options": {
+            "A": "Để tăng dung lượng pin",
+            "B": "Để kết nối mạng nhanh hơn",
+            "C": "Để thay đổi giao diện màn hình",
+            "D": "Để giải phóng bộ nhớ và tăng tốc độ thiết bị"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Đặc điểm nào sau đây KHÔNG phải là đặc trưng nổi bật của hệ điều hành dành cho thiết bị di động?",
+          "options": {
+            "A": "Giao diện tối ưu hóa cho cảm ứng chạm đa điểm",
+            "B": "Hỗ trợ kết nối mạng không dây liên tục như Wi-Fi, 4G/5G",
+            "C": "Tích hợp nhiều cảm biến như gia tốc kế, con quay hồi chuyển, tiệm cận",
+            "D": "Chỉ cho phép cài đặt ứng dụng từ đĩa CD hoặc DVD vật lý"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Để bảo vệ quyền riêng tư và an toàn thông tin trên điện thoại thông minh, người dùng nên thực hiện thao tác nào đối với các ứng dụng giải trí không rõ nguồn gốc?",
+          "options": {
+            "A": "Chỉ tải ứng dụng từ các kho ứng dụng chính thống, đồng thời kiểm tra và giới hạn các quyền truy cập không cần thiết",
+            "B": "Tắt hoàn toàn các tính năng bảo mật và quét mã độc của hệ điều hành di động",
+            "C": "Cấp toàn bộ quyền truy cập vị trí, danh bạ, camera và micro để ứng dụng hoạt động mượt mà nhất",
+            "D": "Chia sẻ thông tin tài khoản cá nhân lên các diễn đàn công nghệ để nhờ cộng đồng kiểm tra độ an toàn"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q20"
+        },
+        {
+          "text": "Đặc điểm nổi bật của thiết bị thông minh trong hệ thống IoT là gì?",
+          "options": {
+            "A": "Chỉ hoạt động khi có sự điều khiển trực tiếp bằng tay của con người.",
+            "B": "Không có khả năng kết nối mạng không dây.",
+            "C": "Có khả năng thu thập, xử lý và truyền tải dữ liệu tự động qua mạng.",
+            "D": "Không tích hợp các cảm biến hay bộ vi xử lý bên trong."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q21"
+        },
+        {
+          "text": "Xu hướng phát triển giao diện của các hệ điều hành máy tính cá nhân từ trước đến nay diễn ra theo tiến trình nào sau đây?",
+          "options": {
+            "A": "Giao diện dòng lệnh -> Giao diện đồ họa -> Giao diện tích hợp AI và giọng nói",
+            "B": "Giao diện tích hợp AI -> Giao diện dòng lệnh -> Giao diện đồ họa",
+            "C": "Giao diện giọng nói -> Giao diện dòng lệnh -> Giao diện đồ họa",
+            "D": "Giao diện đồ họa -> Giao diện dòng lệnh -> Giao diện tích hợp AI và giọng nói"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q22"
+        },
+        {
+          "text": "Giấy phép công cộng GNU GPL quy định điều kiện ràng buộc nào đối với các phần mềm cải tiến được phát triển dựa trên mã nguồn mở GPL?",
+          "options": {
+            "A": "Bắt buộc phải bán với giá cao hơn phiên bản gốc",
+            "B": "Không được phép chia sẻ cho bất kỳ ai khác ngoài tác giả gốc",
+            "C": "Bắt buộc phải công khai mã nguồn của phiên bản cải tiến theo cùng giấy phép GPL",
+            "D": "Được phép chuyển thành phần mềm nguồn đóng thương mại độc quyền"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q23"
+        },
+        {
+          "text": "Khi lỡ tay xóa nhầm một tệp tin quan trọng trên màn hình Desktop, em có thể khôi phục lại tệp tin đó bằng cách nào?",
+          "options": {
+            "A": "Mở Disk Cleanup -> Chọn ổ đĩa C -> Bấm OK",
+            "B": "Mở Recycle Bin -> Nhấp chuột phải vào tệp tin -> Chọn Restore",
+            "C": "Khởi động lại máy tính và nhấn phím F8 liên tục",
+            "D": "Mở Task Manager -> Chọn tiến trình Explorer -> Chọn End Task"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q24"
+        },
+        {
+          "text": "Khi người dùng áp điện thoại vào tai để nghe cuộc gọi, màn hình tự động tắt để tiết kiệm pin và tránh chạm nhầm. Tính năng này hoạt động nhờ cảm biến nào?",
+          "options": {
+            "A": "Cảm biến ánh sáng (Ambient light sensor)",
+            "B": "Cảm biến tiệm cận (Proximity sensor)",
+            "C": "Cảm biến gia tốc kế (Accelerometer)",
+            "D": "Cảm biến con quay hồi chuyển (Gyroscope)"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q25"
+        },
+        {
+          "text": "Hệ điều hành nào sau đây là hệ điều hành thương mại (nguồn đóng) phổ biến nhất trên máy tính cá nhân hiện nay?",
+          "options": {
+            "A": "Debian Linux",
+            "B": "Microsoft Windows",
+            "C": "Fedora Linux",
+            "D": "FreeBSD"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q26"
+        },
+        {
+          "text": "Việc tải và cài đặt các phần mềm miễn phí, phần mềm bẻ khóa (crack) từ các trang web lạ không rõ nguồn gốc tiềm ẩn nguy cơ lớn nhất nào sau đây?",
+          "options": {
+            "A": "Máy tính bị lây nhiễm mã độc, phần mềm gián điệp đánh cắp thông tin cá nhân hoặc mã độc tống tiền",
+            "B": "Hệ điều hành tự động chuyển đổi ngôn ngữ sang tiếng Anh",
+            "C": "Làm tăng dung lượng RAM vật lý của máy tính một cách bất thường",
+            "D": "Bàn phím máy tính tự động thay đổi vị trí các phím bấm"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q27"
+        },
+        {
+          "text": "Phần mềm nguồn mở nào sau đây chuyên dùng để chỉnh sửa ảnh và thiết kế đồ họa, có thể thay thế cho Adobe Photoshop?",
+          "options": {
+            "A": "GIMP",
+            "B": "Mozilla Firefox",
+            "C": "Python",
+            "D": "VLC Media Player"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q28"
+        },
+        {
+          "text": "Theo các quy định về an toàn thông tin số, quyền nào sau đây là một trong những quyền cơ bản của người dùng đối với dữ liệu cá nhân của mình trên các nền tảng số?",
+          "options": {
+            "A": "Quyền được biết dữ liệu cá nhân của mình được thu thập để làm gì và quyền yêu cầu xóa dữ liệu cá nhân đó",
+            "B": "Quyền được yêu cầu nền tảng số thanh toán tiền mỗi khi họ truy cập ứng dụng",
+            "C": "Quyền tự ý thay đổi dữ liệu hệ thống của nhà cung cấp dịch vụ",
+            "D": "Quyền sao chép trái phép mã nguồn của nền tảng để bán lại kiếm lời"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q29"
+        },
+        {
+          "text": "Nguyên nhân chính dẫn đến hiện tượng phân mảnh dữ liệu trên ổ đĩa cứng cơ học (HDD) sau một thời gian dài sử dụng là gì?",
+          "options": {
+            "A": "Do bụi bẩn bám vào bề mặt đĩa từ làm cản trở quá trình ghi dữ liệu",
+            "B": "Do hệ điều hành tự động nhân bản các tệp tin hệ thống để dự phòng sự cố",
+            "C": "Do người dùng thường xuyên tắt máy tính đột ngột bằng cách rút nguồn điện",
+            "D": "Do các tệp tin liên tục được tạo mới, ghi đè, sửa đổi hoặc xóa bỏ, khiến dữ liệu bị chia cắt và lưu trữ rải rác"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q30"
+        },
+        {
+          "text": "Đặc điểm nào sau đây đúng với phần mềm thương mại nguồn đóng?",
+          "options": {
+            "A": "Hoàn toàn miễn phí và không có bất kỳ ràng buộc pháp lý nào khi sử dụng",
+            "B": "Được bán dưới dạng mã máy nhị phân, người dùng phải trả phí mua bản quyền sử dụng và không được xem mã nguồn",
+            "C": "Người dùng được tự do chỉnh sửa mã nguồn theo ý muốn",
+            "D": "Nhà phát triển công khai toàn bộ mã nguồn lên Internet để cộng đồng cùng phát triển"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q31"
+        },
+        {
+          "text": "Công cụ 'Optimize Drives' (hoặc Defragment) trên Windows có vai trò gì đối với ổ đĩa cứng cơ học (HDD)?",
+          "options": {
+            "A": "Thay đổi định dạng hệ thống tệp từ FAT32 sang NTFS",
+            "B": "Khôi phục lại các tệp tin đã bị xóa vĩnh viễn khỏi Thùng rác",
+            "C": "Chống phân mảnh bằng cách sắp xếp lại các khối dữ liệu nằm rải rác liền kề nhau để tăng tốc độ đọc ghi",
+            "D": "Tăng dung lượng lưu trữ vật lý của ổ đĩa lên gấp đôi"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q32"
+        },
+        {
+          "text": "Việc bảo mật thông tin cá nhân trên mạng là trách nhiệm của ai?",
+          "options": {
+            "A": "Mỗi cá nhân người sử dụng",
+            "B": "Chỉ nhà cung cấp dịch vụ",
+            "C": "Chỉ cơ quan nhà nước",
+            "D": "Không ai cả"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q33"
+        },
+        {
+          "text": "Đơn vị đo tốc độ xử lý của CPU là gì?",
+          "options": {
+            "A": "Pixel",
+            "B": "Byte",
+            "C": "Hertz (Hz)",
+            "D": "Watt"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q34"
+        },
+        {
+          "text": "Quyền nào sau đây KHÔNG phải là quyền cơ bản của người dùng dữ liệu cá nhân trên các nền tảng số?",
+          "options": {
+            "A": "Quyền được biết dữ liệu của mình được thu thập để làm gì",
+            "B": "Quyền yêu cầu đính chính hoặc xóa bỏ dữ liệu cá nhân đã lưu trữ",
+            "C": "Quyền tự ý thay đổi mã nguồn hệ thống của trang web thu thập dữ liệu",
+            "D": "Quyền từ chối cung cấp các thông tin cá nhân nhạy cảm"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q35"
+        },
+        {
+          "text": "Hệ điều hành là gì?",
+          "options": {
+            "A": "Thiết bị",
+            "B": "Phần mềm hệ thống",
+            "C": "Phần mềm ứng dụng",
+            "D": "Ngôn ngữ lập trình"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q36"
+        },
+        {
+          "text": "Phần mềm nào sau đây là phần mềm thương mại nguồn đóng?",
+          "options": {
+            "A": "Bộ ứng dụng văn phòng LibreOffice",
+            "B": "Hệ điều hành Ubuntu Linux",
+            "C": "Phần mềm chỉnh sửa ảnh chuyên nghiệp Adobe Photoshop",
+            "D": "Ngôn ngữ lập trình Python"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q37"
+        },
+        {
+          "text": "Sự khác biệt lớn nhất giữa phần mềm thương mại (nguồn đóng) và phần mềm nguồn mở là gì?",
+          "options": {
+            "A": "Khả năng tiếp cận, xem và sửa đổi mã nguồn của phần mềm",
+            "B": "Phần mềm nguồn mở không bao giờ có giao diện đồ họa",
+            "C": "Phần mềm thương mại chỉ chạy được trên máy tính, phần mềm nguồn mở chỉ chạy trên điện thoại",
+            "D": "Phần mềm thương mại không cần hệ điều hành để hoạt động"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q38"
+        },
+        {
+          "text": "Dữ liệu nào sau đây là dữ liệu số?",
+          "options": {
+            "A": "Hình ảnh",
+            "B": "Số nguyên",
+            "C": "Âm thanh",
+            "D": "Văn bản"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q39"
+        },
+        {
+          "text": "Đơn vị đo thông tin nhỏ nhất là gì?",
+          "options": {
+            "A": "Kilobyte",
+            "B": "Byte",
+            "C": "Bit",
+            "D": "Megabyte"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q40"
+        },
+        {
+          "text": "Trong hệ thống máy tính, thành phần nào đóng vai trò là bộ não điều khiển mọi hoạt động?",
+          "options": {
+            "A": "RAM",
+            "B": "Ổ cứng",
+            "C": "CPU",
+            "D": "Mainboard"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q41"
+        },
+        {
+          "text": "Mạng máy tính là gì?",
+          "options": {
+            "A": "Tập hợp các máy tính kết nối với nhau",
+            "B": "Thiết bị lưu trữ dữ liệu",
+            "C": "Một máy tính đơn lẻ",
+            "D": "Phần mềm diệt virus"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q42"
+        },
+        {
+          "text": "Bộ nhớ nào lưu trữ dữ liệu tạm thời khi máy tính đang hoạt động?",
+          "options": {
+            "A": "RAM",
+            "B": "ROM",
+            "C": "HDD",
+            "D": "SSD"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q43"
+        },
+        {
+          "text": "Thiết bị nào sau đây là thiết bị đầu vào?",
+          "options": {
+            "A": "Bàn phím",
+            "B": "Loa",
+            "C": "Màn hình",
+            "D": "Máy in"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q44"
+        },
+        {
+          "text": "Cảm biến nào tích hợp trên thiết bị di động giúp hệ điều hành tự động xoay màn hình theo hướng cầm của người dùng?",
+          "options": {
+            "A": "Cảm biến tiệm cận",
+            "B": "Cảm biến vân tay",
+            "C": "Cảm biến ánh sáng",
+            "D": "Gia tốc kế và con quay hồi chuyển"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q45"
+        },
+        {
+          "text": "Hệ điều hành nào sau đây là hệ điều hành mã nguồn mở?",
+          "options": {
+            "A": "Windows 11",
+            "B": "Linux",
+            "C": "MS-DOS",
+            "D": "macOS"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q46"
+        },
+        {
+          "text": "Hệ điều hành MS-DOS là hệ điều hành có giao diện thuộc loại nào?",
+          "options": {
+            "A": "Giao diện cảm ứng",
+            "B": "Giao diện đồ họa (GUI)",
+            "C": "Giao diện dòng lệnh (CLI)",
+            "D": "Giao diện giọng nói"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q47"
+        },
+        {
+          "text": "Giấy phép phần mềm nguồn mở cho phép người dùng làm điều gì?",
+          "options": {
+            "A": "Bán lại phần mềm đó với giá cao mà không cần dẫn nguồn gốc.",
+            "B": "Chỉ được xem mã nguồn mà không được phép sửa đổi.",
+            "C": "Được phép sao chép, sửa đổi và phân phối lại mã nguồn theo các điều khoản quy định.",
+            "D": "Độc quyền sở hữu mã nguồn đó mãi mãi."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q48"
+        },
+        {
+          "text": "Chức năng nào sau đây không phải của hệ điều hành?",
+          "options": {
+            "A": "Quản lý thiết bị ngoại vi.",
+            "B": "Cung cấp giao diện cho người dùng tương tác.",
+            "C": "Dịch chương trình nguồn sang ngôn ngữ máy.",
+            "D": "Quản lý tệp và thư mục."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q49"
+        },
+        {
+          "text": "Điểm khác biệt lớn nhất của hệ điều hành cho thiết bị di động so với hệ điều hành cho máy tính cá nhân là gì?",
+          "options": {
+            "A": "Không có khả năng kết nối mạng Internet.",
+            "B": "Không hỗ trợ quản lý tệp tin và thư mục.",
+            "C": "Hỗ trợ màn hình cảm ứng và tích hợp nhiều cảm biến thông minh.",
+            "D": "Chỉ chạy được các ứng dụng văn phòng cơ bản."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q50"
+        },
+        {
+          "text": "Hệ điều hành Android được phát triển dựa trên nền tảng của hệ điều hành nào?",
+          "options": {
+            "A": "Windows",
+            "B": "Linux",
+            "C": "Unix",
+            "D": "macOS"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q51"
+        },
+        {
+          "text": "Giấy phép GNU GPL (General Public License) thường được áp dụng cho loại phần mềm nào?",
+          "options": {
+            "A": "Phần mềm nguồn mở.",
+            "B": "Phần mềm thương mại đóng nguồn.",
+            "C": "Phần mềm dùng thử (Shareware).",
+            "D": "Phần mềm độc quyền của Microsoft."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q52"
+        },
+        {
+          "text": "Phần mềm thương mại (Commercial Software) là loại phần mềm:",
+          "options": {
+            "A": "Được bán để thu lợi nhuận và thường đóng mã nguồn.",
+            "B": "Chỉ dùng trong các hoạt động giao dịch thương mại.",
+            "C": "Miễn phí hoàn toàn và cho phép sửa đổi mã nguồn tự do.",
+            "D": "Do nhà nước cấp phát miễn phí cho người dân."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q53"
+        },
+        {
+          "text": "Thuật ngữ 'SaaS' (Software as a Service) có nghĩa là gì?",
+          "options": {
+            "A": "Phần mềm hệ thống quản lý",
+            "B": "Phần mềm như một dịch vụ, chạy trực tuyến trên nền tảng đám mây.",
+            "C": "Phần mềm nguồn mở miễn phí hoàn toàn.",
+            "D": "Phần mềm diệt virus tự động."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q54"
+        },
+        {
+          "text": "Hệ điều hành đóng vai trò là môi trường trung gian giữa:",
+          "options": {
+            "A": "Bộ nhớ RAM và bộ nhớ ROM.",
+            "B": "Màn hình hiển thị và máy in.",
+            "C": "D. Bàn phím và chuột máy tính.",
+            "D": "Phần cứng máy tính và phần mềm ứng dụng/người dùng"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q55"
+        },
+        {
+          "text": "Phương án nào sau đây là đúng khi đề cập đến các chức năng của hệ điều hành?",
+          "options": {
+            "A": "Cấp phát tài nguyên phần cứng cho các ứng dụng; điều khiển, định thời thực thi các chương trình; hỗ trợ người dùng giao tiếp với máy tính.",
+            "B": "Điều khiển, định thời thực thi các chương trình.",
+            "C": "Hỗ trợ người dùng giao tiếp với máy tính.",
+            "D": "Cấp phát tài nguyên"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q56"
+        },
+        {
+          "text": "Trong các thành phần của hệ thống máy tính, thành phần nào quản lý trực tiếp các tài nguyên phần cứng? Chọn phương án trả lời đúng.",
+          "options": {
+            "A": "Hệ điều hành.",
+            "B": "Các phần mềm.",
+            "C": "Người dùng.",
+            "D": "Dữ liệu."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q57"
+        },
+        {
+          "text": "Dưới góc độ cơ bản, Hệ điều hành được định nghĩa là gì?",
+          "options": {
+            "A": "Là một phần mềm quản lý các phần mềm khác.",
+            "B": "Là một chương trình quản lý phần cứng máy tính.",
+            "C": "Là một chương trình bảo vệ phần cứng máy tính.",
+            "D": "Là một phần mềm chạy trên máy tính."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q58"
+        },
+        {
+          "text": "Linux có nguồn gốc từ:",
+          "options": {
+            "A": "UNIX.",
+            "B": "Windows.",
+            "C": "iOS.",
+            "D": "Android"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q59"
+        },
+        {
+          "text": "Hệ điều hành nào là hệ điều hành thiết bị di động?",
+          "options": {
+            "A": "Ubuntu.",
+            "B": "iOS.",
+            "C": "Windows.",
+            "D": "Mac OS."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q60"
+        },
+        {
+          "text": "Đâu là HĐH thông dụng nhất cho PC?",
+          "options": {
+            "A": "Linux",
+            "B": "Unix.",
+            "C": "iOS",
+            "D": "Windows"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q61"
+        },
+        {
+          "text": "Giao diện ban đầu của hệ điều hành máy tính cá nhân là?",
+          "options": {
+            "A": "Giao diện đồ họa",
+            "B": "Giao diện dòng chữ",
+            "C": "Giao diện dòng lệnh",
+            "D": "Giao diện dòng lệnh đơn"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q62"
+        },
+        {
+          "text": "HĐH Windows và Linux là hệ điều hành?",
+          "options": {
+            "A": "Đa nhiệm nhiều người dùng.",
+            "B": "Đa nhiệm một người dùng.",
+            "C": "Đơn nhiệm nhiều người dùng.",
+            "D": "Đơn nhiệm một người dùng."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q63"
+        },
+        {
+          "text": "Phát biểu nào sau đây là ĐÚNG khi nói về mối quan hệ giữa phần cứng, hệ điều hành và phần mềm ứng dụng?",
+          "options": {
+            "A": "Hệ điều hành là môi trường để phần mềm ứng dụng khai thác phần cứng.",
+            "B": "Phần mềm ứng dụng là môi trường để hệ điều hành khai thác phần cứng.",
+            "C": "Phần mềm ứng dụng là cầu nối trung gian giữa hệ điều hành và phần cứng.",
+            "D": "Phần cứng là cầu nối trung gian giữa hệ điều hành và phần mềm ứng dụng."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q64"
+        },
+        {
+          "text": "Trong các phát biểu sau, phát biểu nào ĐÚNG khi một máy tính không có hệ điều hành?",
+          "options": {
+            "A": "Các phần mềm ứng dụng vẫn hoạt động bình thường trên máy tính đó.",
+            "B": "CPU vẫn tiếp nhận và thực thi các lệnh từ người dùng.",
+            "C": "Các phần mềm ứng dụng và lệnh của người dùng không thể thực thi trên máy tính.",
+            "D": "Người dùng vẫn có thể cài đặt các phầm mềm ứng dụng vào máy tính đó."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q65"
+        },
+        {
+          "text": "Đâu là khác biệt của hệ điều hành cho thiết bị di động so với hệ điều hành?",
+          "options": {
+            "A": "Giao diện đa màu, khó sử dụng.",
+            "B": "Ít tiện ích để hỗ trợ cá nhân.",
+            "C": "Thao tác khó sử dụng, phải sử dụng mạng để thao tác.",
+            "D": "Dễ dàng kết nối mạng di động."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q66"
+        },
+        {
+          "text": "Laptop và điện thoại thông minh có thể trao đổi dữ liệu với nhau được không?",
+          "options": {
+            "A": "Trao đổi được mọi lúc.",
+            "B": "Không trao đổi được.",
+            "C": "Chỉ trao đổi được khi điện thoại và laptop có kết nối với nhau.",
+            "D": "Chỉ trao đổi được khi điện thoại mất kết nối."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q67"
+        },
+        {
+          "text": "Hệ điều hành quản lý việc lưu trữ dữ liệu nào?",
+          "options": {
+            "A": "CPU",
+            "B": "Bộ nhớ hay thiết bị ngoại vi",
+            "C": "Quản lý tệp và quản lý thư mục",
+            "D": "Không quản lý lưu trữ dữ liệu"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q68"
+        },
+        {
+          "text": "Theo em, nhóm chức năng nào thể hiện rõ nhất đặc thù của hệ điều hành máy tính cá nhân?",
+          "options": {
+            "A": "Quản lý thiết bị",
+            "B": "Cung cấp môi trường giao tiếp với người sử dụng",
+            "C": "Cung cấp một số tiện ích giúp nâng cao hiệu quả sử dụng máy tính",
+            "D": "Tổ chức thực hiện các chương trình điều phối tải nguyên cho các tiến trình xử lí trên máy tính. Nói cách khác, hệ điều hành là môi trường đề chạy các ứng dụng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q69"
+        },
+        {
+          "text": "Đâu là thành phần cơ bản của giao diện đồ họa",
+          "options": {
+            "A": "Cửa sổ",
+            "B": "Biểu tượng, cửa sổ",
+            "C": "Chuột, biểu tượng",
+            "D": "Cửa sổ, biểu tượng, chuột"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q70"
+        },
+        {
+          "text": "Chức năng kéo thả tiện lợi của hệ điều hành Windows có từ phiên bản nào?",
+          "options": {
+            "A": "Phiên bản 1",
+            "B": "Phiên bản 2",
+            "C": "Phiên bản 3.1",
+            "D": "Phiên bản 3.2"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q71"
+        },
+        {
+          "text": "Phát biểu nào sau đây là sai?",
+          "options": {
+            "A": "Hệ điều hành (operating systems) là phần mềm quản lí và điều khiển máy tính",
+            "B": "Hệ điều hành là môi trường trung gian giúp phần mềm ứng dụng khai thác phần cứng",
+            "C": "Các thiết bị đa năng thì không cần có hệ điều hành",
+            "D": "Hệ điều hành di động ưu tiên cao cho giao tiếp thân thiện và kết nối mạng di động"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q72"
+        },
+        {
+          "text": "Phát biểu nào sau đây là đúng khi nói về vai trò của hệ điều hành?",
+          "options": {
+            "A": "Quản lý các thành phần trong hệ thống máy tính bao gồm",
+            "B": "Thực hiện tìm kiếm trên Internet",
+            "C": "Thực hiện soạn thảo văn bản",
+            "D": "Thực hiện các chức năng bằng cách gửi các chỉ thị trực tiếp đến phần cứng"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q73"
+        },
+        {
+          "text": "Hãy cho biết câu nào trong những câu dưới đây phát biểu KHÔNG đúng về xu hướng phát triển hệ điều hành?",
+          "options": {
+            "A": "Hệ điều hành có giao diện đẹp và dễ sử dụng hơn",
+            "B": "Hệ điều hành có nhiều tính năng hơn",
+            "C": "Chương trình hệ điều hành trở nên đơn giản hơn",
+            "D": "Hệ điều hành khai thác các tài nguyên của máy tốt hơn"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q74"
+        },
+        {
+          "text": "Tiện ích nào trong Window dùng để nâng cao hiệu suất làm việc của máy tính?",
+          "options": {
+            "A": "File Explorer",
+            "B": "Paint",
+            "C": "Disk Cleanup",
+            "D": "Calculator"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q75"
+        },
+        {
+          "text": "Mỗi cung ghi bao nhiêu dữ liệu?",
+          "options": {
+            "A": "512 byte",
+            "B": "512 mega byte",
+            "C": "512 gigabyte",
+            "D": "Đáp án khác"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q76"
+        },
+        {
+          "text": "Dữ liệu được đọc, được ghi bởi?",
+          "options": {
+            "A": "Các đầu từ theo các đoạn thẳng nét cong",
+            "B": "Các đầu từ theo các đường tròn đồng tâm",
+            "C": "Các đầu từ theo các đường thẳng",
+            "D": "Đáp án khác"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q77"
+        },
+        {
+          "text": "Phương án nào sau đây đúng khi đề cập đến lợi ích đối với cộng đồng trong việc chia sẻ mã nguồn mở?",
+          "options": {
+            "A": "Phát triển ứng dụng trong thời gian dài bởi tính chất ổn định, cộng đồng hỗ trợ lớn mạnh.",
+            "B": "Cho phép quản lý và điều khiển những phần nào có thể hoạt động, phần nào không.",
+            "C": "Đảm bảo được tính bảo mật và tính an ninh cao.",
+            "D": "Miễn phí, bền vững theo thời gian."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q78"
+        },
+        {
+          "text": "Giấy phép được áp dụng rộng rãi nhất là?",
+          "options": {
+            "A": "GLU GPL",
+            "B": "GNU GPN",
+            "C": "GLU GPN",
+            "D": "GNU GPL"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q79"
+        },
+        {
+          "text": "Phần mềm GIMP sử dụng giấy phép mã nguồn mở nào :",
+          "options": {
+            "A": "GNU GPL license",
+            "B": "Apache public license",
+            "C": "BSD license",
+            "D": "Artistic license."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q80"
+        },
+        {
+          "text": "Hệ điều hành mã nguồn mở nào được phát triển dựa trên nền tảng Linux dành cho các thiết bị di động có màn hình cảm ứng?",
+          "options": {
+            "A": "UNIX",
+            "B": "Linux",
+            "C": "MacOs",
+            "D": "Android"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q81"
+        },
+        {
+          "text": "Trong các khẳng định sau, khẳng định nào KHÔNG đúng về vai trò của phần mềm thương mại?",
+          "options": {
+            "A": "Mất chi phí mua phần mềm và chi phí chuyển giao",
+            "B": "Bị phụ thuộc vào nhà cung cấp về giải pháp và hỗ trợ kỹ thuật",
+            "C": "Khó kiểm soát những gì được cài cắm bên trong",
+            "D": "Không được hỗ trợ kỹ thuật"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q82"
+        },
+        {
+          "text": "Phương án nào sau đây là đúng khi đề cập đến phần mềm ứng dụng?",
+          "options": {
+            "A": "Chương trình máy tính hỗ trợ con người xử lí công việc trên máy tính.",
+            "B": "Chương trình được cài đặt đầu tiên vào máy tính.",
+            "C": "Các thiết bị như: chuột, bàn phím, máy tính.",
+            "D": "Chương trình giúp máy tính kết nối với thiết bị ngoại vi."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q83"
+        },
+        {
+          "text": "Phương án nào sau đây là ưu điểm của phần mềm chạy trên Internet?",
+          "options": {
+            "A": "Có thể sử dụng ở bất cứ đâu, bất cứ nơi nào, bất cứ máy tính nào miễn là có kết nối Internet; chi phí rẻ hoặc không mất phí.",
+            "B": "Có thể sử dụng ở bất cứ đâu, không cần kết nối Internet.",
+            "C": "Không tốn thời gian.",
+            "D": "Hoàn toàn không cần trả phí."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q84"
+        },
+        {
+          "text": "Phần mềm khai thác trực tuyến chỉ sử dụng được trên môi trường nào?",
+          "options": {
+            "A": "Máy tính cá nhân.",
+            "B": "Máy tính laptop.",
+            "C": "Môi trường Web.",
+            "D": "Điện thoại di động."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q85"
+        },
+        {
+          "text": "Phần mềm thương mại thường là loại phần mềm nào?",
+          "options": {
+            "A": "Phần mềm nguồn đóng.",
+            "B": "Phần mềm nguồn mở.",
+            "C": "Phần mềm miễn phí.",
+            "D": "Phần mềm khai thác trực tuyến"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q86"
+        },
+        {
+          "text": "Phần mềm nguồn mở là gì?",
+          "options": {
+            "A": "Phần mềm mà người dùng phải trả phí để sử dụng.",
+            "B": "Phần mềm mà người dùng có thể sử dụng miễn phí và có thể xem mã nguồn.",
+            "C": "Phần mềm chỉ có thể sử dụng trực tuyến và không cài đặt trên máy tính.",
+            "D": "Trình chiếu."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q87"
+        },
+        {
+          "text": "Phần mềm khai thác trực tuyến có đặc điểm gì?",
+          "options": {
+            "A": "Chỉ sử dụng được trên môi trường Web và có phí.",
+            "B": "Chỉ sử dụng được trên môi trường Web và miễn phí.",
+            "C": "Có thể cài đặt trên máy tính và sử dụng miễn phí.",
+            "D": "Chỉ sử dụng được trên môi trường Web và có thể có phí hoặc miễn phí"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q88"
+        },
+        {
+          "text": "Phần mềm nguồn mở có ưu điểm gì so với phần mềm thương mại:",
+          "options": {
+            "A": "Người dùng được hỗ trợ kỹ thuật.",
+            "B": "Có tính hoàn chỉnh cao, đáp ứng nhu cầu rộng rãi.",
+            "C": "Chi phí thấp, minh bạch, không bị phụ thuộc nhiều vào nhà cung cấp.",
+            "D": "Là nguồn thu nhập chính của các tổ chức, cá nhân làm phần mềm chuyên nghiệp."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q89"
+        },
+        {
+          "text": "Trong các phương án sau, phương án nào KHÔNG phải ưu điểm của phần mềm thương mại?",
+          "options": {
+            "A": "Có tính hoàn chỉnh cao",
+            "B": "Dễ dàng chia sẻ",
+            "C": "Đáp ứng nhu cầu riêng và người dùng được hỗ trợ kỹ thuật",
+            "D": "Đáp ứng nhu cầu rộng rãi"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q90"
+        },
+        {
+          "text": "Văn bản gần với ngôn ngữ tự nhiên trong ngôn ngữ lập trình bậc cao được gọi là?",
+          "options": {
+            "A": "Lệnh",
+            "B": "Mã code",
+            "C": "Mã nguồn",
+            "D": "Văn bản viết bằng kí tự chữ cái"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q91"
+        },
+        {
+          "text": "Hầu hết, phần mềm thương mại được bán ở dạng?",
+          "options": {
+            "A": "Mã nguồn",
+            "B": "Mã máy",
+            "C": "Mã code",
+            "D": "Đáp án khác"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q92"
+        },
+        {
+          "text": "Hệ quản trị cơ sở dữ liệu mở nào có thể thay thế so Oracle, SQL server?",
+          "options": {
+            "A": "Android",
+            "B": "Writer, Calc và Impress",
+            "C": "LINUX",
+            "D": "My SQL, postGreSQL"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q93"
+        },
+        {
+          "text": "Hệ điều hành Windows được phát triển bởi tập đoàn nào?",
+          "options": {
+            "A": "Apple",
+            "B": "Microsoft",
+            "C": "Google",
+            "D": "IBM"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q94"
+        },
+        {
+          "text": "Hệ điều hành Android được phát triển bởi tập đoàn nào?",
+          "options": {
+            "A": "Apple",
+            "B": "Microsoft",
+            "C": "Google",
+            "D": "IBM"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q95"
+        },
+        {
+          "id": "p1_q96",
+          "text": "Máy tính của em đang làm việc với một tệp trên thẻ nhớ. Em hãy sắp xếp lại thứ tự các thao tác sau để tắt máy tính an toàn, không làm mất dữ liệu. a- Chọn nút lệnh Shut down để tắt máy tính. b- Đóng tệp đang mở trên thẻ nhớ. c- Chọn \"Safe To Remove Hardware\" để ngắt kết nối với thẻ nhớ. d- Lưu lại nội dung của tệp.",
+          "image": "",
+          "options": {
+            "A": "a - b - d – c",
+            "B": "d - b - c – a",
+            "C": "d - c - b – a",
+            "D": "c - d - a – b"
+          },
+          "answer": "B",
+          "explanation": ""
+        },
+        {
+          "id": "p1_q97",
+          "text": "Mối quan hệ giữa phần cứng, phần mềm ứng dụng và hệ điều hành nào sau đây là đúng?",
+          "image": "",
+          "options": {
+            "A": "Phần mềm ứng dụng <=> Người dùng <=> Hệ điều hành <=> Phần cứng (CPU, bộ nhớ, thiết bị vào/ra).",
+            "B": "Người dùng <=> Phần mềm ứng dụng <=> Hệ điều hành <=> Phần cứng (CPU, bộ nhớ, thiết bị vào/ra).",
+            "C": "Người dùng <=> Hệ điều hành <=> Phần mềm ứng dụng <=> Phần cứng (CPU, bộ nhớ, thiết bị vào/ra).",
+            "D": "Người dùng <=> Hệ điều hành <=> Phần cứng (CPU, bộ nhớ, thiết bị vào/ra) <=> Phần mềm ứng dụng."
+          },
+          "answer": "B",
+          "explanation": ""
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Máy tính cá nhân của một học sinh sau thời gian dài sử dụng ổ đĩa HDD cài đặt Windows 11 xuất hiện hiện tượng khởi động chậm, ổ đĩa C báo dung lượng trống dưới 5% và thao tác mở tệp tin lớn bị trễ. Học sinh này thực hiện bảo trì hệ thống và đưa ra các đánh giá:",
+          "items": {
+            "a": {
+              "text": "Công cụ Disk Cleanup hỗ trợ tìm và xóa an toàn các tệp tin tạm (Temporary files), tệp tải về thừa và các tệp trong Recycle Bin để giải phóng dung lượng đĩa.",
+              "answer": true
+            },
+            "b": {
+              "text": "Công cụ Task Manager (Trình quản lý tác vụ) chỉ có một chức năng duy nhất là tắt máy tính từ xa khi bị treo.",
+              "answer": false
+            },
+            "c": {
+              "text": "Thực hiện chống phân mảnh (Defragment) trên ổ cứng cơ học (HDD) giúp sắp xếp lại các khối dữ liệu liền kề, từ đó cải thiện tốc độ đọc/ghi của đầu đọc cơ học.",
+              "answer": true
+            },
+            "d": {
+              "text": "Đối với ổ đĩa thể rắn (SSD), việc lạm dụng tính năng chống phân mảnh đĩa thường xuyên sẽ giúp kéo dài tuổi thọ chip nhớ flash của ổ SSD một cách tối đa.",
+              "answer": false
+            }
+          },
+          "id": "p2_q1"
+        },
+        {
+          "text": "Một nhóm học sinh lớp 11 phát triển dự án 'Trợ lý học tập số' và dự định sử dụng các thư viện phần mềm nguồn mở phát hành theo giấy phép GNU GPL phiên bản 3 (GPLv3). Nhóm thảo luận về quyền lợi và nghĩa vụ pháp lý khi phát hành sản phẩm ra cộng đồng:",
+          "items": {
+            "a": {
+              "text": "Việc sử dụng mã nguồn mở đồng nghĩa với việc nhóm không cần chịu bất kỳ trách nhiệm nào về bản quyền tác giả gốc hay các quy định bảo vệ dữ liệu cá nhân của người dùng.",
+              "answer": false
+            },
+            "b": {
+              "text": "Nếu nhóm tích hợp trực tiếp một mô-đun phát hành theo giấy phép GPLv3 vào dự án thì toàn bộ mã nguồn của phần mềm phái sinh khi công bố cũng phải mở và chịu sự ràng buộc của giấy phép tương thích GPL.",
+              "answer": true
+            },
+            "c": {
+              "text": "Phần mềm nguồn mở cho phép người dùng được quyền xem, sửa đổi và phân phối lại mã nguồn theo các điều khoản quy định.",
+              "answer": true
+            },
+            "d": {
+              "text": "Giấy phép GNU GPL cấm hoàn toàn việc thu bất kỳ khoản phí dịch vụ hỗ trợ hay cài đặt nào khi phân phối sản phẩm.",
+              "answer": false
+            }
+          },
+          "id": "p2_q2"
+        },
+        {
+          "text": "Một trường THPT vừa trang bị phòng máy tính gồm 40 máy cấu hình CPU 4 nhân, 8 GB RAM và ổ cứng 256 GB SSD. Giáo viên tin học hướng dẫn học sinh tìm hiểu vai trò của hệ điều hành trong việc quản lý tài nguyên và hỗ trợ chạy các phần mềm học tập. Khi phân tích hoạt động của hệ thống, học sinh đưa ra các nhận định sau:",
+          "items": {
+            "a": {
+              "text": "Cơ chế đa nhiệm (multitasking) của hệ điều hành hiện đại cho phép người dùng chạy đồng thời trình duyệt web và phần mềm lập trình Python mà không sợ xung đột bộ nhớ giữa hai tiến trình.",
+              "answer": true
+            },
+            "b": {
+              "text": "Nếu phòng máy tắt hoàn toàn hệ điều hành thì các ứng dụng như trình duyệt web hay bộ công cụ văn phòng vẫn có thể khởi động độc lập trực tiếp từ phần cứng",
+              "answer": false
+            },
+            "c": {
+              "text": "Hệ điều hành đóng vai trò là môi trường trung gian, cung cấp các giao diện lập trình để các phần mềm ứng dụng có thể gián tiếp khai thác phần cứng một cách an toàn và hiệu quả.",
+              "answer": true
+            },
+            "d": {
+              "text": "HHệ điều hành có chức năng quản lý, phân phối thời gian xử lý của CPU và dung lượng bộ nhớ RAM cho các tiến trình đang hoạt động.",
+              "answer": true
+            }
+          },
+          "id": "p2_q3"
+        },
+        {
+          "text": "Trong buổi hội thảo chuyên đề 'Ứng dụng Trí tuệ nhân tạo (AI) có trách nhiệm trong học đường', nhà trường đặt ra các quy định và hướng dẫn cho học sinh khi sử dụng các mô hình ngôn ngữ lớn (LLM) để phục vụ học tập và nghiên cứu:",
+          "items": {
+            "a": {
+              "text": "Việc định kỳ kiểm tra quyền riêng tư và xóa lịch sử truy vấn trên tài khoản dịch vụ AI là giải pháp hữu hiệu giúp giảm thiểu rủi ro dữ liệu bị lạm dụng.",
+              "answer": true
+            },
+            "b": {
+              "text": "Học sinh không được đưa các thông tin định danh cá nhân, tài khoản ngân hàng hoặc bí mật đời tư vào cửa sổ trò chuyện của AI trực tuyến.",
+              "answer": true
+            },
+            "c": {
+              "text": "Khi sử dụng văn bản do AI tạo ra để làm bài tiểu luận nộp cho giáo viên, học sinh cần trích dẫn nguồn rõ ràng và tự chịu trách nhiệm về nội dung học thuật thay vì sao chép nguyên văn.",
+              "answer": true
+            },
+            "d": {
+              "text": "Mọi câu trả lời và số liệu do mô hình AI tạo ra đều luôn được bảo đảm chính xác 100% nhờ khả năng tự động kiểm chứng dữ liệu thời gian thực.",
+              "answer": false
+            }
+          },
+          "id": "p2_q4"
+        },
+        {
+          "text": "Một nhóm kỹ sư phát triển hệ thống camera AI giao thông thông minh để nhận diện và phân loại phương tiện (xe con, xe buýt, xe tải) tại một nút giao thông trọng điểm. Hệ thống ứng dụng mô hình học máy thị giác máy tính được huấn luyện trên 60.000 hình ảnh chụp vào ban ngày trong điều kiện trời nắng ráo với độ chính xác đạt 96%. Tuy nhiên, khi thử nghiệm thực tế vào ban đêm trời mưa, độ chính xác nhận diện sụt giảm chỉ còn 62%.",
+          "items": {
+            "a": {
+              "text": "Để nâng cao độ chính xác vào ban đêm mà không cần đào tạo lại toàn bộ mô hình từ đầu, giải pháp hiệu quả là áp dụng kỹ thuật học chuyển giao (Transfer Learning) bằng cách tinh chỉnh mô hình với tập dữ liệu bổ sung chụp ban đêm trời mưa.",
+              "answer": true
+            },
+            "b": {
+              "text": "Hệ thống camera phân loại phương tiện giao thông nêu trên là một ứng dụng điển hình của Trí tuệ nhân tạo hẹp (Narrow AI).",
+              "answer": true
+            },
+            "c": {
+              "text": "Nguyên nhân trực tiếp khiến độ chính xác của hệ thống giảm mạnh vào ban đêm là do sự khác biệt lớn về phân phối dữ liệu (Data Drift / Out-of-Distribution) so với tập dữ liệu huấn luyện ban ngày.",
+              "answer": true
+            },
+            "d": {
+              "text": "Nếu hệ thống tự động nhận diện biển số xe vi phạm và tự ý công khai toàn bộ họ tên, số điện thoại, địa chỉ nhà của chủ phương tiện lên mạng xã hội để phạt nguội thì hành vi này hoàn toàn hợp pháp và không vi phạm quy định về bảo vệ dữ liệu cá nhân.",
+              "answer": false
+            }
+          },
+          "id": "p2_q5"
+        },
+        {
+          "text": "Câu lạc bộ Tin học của trường đang thảo luận về việc lựa chọn phần mềm cho các hoạt động truyền thông. Các thành viên phân vân giữa việc sử dụng phần mềm thương mại và phần mềm nguồn mở.",
+          "items": {
+            "a": {
+              "text": "Sử dụng phần mềm nguồn mở giúp câu lạc bộ tiết kiệm chi phí mà vẫn đảm bảo tính hợp pháp.",
+              "answer": true
+            },
+            "b": {
+              "text": "Phần mềm thương mại luôn cung cấp mã nguồn để người dùng tự chỉnh sửa.",
+              "answer": false
+            },
+            "c": {
+              "text": "Giấy phép GNU GPL cho phép người dùng tự do nghiên cứu và sửa đổi mã nguồn.",
+              "answer": true
+            },
+            "d": {
+              "text": "Phần mềm nguồn mở luôn yêu cầu người dùng phải trả phí bản quyền hàng tháng.",
+              "answer": false
+            }
+          },
+          "id": "p2_q6"
+        },
+        {
+          "text": "Trong thời đại số, việc sử dụng các dịch vụ AI trực tuyến trở nên phổ biến. Tuy nhiên, người dùng cần có quy trình sử dụng an toàn để bảo vệ thông tin cá nhân.",
+          "items": {
+            "a": {
+              "text": "Người dùng có quyền yêu cầu xóa dữ liệu cá nhân trên các nền tảng số.",
+              "answer": true
+            },
+            "b": {
+              "text": "Nên nhập mật khẩu ngân hàng vào ô chat của AI để nhờ AI quản lý tài chính.",
+              "answer": false
+            },
+            "c": {
+              "text": "Việc sử dụng AI trực tuyến không bao giờ gây ra rủi ro về bảo mật thông tin.",
+              "answer": false
+            },
+            "d": {
+              "text": "Dữ liệu cuộc trò chuyện với AI có thể bị nhà cung cấp dùng để huấn luyện mô hình.",
+              "answer": true
+            }
+          },
+          "id": "p2_q7"
+        },
+        {
+          "text": "Trong một buổi hội thảo về 'Chuyển đổi số trong trường học', nhóm học sinh lớp 11 được giao dự án thiết kế một hệ thống máy tính tối ưu cho phòng thực hành Tin học. Hệ thống này dự kiến sử dụng cả máy tính cá nhân chạy hệ điều hành thương mại và các máy trạm mỏng (thin client) chạy hệ điều hành mã nguồn mở để tiết kiệm chi phí bản quyền, đồng thời tích hợp các ứng dụng học tập trực tuyến.",
+          "items": {
+            "a": {
+              "text": "Nếu nhà trường quyết định cài đặt hệ điều hành Ubuntu Linux cho 40 máy trạm thay vì Windows 11 Pro (giá bản quyền ước tính 150 USD/máy), nhà trường sẽ tiết kiệm được khoản chi phí bản quyền hệ điều hành là 6000 USD.",
+              "answer": true
+            },
+            "b": {
+              "text": "Để tối ưu hóa hiệu năng và bảo mật cho phòng máy, việc lựa chọn trình duyệt web mã nguồn mở (như Mozilla Firefox) thay thế cho trình duyệt thương mại là đủ để biến trình duyệt này thành một phần mềm hệ thống quản lý toàn bộ phần cứng máy tính.",
+              "answer": false
+            },
+            "c": {
+              "text": "Các phần mềm ứng dụng học tập trực tuyến (như Zoom, Google Meet) có thể tự khởi động và vận hành trực tiếp trên phần cứng máy trạm mà không cần thông qua bất kỳ hệ điều hành nào.",
+              "answer": false
+            },
+            "d": {
+              "text": "Hệ điều hành đóng vai trò là phần mềm hệ thống chạy trực tiếp trên phần cứng để quản lý thiết bị và làm nền tảng cho các phần mềm khác hoạt động.",
+              "answer": true
+            }
+          },
+          "id": "p2_q8"
+        },
+        {
+          "text": "Một trường học triển khai mạng máy tính nội bộ (LAN) kết nối các phòng học thông minh và văn phòng làm việc. Để đảm bảo an toàn thông tin số, nhà trường trang bị tường lửa (Firewall), thiết lập máy chủ xác thực và ban hành quy tắc an toàn thông tin khi truy cập Internet cho giáo viên và học sinh.",
+          "items": {
+            "a": {
+              "text": "Khi nhận được email lạ kèm đường link yêu cầu đăng nhập tài khoản để nhận học bổng, việc bấm ngay vào link và nhập thông tin cá nhân là hoàn toàn an toàn.",
+              "answer": false
+            },
+            "b": {
+              "text": "Học sinh sử dụng mật khẩu đơn giản '123456' để đăng nhập vào cổng thông tin trường học nhằm giúp dễ nhớ là thói quen bảo mật tốt và được khuyến khích.",
+              "answer": false
+            },
+            "c": {
+              "text": "Hệ thống tường lửa (Firewall) đóng vai trò kiểm soát lưu lượng mạng ra vào dựa trên các quy tắc bảo mật được thiết lập trước.",
+              "answer": true
+            },
+            "d": {
+              "text": "Mạng máy tính trong phạm vi khuôn viên trường học nêu trên thuộc loại mạng cục bộ (LAN - Local Area Network).",
+              "answer": true
+            }
+          },
+          "id": "p2_q9"
+        },
+        {
+          "text": "Bạn Nam đang tự xây dựng cấu hình cho một chiếc máy tính cá nhân phục vụ việc học lập trình Python và thiết kế đồ họa 2D. Nam đã lựa chọn các linh kiện gồm: CPU Intel Core i5, RAM 16 GB, ổ cứng SSD 512 GB, bo mạch chủ hỗ trợ cổng HDMI và một màn hình độ phân giải Full HD.",
+          "items": {
+            "a": {
+              "text": "Khi Nam đang viết code Python nhưng máy tính đột ngột bị mất điện và không có bộ lưu điện (UPS), toàn bộ dữ liệu code chưa lưu trên RAM sẽ bị mất do RAM là bộ nhớ truy xuất ngẫu nhiên và có tính chất khả biến.",
+              "answer": true
+            },
+            "b": {
+              "text": "Để truyền tải đồng thời cả tín hiệu hình ảnh sắc nét và âm thanh chất lượng cao từ thùng máy lên màn hình tích hợp loa của mình, Nam chỉ cần sử dụng duy nhất một sợi cáp HDMI kết nối giữa hai thiết bị.",
+              "answer": true
+            },
+            "c": {
+              "text": "Bộ nhớ ROM trên bo mạch chủ của Nam là nơi lưu trữ hệ điều hành Windows và các tệp tin mã nguồn Python mà Nam viết trong quá trình học tập.",
+              "answer": false
+            },
+            "d": {
+              "text": "Để tăng tốc độ biên dịch các chương trình Python lớn, Nam nên ưu tiên nâng cấp dung lượng ổ cứng SSD lên 2 TB thay việc nâng cấp tốc độ xử lý của CPU hoặc dung lượng RAM.",
+              "answer": false
+            }
+          },
+          "id": "p2_q10"
+        },
+        {
+          "text": "Giáo viên chủ nhiệm sử dụng phần mềm bảng tính điện tử để quản lý điểm kiểm tra định kỳ của lớp học gồm 40 học sinh. Bảng tính gồm các cột: STT, Họ và tên, Điểm Toán, Điểm Văn, Điểm Tin học, Điểm Trung bình (ĐTB). Giáo viên sử dụng hàm `=AVERAGE(C2:E2)` tại ô F2 để tính ĐTB cho học sinh đầu tiên.",
+          "items": {
+            "a": {
+              "text": "Khi sao chép công thức từ ô F2 xuống ô F3, địa chỉ tương đối trong công thức tự động đổi thành `=AVERAGE(C3:E3)`.",
+              "answer": true
+            },
+            "b": {
+              "text": "Để lọc danh sách các học sinh có ĐTB từ 8.0 trở lên, giáo viên có thể sử dụng công cụ Tự động lọc (AutoFilter) với điều kiện '>= 8.0'.",
+              "answer": true
+            },
+            "c": {
+              "text": "Hàm `=AVERAGE(C2:E2)` được dùng để tính trung bình cộng giá trị số trong khối ô từ C2 đến E2.",
+              "answer": true
+            },
+            "d": {
+              "text": "Phần mềm bảng tính chỉ cho phép tính toán số học đơn giản và không thể biểu diễn dữ liệu bằng các dạng biểu đồ trực quan (hình cột, hình tròn).",
+              "answer": false
+            }
+          },
+          "id": "p2_q11"
+        },
+        {
+          "text": "Để phục vụ dự án đồ họa 3D và biên tập video của trường học, nhóm học sinh lớp 11 phân tích các thành phần phần cứng máy tính gồm: CPU 8 nhân, RAM 32 GB, ổ đĩa SSD NVMe 1 TB và màn hình máy tính:",
+          "items": {
+            "a": {
+              "text": "Bộ nhớ RAM là bộ nhớ trong có tốc độ truy xuất nhanh, nhưng toàn bộ dữ liệu lưu trong RAM sẽ bị mất khi máy tính bị mất điện hoặc tắt máy.",
+              "answer": true
+            },
+            "b": {
+              "text": "Nếu ngắt kết nối màn hình hiển thị, máy tính vẫn có thể khởi động thành công và hệ điều hành vẫn có thể chạy ngầm các tác vụ nền nếu các linh kiện cốt lõi không có lỗi.",
+              "answer": true
+            },
+            "c": {
+              "text": "Ổ đĩa lưu trữ SSD NVMe 1 TB đóng vai trò là bộ nhớ trong và có tốc độ truy xuất dữ liệu nhanh ngang bằng với thanh ghi bên trong CPU.",
+              "answer": false
+            },
+            "d": {
+              "text": "CPU là bộ xử lý trung tâm có chức năng tiếp nhận lệnh, giải mã và thực thi các phép toán số học cũng như logic của chương trình.",
+              "answer": true
+            }
+          },
+          "id": "p2_q12"
+        },
+        {
+          "text": "Trường THPT Long Cang đang lên kế hoạch nâng cấp hệ thống máy tính tại phòng thực hành Tin học. Nhà trường đang cân nhắc giữa hai phương án: Phương án 1 là mua bản quyền hệ điều hành Windows 11 và bộ ứng dụng văn phòng Microsoft Office; Phương án 2 là cài đặt hệ điều hành nguồn mở Ubuntu Linux và bộ ứng dụng văn phòng LibreOffice để tiết kiệm ngân sách, đồng thời tích hợp các công cụ AI trực tuyến hỗ trợ học sinh tự học.",
+          "items": {
+            "a": {
+              "text": "Ubuntu Linux và LibreOffice là các phần mềm nguồn mở được phân phối miễn phí theo giấy phép GNU GPL, giúp nhà trường tiết kiệm hoàn toàn chi phí mua bản quyền phần mềm.",
+              "answer": true
+            },
+            "b": {
+              "text": "Để tối ưu hóa chi phí và hiệu năng cho các máy tính cấu hình yếu của trường, việc cài đặt Windows 11 tích hợp Copilot là giải pháp tốt nhất vì Copilot hoạt động hoàn toàn ngoại tuyến (offline) không cần kết nối Internet và không tiêu tốn tài nguyên phần cứng.",
+              "answer": false
+            },
+            "c": {
+              "text": "Giấy phép GNU GPL cho phép nhà trường tự do chỉnh sửa mã nguồn của LibreOffice để tạo ra một phiên bản riêng phục vụ nội bộ mà không bắt buộc phải công khai mã nguồn đã sửa đổi nếu không phân phối ra bên ngoài.",
+              "answer": true
+            },
+            "d": {
+              "text": "Nếu chuyển sang sử dụng hệ điều hành Ubuntu Linux, nhà trường vẫn có thể cài đặt và chạy trực tiếp các tệp cài đặt định dạng .exe của Microsoft Office dành cho Windows mà không cần bất kỳ công cụ hỗ trợ nào.",
+              "answer": false
+            }
+          },
+          "id": "p2_q13"
+        },
+        {
+          "text": "Bạn Nam chuẩn bị bài thuyết trình về kiến trúc máy tính cho câu lạc bộ Tin học. Nam phân tích trường hợp một máy tính để bàn đang chạy hệ điều hành Windows 11 với bộ xử lý đa nhân, đang mở đồng thời các ứng dụng gồm trình duyệt Google Chrome, soạn thảo Microsoft Word và trình nghe nhạc Spotify:",
+          "items": {
+            "a": {
+              "text": "Các ứng dụng như Google Chrome và Microsoft Word không thể trực tiếp điều khiển các thanh ghi CPU hay phân bổ bộ nhớ vật lý mà phải thông qua dịch vụ của hệ điều hành.",
+              "answer": true
+            },
+            "b": {
+              "text": "Hệ điều hành Windows 11 đóng vai trò là phần mềm hệ thống trung gian quản lý tài nguyên phần cứng và cung cấp môi trường thực thi cho các ứng dụng.",
+              "answer": true
+            },
+            "c": {
+              "text": "Nếu máy tính hoàn toàn chưa cài đặt hệ điều hành, người dùng vẫn có thể sao chép và kích hoạt chạy trực tiếp phần mềm Microsoft Word từ thẻ nhớ USB.",
+              "answer": false
+            },
+            "d": {
+              "text": "Khi người dùng tắt ứng dụng nghe nhạc Spotify, hệ điều hành sẽ tự động thu hồi vùng nhớ RAM và giải phóng tài nguyên CPU mà tiến trình này đang chiếm dụng.",
+              "answer": true
+            }
+          },
+          "id": "p2_q14"
+        },
+        {
+          "text": "Một công ty công nghệ đang cân nhắc lựa chọn phần mềm cho văn phòng làm việc. Bộ phận kỹ thuật thảo luận về các mô hình bản quyền và phân loại phần mềm: hệ điều hành mã nguồn mở Ubuntu Linux, bộ ứng dụng thương mại Microsoft Office, và các tiện ích bảo trì hệ thống:",
+          "items": {
+            "a": {
+              "text": "Các tiện ích tối ưu hóa hệ thống tải về từ các trang mạng không rõ nguồn gốc luôn an toàn tuyệt đối và không tiềm ẩn rủi ro lây nhiễm mã độc hại.",
+              "answer": false
+            },
+            "b": {
+              "text": "Phần mềm thương mại (Commercial Software) thường được phân phối dưới dạng mã máy đóng kín, người dùng phải trả phí bản quyền và không có quyền sửa đổi mã nguồn gốc.",
+              "answer": true
+            },
+            "c": {
+              "text": "Phần mềm nguồn mở như Ubuntu Linux cho phép người dùng tự do sử dụng, nghiên cứu mã nguồn, chỉnh sửa và phân phối lại theo giấy phép bản quyền tương ứng.",
+              "answer": true
+            },
+            "d": {
+              "text": "Hệ điều hành Windows 11 là phần mềm mã nguồn mở vì hãng Microsoft cho phép người dùng tự do tải về tệp cài đặt định dạng ISO từ website chính thức.",
+              "answer": false
+            }
+          },
+          "id": "p2_q15"
+        }
+      ]
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Phần mềm chạy trên Internet thường được gọi tắt bằng cụm từ tiếng Anh nào (viết tắt 4 chữ cái)?",
+          "answer": "SaaS",
+          "accepted_answers": [
+            "SaaS"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q1"
+        },
+        {
+          "text": "Tổ hợp phím tắt nào dùng để mở nhanh công cụ Task Manager trên Windows?",
+          "answer": "Ctrl + Shift + Esc",
+          "accepted_answers": [
+            "Ctrl + Shift + Esc"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q2"
+        },
+        {
+          "text": "Tên loại giấy phép phổ biến nhất dành cho phần mềm nguồn mở là gì?",
+          "answer": "GNU GPL",
+          "accepted_answers": [
+            "GNU GPL"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q3"
+        },
+        {
+          "text": "Tên tiện ích trên Windows dùng để dọn dẹp tệp tin rác là gì?",
+          "answer": "Disk Cleanup",
+          "accepted_answers": [
+            "Disk Cleanup"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q4"
+        },
+        {
+          "text": "Công nghệ bảo mật sinh trắc học trên iPhone sử dụng khuôn mặt gọi là gì?",
+          "answer": "FaceID",
+          "accepted_answers": [
+            "FaceID"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q5"
+        },
+        {
+          "text": "Kể tên một hệ điều hành mã nguồn mở phổ biến cho máy tính cá nhân.",
+          "answer": "Linux",
+          "accepted_answers": [
+            "Linux"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q6"
+        },
+        {
+          "text": "Bộ nhớ nào có tốc độ truy xuất dữ liệu nhanh nhất trong máy tính?",
+          "answer": "Thanh ghi",
+          "accepted_answers": [
+            "Thanh ghi"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q7"
+        },
+        {
+          "text": "Thiết bị nào dùng để nhập dữ liệu văn bản vào máy tính?",
+          "answer": "Bàn phím",
+          "accepted_answers": [
+            "Bàn phím"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q8"
+        },
+        {
+          "text": "Đơn vị đo thông tin nhỏ nhất trong máy tính là gì?",
+          "answer": "Bit",
+          "accepted_answers": [
+            "Bit"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q9"
+        },
+        {
+          "text": "Số lượng trạng thái của một bit là bao nhiêu?",
+          "answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q10"
+        },
+        {
+          "text": "Tên gọi chung của các chương trình điều khiển thiết bị",
+          "answer": "Driver",
+          "accepted_answers": [
+            "Driver"
+          ],
+          "tolerance": 0.01,
+          "explanation": "",
+          "id": "p3_q11"
+        }
+      ]
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_ad5ec8d7",
+  "created_by": "haidhsp2005",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 24.25,
+    "part1_per_question": 0.25,
+    "part2_total": 15.0,
+    "part2_per_question": 1.0,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1.0
+    },
+    "part3_total": 5.5,
+    "part3_per_question": 0.5,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": true
+  },
+  "is_online_exam": true,
+  "is_bank": true,
+  "bank_config": {
+    "enabled": true,
+    "draw_mode": "per_student",
+    "total_draw": 25,
+    "part1_draw": 20,
+    "part2_draw": 5,
+    "part3_draw": 0,
+    "part4_draw": 0
+  },
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Long Cang"
+}

@@ -1375,13 +1375,14 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
     clean_block = re.sub(r'<td[^>]*>', '  ', clean_block, flags=re.I)
     clean_block = re.sub(r'</td>', '  ', clean_block, flags=re.I)
 
-    # Khớp A., A:, A), A/, A-, (A), [A]. Nếu allow_lowercase=True, hỗ trợ cả a, b, c, d
-    if allow_lowercase:
-        opt_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-Da-d])[\)\]]|(?P<key_plain>[A-Da-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
-    else:
-        opt_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-D])[\)\]]|(?P<key_plain>[A-D])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+    # Ưu tiên số 1: Luôn tìm các phương án IN HOA A, B, C, D trước
+    upper_opt_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-D])[\)\]]|(?P<key_plain>[A-D])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+    matches = list(re.finditer(upper_opt_regex, clean_block))
 
-    matches = list(re.finditer(opt_regex, clean_block))
+    # Nếu không tìm thấy đủ ít nhất 2 phương án viết hoa A-D VÀ allow_lowercase=True, mới thử tìm chữ thường a-d
+    if len(matches) < 2 and allow_lowercase:
+        lower_opt_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[a-d])[\)\]]|(?P<key_plain>[a-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
+        matches = list(re.finditer(lower_opt_regex, clean_block))
 
     # Nếu không tìm thấy ít nhất 2 phương án
     if len(matches) < 2:
@@ -1693,27 +1694,47 @@ async def parse_exam_text(payload: dict):
     has_red_keys = "{{RED}}" in text
 
     # 2. Phân chia các phần (PHẦN I, PHẦN II, PHẦN III, PHẦN IV)
-    part_splits = re.split(r"((?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:PHẦN|Phần)\s+(?:I{1,3}|IV|[1-4]|[A-D]|thứ\s*[a-z\u0103\u00e2]+)[^\n]*)", text, flags=re.IGNORECASE)
-    
+    # Regex an toàn: CHỈ khớp các tiêu đề phân mục đề thi thực sự ở đầu dòng
+    # Tuyệt đối KHÔNG khớp các cụm từ nội dung câu hỏi như 'phần cứng', 'phần mềm', 'phần trăm', 'phần tử'...
+    part_header_pattern = re.compile(
+        r"(?:^|\n)\s*((?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*(?:PHẦN|Phần|PART|Part)\s+"
+        r"(?:I{1,3}|IV|[1-4]|thứ\s*(?:nhất|một|hai|ba|bốn|tư)|[ABCD](?=[.:\-\s\(\)]))"
+        r"(?![a-zA-Z\u00C0-\u1EF9])"
+        r"[^\n]*)",
+        re.IGNORECASE
+    )
+
+    EXCLUDE_KEYWORDS = ["phần cứng", "phần mềm", "phần trăm", "phần tử", "phần lớn", "phần nhỏ", "phần nào", "phần này", "phần kia"]
+
+    raw_matches = list(part_header_pattern.finditer(text))
+    valid_matches = []
+    for m in raw_matches:
+        h_text = m.group(1).strip()
+        h_lower = h_text.lower()
+        if any(kw in h_lower for kw in EXCLUDE_KEYWORDS):
+            continue
+        valid_matches.append((m.start(1), m.end(1), h_text))
+
     sections = {"part1": "", "part2": "", "part3": "", "part4": ""}
 
-    if len(part_splits) > 1:
-        current_section = None
-        for i in range(1, len(part_splits), 2):
-            header = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", part_splits[i]).strip()
-            content = part_splits[i+1] if i+1 < len(part_splits) else ""
-            
-            if re.search(r"(?:PHẦN|Phần)\s*(?:I\b|1\b|A\b|thứ\s*nhất|thứ\s*một)", header, re.IGNORECASE):
-                current_section = "part1"
-            elif re.search(r"(?:PHẦN|Phần)\s*(?:II\b|2\b|B\b|thứ\s*hai)", header, re.IGNORECASE):
-                current_section = "part2"
-            elif re.search(r"(?:PHẦN|Phần)\s*(?:III\b|3\b|C\b|thứ\s*ba)", header, re.IGNORECASE):
-                current_section = "part3"
-            elif re.search(r"(?:PHẦN|Phần)\s*(?:IV\b|4\b|D\b|thứ\s*bốn|thứ\s*tư)", header, re.IGNORECASE):
-                current_section = "part4"
-            
-            if current_section:
-                sections[current_section] += "\n" + content
+    if valid_matches:
+        for idx, (m_start, m_end, header) in enumerate(valid_matches):
+            next_start = valid_matches[idx + 1][0] if idx + 1 < len(valid_matches) else len(text)
+            content = text[m_end:next_start]
+
+            h_clean = re.sub(r"\{\{/?(?:RED|UNDERLINE)\}\}", "", header).strip()
+            target_part = None
+            if re.search(r"(?:PHẦN|Phần)\s*(?:I\b|1\b|A\b|thứ\s*nhất|thứ\s*một)", h_clean, re.IGNORECASE):
+                target_part = "part1"
+            elif re.search(r"(?:PHẦN|Phần)\s*(?:II\b|2\b|B\b|thứ\s*hai)", h_clean, re.IGNORECASE):
+                target_part = "part2"
+            elif re.search(r"(?:PHẦN|Phần)\s*(?:III\b|3\b|C\b|thứ\s*ba)", h_clean, re.IGNORECASE):
+                target_part = "part3"
+            elif re.search(r"(?:PHẦN|Phần)\s*(?:IV\b|4\b|D\b|thứ\s*bốn|thứ\s*tư)", h_clean, re.IGNORECASE):
+                target_part = "part4"
+
+            if target_part:
+                sections[target_part] += "\n" + content
 
         # Xử lý từng phần khi có phân mục rõ ràng
         # Phần I: Luôn giữ toàn bộ các câu trong Phần I
