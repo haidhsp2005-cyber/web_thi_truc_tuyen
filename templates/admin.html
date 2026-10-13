@@ -826,11 +826,11 @@
 
     <!-- Bảng danh sách tài khoản -->
     <div class="p-5">
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto overflow-y-auto max-h-[480px] rounded-xl border border-gray-200 shadow-2xs">
         <!-- BẢNG DÀNH CHO SUPER ADMIN: Thấy đầy đủ tất cả tài khoản hệ thống -->
         <template x-if="isSuperAdmin()">
           <table class="w-full text-sm">
-            <thead class="bg-gray-50 text-gray-700 text-xs uppercase font-bold border-b">
+            <thead class="bg-gray-100 text-gray-700 text-xs uppercase font-bold border-b sticky top-0 z-10 shadow-xs">
               <tr>
                 <th class="px-4 py-3 text-left">Tài khoản</th>
                 <th class="px-4 py-3 text-left">Họ và tên</th>
@@ -897,7 +897,7 @@
         <!-- BẢNG DÀNH CHO GIÁO VIÊN: Chỉ hiển thị tên tài khoản giáo viên đó và mật khẩu để tăng tính bảo mật -->
         <template x-if="!isSuperAdmin()">
           <table class="w-full text-sm">
-            <thead class="bg-gray-50 text-gray-700 text-xs uppercase font-bold border-b">
+            <thead class="bg-gray-100 text-gray-700 text-xs uppercase font-bold border-b sticky top-0 z-10 shadow-xs">
               <tr>
                 <th class="px-5 py-3.5 text-left">Tên tài khoản</th>
                 <th class="px-5 py-3.5 text-center">Mật khẩu</th>
