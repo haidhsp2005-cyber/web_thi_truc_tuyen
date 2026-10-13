@@ -456,6 +456,35 @@ def delete_all_submissions(exam_id: str = None, exam_ids: List[str] = None) -> i
     return count
 
 
+def delete_submissions_batch(submission_ids: List[str], allowed_exam_ids: List[str] = None) -> int:
+    """Xóa danh sách bài nộp theo danh sách submission_ids, có thể ràng buộc theo allowed_exam_ids của giáo viên."""
+    if not submission_ids:
+        return 0
+    # Lọc bỏ ID rỗng
+    clean_ids = [s.strip() for s in submission_ids if s and s.strip()]
+    if not clean_ids:
+        return 0
+
+    conn = get_connection()
+    c = conn.cursor()
+    id_placeholders = ",".join("?" for _ in clean_ids)
+    if allowed_exam_ids is not None:
+        if not allowed_exam_ids:
+            conn.close()
+            return 0
+        exam_placeholders = ",".join("?" for _ in allowed_exam_ids)
+        query = f"DELETE FROM submissions WHERE id IN ({id_placeholders}) AND exam_id IN ({exam_placeholders})"
+        c.execute(query, (*clean_ids, *allowed_exam_ids))
+    else:
+        query = f"DELETE FROM submissions WHERE id IN ({id_placeholders})"
+        c.execute(query, tuple(clean_ids))
+    count = c.rowcount
+    conn.commit()
+    conn.close()
+    return count
+
+
+
 def convert_bytes_to_base64_data_uri(image_bytes: bytes, ext: str = "png") -> str:
     """Chuyển đổi dữ liệu ảnh thành chuỗi Base64 Data URI, tự động tối ưu hóa kích thước nếu quá lớn."""
     try:

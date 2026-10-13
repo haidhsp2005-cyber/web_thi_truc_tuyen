@@ -79,3 +79,7 @@ class ExamConfig(BaseModel):
     duration_minutes: int = 45
     is_active: bool = True
 
+
+class DeleteBatchSubmissionsRequest(BaseModel):
+    submission_ids: List[str]
+

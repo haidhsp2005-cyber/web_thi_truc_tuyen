@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Request, Response, Depends, Query
 from fastapi.responses import HTMLResponse
 from ..database import (
     get_all_submissions, get_submission, get_config, set_config, load_exam,
-    delete_submission, delete_all_submissions,
+    delete_submission, delete_all_submissions, delete_submissions_batch,
     get_all_users, create_user, update_user_password, delete_user, update_user_role,
     get_user_by_username, hash_password, export_full_backup, import_full_backup,
     export_users_backup, import_users_backup
@@ -28,7 +28,8 @@ from ..services.export_service import (
 )
 from ..models import (
     APIKeyRequest, AdminLoginRequest,
-    CreateUserRequest, ChangePasswordRequest, DeleteUserRequest, UpdateRoleRequest
+    CreateUserRequest, ChangePasswordRequest, DeleteUserRequest, UpdateRoleRequest,
+    DeleteBatchSubmissionsRequest
 )
 import logging
 
@@ -450,6 +451,39 @@ async def remove_submission(submission_id: str, request: Request):
             detail="Không tìm thấy bài nộp hoặc bạn không có quyền xóa bài thi của đề do giáo viên khác tạo!"
         )
     return {"success": True, "message": f"Đã xóa bài nộp của thí sinh ({submission_id}) thành công!"}
+
+
+@router.post("/submissions/delete-batch")
+async def remove_submissions_batch(req: DeleteBatchSubmissionsRequest, request: Request):
+    """
+    Xóa hàng loạt bài nộp đã chọn (theo bộ lọc của giáo viên/admin).
+    TỰ ĐỘNG BẢO VỆ: Nếu là giáo viên, chỉ được phép xóa các bài nộp thuộc đề do chính mình tạo.
+    Tuyệt đối không bao giờ làm ảnh hưởng đến bài thi khác!
+    """
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Vui lòng đăng nhập trang quản trị!")
+
+    is_super_admin = bool(
+        current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'
+    )
+    allowed_exam_ids = None
+    if not is_super_admin:
+        user_username = (current_user.get('username') or '').strip().lower()
+        all_exams = _list_exam_files()
+        allowed_exam_ids = list({
+            e['id'] for e in all_exams
+            if (e.get('created_by') or '').strip().lower() == user_username
+        })
+
+    count = delete_submissions_batch(req.submission_ids, allowed_exam_ids=allowed_exam_ids)
+    return {
+        "success": True,
+        "message": f"Đã xóa thành công {count} bài thi đã chọn! (Không ảnh hưởng đến các bài thi khác)",
+        "count": count
+    }
+
 
 
 @router.delete("/submissions/clear/all")

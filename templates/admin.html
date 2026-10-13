@@ -508,10 +508,43 @@
       </div>
     </div>
     
+    <!-- Thanh thao tác chọn bài thi theo bộ lọc -->
+    <div x-show="filteredSubmissions.length > 0" class="px-4 py-2.5 bg-blue-50/90 border-t border-b border-blue-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-3 flex-wrap">
+        <button @click="toggleSelectAllFiltered()" 
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-bold transition-all cursor-pointer shadow-2xs text-xs"
+          :class="isAllFilteredSelected ? 'bg-blue-600 text-white border-blue-700 hover:bg-blue-700' : 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50'">
+          <span x-text="isAllFilteredSelected ? '☑️ Bỏ chọn tất cả' : '☑️ Chọn tất cả (' + filteredSubmissions.length + ' bài lọc)'"></span>
+        </button>
+        <span x-show="selectedFilteredCount > 0" class="font-semibold text-gray-700 flex items-center gap-1">
+          <span>Đã chọn:</span>
+          <span class="px-2 py-0.5 rounded-full bg-blue-600 text-white font-bold text-xs" x-text="selectedFilteredCount"></span>
+          <span>/ <span x-text="filteredSubmissions.length"></span> bài đang lọc</span>
+        </span>
+        <button x-show="selectedSubmissionIds.length > 0" @click="clearSelectedSubmissions()" class="text-gray-500 hover:text-gray-800 underline font-medium cursor-pointer">
+          Bỏ chọn hết
+        </button>
+      </div>
+      <div class="flex items-center gap-2">
+        <button x-show="selectedFilteredCount > 0" @click="deleteSelectedSubmissions()" 
+          class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95"
+          :title="`Xóa ${selectedFilteredCount} bài thi đã chọn trong bộ lọc (không ảnh hưởng bài thi khác)`">
+          <span>🗑️</span>
+          <span>Xóa <strong x-text="selectedFilteredCount"></strong> bài đã chọn</span>
+        </button>
+      </div>
+    </div>
+
     <div class="overflow-x-auto overflow-y-auto max-h-[560px] rounded-b-2xl border-t border-gray-100">
       <table class="w-full text-sm">
         <thead class="bg-gray-100 text-gray-700 sticky top-0 z-10 shadow-xs">
           <tr>
+            <th class="text-center px-3 py-3 w-10">
+              <input type="checkbox" :checked="isAllFilteredSelected" @change="toggleSelectAllFiltered()" 
+                :disabled="filteredSubmissions.length === 0"
+                title="Chọn hoặc bỏ chọn tất cả bài thi đang lọc"
+                class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600">
+            </th>
             <th class="text-left px-4 py-3 font-semibold">Họ và tên</th>
             <th class="text-center px-4 py-3 font-semibold">Lớp</th>
             <th class="text-center px-4 py-3 font-semibold">Thời gian nộp</th>
@@ -524,7 +557,7 @@
         <tbody class="divide-y">
           <template x-if="submissions.length === 0">
             <tr>
-              <td colspan="7" class="text-center py-12 text-gray-400">
+              <td colspan="8" class="text-center py-12 text-gray-400">
                 <p class="text-3xl mb-2">📭</p>
                 <p>Chưa có bài nộp nào.</p>
               </td>
@@ -532,14 +565,18 @@
           </template>
           <template x-if="submissions.length > 0 && filteredSubmissions.length === 0">
             <tr>
-              <td colspan="7" class="text-center py-8 text-gray-400">
+              <td colspan="8" class="text-center py-8 text-gray-400">
                 <p class="text-2xl mb-2">🔍</p>
                 <p class="text-sm">Không có bài nộp nào khớp bộ lọc.</p>
               </td>
             </tr>
           </template>
           <template x-for="sub in filteredSubmissions" :key="sub.submission_id">
-            <tr class="hover:bg-gray-50 transition-colors">
+            <tr class="transition-colors" :class="selectedSubmissionIds.includes(sub.submission_id) ? 'bg-blue-50/70 border-l-4 border-l-blue-600' : 'hover:bg-gray-50'">
+              <td class="px-3 py-3 text-center">
+                <input type="checkbox" :value="sub.submission_id" x-model="selectedSubmissionIds"
+                  class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600">
+              </td>
               <td class="px-4 py-3 font-medium text-gray-800">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span x-text="sub.student_name"></span>
@@ -1319,6 +1356,7 @@ function adminApp() {
     stats: {},
     keyStatus: { keys: [], active_count: 0, total_count: 0 },
     submissions: [],
+    selectedSubmissionIds: [],
     examList: [],
     userList: [],
     selectedSubjectFilter: '',
@@ -1481,6 +1519,17 @@ function adminApp() {
         }
         return true;
       });
+    },
+
+    get isAllFilteredSelected() {
+      if (!this.filteredSubmissions || this.filteredSubmissions.length === 0) return false;
+      return this.filteredSubmissions.every(s => this.selectedSubmissionIds.includes(s.submission_id));
+    },
+
+    get selectedFilteredCount() {
+      if (!this.filteredSubmissions || this.filteredSubmissions.length === 0) return 0;
+      const filteredSet = new Set(this.filteredSubmissions.map(s => s.submission_id));
+      return this.selectedSubmissionIds.filter(id => filteredSet.has(id)).length;
     },
 
     get excelExportUrl() {
@@ -2060,10 +2109,74 @@ function adminApp() {
         const r = await fetch(`/api/admin/submissions/${subId}`, { method: 'DELETE' });
         const data = await r.json();
         if (r.ok) {
+          this.selectedSubmissionIds = this.selectedSubmissionIds.filter(id => id !== subId);
           await this.loadSubmissions();
           await this.loadStats();
         } else {
           alert(data.detail || 'Lỗi khi xóa bài làm!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    toggleSelectAllFiltered() {
+      const filteredIds = this.filteredSubmissions.map(s => s.submission_id);
+      if (this.isAllFilteredSelected) {
+        // Đang chọn hết -> bỏ chọn các bài trong danh sách lọc
+        this.selectedSubmissionIds = this.selectedSubmissionIds.filter(id => !filteredIds.includes(id));
+      } else {
+        // Chưa chọn hết -> thêm toàn bộ các bài trong danh sách lọc vào
+        const union = new Set([...this.selectedSubmissionIds, ...filteredIds]);
+        this.selectedSubmissionIds = Array.from(union);
+      }
+    },
+
+    clearSelectedSubmissions() {
+      this.selectedSubmissionIds = [];
+    },
+
+    async deleteSelectedSubmissions() {
+      const filteredIds = new Set(this.filteredSubmissions.map(s => s.submission_id));
+      const toDeleteIds = this.selectedSubmissionIds.filter(id => filteredIds.has(id));
+      const count = toDeleteIds.length;
+      if (count === 0) {
+        alert('Vui lòng chọn ít nhất 1 bài thi trong danh sách lọc để xóa!');
+        return;
+      }
+
+      let filterDesc = [];
+      if (this.selectedClassFilter) filterDesc.push(`Lớp: ${this.selectedClassFilter}`);
+      if (this.selectedSubjectFilter) filterDesc.push(`Môn: ${this.selectedSubjectFilter}`);
+      if (this.selectedExamFilter) filterDesc.push(`Đề: ${this.examMap[this.selectedExamFilter]?.title || this.selectedExamFilter}`);
+      if (this.filterDate) filterDesc.push(`Ngày: ${this.filterDate}`);
+      if (this.selectedTeacherFilter) filterDesc.push(`GV: ${this.selectedTeacherFilter}`);
+      const descStr = filterDesc.length > 0 ? `\n(Thuộc bộ lọc: ${filterDesc.join(', ')})` : '';
+
+      const promptMsg = `⚠️ CẢNH BÁO XÓA BÀI THI ĐÃ CHỌN:\n\n` +
+        `Bạn có chắc chắn muốn XÓA ${count} bài thi đang được chọn không?${descStr}\n\n` +
+        `🛡️ Hệ thống đảm bảo an toàn:\n` +
+        `- Chỉ xóa đúng ${count} bài thi bạn đã chọn trong bộ lọc.\n` +
+        `- Tuyệt đối KHÔNG làm ảnh hưởng đến các bài thi khác trong hệ thống!\n` +
+        `- Thao tác này KHÔNG THỂ KHÔI PHỤC!`;
+
+      if (!confirm(promptMsg)) return;
+
+      try {
+        const r = await fetch('/api/admin/submissions/delete-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ submission_ids: toDeleteIds })
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          alert(`🎉 ${data.message}`);
+          const deletedSet = new Set(toDeleteIds);
+          this.selectedSubmissionIds = this.selectedSubmissionIds.filter(id => !deletedSet.has(id));
+          await this.loadSubmissions();
+          await this.loadStats();
+        } else {
+          alert(data.detail || 'Lỗi khi xóa bài thi đã chọn!');
         }
       } catch(e) {
         alert('Lỗi kết nối máy chủ!');
