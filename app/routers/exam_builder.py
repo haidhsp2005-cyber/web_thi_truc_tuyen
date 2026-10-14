@@ -2182,19 +2182,6 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         r_g_title.font.size = Pt(11)
 
         p_guide.add_run("• ")
-        r_p0_lbl = p_guide.add_run("ĐỀ KHÔNG CẦN CHUYỂN LATEX: ")
-        r_p0_lbl.bold = True
-        p_guide.add_run("Hệ thống hỗ trợ nạp trực tiếp file Word (.docx) thông thường, vẫn tự động nhận diện đúng 100% câu hỏi, đáp án, công thức MathType, Word Equation và hình vẽ.\n")
-
-        p_guide.add_run("• ")
-        r_p0_tex = p_guide.add_run("Mẹo Toggle TeX (Alt + \\): ")
-        r_p0_tex.bold = True
-        p_guide.add_run("Nếu dùng MathType trong Word, bấm tổ hợp phím ")
-        r_p0_key = p_guide.add_run("Alt + \\")
-        r_p0_key.bold = True
-        p_guide.add_run(" (hoặc nút Toggle TeX) để công thức chuyển sang LaTeX siêu nhẹ và nét chuẩn 100%.\n")
-
-        p_guide.add_run("• ")
         r_p1_lbl = p_guide.add_run("Phần I (12 câu Trắc nghiệm nhiều lựa chọn): ")
         r_p1_lbl.bold = True
         p_guide.add_run("Phương án đúng được ")
@@ -2320,7 +2307,6 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
             "Môn: TOÁN HỌC - Lớp: 12 - Thời gian làm bài: 50 phút",
             "",
             "📌 QUY ƯỚC SOẠN ĐỀ CHO HỆ THỐNG:",
-            "- Đề không cần chuyển LaTeX: Thầy cô nạp trực tiếp file Word (.docx) thông thường, hệ thống tự động nhận diện 100% câu hỏi, đáp án, công thức và hình vẽ.",
             "- File Word (.docx): Đáp án đúng chỉ cần TÔ MÀU ĐỎ (không ghi chữ Đúng hay Sai). Phần III ghi 'Đáp án: <số>' màu đen bình thường.",
             "- Mẹo Toggle TeX (Alt + \\): Bấm Alt + \\ trong Word có MathType để chuyển công thức sang mã LaTeX siêu nhẹ.",
             "- File Text (.txt): Đánh dấu * sau phương án đúng của Phần I; ghi (Đúng) hoặc (Sai) ở Phần II; Phần III ghi 'Đáp án: <số>'.",
