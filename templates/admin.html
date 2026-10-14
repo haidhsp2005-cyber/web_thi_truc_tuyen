@@ -526,6 +526,12 @@
         </button>
       </div>
       <div class="flex items-center gap-2">
+        <button x-show="selectedFilteredCount > 0" @click="printSelectedSubmissions()" 
+          class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95"
+          :title="`In PDF ${selectedFilteredCount} bài thi đã chọn`">
+          <span>🖨️</span>
+          <span>In <strong x-text="selectedFilteredCount"></strong> bài đã chọn (PDF)</span>
+        </button>
         <button x-show="selectedFilteredCount > 0" @click="deleteSelectedSubmissions()" 
           class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95"
           :title="`Xóa ${selectedFilteredCount} bài thi đã chọn trong bộ lọc (không ảnh hưởng bài thi khác)`">
@@ -2134,6 +2140,24 @@ function adminApp() {
 
     clearSelectedSubmissions() {
       this.selectedSubmissionIds = [];
+    },
+
+    printSelectedSubmissions() {
+      const filteredIds = new Set(this.filteredSubmissions.map(s => s.submission_id));
+      const toPrintIds = this.selectedSubmissionIds.filter(id => filteredIds.has(id));
+      const count = toPrintIds.length;
+      if (count === 0) {
+        alert('Vui lòng chọn ít nhất 1 bài thi để in!');
+        return;
+      }
+      const params = new URLSearchParams();
+      params.append('ids', toPrintIds.join(','));
+      if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
+      if (this.selectedExamFilter) params.append('exam_id', this.selectedExamFilter);
+      if (this.selectedClassFilter) params.append('student_class', this.selectedClassFilter);
+      if (this.filterDate) params.append('date', this.filterDate);
+      if (this.selectedTeacherFilter) params.append('teacher', this.selectedTeacherFilter);
+      window.open('/api/admin/print/submissions/class?' + params.toString(), '_blank');
     },
 
     async deleteSelectedSubmissions() {

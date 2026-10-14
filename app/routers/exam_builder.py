@@ -713,6 +713,16 @@ def _extract_element_runs_and_math(elem, p, images_map: dict = None) -> List[str
                     r_id = img_data.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
                     if r_id and r_id in images_map:
                         parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
+            # Trích xuất ảnh đối tượng OLE / MathType nhúng trong run
+            for obj in child.xpath('.//*[local-name()="object"]'):
+                for blip in obj.xpath('.//*[local-name()="blip"]'):
+                    r_id = blip.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed')
+                    if r_id and r_id in images_map:
+                        parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
+                for img_data in obj.xpath('.//*[local-name()="imagedata"]'):
+                    r_id = img_data.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+                    if r_id and r_id in images_map:
+                        parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
 
             r = docx.text.run.Run(child, p)
             txt = r.text
@@ -740,6 +750,16 @@ def _extract_element_runs_and_math(elem, p, images_map: dict = None) -> List[str
                 if r_id and r_id in images_map:
                     parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
         elif tag == "pict":
+            for img_data in child.xpath('.//*[local-name()="imagedata"]'):
+                r_id = img_data.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+                if r_id and r_id in images_map:
+                    parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
+        elif tag == "object":
+            # Xử lý các đối tượng nhúng OLE như MathType Equation, Visio, ChemDraw...
+            for blip in child.xpath('.//*[local-name()="blip"]'):
+                r_id = blip.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed')
+                if r_id and r_id in images_map:
+                    parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
             for img_data in child.xpath('.//*[local-name()="imagedata"]'):
                 r_id = img_data.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
                 if r_id and r_id in images_map:

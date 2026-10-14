@@ -652,38 +652,56 @@
     </div>
   </div>
 
-  <!-- ======= TABS CHUYỂN PHẦN ======= -->
-  <div class="flex gap-2 overflow-x-auto pb-1">
-    <button @click="activeTab='p1'" :class="activeTab==='p1' ? 'active':''" class="tab-btn whitespace-nowrap">
-      📝 Phần I - TNKQ (<span x-text="exam.parts.part1.questions.length"></span>)
-    </button>
-    <button @click="activeTab='p2'" :class="activeTab==='p2' ? 'active':''" class="tab-btn whitespace-nowrap">
-      ✅ Phần II - Đúng/Sai (<span x-text="exam.parts.part2.questions.length"></span>)
-    </button>
-    <button @click="activeTab='p3'" :class="activeTab==='p3' ? 'active':''" class="tab-btn whitespace-nowrap">
-      ✏️ Phần III - TL Ngắn (<span x-text="exam.parts.part3.questions.length"></span>)
-    </button>
-    <button @click="activeTab='p4'" :class="activeTab==='p4' ? 'active':''" class="tab-btn whitespace-nowrap">
-      📄 Phần IV - Tự luận (<span x-text="exam.parts.part4.questions.length"></span>)
-    </button>
-    <button @click="activeTab='all'" :class="activeTab==='all' ? 'active':''" class="tab-btn whitespace-nowrap bg-amber-50 text-amber-900 border-amber-300 font-bold hover:bg-amber-100">
-      👁️ Xem tất cả (<span x-text="totalQuestionsCount"></span> câu)
-    </button>
+  <!-- ======= TABS CHUYỂN PHẦN & ĐIỀU KHIỂN SỬA ĐỀ ======= -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pb-1 sticky top-16 z-30 bg-gray-100/95 backdrop-blur-md py-2 border-b border-gray-200">
+    <div class="flex gap-2 overflow-x-auto pb-1 max-w-full">
+      <button @click="activeTab='p1'" :class="activeTab==='p1' ? 'active':''" class="tab-btn whitespace-nowrap">
+        📝 Phần I - TNKQ (<span x-text="exam.parts.part1.questions.length"></span>)
+      </button>
+      <button @click="activeTab='p2'" :class="activeTab==='p2' ? 'active':''" class="tab-btn whitespace-nowrap">
+        ✅ Phần II - Đúng/Sai (<span x-text="exam.parts.part2.questions.length"></span>)
+      </button>
+      <button @click="activeTab='p3'" :class="activeTab==='p3' ? 'active':''" class="tab-btn whitespace-nowrap">
+        ✏️ Phần III - TL Ngắn (<span x-text="exam.parts.part3.questions.length"></span>)
+      </button>
+      <button @click="activeTab='p4'" :class="activeTab==='p4' ? 'active':''" class="tab-btn whitespace-nowrap">
+        📄 Phần IV - Tự luận (<span x-text="exam.parts.part4.questions.length"></span>)
+      </button>
+      <button @click="activeTab='all'" :class="activeTab==='all' ? 'active':''" class="tab-btn whitespace-nowrap bg-amber-50 text-amber-900 border-amber-300 font-bold hover:bg-amber-100">
+        👁️ Xem tất cả (<span x-text="totalQuestionsCount"></span> câu)
+      </button>
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <button type="button" @click="toggleGlobalEdit()" 
+        class="text-xs px-3.5 py-2 rounded-xl font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+        :class="globalEditMode ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600' : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'">
+        <span x-text="globalEditMode ? '👁️ Đóng tất cả khung sửa' : '✏️ Mở sửa tất cả các câu'"></span>
+      </button>
+      <button type="button" @click="showNavDrawer = true" class="xl:hidden text-xs px-3 py-2 bg-blue-900 text-white rounded-xl font-bold flex items-center gap-1 cursor-pointer shadow-sm">
+        <span>📋</span> <span>Mục lục (<span x-text="totalQuestionsCount"></span>)</span>
+      </button>
+    </div>
   </div>
 
-  <!-- ======= PHẦN I: TNKQ ======= -->
-  <div x-show="activeTab==='p1' || activeTab==='all'" x-cloak class="mb-8">
-    <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-4 text-sm text-indigo-900 flex items-center justify-between">
-      <div>
-        <strong>Phần I (5.0 điểm):</strong> Trắc nghiệm 4 lựa chọn. Nhấp vào chữ cái để chọn đáp án đúng. Bấm <strong>✏️ Sửa câu này</strong> để mở khung chỉnh sửa.
-      </div>
-      <span class="bg-indigo-200 text-indigo-900 font-bold px-3 py-1 rounded-xl text-xs whitespace-nowrap ml-2">
-        <span x-text="exam.parts.part1.questions.length"></span> câu
-      </span>
-    </div>
+  <!-- BỐ CỤC 2 CỘT: CỘT SOẠN CÂU HỎI & CỘT MỤC LỤC CÂU CỐ ĐỊNH CÓ THANH CUỘN -->
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+    <!-- CỘT CÂU HỎI CHÍNH (Chiếm 9/12 cột trên màn hình rộng) -->
+    <div class="xl:col-span-9 2xl:col-span-9 min-w-0 space-y-6">
 
-    <template x-for="(q, i) in exam.parts.part1.questions" :key="q._id">
-      <div class="q-card" :class="isEditing(q) ? 'border-indigo-400 ring-2 ring-indigo-100 shadow-md' : 'hover:border-indigo-300'">
+      <!-- ======= PHẦN I: TNKQ ======= -->
+      <div x-show="activeTab==='p1' || activeTab==='all'" x-cloak class="mb-8">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-4 text-sm text-indigo-900 flex items-center justify-between">
+          <div>
+            <strong>Phần I (5.0 điểm):</strong> Trắc nghiệm 4 lựa chọn. Nhấp vào chữ cái để chọn đáp án đúng. Bấm <strong>✏️ Sửa câu này</strong> để mở khung chỉnh sửa.
+          </div>
+          <span class="bg-indigo-200 text-indigo-900 font-bold px-3 py-1 rounded-xl text-xs whitespace-nowrap ml-2">
+            <span x-text="exam.parts.part1.questions.length"></span> câu
+          </span>
+        </div>
+
+        <template x-for="(q, i) in exam.parts.part1.questions" :key="q._id">
+          <div class="q-card" :id="'q_card_part1_' + i" :class="isEditing(q) ? 'border-indigo-400 ring-2 ring-indigo-100 shadow-md' : 'hover:border-indigo-300'">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
@@ -818,7 +836,7 @@
     </div>
 
     <template x-for="(q, i) in exam.parts.part2.questions" :key="q._id">
-      <div class="q-card" :class="isEditing(q) ? 'border-purple-400 ring-2 ring-purple-100 shadow-md' : 'hover:border-purple-300'">
+      <div class="q-card" :id="'q_card_part2_' + i" :class="isEditing(q) ? 'border-purple-400 ring-2 ring-purple-100 shadow-md' : 'hover:border-purple-300'">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
@@ -936,7 +954,7 @@
     </div>
 
     <template x-for="(q, i) in exam.parts.part3.questions" :key="q._id">
-      <div class="q-card" :class="isEditing(q) ? 'border-teal-400 ring-2 ring-teal-100 shadow-md' : 'hover:border-teal-300'">
+      <div class="q-card" :id="'q_card_part3_' + i" :class="isEditing(q) ? 'border-teal-400 ring-2 ring-teal-100 shadow-md' : 'hover:border-teal-300'">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
@@ -1043,7 +1061,7 @@
     </div>
 
     <template x-for="(q, i) in exam.parts.part4.questions" :key="q._id">
-      <div class="q-card border-orange-200">
+      <div class="q-card border-orange-200" :id="'q_card_part4_' + i">
         <button @click="removeQ('part4', i)" class="btn-del">✕</button>
         <div class="flex items-center gap-2 mb-3">
           <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
@@ -1101,6 +1119,206 @@
     <button @click="addQ('part4')" class="btn-add w-full justify-center">
       <span>➕</span> <span>Thêm câu Tự luận (Phần IV)</span>
     </button>
+  </div>
+
+    </div>
+    <!-- HẾT CỘT TRÁI (DANH SÁCH CÂU HỎI) -->
+
+    <!-- CỘT PHẢI: MỤC LỤC CÂU HỎI & THANH CUỘN ĐIỀU HƯỚNG NHANH (Sticky cố định trên màn hình rộng) -->
+    <div class="hidden xl:block xl:col-span-3 2xl:col-span-3 sticky top-28 self-start">
+      <div class="bg-white rounded-3xl p-4 shadow-md border-2 border-indigo-100 space-y-3.5">
+        <div class="flex items-center justify-between pb-2.5 border-b border-gray-100">
+          <div class="flex items-center gap-1.5 font-bold text-gray-800 text-sm">
+            <span>📋</span>
+            <span>Mục lục câu hỏi</span>
+          </div>
+          <span class="text-xs bg-indigo-100 text-indigo-900 font-extrabold px-2.5 py-0.5 rounded-full" x-text="totalQuestionsCount + ' câu'"></span>
+        </div>
+
+        <!-- Chú thích màu sắc -->
+        <div class="flex items-center justify-between gap-1 text-[11px] font-semibold text-gray-500 bg-gray-50 p-2 rounded-xl">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span> Đã có Đ/A</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span> Đang sửa</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-gray-300 inline-block"></span> Chưa có</span>
+        </div>
+
+        <!-- KHUNG CUỘN DỌC DANH SÁCH CÂU HỎI VỚI MAX-HEIGHT -->
+        <div class="overflow-y-auto max-h-[calc(100vh-320px)] pr-1.5 space-y-3.5 select-none" style="scrollbar-width: thin;">
+          <!-- Phần I: TNKQ -->
+          <div x-show="exam.parts.part1.questions.length > 0">
+            <div class="text-[11px] font-bold text-indigo-900 uppercase flex items-center justify-between mb-1.5">
+              <span>Phần I (TNKQ)</span>
+              <span class="text-gray-400 font-normal" x-text="exam.parts.part1.questions.length + ' câu'"></span>
+            </div>
+            <div class="grid grid-cols-5 gap-1.5">
+              <template x-for="(q, idx) in exam.parts.part1.questions" :key="q._id">
+                <button type="button" @click="jumpToQuestion('part1', idx)"
+                  class="h-8 rounded-xl text-xs font-bold transition-all border flex flex-col items-center justify-center cursor-pointer shadow-2xs relative"
+                  :class="isEditing(q) ? 'bg-indigo-600 text-white border-indigo-700 ring-2 ring-indigo-300 font-black scale-105' : (q.answer ? 'bg-green-50 text-green-800 border-green-300 hover:bg-green-100' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100')"
+                  :title="'Câu ' + (idx+1) + (q.answer ? ' (Đáp án ' + q.answer + ')' : ' (Chưa có đáp án)')">
+                  <span x-text="idx+1"></span>
+                  <span x-show="q.answer && !isEditing(q)" class="text-[9px] font-black leading-none opacity-80" x-text="q.answer"></span>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <!-- Phần II: Đúng/Sai -->
+          <div x-show="exam.parts.part2.questions.length > 0">
+            <div class="text-[11px] font-bold text-purple-900 uppercase flex items-center justify-between mb-1.5">
+              <span>Phần II (Đúng/Sai)</span>
+              <span class="text-gray-400 font-normal" x-text="exam.parts.part2.questions.length + ' câu'"></span>
+            </div>
+            <div class="grid grid-cols-4 gap-1.5">
+              <template x-for="(q, idx) in exam.parts.part2.questions" :key="q._id">
+                <button type="button" @click="jumpToQuestion('part2', idx)"
+                  class="h-8 rounded-xl text-xs font-bold transition-all border flex items-center justify-center cursor-pointer shadow-2xs"
+                  :class="isEditing(q) ? 'bg-purple-600 text-white border-purple-700 ring-2 ring-purple-300 font-black scale-105' : 'bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100'"
+                  :title="'Câu ' + (idx+1)">
+                  <span x-text="'C' + (idx+1)"></span>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <!-- Phần III: Trả lời ngắn -->
+          <div x-show="exam.parts.part3.questions.length > 0">
+            <div class="text-[11px] font-bold text-teal-900 uppercase flex items-center justify-between mb-1.5">
+              <span>Phần III (TL Ngắn)</span>
+              <span class="text-gray-400 font-normal" x-text="exam.parts.part3.questions.length + ' câu'"></span>
+            </div>
+            <div class="grid grid-cols-4 gap-1.5">
+              <template x-for="(q, idx) in exam.parts.part3.questions" :key="q._id">
+                <button type="button" @click="jumpToQuestion('part3', idx)"
+                  class="h-8 rounded-xl text-xs font-bold transition-all border flex items-center justify-center cursor-pointer shadow-2xs"
+                  :class="isEditing(q) ? 'bg-teal-600 text-white border-teal-700 ring-2 ring-teal-300 font-black scale-105' : (q.answer ? 'bg-teal-50 text-teal-800 border-teal-200 hover:bg-teal-100' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100')"
+                  :title="'Câu ' + (idx+1) + (q.answer ? ' (ĐA: ' + q.answer + ')' : '')">
+                  <span x-text="'C' + (idx+1)"></span>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <!-- Phần IV: Tự luận -->
+          <div x-show="exam.parts.part4.questions.length > 0">
+            <div class="text-[11px] font-bold text-orange-900 uppercase flex items-center justify-between mb-1.5">
+              <span>Phần IV (Tự luận)</span>
+              <span class="text-gray-400 font-normal" x-text="exam.parts.part4.questions.length + ' câu'"></span>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5">
+              <template x-for="(q, idx) in exam.parts.part4.questions" :key="q._id">
+                <button type="button" @click="jumpToQuestion('part4', idx)"
+                  class="h-8 rounded-xl text-xs font-bold transition-all border flex items-center justify-center cursor-pointer shadow-2xs"
+                  :class="isEditing(q) ? 'bg-orange-600 text-white border-orange-700 ring-2 ring-orange-300 font-black scale-105' : 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100'"
+                  :title="'Câu ' + (idx+1)">
+                  <span x-text="'C' + (idx+1)"></span>
+                </button>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút hành động nhanh trên Sidebar -->
+        <div class="pt-2.5 border-t border-gray-100 space-y-2">
+          <button type="button" @click="saveExam(false)" :disabled="saving"
+            class="w-full py-2.5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer">
+            <span x-show="saving" class="animate-spin">⏳</span>
+            <span x-show="!saving">💾</span>
+            <span x-text="saving ? 'Đang lưu...' : 'Lưu nhanh đề thi'"></span>
+          </button>
+          <div class="flex gap-2">
+            <button type="button" @click="scrollToTop()" class="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1" title="Cuộn lên đầu trang">
+              <span>▲</span> <span>Đầu trang</span>
+            </button>
+            <button type="button" @click="scrollToBottom()" class="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1" title="Cuộn xuống cuối trang">
+              <span>▼</span> <span>Cuối trang</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- HẾT GRID 12 CỘT -->
+
+  <!-- NÚT NỔI MỤC LỤC CHO MOBILE & TABLET -->
+  <button type="button" @click="showNavDrawer = true"
+    class="xl:hidden fixed bottom-6 right-6 z-40 bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2 font-bold text-xs border border-white/20 active:scale-95 cursor-pointer">
+    <span>📋</span>
+    <span>Mục lục (<span x-text="totalQuestionsCount"></span> câu)</span>
+  </button>
+
+  <!-- DRAWER MỤC LỤC TRƯỢT TỪ BÊN PHẢI DÀNH CHO MÀN HÌNH NHỎ -->
+  <div x-show="showNavDrawer" x-cloak class="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end">
+    <div class="w-80 max-w-[85vw] bg-white h-full shadow-2xl p-4 flex flex-col justify-between" @click.outside="showNavDrawer = false">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between pb-3 border-b">
+          <div class="flex items-center gap-2 font-bold text-gray-900 text-base">
+            <span>📋</span> <span>Mục lục câu hỏi</span>
+          </div>
+          <button @click="showNavDrawer = false" class="text-gray-400 hover:text-gray-700 text-xl font-bold p-1 cursor-pointer">✕</button>
+        </div>
+
+        <div class="overflow-y-auto max-h-[calc(100vh-180px)] pr-1 space-y-4">
+          <!-- Phần I -->
+          <div x-show="exam.parts.part1.questions.length > 0">
+            <div class="text-xs font-bold text-indigo-900 mb-1.5 uppercase">Phần I - TNKQ (<span x-text="exam.parts.part1.questions.length"></span>)</div>
+            <div class="grid grid-cols-5 gap-1.5">
+              <template x-for="(q, idx) in exam.parts.part1.questions" :key="q._id">
+                <button type="button" @click="jumpToQuestion('part1', idx)"
+                  class="h-8 rounded-lg text-xs font-bold border flex items-center justify-center cursor-pointer"
+                  :class="isEditing(q) ? 'bg-indigo-600 text-white' : (q.answer ? 'bg-green-100 text-green-800 border-green-300' : 'bg-gray-100 text-gray-700')"
+                  x-text="idx+1"></button>
+              </template>
+            </div>
+          </div>
+
+          <!-- Phần II -->
+          <div x-show="exam.parts.part2.questions.length > 0">
+            <div class="text-xs font-bold text-purple-900 mb-1.5 uppercase">Phần II - Đúng/Sai (<span x-text="exam.parts.part2.questions.length"></span>)</div>
+            <div class="grid grid-cols-4 gap-1.5">
+              <template x-for="(q, idx) in exam.parts.part2.questions" :key="q._id">
+                <button type="button" @click="jumpToQuestion('part2', idx)"
+                  class="h-8 rounded-lg text-xs font-bold border flex items-center justify-center cursor-pointer"
+                  :class="isEditing(q) ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800 border-purple-300'"
+                  x-text="'C' + (idx+1)"></button>
+              </template>
+            </div>
+          </div>
+
+          <!-- Phần III -->
+          <div x-show="exam.parts.part3.questions.length > 0">
+            <div class="text-xs font-bold text-teal-900 mb-1.5 uppercase">Phần III - TL Ngắn (<span x-text="exam.parts.part3.questions.length"></span>)</div>
+            <div class="grid grid-cols-4 gap-1.5">
+              <template x-for="(q, idx) in exam.parts.part3.questions" :key="q._id">
+                <button type="button" @click="jumpToQuestion('part3', idx)"
+                  class="h-8 rounded-lg text-xs font-bold border flex items-center justify-center cursor-pointer"
+                  :class="isEditing(q) ? 'bg-teal-600 text-white' : (q.answer ? 'bg-teal-100 text-teal-800 border-teal-300' : 'bg-gray-100 text-gray-700')"
+                  x-text="'C' + (idx+1)"></button>
+              </template>
+            </div>
+          </div>
+
+          <!-- Phần IV -->
+          <div x-show="exam.parts.part4.questions.length > 0">
+            <div class="text-xs font-bold text-orange-900 mb-1.5 uppercase">Phần IV - Tự luận (<span x-text="exam.parts.part4.questions.length"></span>)</div>
+            <div class="grid grid-cols-3 gap-1.5">
+              <template x-for="(q, idx) in exam.parts.part4.questions" :key="q._id">
+                <button type="button" @click="jumpToQuestion('part4', idx)"
+                  class="h-8 rounded-lg text-xs font-bold border flex items-center justify-center cursor-pointer"
+                  :class="isEditing(q) ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-800 border-orange-300'"
+                  x-text="'C' + (idx+1)"></button>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t">
+        <button type="button" @click="showNavDrawer = false; saveExam(false)" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+          <span>💾 Lưu đề thi</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Nút Lưu Đề Cuối Trang -->
@@ -1470,6 +1688,39 @@ function examBuilder() {
           q._editing = this.globalEditMode;
         });
       });
+    },
+
+    showNavDrawer: false,
+
+    jumpToQuestion(part, index) {
+      const tabMap = { part1: 'p1', part2: 'p2', part3: 'p3', part4: 'p4' };
+      const targetTab = tabMap[part] || 'p1';
+      if (this.activeTab !== targetTab && this.activeTab !== 'all') {
+        this.activeTab = targetTab;
+      }
+      const qList = this.exam.parts[part]?.questions || [];
+      const q = qList[index];
+      if (q) {
+        q._editing = true;
+      }
+      this.showNavDrawer = false;
+      setTimeout(() => {
+        const elId = `q_card_${part}_${index}`;
+        const el = document.getElementById(elId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-4', 'ring-blue-400');
+          setTimeout(() => el.classList.remove('ring-4', 'ring-blue-400'), 1500);
+        }
+      }, 100);
+    },
+
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    scrollToBottom() {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     },
     
     // Toolbar công thức Toán - Lý - Hóa trực quan

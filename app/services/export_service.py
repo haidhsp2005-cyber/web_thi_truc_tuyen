@@ -6,7 +6,7 @@ import io
 import json
 import logging
 from datetime import datetime, timezone, timedelta
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import openpyxl
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
@@ -1041,14 +1041,19 @@ def export_class_submissions_print_html(
     exams_cache: Dict[str, dict],
     class_name: str = "Tất cả các lớp",
     exam_id: str = None,
-    subject: str = None
+    subject: str = None,
+    batch: int = None,
+    batch_size: int = 40,
+    all_pages: bool = False,
+    request_query: dict = None
 ) -> str:
     """
     Tạo HTML bản in PDF trọn bộ tất cả bài thi học sinh theo lớp:
     - Sắp xếp học sinh theo Lớp rồi theo Tên (A-Z)
-    - Tự động ngắt trang in (page-break-before: always) giữa các học sinh
-    - Có thanh điều hướng in PDF cố định phía trên (ẩn khi in)
-    - Nhúng KaTeX đầy đủ render công thức toán học sắc nét
+    - Tự động ngắt trang in (page-break-after: always) giữa các học sinh
+    - Tối ưu siêu tốc cho khối lượng lớn (500+ trang): Hỗ trợ in theo đợt (Batch Printing)
+      hoặc in toàn bộ, chống đơ và chống treo trình duyệt.
+    - KaTeX render tuần tự theo tiến trình (Chunked Math Rendering) tránh tràn bộ nhớ RAM.
     """
     sorted_subs = sorted(
         submissions,
@@ -1058,6 +1063,23 @@ def export_class_submissions_print_html(
         )
     )
 
+    total_subs = len(sorted_subs)
+    batch_size = max(10, min(int(batch_size or 40), 200))
+    total_batches = (total_subs + batch_size - 1) // batch_size if total_subs > 0 else 1
+
+    if not all_pages and total_subs > batch_size:
+        curr_batch = max(1, min(int(batch or 1), total_batches))
+        start_idx = (curr_batch - 1) * batch_size
+        end_idx = min(start_idx + batch_size, total_subs)
+        subs_to_render = sorted_subs[start_idx:end_idx]
+        is_batched = True
+    else:
+        curr_batch = 1
+        start_idx = 0
+        end_idx = total_subs
+        subs_to_render = sorted_subs
+        is_batched = False
+
     exam_title = ""
     if exam_id and exam_id in exams_cache:
         exam_title = exams_cache[exam_id].get("title", "")
@@ -1065,36 +1087,139 @@ def export_class_submissions_print_html(
         first_exam = next(iter(exams_cache.values()))
         exam_title = first_exam.get("title", "")
 
-    cards_html = []
-    for idx, sub in enumerate(sorted_subs):
-        eid = sub.get("exam_id", "exam_001")
-        base_e = exams_cache.get(eid) or {"title": exam_title or "BÀI KIỂM TRA", "subject": subject or "Toán", "grade": "12"}
-        from .bank_service import resolve_student_exam
-        exam_data = resolve_student_exam(sub, base_e)
-        inner = render_single_student_exam_inner_html(sub, exam_data)
+    # Helper tạo URL chuyển đợt in
+    from urllib.parse import urlencode
+    def make_batch_url(b_num: int = None, show_all: bool = False) -> str:
+        q = dict(request_query or {})
+        if show_all:
+            q["all_pages"] = "1"
+            q.pop("batch", None)
+        else:
+            q.pop("all_pages", None)
+            if b_num is not None:
+                q["batch"] = str(b_num)
+            q["batch_size"] = str(batch_size)
+        return "?" + urlencode(q)
+
+    # Xây dựng thanh công cụ chọn đợt in siêu tốc
+    batch_nav_html = ""
+    if total_batches > 1 or all_pages:
+        batch_buttons = []
+        for b in range(1, total_batches + 1):
+            b_s = (b - 1) * batch_size + 1
+            b_e = min(b * batch_size, total_subs)
+            is_curr = (b == curr_batch and not all_pages)
+            cls = "bg-blue-600 text-white font-bold shadow-sm ring-1 ring-blue-400" if is_curr else "bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white"
+            batch_buttons.append(
+                f'<a href="{make_batch_url(b)}" class="px-2.5 py-1 rounded-lg text-xs font-semibold {cls} transition-all whitespace-nowrap">'
+                f'Đợt {b} ({b_s}-{b_e})'
+                f'</a>'
+            )
         
-        page_break_style = "page-break-before: always; break-before: page;" if idx > 0 else ""
+        all_active = "bg-amber-600 text-white font-bold ring-1 ring-amber-300 shadow-sm" if all_pages else "bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white"
+        batch_nav_html = f"""
+        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-800 text-xs">
+          <span class="text-amber-400 font-bold flex items-center gap-1">⚡ Chọn đợt in nhanh ({batch_size} bài/đợt - xuất PDF 2 giây, không đơ máy):</span>
+          <div class="flex flex-wrap items-center gap-1.5 flex-1">
+            {''.join(batch_buttons)}
+            <a href="{make_batch_url(show_all=True)}" class="ml-auto px-3 py-1 rounded-lg text-xs {all_active} transition-all whitespace-nowrap" title="In toàn bộ {total_subs} bài nộp (~{total_subs*2} trang). Khuyên dùng khi máy tính cấu hình mạnh.">
+              ⚡ In toàn bộ ({total_subs} bài)
+            </a>
+          </div>
+        </div>
+        """
+
+    cards_html = []
+    from .bank_service import resolve_student_exam
+    for idx, sub in enumerate(subs_to_render):
+        eid = sub.get("exam_id", "exam_001")
+        clean_eid = (eid or "").replace(".json", "")
+        base_e = exams_cache.get(eid) or exams_cache.get(clean_eid) or exams_cache.get(f"{clean_eid}.json") or {"title": exam_title or "BÀI KIỂM TRA", "subject": subject or "Toán", "grade": "12"}
+        try:
+            exam_data = resolve_student_exam(sub, base_e)
+            inner = render_single_student_exam_inner_html(sub, exam_data)
+        except Exception as ex:
+            logger.error(f"Lỗi render bài thi học sinh {sub.get('student_name')}: {ex}")
+            inner = f"<div class='p-6 text-red-600 font-bold'>Không thể nạp bài thi của học sinh {sub.get('student_name', '')} (Lỗi: {ex})</div>"
+
         cards_html.append(f"""
-        <div class="student-exam-card max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-8 border mb-8" style="{page_break_style}">
+        <div class="student-exam-card max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-8 border mb-8">
           {inner}
         </div>
         """)
 
     all_cards = "\n".join(cards_html)
+    rendered_count = len(subs_to_render)
+    page_subtitle = f"Đợt {curr_batch}/{total_batches} (Bài {start_idx + 1} đến {end_idx} trong tổng {total_subs} bài nộp)" if is_batched else f"Tổng số: {total_subs} bài thi (~{total_subs * 2} trang A4) • Tự động ngắt trang riêng từng học sinh"
+
+    import re
+    safe_class = re.sub(r'[^\w\-]', '_', str(class_name or 'All')).strip('_')
+    batch_str = f"Dot_{curr_batch}" if is_batched else "Tat_Ca"
+    pdf_filename = f"BaiThi_{safe_class}_{batch_str}"
 
     return f"""<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>In tất cả bài thi - Lớp {class_name} ({len(sorted_subs)} bài nộp)</title>
+<title>{pdf_filename}</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/mhchem.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
 <script>
-  function triggerMath() {{
-    if (window.renderMathInElement) {{
+  let isMathReady = false;
+
+  async function renderMathInChunks() {{
+    if (!window.renderMathInElement) {{
+      setTimeout(renderMathInChunks, 120);
+      return;
+    }}
+    const cards = document.querySelectorAll('.student-exam-card');
+    const total = cards.length;
+    const progressEl = document.getElementById('render-progress');
+    const statusTextEl = document.getElementById('render-status-text');
+    const printBtn = document.getElementById('btn-print-main');
+
+    for (let i = 0; i < total; i++) {{
+      try {{
+        renderMathInElement(cards[i], {{
+          delimiters: [
+            {{left: '$$', right: '$$', display: true}},
+            {{left: '$', right: '$', display: false}},
+            {{left: '\\\\(', right: '\\\\)', display: false}},
+            {{left: '\\\\[', right: '\\\\]', display: true}}
+          ],
+          throwOnError: false
+        }});
+      }} catch(e) {{}}
+
+      if (progressEl) {{
+        const pct = Math.round(((i + 1) / total) * 100);
+        progressEl.style.width = pct + '%';
+      }}
+      if (statusTextEl && (i % 4 === 0 || i === total - 1)) {{
+        statusTextEl.innerText = `Đang nạp công thức Toán/Lý/Hóa: ${{i + 1}}/${{total}} bài (${{Math.round(((i + 1) / total) * 100)}}%)`;
+      }}
+      // Nhường CPU cho trình duyệt sau mỗi 3 bài để không đơ máy
+      if (i % 3 === 0) {{
+        await new Promise(r => setTimeout(r, 10));
+      }}
+    }}
+    isMathReady = true;
+    if (statusTextEl) {{
+      statusTextEl.classList.remove('animate-pulse', 'text-amber-300');
+      statusTextEl.classList.add('text-emerald-400');
+      statusTextEl.innerText = `✅ Đã xử lý xong toàn bộ công thức! Sẵn sàng in hoặc xuất PDF.`;
+    }}
+    if (printBtn) {{
+      printBtn.classList.remove('opacity-60');
+    }}
+  }}
+
+  // Nếu người dùng bấm Ctrl + P trước khi KaTeX quét xong, chạy quét nốt tức thì
+  window.addEventListener('beforeprint', () => {{
+    if (!isMathReady && window.renderMathInElement) {{
       renderMathInElement(document.body, {{
         delimiters: [
           {{left: '$$', right: '$$', display: true}},
@@ -1104,16 +1229,15 @@ def export_class_submissions_print_html(
         ],
         throwOnError: false
       }});
-    }} else {{
-      setTimeout(triggerMath, 100);
+      isMathReady = true;
     }}
-  }}
+  }});
+
   if (document.readyState === 'loading') {{
-    document.addEventListener("DOMContentLoaded", triggerMath);
+    document.addEventListener("DOMContentLoaded", renderMathInChunks);
   }} else {{
-    triggerMath();
+    renderMathInChunks();
   }}
-  window.addEventListener("load", triggerMath);
 </script>
 <style>
   /* KaTeX và Công thức Toán / Hệ phương trình */
@@ -1128,7 +1252,7 @@ def export_class_submissions_print_html(
     overflow: visible !important;
   }}
   .katex-display {{
-    margin: 0.4em 0 !important;
+    margin: 0.35em 0 !important;
     overflow-x: auto;
     overflow-y: visible !important;
   }}
@@ -1138,7 +1262,7 @@ def export_class_submissions_print_html(
 
   @media print {{
     .no-print {{ display: none !important; }}
-    body {{ background: white !important; padding: 0 !important; font-size: 12px; margin: 0 !important; }}
+    body {{ background: white !important; padding: 0 !important; font-size: 11px; margin: 0 !important; }}
     .student-exam-card {{
       box-shadow: none !important;
       border: none !important;
@@ -1146,6 +1270,16 @@ def export_class_submissions_print_html(
       padding: 0 !important;
       margin: 0 auto !important;
       max-width: 100% !important;
+      page-break-after: always !important;
+      break-after: page !important;
+    }}
+    /* Tắt toàn bộ shadow, filter, animation để Chrome tạo PDF siêu tốc */
+    * {{
+      box-shadow: none !important;
+      text-shadow: none !important;
+      filter: none !important;
+      transition: none !important;
+      animation: none !important;
     }}
     .avoid-break {{
       page-break-inside: avoid !important;
@@ -1154,7 +1288,7 @@ def export_class_submissions_print_html(
   }}
   @page {{
     size: A4;
-    margin: 15mm;
+    margin: 10mm 12mm;
   }}
 </style>
 </head>
@@ -1162,22 +1296,41 @@ def export_class_submissions_print_html(
 
   <!-- Thanh điều khiển In / Xuất PDF (ẩn khi in ra giấy/PDF) -->
   <div class="no-print sticky top-0 z-50 bg-gray-900/95 backdrop-blur-md text-white py-3 px-4 sm:px-6 shadow-xl border-b border-gray-700 mb-6">
-    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">📋</span>
-        <div>
-          <h1 class="text-sm sm:text-base font-bold leading-tight">IN TẤT CẢ BÀI THI - LỚP {class_name}</h1>
-          <p class="text-xs text-gray-300">Tổng số: <b>{len(sorted_subs)} bài thi</b> đã nộp • Tự động ngắt trang riêng từng học sinh</p>
+    <div class="max-w-5xl mx-auto space-y-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">📋</span>
+          <div>
+            <h1 class="text-sm sm:text-base font-bold leading-tight">IN TẤT CẢ BÀI THI - LỚP {class_name}</h1>
+            <p class="text-xs text-gray-300">{page_subtitle}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button id="btn-print-main" onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer transition-transform active:scale-95">
+            <span>🖨️</span><span>In ra giấy / Lưu file PDF (Ctrl + P)</span>
+          </button>
+          <button onclick="window.close()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer transition-colors">
+            Đóng
+          </button>
         </div>
       </div>
-      <div class="flex items-center gap-2.5">
-        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer transition-transform active:scale-95">
-          <span>🖨️</span><span>In ra giấy / Lưu file PDF (Ctrl + P)</span>
-        </button>
-        <button onclick="window.close()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer transition-colors">
-          Đóng
-        </button>
+      
+      <!-- Gợi ý chọn máy in Lưu dưới dạng PDF của Chrome -->
+      <div class="bg-blue-950/80 border border-blue-600/40 rounded-lg px-3 py-1.5 text-xs text-blue-200 flex items-center gap-2">
+        <span>💡</span>
+        <span><b>Lưu ý khi xuất PDF:</b> Trong hộp thoại in, tại mục <b>Máy in đích (Destination)</b>, hãy chọn <b>"Lưu dưới dạng PDF" (Save as PDF)</b> của trình duyệt để lưu nhanh và không bị lỗi khóa file của Foxit.</span>
       </div>
+
+      <!-- Thanh tiến trình nạp công thức -->
+      <div class="flex items-center justify-between text-xs text-gray-300 border-t border-gray-800 pt-2">
+        <span id="render-status-text" class="font-medium text-amber-300 animate-pulse">⏳ Đang tải và định dạng công thức Toán, Lý, Hóa...</span>
+        <div class="w-48 bg-gray-700 rounded-full h-2 overflow-hidden">
+          <div id="render-progress" class="bg-gradient-to-r from-blue-500 to-indigo-400 h-2 rounded-full transition-all duration-150" style="width: 5%"></div>
+        </div>
+      </div>
+
+      <!-- Thanh phân đợt in siêu tốc nếu có nhiều bài (500+ trang) -->
+      {batch_nav_html}
     </div>
   </div>
 

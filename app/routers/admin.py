@@ -786,11 +786,15 @@ async def print_class_submissions(
     exam_id: Optional[str] = Query(None),
     subject: Optional[str] = Query(None),
     date: Optional[str] = Query(None),
-    teacher: Optional[str] = Query(None)
+    teacher: Optional[str] = Query(None),
+    ids: Optional[str] = Query(None),
+    batch: Optional[int] = Query(None),
+    batch_size: Optional[int] = Query(40),
+    all_pages: Optional[bool] = Query(False)
 ):
     """
-    In toàn bộ bài thi đã nộp của tất cả học sinh theo Lớp (hoặc theo đề thi / ngày / giáo viên / bộ lọc hiện tại):
-    Tự động phân trang chuẩn A4 (mỗi học sinh 1 trang in riêng biệt) để in ra giấy hoặc lưu thành 1 file PDF trọn bộ.
+    In toàn bộ bài thi đã nộp của học sinh theo Lớp / Đề thi / Bộ lọc / Danh sách đã chọn:
+    Tối ưu siêu tốc cho khối lượng lớn (500+ trang), hỗ trợ in theo đợt 30-50 bài hoặc in toàn bộ.
     """
     from ..routers.exam_builder import _list_exam_files
     current_user = get_current_user_from_request(request)
@@ -803,23 +807,58 @@ async def print_class_submissions(
     submissions = get_all_submissions(exam_id=clean_eid, student_class=clean_cls, submission_date=clean_date)
     all_exams = _list_exam_files()
 
+    # Nếu có danh sách ID cụ thể (học sinh được chọn bằng checkbox)
+    if ids and ids.strip():
+        id_set = {i.strip() for i in ids.split(",") if i.strip()}
+        submissions = [s for s in submissions if (s.get("submission_id") in id_set or s.get("id") in id_set)]
+
     # Lọc theo quyền giáo viên (chỉ Super Admin mặc định mới thấy tất cả môn)
     is_super_admin = bool(
         current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
     )
     if current_user and not is_super_admin:
-        accessible_ids = {e['id'] for e in _list_exam_files(current_user)}
-        submissions = [s for s in submissions if s.get('exam_id') in accessible_ids]
+        accessible_ids = set()
+        for e in _list_exam_files(current_user):
+            accessible_ids.add(e.get('id', ''))
+            accessible_ids.add(e.get('file', ''))
+            accessible_ids.add(e.get('id', '').replace('.json', ''))
+            accessible_ids.add(f"{e.get('id', '')}.json")
+        submissions = [
+            s for s in submissions 
+            if s.get('exam_id') in accessible_ids 
+            or (s.get('exam_id') or '').replace('.json', '') in accessible_ids
+        ]
 
     # Lọc theo môn học nếu có tham số subject
     if clean_sub:
-        subject_exam_ids = {e['id'] for e in all_exams if (e.get('subject') or '').strip().lower() == clean_sub}
-        submissions = [s for s in submissions if s.get('exam_id') in subject_exam_ids]
+        subject_exam_ids = set()
+        for e in all_exams:
+            if (e.get('subject') or '').strip().lower() == clean_sub:
+                eid = e.get('id', '')
+                subject_exam_ids.add(eid)
+                subject_exam_ids.add(eid.replace('.json', ''))
+                subject_exam_ids.add(f"{eid}.json")
+        submissions = [
+            s for s in submissions 
+            if s.get('exam_id') in subject_exam_ids 
+            or (s.get('exam_id') or '').replace('.json', '') in subject_exam_ids
+        ]
 
     # Lọc theo giáo viên tạo đề thi nếu có
     if clean_teacher:
-        teacher_exam_ids = {e['id'] for e in all_exams if (e.get('created_by') or '').strip().lower() == clean_teacher}
-        submissions = [s for s in submissions if s.get('exam_id') in teacher_exam_ids or (s.get('exam_created_by') or '').strip().lower() == clean_teacher]
+        teacher_exam_ids = set()
+        for e in all_exams:
+            if (e.get('created_by') or '').strip().lower() == clean_teacher:
+                eid = e.get('id', '')
+                teacher_exam_ids.add(eid)
+                teacher_exam_ids.add(eid.replace('.json', ''))
+                teacher_exam_ids.add(f"{eid}.json")
+        submissions = [
+            s for s in submissions 
+            if s.get('exam_id') in teacher_exam_ids 
+            or (s.get('exam_id') or '').replace('.json', '') in teacher_exam_ids
+            or (s.get('exam_created_by') or '').strip().lower() == clean_teacher
+        ]
 
     if not submissions:
         return HTMLResponse(
@@ -852,21 +891,28 @@ async def print_class_submissions(
     for s in submissions:
         eid = s.get("exam_id")
         if eid and eid not in exams_cache:
-            e = load_exam(eid)
+            clean_eid_cand = eid.replace(".json", "")
+            e = load_exam(eid) or load_exam(clean_eid_cand) or load_exam(f"{clean_eid_cand}.json")
             if not e:
                 for cand in all_exams:
-                    if cand.get("id") == eid or cand.get("file") == eid:
+                    if cand.get("id") in (eid, clean_eid_cand) or cand.get("file") in (eid, clean_eid_cand, f"{clean_eid_cand}.json"):
                         e = load_exam(cand.get("id")) or cand
                         break
             if e:
                 exams_cache[eid] = e
+                exams_cache[clean_eid_cand] = e
+                exams_cache[f"{clean_eid_cand}.json"] = e
 
     html = export_class_submissions_print_html(
         submissions=submissions,
         exams_cache=exams_cache,
         class_name=clean_cls or "Tất cả các lớp",
         exam_id=clean_eid,
-        subject=clean_sub
+        subject=clean_sub,
+        batch=batch,
+        batch_size=batch_size or 40,
+        all_pages=all_pages,
+        request_query=dict(request.query_params)
     )
     return HTMLResponse(content=html)
 
