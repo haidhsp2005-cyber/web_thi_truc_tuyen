@@ -2180,7 +2180,20 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         r_g_title = p_guide.add_run("📌 QUY ƯỚC ĐÁNH DẤU ĐÁP ÁN KHI SOẠN ĐỀ CHO HỆ THỐNG:\n")
         r_g_title.bold = True
         r_g_title.font.size = Pt(11)
-        
+
+        p_guide.add_run("• ")
+        r_p0_lbl = p_guide.add_run("ĐỀ KHÔNG CẦN CHUYỂN LATEX: ")
+        r_p0_lbl.bold = True
+        p_guide.add_run("Hệ thống hỗ trợ nạp trực tiếp file Word (.docx) thông thường, vẫn tự động nhận diện đúng 100% câu hỏi, đáp án, công thức MathType, Word Equation và hình vẽ.\n")
+
+        p_guide.add_run("• ")
+        r_p0_tex = p_guide.add_run("Mẹo Toggle TeX (Alt + \\): ")
+        r_p0_tex.bold = True
+        p_guide.add_run("Nếu dùng MathType trong Word, bấm tổ hợp phím ")
+        r_p0_key = p_guide.add_run("Alt + \\")
+        r_p0_key.bold = True
+        p_guide.add_run(" (hoặc nút Toggle TeX) để công thức chuyển sang LaTeX siêu nhẹ và nét chuẩn 100%.\n")
+
         p_guide.add_run("• ")
         r_p1_lbl = p_guide.add_run("Phần I (12 câu Trắc nghiệm nhiều lựa chọn): ")
         r_p1_lbl.bold = True
@@ -2267,6 +2280,28 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         for r in p_p4_guide.runs:
             r.font.italic = True
 
+        # ================= MỤC CUỐI ĐỀ: CHÚ Ý QUAN TRỌNG =================
+        doc.add_paragraph("─" * 45).alignment = WD_ALIGN_PARAGRAPH.CENTER
+        table_note = doc.add_table(rows=1, cols=1)
+        table_note.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        cell_note = table_note.cell(0, 0)
+        p_note = cell_note.paragraphs[0]
+        r_n_title = p_note.add_run("📌 CHÚ Ý QUAN TRỌNG KHI NẠP ĐỀ LÊN HỆ THỐNG:\n")
+        r_n_title.bold = True
+        r_n_title.font.size = Pt(11)
+        
+        r_n1_lbl = p_note.add_run("1. Đề không cần chuyển LaTeX: ")
+        r_n1_lbl.bold = True
+        p_note.add_run("Hệ thống nhận dạng trực tiếp file Word (.docx) thông thường (dùng MathType, Word Equation hoặc ký hiệu chỉ số), tự động nhận diện đúng 100% câu hỏi, các phương án, đáp án đúng (tô màu đỏ), công thức và hình vẽ minh họa.\n")
+        
+        r_n2_lbl = p_note.add_run("2. Phím tắt Toggle TeX (Alt + \\): ")
+        r_n2_lbl.bold = True
+        p_note.add_run("Nếu muốn công thức MathType chuyển sang dạng LaTeX siêu nhẹ và sắc nét nhất, chỉ cần bôi đen và nhấn tổ hợp phím Alt + \\ (hoặc nút Toggle TeX trên thanh MathType trong Word).\n")
+        
+        r_n3_lbl = p_note.add_run("3. Phím tắt soạn thảo tiện lợi trong Word: ")
+        r_n3_lbl.bold = True
+        p_note.add_run("Gõ công thức Toán: Alt + = | Chỉ số dưới Hóa học (H₂SO₄, CO₂): Ctrl + = | Chỉ số trên (ion Fe³⁺, số mũ x²): Ctrl + Shift + =.")
+
         buf = io.BytesIO()
         doc.save(buf)
         buf.seek(0)
@@ -2285,7 +2320,9 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
             "Môn: TOÁN HỌC - Lớp: 12 - Thời gian làm bài: 50 phút",
             "",
             "📌 QUY ƯỚC SOẠN ĐỀ CHO HỆ THỐNG:",
+            "- Đề không cần chuyển LaTeX: Thầy cô nạp trực tiếp file Word (.docx) thông thường, hệ thống tự động nhận diện 100% câu hỏi, đáp án, công thức và hình vẽ.",
             "- File Word (.docx): Đáp án đúng chỉ cần TÔ MÀU ĐỎ (không ghi chữ Đúng hay Sai). Phần III ghi 'Đáp án: <số>' màu đen bình thường.",
+            "- Mẹo Toggle TeX (Alt + \\): Bấm Alt + \\ trong Word có MathType để chuyển công thức sang mã LaTeX siêu nhẹ.",
             "- File Text (.txt): Đánh dấu * sau phương án đúng của Phần I; ghi (Đúng) hoặc (Sai) ở Phần II; Phần III ghi 'Đáp án: <số>'.",
             "",
             "PHẦN I (3.0 điểm). Trắc nghiệm nhiều lựa chọn (Câu 1 đến Câu 12)."
@@ -2317,6 +2354,12 @@ async def download_exam_template(format: str = Query("txt", pattern="^(txt|json|
         txt_lines.append(STANDARD_PART4["q"])
         txt_lines.append("")
         txt_lines.append(STANDARD_PART4["guide"])
+        txt_lines.append("")
+        txt_lines.append("──────────────────────────────────────────────")
+        txt_lines.append("📌 CHÚ Ý QUAN TRỌNG KHI NẠP ĐỀ LÊN HỆ THỐNG:")
+        txt_lines.append("1. Đề không cần chuyển LaTeX: Hệ thống tự động nhận dạng trực tiếp file Word (.docx) thông thường đúng 100% câu hỏi, các phương án, đáp án đúng (tô màu đỏ), công thức và hình vẽ.")
+        txt_lines.append("2. Phím tắt Toggle TeX (Alt + \\): Trong Word có MathType, nhấn tổ hợp phím Alt + \\ để chuyển nhanh công thức sang LaTeX siêu nhẹ và sắc nét.")
+        txt_lines.append("3. Phím tắt Word hữu ích: Alt + = (công thức Toán); Ctrl + = (chỉ số dưới Hóa học: H₂SO₄); Ctrl + Shift + = (chỉ số trên: Fe³⁺, x²).")
 
         txt_content = "\n".join(txt_lines)
         return Response(
