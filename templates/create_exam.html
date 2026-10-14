@@ -36,6 +36,30 @@
     width: 100% !important;
     box-sizing: border-box !important;
   }
+  .btn-sym {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  .btn-sym:hover {
+    background-color: #e0e7ff;
+    border-color: #6366f1;
+    color: #4338ca;
+    transform: translateY(-1px);
+  }
+  .btn-sym:active {
+    transform: scale(0.96);
+  }
 </style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800" x-data="examBuilder()" x-init="init()">
@@ -701,123 +725,56 @@
         </div>
 
         <template x-for="(q, i) in exam.parts.part1.questions" :key="q._id">
-          <div class="q-card" :id="'q_card_part1_' + i" :class="isEditing(q) ? 'border-indigo-400 ring-2 ring-indigo-100 shadow-md' : 'hover:border-indigo-300'">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <span class="bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
-            <span class="text-gray-400 text-xs font-medium">Trắc nghiệm đơn</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button type="button" @click="toggleQEdit(q)" 
-              class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1 cursor-pointer"
-              :class="isEditing(q) ? 'bg-green-600 hover:bg-green-700 text-white border-green-600 shadow-sm' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'">
-              <span x-text="isEditing(q) ? '✅ Xong' : '✏️ Sửa câu này'"></span>
-            </button>
-            <button @click="removeQ('part1', i)" class="btn-del !static !top-auto !right-auto" title="Xóa câu này">✕</button>
-          </div>
-        </div>
-
-        <!-- NỘI DUNG CÂU HỎI -->
-        <div class="mb-3">
-          <!-- Chế độ xem: KaTeX thuần túy, sạch sẽ, không hiện mã LaTeX thô -->
-          <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
-            class="p-4 bg-gray-50/70 hover:bg-indigo-50/30 rounded-2xl border border-gray-200 cursor-pointer text-base text-gray-900 leading-relaxed min-h-[50px] transition-colors">
-            <div x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-sm\'>Nhấp để nhập nội dung câu hỏi...</span>'"></div>
-            <!-- Ảnh minh họa câu hỏi nếu có -->
-            <div x-show="q.image" class="mt-3 text-center">
-              <img :src="q.image" class="max-h-60 rounded-xl border border-gray-200 shadow-sm mx-auto object-contain cursor-zoom-in hover:opacity-95 transition-opacity" @click.stop="zoomImage(q.image)" alt="Hình vẽ / Đồ thị câu hỏi">
-              <p class="text-[11px] text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to</p>
-            </div>
-          </div>
-
-          <!-- Chế độ sửa: Khi bấm Sửa mới hiện textarea và công cụ ảnh -->
-          <div x-show="isEditing(q)">
-            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Nội dung câu hỏi <span class="text-red-500">*</span></label>
-              <div class="flex items-center gap-2">
-                <input type="file" accept="image/*" class="hidden" :id="'p1_img_' + q._id" @change="uploadQuestionImage($event, q)">
-                <button type="button" @click="document.getElementById('p1_img_' + q._id).click()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2.5 py-1 rounded-lg border border-indigo-200 flex items-center gap-1 cursor-pointer transition-colors">
-                  <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
-                </button>
-                <button type="button" @click="showFormulaToolbar = true; window.scrollTo({top: 300, behavior: 'smooth'})" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold px-2.5 py-1 rounded-lg border border-blue-200 flex items-center gap-1 cursor-pointer transition-colors" title="Mở bảng ký hiệu & công thức Toán - Lý - Hóa">
-                  <span>🧮</span> <span>Bảng công thức</span>
-                </button>
-                <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
-                  <span>🗑️ Xóa ảnh</span>
-                </button>
+          <div class="bg-white rounded-2xl border-2 border-gray-200 hover:border-indigo-400 p-4 transition-all shadow-xs mb-3 group" :id="'q_card_part1_' + i">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="bg-indigo-600 text-white text-xs font-black px-2.5 py-0.5 rounded-lg shadow-2xs" x-text="`Câu ${i+1}`"></span>
+                <span class="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">TNKQ (0.25đ)</span>
+                <span x-show="q.image" class="text-[11px] font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-md cursor-pointer flex items-center gap-1" @click="zoomImage(q.image)">
+                  <span>🖼️</span><span>Ảnh đồ thị</span>
+                </span>
+                <span x-show="!q.answer" class="text-[11px] font-extrabold text-red-600 bg-red-50 px-2 py-0.5 rounded-md animate-pulse">
+                  ⚠️ Chưa chọn đáp án
+                </span>
               </div>
-            </div>
-            <textarea x-model="q.text" @paste="handlePasteImage($event, q)" rows="3" placeholder="Nhập câu hỏi... (Có thể dán trực tiếp ảnh đồ thị/hình vẽ bằng phím Ctrl + V tại đây)"
-              class="input-base w-full block border-2 border-indigo-200 rounded-2xl p-3.5 text-base focus:outline-none focus:border-indigo-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
-            
-            <!-- Xem trước ảnh trong chế độ sửa -->
-            <div x-show="q.image" class="mt-3 p-3 bg-indigo-50/50 rounded-2xl border border-indigo-200 flex flex-col items-center">
-              <img :src="q.image" class="max-h-52 rounded-lg border shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh câu hỏi">
-              <div class="mt-2 flex items-center gap-3 text-xs">
-                <span class="text-gray-500 font-medium">Đã gắn ảnh câu hỏi</span>
-                <button type="button" @click="zoomImage(q.image)" class="text-indigo-600 font-bold hover:underline">🔍 Xem lớn</button>
-                <button type="button" @click="q.image = ''" class="text-red-600 font-bold hover:underline">🗑️ Xóa ảnh</button>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button type="button" @click="openEditModal('part1', i)" 
+                  class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer active:scale-95"
+                  title="Mở hộp thoại chỉnh sửa nội dung, công thức và đáp án">
+                  <span>✏️</span><span>Sửa câu này</span>
+                </button>
+                <button @click="removeQ('part1', i)" class="w-8 h-8 rounded-xl bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-600 font-bold text-xs flex items-center justify-center cursor-pointer transition-colors" title="Xóa câu này">✕</button>
               </div>
             </div>
 
-            <!-- Hiển thị công thức KaTeX trực quan ngay bên dưới khi đang sửa -->
-            <div x-show="hasMath(q.text)" class="mt-2 p-3 bg-blue-50/70 border border-blue-200 rounded-2xl text-blue-950 font-medium text-base"
-              x-html="renderMathHtml(q.text)"></div>
-          </div>
-        </div>
-
-        <!-- 4 LỰA CHỌN -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3">
-          <template x-for="opt in ['A','B','C','D']" :key="opt">
-            <div :class="q.answer === opt ? 'border-green-500 bg-green-50/80 shadow-sm' : 'border-gray-200 bg-white'" class="border-2 rounded-2xl p-3 transition-all">
-              <div class="flex items-center gap-2.5">
-                <button type="button" @click="q.answer = opt"
-                  :class="q.answer === opt ? 'bg-green-600 text-white ring-2 ring-green-300' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" 
-                  class="w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0 transition-colors cursor-pointer" 
-                  x-text="opt"></button>
-                
-                <!-- Chế độ xem: Hiện KaTeX chuẩn, KHÔNG hiện mã $ hay code LaTeX thô -->
-                <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
-                  class="flex-1 text-sm sm:text-base font-semibold text-gray-900 cursor-pointer py-1 px-1 min-h-[36px] flex items-center"
-                  x-html="renderMathHtml(q.options[opt]) || '<span class=\'text-gray-300 font-normal italic text-xs\'>Trống...</span>'"></div>
-
-                <!-- Chế độ sửa: Ô nhập liệu & Xem trước trực tiếp KaTeX -->
-                <div x-show="isEditing(q)" class="flex-1 space-y-1.5">
-                  <input x-model="q.options[opt]" type="text" :placeholder="`Phương án ${opt}...`"
-                    class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm sm:text-base focus:outline-none focus:border-indigo-500 font-medium">
-                  <div x-show="hasMath(q.options[opt])" class="p-2 bg-indigo-50/70 border border-indigo-100 rounded-xl text-sm font-semibold text-gray-900 shadow-sm"
-                    x-html="renderMathHtml(q.options[opt])"></div>
-                </div>
+            <!-- Nội dung câu hỏi (Click mở popup sửa) -->
+            <div @click="openEditModal('part1', i)" class="cursor-pointer py-1">
+              <div class="text-sm font-medium text-gray-900 leading-relaxed hover:text-indigo-900 transition-colors" x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-xs\'>Chưa có nội dung câu hỏi (Bấm vào để nhập)...</span>'"></div>
+              <div x-show="q.image" class="mt-2 text-center">
+                <img :src="q.image" class="max-h-36 rounded-lg border object-contain mx-auto cursor-zoom-in hover:opacity-90 transition-opacity" @click.stop="zoomImage(q.image)" alt="Ảnh đồ thị">
               </div>
             </div>
-          </template>
-        </div>
 
-        <!-- Chọn đáp án đúng & Lời giải -->
-        <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-gray-100">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-600">Đáp án đúng:</span>
-            <div class="flex gap-1">
+            <!-- Hàng 4 đáp án nhanh: Click là đổi đáp án đúng ngay tức thì -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-2.5 pt-2.5 border-t border-gray-100 text-xs">
               <template x-for="opt in ['A','B','C','D']" :key="opt">
-                <button type="button" @click="q.answer = opt"
-                  :class="q.answer === opt ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-300 hover:border-green-400'"
-                  class="w-8 h-8 rounded-xl border-2 font-bold text-xs transition-all cursor-pointer"
-                  x-text="opt"></button>
+                <div @click="q.answer = opt" 
+                  class="flex items-center gap-2 p-2 rounded-xl border transition-all cursor-pointer select-none"
+                  :class="q.answer === opt ? 'bg-green-50 border-green-500 text-green-950 font-bold shadow-2xs ring-1 ring-green-400' : 'bg-gray-50/70 hover:bg-gray-100 border-gray-200 text-gray-700'">
+                  <span class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0 transition-colors"
+                    :class="q.answer === opt ? 'bg-green-600 text-white shadow-2xs' : 'bg-white border text-gray-700'"
+                    x-text="opt"></span>
+                  <div class="truncate flex-1" x-html="renderMathHtml(q.options[opt]) || '<span class=\'text-gray-300 italic\'>Trống</span>'"></div>
+                  <span x-show="q.answer === opt" class="text-green-600 text-xs font-black">✓</span>
+                </div>
               </template>
             </div>
-            <span x-show="!q.answer" class="text-red-500 text-xs font-semibold ml-1">⚠️ Chưa chọn đáp án</span>
+            
+            <div x-show="q.explanation" class="mt-2 text-xs text-gray-500 italic pt-1 border-t border-dashed border-gray-100">
+              <span class="font-bold text-gray-600">Lời giải:</span> <span x-html="renderMathHtml(q.explanation)"></span>
+            </div>
           </div>
-
-          <div class="flex-1 min-w-[200px]" x-show="isEditing(q)">
-            <input x-model="q.explanation" type="text" placeholder="💡 Lời giải / giải thích (không bắt buộc)..."
-              class="w-full border rounded-xl px-3 py-1.5 text-xs text-gray-600 bg-gray-50 focus:bg-white focus:outline-none">
-          </div>
-          <div class="text-xs text-gray-500 italic" x-show="!isEditing(q) && q.explanation">
-            <span class="font-semibold text-gray-700">Lời giải:</span> <span x-html="renderMathHtml(q.explanation)"></span>
-          </div>
-        </div>
-      </div>
-    </template>
+        </template>
 
     <button @click="addQ('part1')" class="btn-add w-full justify-center">
       <span>➕</span> <span>Thêm câu Trắc nghiệm (Phần I)</span>
@@ -835,107 +792,55 @@
       </span>
     </div>
 
-    <template x-for="(q, i) in exam.parts.part2.questions" :key="q._id">
-      <div class="q-card" :id="'q_card_part2_' + i" :class="isEditing(q) ? 'border-purple-400 ring-2 ring-purple-100 shadow-md' : 'hover:border-purple-300'">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <span class="bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
-            <span class="text-gray-400 text-xs font-medium">ĐÚNG / SAI</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button type="button" @click="toggleQEdit(q)" 
-              class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1 cursor-pointer"
-              :class="isEditing(q) ? 'bg-green-600 hover:bg-green-700 text-white border-green-600 shadow-sm' : 'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200'">
-              <span x-text="isEditing(q) ? '✅ Xong' : '✏️ Sửa câu này'"></span>
-            </button>
-            <button @click="removeQ('part2', i)" class="btn-del !static !top-auto !right-auto">✕</button>
-          </div>
-        </div>
-
-        <!-- Mô tả bài toán -->
-        <div class="mb-4">
-          <!-- Chế độ xem: KaTeX thuần túy -->
-          <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
-            class="p-4 bg-gray-50/70 hover:bg-purple-50/30 rounded-2xl border border-gray-200 cursor-pointer text-base text-gray-900 leading-relaxed min-h-[50px] transition-colors">
-            <div x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-sm\'>Nhấp để nhập mô tả bài toán...</span>'"></div>
-            <!-- Ảnh minh họa câu hỏi nếu có -->
-            <div x-show="q.image" class="mt-3 text-center">
-              <img :src="q.image" class="max-h-60 rounded-xl border border-gray-200 shadow-sm mx-auto object-contain cursor-zoom-in hover:opacity-95 transition-opacity" @click.stop="zoomImage(q.image)" alt="Hình vẽ / Đồ thị câu hỏi">
-              <p class="text-[11px] text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to</p>
-            </div>
-          </div>
-          <!-- Chế độ sửa -->
-          <div x-show="isEditing(q)">
-            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Mô tả / Ngữ cảnh bài toán <span class="text-red-500">*</span></label>
-              <div class="flex items-center gap-2">
-                <input type="file" accept="image/*" class="hidden" :id="'p2_img_' + q._id" @change="uploadQuestionImage($event, q)">
-                <button type="button" @click="document.getElementById('p2_img_' + q._id).click()" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold px-2.5 py-1 rounded-lg border border-purple-200 flex items-center gap-1 cursor-pointer transition-colors">
-                  <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
-                </button>
-                <button type="button" @click="showFormulaToolbar = true; window.scrollTo({top: 300, behavior: 'smooth'})" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold px-2.5 py-1 rounded-lg border border-purple-200 flex items-center gap-1 cursor-pointer transition-colors" title="Mở bảng ký hiệu & công thức Toán - Lý - Hóa">
-                  <span>🧮</span> <span>Bảng công thức</span>
-                </button>
-                <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
-                  <span>🗑️ Xóa ảnh</span>
-                </button>
+        <template x-for="(q, i) in exam.parts.part2.questions" :key="q._id">
+          <div class="bg-white rounded-2xl border-2 border-gray-200 hover:border-purple-400 p-4 transition-all shadow-xs mb-3 group" :id="'q_card_part2_' + i">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="bg-purple-600 text-white text-xs font-black px-2.5 py-0.5 rounded-lg shadow-2xs" x-text="`Câu ${i+1}`"></span>
+                <span class="text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">Đúng / Sai (1.0đ)</span>
+                <span x-show="q.image" class="text-[11px] font-semibold text-purple-600 bg-purple-50 hover:bg-purple-100 px-2 py-0.5 rounded-md cursor-pointer flex items-center gap-1" @click="zoomImage(q.image)">
+                  <span>🖼️</span><span>Ảnh đồ thị</span>
+                </span>
               </div>
-            </div>
-            <textarea x-model="q.text" @paste="handlePasteImage($event, q)" rows="3" placeholder="VD: Cho hàm số y = f(x)... Xét tính đúng sai của các khẳng định sau: (Có thể dán ảnh bằng Ctrl+V tại đây)"
-              class="input-base w-full block border-2 border-purple-200 rounded-2xl p-3.5 text-base focus:outline-none focus:border-purple-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
-            
-            <!-- Xem trước ảnh trong chế độ sửa -->
-            <div x-show="q.image" class="mt-3 p-3 bg-purple-50/50 rounded-2xl border border-purple-200 flex flex-col items-center">
-              <img :src="q.image" class="max-h-52 rounded-lg border shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh câu hỏi">
-              <div class="mt-2 flex items-center gap-3 text-xs">
-                <span class="text-gray-500 font-medium">Đã gắn ảnh câu hỏi</span>
-                <button type="button" @click="zoomImage(q.image)" class="text-purple-600 font-bold hover:underline">🔍 Xem lớn</button>
-                <button type="button" @click="q.image = ''" class="text-red-600 font-bold hover:underline">🗑️ Xóa ảnh</button>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button type="button" @click="openEditModal('part2', i)" 
+                  class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer active:scale-95"
+                  title="Mở hộp thoại chỉnh sửa nội dung, công thức và đáp án">
+                  <span>✏️</span><span>Sửa câu này</span>
+                </button>
+                <button @click="removeQ('part2', i)" class="w-8 h-8 rounded-xl bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-600 font-bold text-xs flex items-center justify-center cursor-pointer transition-colors" title="Xóa câu này">✕</button>
               </div>
             </div>
 
-            <div x-show="hasMath(q.text)" class="mt-2 p-3 bg-purple-50/70 border border-purple-200 rounded-2xl text-purple-950 font-medium text-base"
-              x-html="renderMathHtml(q.text)"></div>
-          </div>
-        </div>
+            <!-- Mô tả bài toán (Click mở popup sửa) -->
+            <div @click="openEditModal('part2', i)" class="cursor-pointer py-1">
+              <div class="text-sm font-medium text-gray-900 leading-relaxed hover:text-purple-900 transition-colors" x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-xs\'>Chưa có mô tả bài toán (Bấm vào để nhập)...</span>'"></div>
+              <div x-show="q.image" class="mt-2 text-center">
+                <img :src="q.image" class="max-h-36 rounded-lg border object-contain mx-auto cursor-zoom-in hover:opacity-90 transition-opacity" @click.stop="zoomImage(q.image)" alt="Ảnh">
+              </div>
+            </div>
 
-        <!-- 4 ý a, b, c, d -->
-        <div class="space-y-3">
-          <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
-            <div class="p-3 sm:p-3.5 bg-gray-50 rounded-2xl border border-gray-200 w-full transition-all">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full">
-                <div class="flex items-start sm:items-center gap-2.5 flex-1 min-w-0">
-                  <span class="font-black text-gray-700 w-8 text-base flex-shrink-0 pt-0.5 sm:pt-0">(<span x-text="itemKey.toUpperCase()"></span>)</span>
-                  
-                  <!-- Chế độ xem: KaTeX trực tiếp -->
-                  <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
-                    class="flex-1 text-sm sm:text-base font-semibold text-gray-900 cursor-pointer py-1 px-1 min-h-[36px] flex items-center break-words"
-                    x-html="renderMathHtml(q.items[itemKey]?.text) || '<span class=\'text-gray-300 font-normal italic text-xs\'>Trống...</span>'"></div>
-
-                  <!-- Chế độ sửa & Xem trước trực tiếp KaTeX -->
-                  <div x-show="isEditing(q)" class="flex-1 w-full space-y-1.5">
-                    <input x-model="q.items[itemKey].text" type="text"
-                      :placeholder="`Nội dung mệnh đề ${itemKey.toUpperCase()}...`"
-                      class="w-full border-2 border-gray-200 rounded-xl px-4 py-2 text-sm sm:text-base focus:outline-none focus:border-purple-500 bg-white transition-colors font-medium">
-                    <div x-show="hasMath(q.items[itemKey]?.text)" class="p-2 bg-purple-50/70 border border-purple-100 rounded-xl text-sm font-semibold text-gray-900 shadow-sm"
-                      x-html="renderMathHtml(q.items[itemKey]?.text)"></div>
+            <!-- 4 ý a, b, c, d với nút Đúng / Sai bấm đổi trực tiếp -->
+            <div class="space-y-1.5 mt-2.5 pt-2 border-t border-gray-100 text-xs">
+              <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
+                <div class="flex items-center justify-between gap-3 p-1.5 px-2.5 rounded-xl bg-gray-50/70 border border-gray-200">
+                  <div class="flex items-center gap-2 flex-1 min-w-0" @click="openEditModal('part2', i)">
+                    <span class="font-black text-gray-600 w-5 flex-shrink-0" x-text="`(${itemKey.toUpperCase()})`"></span>
+                    <div class="truncate flex-1 text-gray-800" x-html="renderMathHtml(q.items[itemKey]?.text) || '<span class=\'text-gray-300 italic\'>Trống</span>'"></div>
+                  </div>
+                  <div class="flex items-center gap-1 flex-shrink-0">
+                    <button type="button" @click="q.items[itemKey].answer = true"
+                      :class="q.items[itemKey]?.answer === true ? 'bg-green-600 text-white font-black shadow-2xs ring-1 ring-green-300' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-100'"
+                      class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all">Đúng</button>
+                    <button type="button" @click="q.items[itemKey].answer = false"
+                      :class="q.items[itemKey]?.answer === false ? 'bg-red-600 text-white font-black shadow-2xs ring-1 ring-red-300' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-100'"
+                      class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all">Sai</button>
                   </div>
                 </div>
-                
-                <div class="flex items-center justify-end sm:justify-center gap-2 flex-shrink-0 w-full sm:w-auto pt-1.5 sm:pt-0 border-t sm:border-t-0 border-gray-200/60">
-                  <button type="button" @click="q.items[itemKey].answer = true"
-                    :class="q.items[itemKey]?.answer === true ? 'bg-green-600 text-white border-green-600 shadow-md ring-2 ring-green-300' : 'bg-white border-gray-300 text-gray-700 hover:border-green-400'"
-                    class="flex-1 sm:flex-none px-4 py-2 rounded-xl border-2 text-xs sm:text-sm font-black transition-all cursor-pointer">ĐÚNG</button>
-                  <button type="button" @click="q.items[itemKey].answer = false"
-                    :class="q.items[itemKey]?.answer === false ? 'bg-red-600 text-white border-red-600 shadow-md ring-2 ring-red-300' : 'bg-white border-gray-300 text-gray-700 hover:border-red-400'"
-                    class="flex-1 sm:flex-none px-4 py-2 rounded-xl border-2 text-xs sm:text-sm font-black transition-all cursor-pointer">SAI</button>
-                </div>
-              </div>
+              </template>
             </div>
-          </template>
-        </div>
-      </div>
-    </template>
+          </div>
+        </template>
 
     <button @click="addQ('part2')" class="btn-add w-full justify-center">
       <span>➕</span> <span>Thêm câu Đúng/Sai (Phần II)</span>
@@ -953,96 +858,49 @@
       </span>
     </div>
 
-    <template x-for="(q, i) in exam.parts.part3.questions" :key="q._id">
-      <div class="q-card" :id="'q_card_part3_' + i" :class="isEditing(q) ? 'border-teal-400 ring-2 ring-teal-100 shadow-md' : 'hover:border-teal-300'">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <span class="bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
-            <span class="text-gray-400 text-xs font-medium">TRẢ LỜI NGẮN</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button type="button" @click="toggleQEdit(q)" 
-              class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1 cursor-pointer"
-              :class="isEditing(q) ? 'bg-green-600 hover:bg-green-700 text-white border-green-600 shadow-sm' : 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'">
-              <span x-text="isEditing(q) ? '✅ Xong' : '✏️ Sửa câu này'"></span>
-            </button>
-            <button @click="removeQ('part3', i)" class="btn-del !static !top-auto !right-auto">✕</button>
-          </div>
-        </div>
-        
-        <!-- Nội dung câu hỏi -->
-        <div class="mb-4">
-          <!-- Chế độ xem: KaTeX thuần túy -->
-          <div x-show="!isEditing(q)" @click="toggleQEdit(q)" 
-            class="p-4 bg-gray-50/70 hover:bg-teal-50/30 rounded-2xl border border-gray-200 cursor-pointer text-base text-gray-900 leading-relaxed min-h-[50px] transition-colors">
-            <div x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-sm\'>Nhấp để nhập câu hỏi...</span>'"></div>
-            <!-- Ảnh minh họa câu hỏi nếu có -->
-            <div x-show="q.image" class="mt-3 text-center">
-              <img :src="q.image" class="max-h-60 rounded-xl border border-gray-200 shadow-sm mx-auto object-contain cursor-zoom-in hover:opacity-95 transition-opacity" @click.stop="zoomImage(q.image)" alt="Hình vẽ / Đồ thị câu hỏi">
-              <p class="text-[11px] text-gray-400 mt-1">🔍 Nhấp vào ảnh để phóng to</p>
-            </div>
-          </div>
-          <!-- Chế độ sửa -->
-          <div x-show="isEditing(q)">
-            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Nội dung câu hỏi <span class="text-red-500">*</span></label>
-              <div class="flex items-center gap-2">
-                <input type="file" accept="image/*" class="hidden" :id="'p3_img_' + q._id" @change="uploadQuestionImage($event, q)">
-                <button type="button" @click="document.getElementById('p3_img_' + q._id).click()" class="text-xs bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-2.5 py-1 rounded-lg border border-teal-200 flex items-center gap-1 cursor-pointer transition-colors">
-                  <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
-                </button>
-                <button type="button" @click="showFormulaToolbar = true; window.scrollTo({top: 300, behavior: 'smooth'})" class="text-xs bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-2.5 py-1 rounded-lg border border-teal-200 flex items-center gap-1 cursor-pointer transition-colors" title="Mở bảng ký hiệu & công thức Toán - Lý - Hóa">
-                  <span>🧮</span> <span>Bảng công thức</span>
-                </button>
-                <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
-                  <span>🗑️ Xóa ảnh</span>
-                </button>
+        <template x-for="(q, i) in exam.parts.part3.questions" :key="q._id">
+          <div class="bg-white rounded-2xl border-2 border-gray-200 hover:border-teal-400 p-4 transition-all shadow-xs mb-3 group" :id="'q_card_part3_' + i">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="bg-teal-600 text-white text-xs font-black px-2.5 py-0.5 rounded-lg shadow-2xs" x-text="`Câu ${i+1}`"></span>
+                <span class="text-[11px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md">TL Ngắn (0.5đ)</span>
+                <span x-show="q.image" class="text-[11px] font-semibold text-teal-600 bg-teal-50 hover:bg-teal-100 px-2 py-0.5 rounded-md cursor-pointer flex items-center gap-1" @click="zoomImage(q.image)">
+                  <span>🖼️</span><span>Ảnh đồ thị</span>
+                </span>
+                <span x-show="!q.answer" class="text-[11px] font-extrabold text-red-600 bg-red-50 px-2 py-0.5 rounded-md animate-pulse">
+                  ⚠️ Chưa nhập đáp án
+                </span>
               </div>
-            </div>
-            <textarea x-model="q.text" @paste="handlePasteImage($event, q)" rows="3" placeholder="VD: Tính diện tích toàn phần của hình nón... (Có thể dán ảnh bằng Ctrl+V tại đây)"
-              class="input-base w-full block border-2 border-teal-200 rounded-2xl p-3.5 text-base focus:outline-none focus:border-teal-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
-            
-            <!-- Xem trước ảnh trong chế độ sửa -->
-            <div x-show="q.image" class="mt-3 p-3 bg-teal-50/50 rounded-2xl border border-teal-200 flex flex-col items-center">
-              <img :src="q.image" class="max-h-52 rounded-lg border shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh câu hỏi">
-              <div class="mt-2 flex items-center gap-3 text-xs">
-                <span class="text-gray-500 font-medium">Đã gắn ảnh câu hỏi</span>
-                <button type="button" @click="zoomImage(q.image)" class="text-teal-600 font-bold hover:underline">🔍 Xem lớn</button>
-                <button type="button" @click="q.image = ''" class="text-red-600 font-bold hover:underline">🗑️ Xóa ảnh</button>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button type="button" @click="openEditModal('part3', i)" 
+                  class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer active:scale-95"
+                  title="Mở hộp thoại chỉnh sửa nội dung, công thức và đáp án">
+                  <span>✏️</span><span>Sửa câu này</span>
+                </button>
+                <button @click="removeQ('part3', i)" class="w-8 h-8 rounded-xl bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-600 font-bold text-xs flex items-center justify-center cursor-pointer transition-colors" title="Xóa câu này">✕</button>
               </div>
             </div>
 
-            <div x-show="hasMath(q.text)" class="mt-2 p-3 bg-teal-50/70 border border-teal-200 rounded-2xl text-teal-950 font-medium text-base"
-              x-html="renderMathHtml(q.text)"></div>
-          </div>
-        </div>
+            <!-- Nội dung câu hỏi (Click mở popup sửa) -->
+            <div @click="openEditModal('part3', i)" class="cursor-pointer py-1">
+              <div class="text-sm font-medium text-gray-900 leading-relaxed hover:text-teal-900 transition-colors" x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-xs\'>Chưa có nội dung câu hỏi (Bấm vào để nhập)...</span>'"></div>
+              <div x-show="q.image" class="mt-2 text-center">
+                <img :src="q.image" class="max-h-36 rounded-lg border object-contain mx-auto cursor-zoom-in hover:opacity-90 transition-opacity" @click.stop="zoomImage(q.image)" alt="Ảnh">
+              </div>
+            </div>
 
-        <!-- Đáp án -->
-        <div class="p-3 bg-gray-50 rounded-2xl border flex flex-wrap items-center gap-4">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-700 uppercase">Đáp án đúng:</span>
-            <!-- Chế độ xem -->
-            <div x-show="!isEditing(q)" @click="toggleQEdit(q)" class="font-black text-teal-800 text-base cursor-pointer px-3 py-1 bg-white border border-teal-200 rounded-xl min-w-[70px] text-center"
-              x-html="renderMathHtml(q.answer) || '<span class=\'text-gray-300 font-normal italic text-xs\'>Trống</span>'"></div>
-            <!-- Chế độ sửa -->
-            <input x-show="isEditing(q)" x-model="q.answer" type="text" placeholder="VD: 9 hoặc 0.38"
-              class="input-base font-bold text-teal-800 rounded-xl px-4 py-2 text-base w-48">
+            <!-- Khung đáp án chuẩn nhập nhanh -->
+            <div class="flex items-center gap-3 mt-2.5 pt-2 border-t border-gray-100 text-xs flex-wrap">
+              <span class="font-bold text-gray-600">Đáp án chuẩn:</span>
+              <input x-model="q.answer" type="text" placeholder="Nhập đáp án..."
+                class="px-3 py-1.5 font-bold text-teal-800 bg-teal-50 border border-teal-300 rounded-xl text-xs w-44 focus:bg-white focus:outline-none focus:border-teal-500 shadow-2xs">
+              <span x-show="q.accepted_other" class="text-gray-400 text-[11px]" x-text="`Chấp nhận thêm: ${q.accepted_other}`"></span>
+              <div x-show="q.explanation" class="text-gray-500 italic ml-auto text-[11px]">
+                <span class="font-bold">Lời giải:</span> <span x-html="renderMathHtml(q.explanation)"></span>
+              </div>
+            </div>
           </div>
-
-          <div class="flex-1 min-w-[180px]" x-show="isEditing(q)">
-            <input x-model="q.accepted_other" type="text" placeholder="Đáp án phụ (ngăn cách bằng dấu |)..."
-              class="input-base text-xs font-mono rounded-xl px-3 py-2 w-full">
-          </div>
-          <div class="flex-1 min-w-[180px]" x-show="isEditing(q)">
-            <input x-model="q.explanation" type="text" placeholder="💡 Lời giải ngắn..."
-              class="input-base text-xs rounded-xl px-3 py-2 w-full">
-          </div>
-          <div class="text-xs text-gray-500 italic" x-show="!isEditing(q) && q.explanation">
-            <span class="font-semibold text-gray-700">Lời giải:</span> <span x-html="renderMathHtml(q.explanation)"></span>
-          </div>
-        </div>
-      </div>
-    </template>
+        </template>
 
     <button @click="addQ('part3')" class="btn-add w-full justify-center">
       <span>➕</span> <span>Thêm câu Trả lời ngắn (Phần III)</span>
@@ -1061,56 +919,30 @@
     </div>
 
     <template x-for="(q, i) in exam.parts.part4.questions" :key="q._id">
-      <div class="q-card border-orange-200" :id="'q_card_part4_' + i">
-        <button @click="removeQ('part4', i)" class="btn-del">✕</button>
-        <div class="flex items-center gap-2 mb-3">
-          <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full" x-text="`Câu ${i+1}`"></span>
-          <span class="text-gray-400 text-xs font-medium">TỰ LUẬN TỰ CHỌN</span>
+      <div class="bg-white rounded-2xl border-2 border-gray-200 hover:border-orange-400 p-4 transition-all shadow-xs mb-3 group" :id="'q_card_part4_' + i">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="bg-orange-500 text-white text-xs font-black px-2.5 py-0.5 rounded-lg shadow-2xs" x-text="`Câu ${i+1}`"></span>
+            <span class="text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md">Tự luận</span>
+            <span x-show="q.image" class="text-[11px] font-semibold text-orange-600 bg-orange-50 hover:bg-orange-100 px-2 py-0.5 rounded-md cursor-pointer flex items-center gap-1" @click="zoomImage(q.image)">
+              <span>🖼️</span><span>Ảnh</span>
+            </span>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button type="button" @click="openEditModal('part4', i)" 
+              class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer active:scale-95"
+              title="Mở hộp thoại chỉnh sửa nội dung và đề bài tự luận">
+              <span>✏️</span><span>Sửa câu này</span>
+            </button>
+            <button @click="removeQ('part4', i)" class="w-8 h-8 rounded-xl bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-600 font-bold text-xs flex items-center justify-center cursor-pointer transition-colors" title="Xóa câu này">✕</button>
+          </div>
         </div>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Tiêu đề bài tự luận</label>
-            <input x-model="q.title" type="text" placeholder="VD: Câu 1: Khảo sát và ứng dụng tích phân"
-              class="input-base font-semibold rounded-xl px-4 py-2.5">
-          </div>
-          <div>
-            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Đề bài đầy đủ <span class="text-red-500">*</span></label>
-              <div class="flex items-center gap-2">
-                <input type="file" accept="image/*" class="hidden" :id="'p4_img_' + q._id" @change="uploadQuestionImage($event, q)">
-                <button type="button" @click="document.getElementById('p4_img_' + q._id).click()" class="text-xs bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold px-2.5 py-1 rounded-lg border border-orange-200 flex items-center gap-1 cursor-pointer transition-colors">
-                  <span>🖼️</span> <span>Tải ảnh / đồ thị</span>
-                </button>
-                <button type="button" @click="showFormulaToolbar = true; window.scrollTo({top: 300, behavior: 'smooth'})" class="text-xs bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold px-2.5 py-1 rounded-lg border border-orange-200 flex items-center gap-1 cursor-pointer transition-colors" title="Mở bảng ký hiệu & công thức Toán - Lý - Hóa">
-                  <span>🧮</span> <span>Bảng công thức</span>
-                </button>
-                <button type="button" x-show="q.image" @click="q.image = ''" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2 py-1 rounded-lg border border-red-200 cursor-pointer transition-colors" title="Xóa ảnh khỏi câu hỏi">
-                  <span>🗑️ Xóa ảnh</span>
-                </button>
-              </div>
-            </div>
-            <textarea x-model="q.text" @paste="handlePasteImage($event, q)" rows="4" placeholder="Nhập đề bài tự luận chi tiết... (Có thể dán ảnh bằng Ctrl+V tại đây)"
-              class="input-base w-full block border-2 border-gray-200 rounded-2xl p-4 text-base focus:outline-none focus:border-orange-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
-            
-            <!-- Xem trước ảnh -->
-            <div x-show="q.image" class="mt-3 p-3 bg-orange-50/50 rounded-2xl border border-orange-200 flex flex-col items-center">
-              <img :src="q.image" class="max-h-52 rounded-lg border shadow-sm object-contain cursor-zoom-in" @click="zoomImage(q.image)" alt="Ảnh câu hỏi">
-              <div class="mt-2 flex items-center gap-3 text-xs">
-                <span class="text-gray-500 font-medium">Đã gắn ảnh câu hỏi</span>
-                <button type="button" @click="zoomImage(q.image)" class="text-orange-600 font-bold hover:underline">🔍 Xem lớn</button>
-                <button type="button" @click="q.image = ''" class="text-red-600 font-bold hover:underline">🗑️ Xóa ảnh</button>
-              </div>
-            </div>
 
-            <div x-show="hasMath(q.text)" class="mt-2.5 p-3.5 bg-orange-50/80 border border-orange-200 rounded-2xl text-base text-gray-900 shadow-sm"
-              x-html="renderMathHtml(q.text)"></div>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Đáp án mẫu / Hướng dẫn giải</label>
-            <textarea x-model="q.rubric.sample_answer" rows="4" placeholder="Lời giải mẫu để AI đối chiếu chấm điểm..."
-              class="input-base w-full block border-2 border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500 transition-colors resize-y leading-relaxed bg-white"></textarea>
-            <div x-show="hasMath(q.rubric?.sample_answer)" class="mt-2.5 p-3.5 bg-orange-50/80 border border-orange-200 rounded-2xl text-sm text-gray-900 shadow-sm"
-              x-html="renderMathHtml(q.rubric?.sample_answer)"></div>
+        <div @click="openEditModal('part4', i)" class="cursor-pointer py-1">
+          <div x-show="q.title" class="font-bold text-sm text-gray-900 mb-1" x-text="q.title"></div>
+          <div class="text-sm font-medium text-gray-800 leading-relaxed hover:text-orange-950 transition-colors" x-html="renderMathHtml(q.text) || '<span class=\'text-gray-400 italic text-xs\'>Chưa có đề bài tự luận (Bấm vào để nhập)...</span>'"></div>
+          <div x-show="q.image" class="mt-2 text-center">
+            <img :src="q.image" class="max-h-36 rounded-lg border object-contain mx-auto cursor-zoom-in hover:opacity-90 transition-opacity" @click.stop="zoomImage(q.image)" alt="Ảnh">
           </div>
         </div>
       </div>
@@ -1603,6 +1435,394 @@
   </div>
 </div>
 
+<!-- ======= POP-UP MODAL CHỈNH SỬA CÂU HỎI CHUYÊN NGHIỆP (AZOTA STYLE) ======= -->
+<div x-show="editingModal.open && editingModal.q" x-cloak 
+  class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 select-none"
+  @keydown.escape.window="closeEditModal()"
+  @keydown.ctrl.enter.window="closeEditModal(); showMsg('Đã lưu câu hỏi thành công!', true)">
+  
+  <div class="relative max-w-6xl w-full max-h-[95vh] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200" @click.stop>
+    
+    <!-- HEADER MODAL -->
+    <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 text-white px-5 py-3.5 flex items-center justify-between gap-3 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">✏️</span>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="font-extrabold text-base sm:text-lg">
+              Chỉnh sửa Câu <span x-text="editingModal.index + 1"></span>
+            </h3>
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+              :class="{
+                'bg-indigo-500/40 text-indigo-200 border border-indigo-400/40': editingModal.part === 'part1',
+                'bg-purple-500/40 text-purple-200 border border-purple-400/40': editingModal.part === 'part2',
+                'bg-teal-500/40 text-teal-200 border border-teal-400/40': editingModal.part === 'part3',
+                'bg-orange-500/40 text-orange-200 border border-orange-400/40': editingModal.part === 'part4'
+              }"
+              x-text="editingModal.part === 'part1' ? 'Phần I - TNKQ 4 lựa chọn' : (editingModal.part === 'part2' ? 'Phần II - Trắc nghiệm Đúng/Sai' : (editingModal.part === 'part3' ? 'Phần III - Trả lời ngắn' : 'Phần IV - Tự luận'))"></span>
+          </div>
+          <p class="text-xs text-blue-200">Gõ công thức đến đâu, xem trước hiển thị KaTeX trực tiếp ngay bên phải</p>
+        </div>
+      </div>
+
+      <!-- Điều hướng câu trước / câu sau & Nút đóng -->
+      <div class="flex items-center gap-2">
+        <button type="button" @click="prevModalQ()" :disabled="editingModal.index <= 0"
+          class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1 cursor-pointer"
+          title="Sang câu trước">
+          <span>⬅️</span> <span class="hidden sm:inline">Câu trước</span>
+        </button>
+        <span class="text-xs font-bold px-2.5 py-1 bg-white/10 rounded-lg text-blue-100">
+          <span x-text="editingModal.index + 1"></span> / <span x-text="exam.parts[editingModal.part]?.questions?.length || 0"></span>
+        </span>
+        <button type="button" @click="nextModalQ()" :disabled="editingModal.index >= (exam.parts[editingModal.part]?.questions?.length || 0) - 1"
+          class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1 cursor-pointer"
+          title="Sang câu tiếp theo">
+          <span class="hidden sm:inline">Câu tiếp</span> <span>➡️</span>
+        </button>
+        <button @click="closeEditModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-600 text-white font-bold flex items-center justify-center transition-colors ml-2 cursor-pointer" title="Đóng (Esc)">✕</button>
+      </div>
+    </div>
+
+    <!-- TOOLBAR CÔNG THỨC TOÁN - LÝ - HÓA 1 CHẠM -->
+    <div class="bg-gray-100 border-b border-gray-200 px-4 py-2 flex flex-col gap-1.5 flex-shrink-0">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-bold text-gray-700 flex items-center gap-1 mr-1">
+            <span>⚡ Chèn nhanh công thức:</span>
+          </span>
+          <button type="button" @click="editingModal.toolbarTab = 'math'"
+            :class="editingModal.toolbarTab === 'math' ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'"
+            class="px-3 py-1 rounded-lg text-xs transition-all cursor-pointer">📐 Toán học</button>
+          <button type="button" @click="editingModal.toolbarTab = 'phys'"
+            :class="editingModal.toolbarTab === 'phys' ? 'bg-indigo-600 text-white font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'"
+            class="px-3 py-1 rounded-lg text-xs transition-all cursor-pointer">⚡ Vật lí</button>
+          <button type="button" @click="editingModal.toolbarTab = 'chem'"
+            :class="editingModal.toolbarTab === 'chem' ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'"
+            class="px-3 py-1 rounded-lg text-xs transition-all cursor-pointer">🧪 Hóa học</button>
+        </div>
+        <div class="text-[11px] text-gray-500 italic hidden md:block">
+          💡 Click ký hiệu để chèn vào: <b class="text-indigo-700 uppercase" x-text="editingModal.activeField === 'text' ? 'Nội dung câu' : editingModal.activeField"></b>
+        </div>
+      </div>
+
+      <!-- CÁC NÚT BẤM KÝ HIỆU THEO TAB -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs select-none" style="scrollbar-width: thin;">
+        <!-- TAB TOÁN HỌC -->
+        <template x-if="editingModal.toolbarTab === 'math'">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button type="button" @click="insertSymbolToModal('\\frac{a}{b}')" class="btn-sym" title="Phân số a/b">$\frac{a}{b}$</button>
+            <button type="button" @click="insertSymbolToModal('\\sqrt{x}')" class="btn-sym" title="Căn bậc hai">$\sqrt{x}$</button>
+            <button type="button" @click="insertSymbolToModal('x^{2}')" class="btn-sym" title="Số mũ / Lũy thừa">$x^2$</button>
+            <button type="button" @click="insertSymbolToModal('x_{1}')" class="btn-sym" title="Chỉ số dưới">$x_1$</button>
+            <button type="button" @click="insertSymbolToModal('\\int_{a}^{b} f(x)dx')" class="btn-sym" title="Tích phân">$\int$</button>
+            <button type="button" @click="insertSymbolToModal('\\lim_{x \\to 0}')" class="btn-sym" title="Giới hạn">$\lim$</button>
+            <button type="button" @click="insertSymbolToModal('\\vec{u}')" class="btn-sym" title="Vector">$\vec{u}$</button>
+            <button type="button" @click="insertSymbolToModal('\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}')" class="btn-sym" title="Hệ phương trình">Hệ PT</button>
+            <button type="button" @click="insertSymbolToModal('\\widehat{ABC}')" class="btn-sym" title="Góc">$\widehat{ABC}$</button>
+            <button type="button" @click="insertSymbolToModal('\\Delta')" class="btn-sym" title="Delta">$\Delta$</button>
+            <button type="button" @click="insertSymbolToModal('\\pi')" class="btn-sym" title="Số Pi">$\pi$</button>
+            <button type="button" @click="insertSymbolToModal('\\alpha')" class="btn-sym" title="Alpha">$\alpha$</button>
+            <button type="button" @click="insertSymbolToModal('\\beta')" class="btn-sym" title="Beta">$\beta$</button>
+            <button type="button" @click="insertSymbolToModal('\\in')" class="btn-sym" title="Thuộc">$\in$</button>
+            <button type="button" @click="insertSymbolToModal('\\infty')" class="btn-sym" title="Vô cực">$\infty$</button>
+            <button type="button" @click="insertSymbolToModal('\\le')" class="btn-sym" title="Nhỏ hơn hoặc bằng">$\le$</button>
+            <button type="button" @click="insertSymbolToModal('\\ge')" class="btn-sym" title="Lớn hơn hoặc bằng">$\ge$</button>
+            <button type="button" @click="insertSymbolToModal('\\ne')" class="btn-sym" title="Khác">$\ne$</button>
+            <button type="button" @click="insertSymbolToModal('\\approx')" class="btn-sym" title="Xấp xỉ">$\approx$</button>
+            <button type="button" @click="insertSymbolToModal('\\pm')" class="btn-sym" title="Cộng trừ">$\pm$</button>
+          </div>
+        </template>
+
+        <!-- TAB VẬT LÍ -->
+        <template x-if="editingModal.toolbarTab === 'phys'">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button type="button" @click="insertSymbolToModal('\\Omega')" class="btn-sym" title="Điện trở Ôm">$\Omega$</button>
+            <button type="button" @click="insertSymbolToModal('\\mu\\text{F}')" class="btn-sym" title="Micro fara">$\mu\text{F}$</button>
+            <button type="button" @click="insertSymbolToModal('\\lambda')" class="btn-sym" title="Bước sóng Lamda">$\lambda$</button>
+            <button type="button" @click="insertSymbolToModal('^\\circ\\text{C}')" class="btn-sym" title="Độ C">$^\circ\text{C}$</button>
+            <button type="button" @click="insertSymbolToModal('\\vec{F}')" class="btn-sym" title="Véc tơ Lực">$\vec{F}$</button>
+            <button type="button" @click="insertSymbolToModal('\\vec{v}')" class="btn-sym" title="Véc tơ Vận tốc">$\vec{v}$</button>
+            <button type="button" @click="insertSymbolToModal('\\vec{B}')" class="btn-sym" title="Cảm ứng từ">$\vec{B}$</button>
+            <button type="button" @click="insertSymbolToModal('\\Delta t')" class="btn-sym" title="Độ biến thiên thời gian">$\Delta t$</button>
+            <button type="button" @click="insertSymbolToModal('\\omega')" class="btn-sym" title="Tần số góc Omega">$\omega$</button>
+            <button type="button" @click="insertSymbolToModal('\\varphi')" class="btn-sym" title="Pha dao động Phi">$\varphi$</button>
+            <button type="button" @click="insertSymbolToModal('10^{-6}')" class="btn-sym" title="Mũ âm">$10^{-6}$</button>
+            <button type="button" @click="insertSymbolToModal('\\text{m/s}^2')" class="btn-sym" title="Gia tốc">$\text{m/s}^2$</button>
+            <button type="button" @click="insertSymbolToModal('\\text{kW}\\cdot\\text{h}')" class="btn-sym" title="Kilowatt giờ">$\text{kWh}$</button>
+          </div>
+        </template>
+
+        <!-- TAB HÓA HỌC -->
+        <template x-if="editingModal.toolbarTab === 'chem'">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button type="button" @click="insertSymbolToModal('\\rightarrow')" class="btn-sym" title="Mũi tên phản ứng 1 chiều">$\rightarrow$</button>
+            <button type="button" @click="insertSymbolToModal('\\rightleftharpoons')" class="btn-sym" title="Mũi tên phản ứng thuận nghịch">$\rightleftharpoons$</button>
+            <button type="button" @click="insertSymbolToModal('\\downarrow')" class="btn-sym" title="Chất kết tủa">$\downarrow$</button>
+            <button type="button" @click="insertSymbolToModal('\\uparrow')" class="btn-sym" title="Chất bay hơi / khí">$\uparrow$</button>
+            <button type="button" @click="insertSymbolToModal('\\text{Fe}^{3+}')" class="btn-sym" title="Ion Fe 3+">$\text{Fe}^{3+}$</button>
+            <button type="button" @click="insertSymbolToModal('\\text{SO}_4^{2-}')" class="btn-sym" title="Gốc Sunfat">$\text{SO}_4^{2-}$</button>
+            <button type="button" @click="insertSymbolToModal('\\text{OH}^-')" class="btn-sym" title="Ion Hydroxit">$\text{OH}^-$</button>
+            <button type="button" @click="insertSymbolToModal('\\text{H}^+')" class="btn-sym" title="Ion H+">$\text{H}^+$</button>
+            <button type="button" @click="insertSymbolToModal('\\text{H}_2\\text{O}')" class="btn-sym" title="Nước">$\text{H}_2\text{O}$</button>
+            <button type="button" @click="insertSymbolToModal('\\text{CO}_2')" class="btn-sym" title="Khí CO2">$\text{CO}_2$</button>
+            <button type="button" @click="insertSymbolToModal('\\xrightarrow{t^\\circ}')" class="btn-sym" title="Mũi tên nhiệt độ">$\xrightarrow{t^\circ}$</button>
+            <button type="button" @click="insertSymbolToModal('\\xrightarrow{\\text{xt}}')" class="btn-sym" title="Mũi tên xúc tác">$\xrightarrow{\text{xt}}$</button>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- BODY MODAL: CHIA 2 CỘT (SOẠN THẢO TRÁI & XEM TRƯỚC LIVE PREVIEW PHẢI) -->
+    <div class="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+      
+      <!-- CỘT TRÁI: KHU VỰC SOẠN THẢO (Chiếm 7/12) -->
+      <div class="lg:col-span-7 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[calc(95vh-200px)]">
+        
+        <!-- NỘI DUNG CÂU HỎI -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+              <span x-text="editingModal.part === 'part2' ? 'Mô tả / Ngữ cảnh bài toán' : (editingModal.part === 'part4' ? 'Đề bài tự luận chi tiết' : 'Nội dung câu hỏi')"></span>
+              <span class="text-red-500">*</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input type="file" accept="image/*" class="hidden" id="modal-upload-img" @change="uploadQuestionImage($event, editingModal.q)">
+              <button type="button" @click="document.getElementById('modal-upload-img').click()"
+                class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl border border-indigo-200 flex items-center gap-1 cursor-pointer transition-colors">
+                <span>🖼️</span> <span>Tải ảnh đồ thị</span>
+              </button>
+              <button type="button" x-show="editingModal.q.image" @click="editingModal.q.image = ''"
+                class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-bold px-2.5 py-1.5 rounded-xl border border-red-200 cursor-pointer transition-colors">
+                <span>🗑️ Xóa ảnh</span>
+              </button>
+            </div>
+          </div>
+
+          <textarea id="modal-field-text" x-model="editingModal.q.text"
+            @focus="editingModal.activeField = 'text'"
+            @paste="handlePasteImage($event, editingModal.q)"
+            rows="4"
+            placeholder="Nhập nội dung đề bài... (Có thể dán trực tiếp ảnh bằng Ctrl + V tại đây)"
+            class="w-full border-2 border-indigo-200 focus:border-indigo-600 rounded-2xl p-3.5 text-sm sm:text-base focus:outline-none transition-colors resize-y leading-relaxed font-sans bg-white shadow-2xs"></textarea>
+          
+          <!-- Thumbnail ảnh trong ô soạn thảo -->
+          <div x-show="editingModal.q.image" class="mt-2.5 p-2 bg-indigo-50/50 rounded-xl border border-indigo-200 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <img :src="editingModal.q.image" class="h-12 w-16 object-contain rounded border bg-white cursor-zoom-in" @click="zoomImage(editingModal.q.image)">
+              <span class="text-xs text-indigo-900 font-semibold">Đã đính kèm ảnh đồ thị</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" @click="zoomImage(editingModal.q.image)" class="text-xs text-indigo-600 font-bold hover:underline">Xem lớn</button>
+              <button type="button" @click="editingModal.q.image = ''" class="text-xs text-red-600 font-bold hover:underline">Xóa</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN I: SOẠN 4 PHƯƠNG ÁN & CHỌN ĐÁP ÁN ĐÚNG -->
+        <template x-if="editingModal.part === 'part1'">
+          <div class="space-y-3 pt-2 border-t border-gray-100">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">4 Phương án trả lời (Nhấp chọn đáp án đúng):</label>
+              <span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-md" x-text="editingModal.q.answer ? `Đáp án đúng: ${editingModal.q.answer}` : 'Chưa chọn đáp án'"></span>
+            </div>
+
+            <div class="space-y-2">
+              <template x-for="opt in ['A','B','C','D']" :key="opt">
+                <div class="flex items-center gap-2 p-2 rounded-2xl border-2 transition-all"
+                  :class="editingModal.q.answer === opt ? 'bg-green-50/90 border-green-500 shadow-xs' : 'bg-white border-gray-200'">
+                  <button type="button" @click="editingModal.q.answer = opt"
+                    class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0 cursor-pointer transition-all"
+                    :class="editingModal.q.answer === opt ? 'bg-green-600 text-white shadow-sm ring-2 ring-green-300' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                    x-text="opt"></button>
+                  <input :id="`modal-field-${opt}`" x-model="editingModal.q.options[opt]"
+                    @focus="editingModal.activeField = opt"
+                    type="text" :placeholder="`Nội dung phương án ${opt}...`"
+                    class="flex-1 bg-white border border-gray-200 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm focus:outline-none font-medium">
+                  <span x-show="editingModal.q.answer === opt" class="text-xs font-extrabold text-green-700 whitespace-nowrap pr-1">Đúng ✓</span>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+
+        <!-- PHẦN II: SOẠN 4 Ý ĐÚNG / SAI -->
+        <template x-if="editingModal.part === 'part2'">
+          <div class="space-y-3 pt-2 border-t border-gray-100">
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">4 Mệnh đề Đúng / Sai:</label>
+            <div class="space-y-2">
+              <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
+                <div class="p-2.5 rounded-2xl border-2 border-gray-200 bg-white space-y-2">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-black text-gray-800 text-sm w-7 flex-shrink-0" x-text="`(${itemKey.toUpperCase()})`"></span>
+                    <input :id="`modal-field-${itemKey}`" x-model="editingModal.q.items[itemKey].text"
+                      @focus="editingModal.activeField = itemKey"
+                      type="text" :placeholder="`Nội dung khẳng định ${itemKey.toUpperCase()}...`"
+                      class="flex-1 border border-gray-200 focus:border-purple-500 rounded-xl px-3 py-1.5 text-sm focus:outline-none font-medium">
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                      <button type="button" @click="editingModal.q.items[itemKey].answer = true"
+                        :class="editingModal.q.items[itemKey]?.answer === true ? 'bg-green-600 text-white font-black shadow-xs ring-2 ring-green-300' : 'bg-gray-100 text-gray-600 border border-gray-300'"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all">ĐÚNG</button>
+                      <button type="button" @click="editingModal.q.items[itemKey].answer = false"
+                        :class="editingModal.q.items[itemKey]?.answer === false ? 'bg-red-600 text-white font-black shadow-xs ring-2 ring-red-300' : 'bg-gray-100 text-gray-600 border border-gray-300'"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all">SAI</button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+
+        <!-- PHẦN III: SOẠN ĐÁP ÁN TRẢ LỜI NGẮN -->
+        <template x-if="editingModal.part === 'part3'">
+          <div class="space-y-3 pt-2 border-t border-gray-100">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Đáp án đúng chính xác <span class="text-red-500">*</span></label>
+                <input id="modal-field-answer" x-model="editingModal.q.answer"
+                  @focus="editingModal.activeField = 'answer'"
+                  type="text" placeholder="VD: 12 hoặc 0.25 hoặc -3/4..."
+                  class="w-full border-2 border-teal-300 focus:border-teal-600 rounded-xl px-3.5 py-2 text-sm font-bold text-teal-900 bg-teal-50/50 focus:bg-white focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Đáp án chấp nhận thêm (nếu có)</label>
+                <input x-model="editingModal.q.accepted_other"
+                  type="text" placeholder="Ngăn cách bằng dấu | (VD: 12.0|12)"
+                  class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-xs focus:outline-none">
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- PHẦN IV: TỰ LUẬN -->
+        <template x-if="editingModal.part === 'part4'">
+          <div class="space-y-3 pt-2 border-t border-gray-100">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Tiêu đề bài tự luận</label>
+              <input x-model="editingModal.q.title" type="text" placeholder="VD: Câu 1: Khảo sát và ứng dụng tích phân"
+                class="w-full border rounded-xl px-3.5 py-2 text-sm font-bold">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Đáp án mẫu / Rubric chấm điểm</label>
+              <textarea x-model="editingModal.q.rubric.sample_answer" rows="3" placeholder="Lời giải mẫu chi tiết..."
+                class="w-full border rounded-xl p-3 text-xs focus:outline-none"></textarea>
+            </div>
+          </div>
+        </template>
+
+        <!-- LỜI GIẢI / GIẢI THÍCH CHI TIẾT -->
+        <div class="pt-2 border-t border-gray-100">
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">💡 Lời giải / Hướng dẫn giải chi tiết (không bắt buộc):</label>
+          <input id="modal-field-explanation" x-model="editingModal.q.explanation"
+            @focus="editingModal.activeField = 'explanation'"
+            type="text" placeholder="Nhập lời giải hoặc ghi chú cho học sinh xem sau khi thi..."
+            class="w-full border border-gray-200 focus:border-indigo-400 rounded-xl px-3.5 py-2 text-xs text-gray-700 bg-gray-50 focus:bg-white focus:outline-none">
+        </div>
+      </div>
+
+      <!-- CỘT PHẢI: XEM TRƯỚC THỜI GIAN THỰC (LIVE KATEX PREVIEW - Chiếm 5/12) -->
+      <div class="lg:col-span-5 p-4 sm:p-6 bg-slate-50/70 overflow-y-auto max-h-[calc(95vh-200px)] flex flex-col">
+        <div class="flex items-center justify-between pb-3 border-b border-gray-200 mb-4">
+          <div class="flex items-center gap-1.5 text-xs font-bold text-gray-700 uppercase tracking-wider">
+            <span>👁️</span>
+            <span>Xem trước thời gian thực</span>
+          </div>
+          <span class="text-[10px] font-extrabold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Giao diện học sinh</span>
+        </div>
+
+        <div class="flex-1 bg-white rounded-2xl p-4 sm:p-5 border border-gray-200 shadow-sm space-y-4">
+          <!-- Đề bài xem trước -->
+          <div>
+            <div class="flex items-start gap-2 text-sm font-semibold text-gray-900 leading-relaxed">
+              <span class="font-bold text-indigo-700 flex-shrink-0" x-text="`Câu ${editingModal.index + 1}:`"></span>
+              <div class="flex-1" x-html="renderMathHtml(editingModal.q.text) || '<span class=\'text-gray-300 italic\'>Đề bài sẽ hiển thị tại đây...</span>'"></div>
+            </div>
+            <!-- Ảnh minh họa xem trước -->
+            <div x-show="editingModal.q.image" class="mt-3 text-center">
+              <img :src="editingModal.q.image" class="max-h-48 rounded-xl border mx-auto object-contain shadow-2xs">
+            </div>
+          </div>
+
+          <!-- Lựa chọn Phần I xem trước -->
+          <template x-if="editingModal.part === 'part1'">
+            <div class="space-y-2 pt-2 border-t border-gray-100 text-xs">
+              <template x-for="opt in ['A','B','C','D']" :key="opt">
+                <div class="flex items-start gap-2.5 p-2 rounded-xl border transition-all"
+                  :class="editingModal.q.answer === opt ? 'bg-green-50 border-green-500 font-bold text-green-950 shadow-2xs' : 'bg-gray-50/60 border-gray-200 text-gray-700'">
+                  <span class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
+                    :class="editingModal.q.answer === opt ? 'bg-green-600 text-white' : 'bg-white border text-gray-600'"
+                    x-text="opt"></span>
+                  <div class="flex-1 pt-0.5" x-html="renderMathHtml(editingModal.q.options[opt]) || '<span class=\'text-gray-300 italic\'>Trống</span>'"></div>
+                  <span x-show="editingModal.q.answer === opt" class="text-green-600 font-black text-xs">✓ Đáp án</span>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- Lựa chọn Phần II xem trước -->
+          <template x-if="editingModal.part === 'part2'">
+            <div class="space-y-2 pt-2 border-t border-gray-100 text-xs">
+              <template x-for="itemKey in ['a','b','c','d']" :key="itemKey">
+                <div class="flex items-center justify-between gap-2 p-2 rounded-xl border border-gray-200 bg-gray-50/60">
+                  <div class="flex items-start gap-2 flex-1">
+                    <span class="font-bold text-gray-600 w-6 flex-shrink-0" x-text="`(${itemKey.toUpperCase()})`"></span>
+                    <div class="flex-1" x-html="renderMathHtml(editingModal.q.items[itemKey]?.text) || '<span class=\'text-gray-300 italic\'>Trống</span>'"></div>
+                  </div>
+                  <span class="px-2.5 py-0.5 rounded-lg font-black text-[11px] flex-shrink-0 border"
+                    :class="editingModal.q.items[itemKey]?.answer ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'"
+                    x-text="editingModal.q.items[itemKey]?.answer ? 'ĐÚNG' : 'SAI'"></span>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- Lựa chọn Phần III xem trước -->
+          <template x-if="editingModal.part === 'part3'">
+            <div class="pt-2 border-t border-gray-100 text-xs space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-gray-600">Đáp án chuẩn:</span>
+                <span class="px-3 py-1 bg-teal-50 border border-teal-300 text-teal-900 font-bold rounded-xl text-sm"
+                  x-html="renderMathHtml(editingModal.q.answer) || '<span class=\'text-gray-300\'>Chưa nhập</span>'"></span>
+              </div>
+              <div x-show="editingModal.q.accepted_other" class="text-gray-400 text-[11px]" x-text="`Chấp nhận: ${editingModal.q.accepted_other}`"></div>
+            </div>
+          </template>
+
+          <!-- Lời giải xem trước -->
+          <div x-show="editingModal.q.explanation" class="mt-3 p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-950">
+            <span class="font-bold">💡 Lời giải chi tiết:</span>
+            <div class="mt-1" x-html="renderMathHtml(editingModal.q.explanation)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER MODAL -->
+    <div class="bg-gray-50 border-t border-gray-200 px-6 py-3.5 flex items-center justify-between gap-3 flex-shrink-0">
+      <div class="text-xs text-gray-500 hidden sm:block">
+        Phím tắt: <kbd class="px-1.5 py-0.5 bg-gray-200 rounded font-mono text-[10px]">Esc</kbd> để đóng, <kbd class="px-1.5 py-0.5 bg-gray-200 rounded font-mono text-[10px]">Ctrl + Enter</kbd> để lưu
+      </div>
+      <div class="flex items-center gap-2.5 ml-auto">
+        <button type="button" @click="closeEditModal()"
+          class="px-4 py-2 border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold rounded-xl text-xs sm:text-sm cursor-pointer transition-colors">
+          Đóng
+        </button>
+        <button type="button" @click="closeEditModal(); showMsg('Đã lưu câu hỏi thành công!', true)"
+          class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md cursor-pointer transition-transform active:scale-95 flex items-center gap-1.5">
+          <span>💾</span><span>Lưu câu hỏi</span>
+        </button>
+        <button type="button" x-show="editingModal.index < (exam.parts[editingModal.part]?.questions?.length || 0) - 1"
+          @click="nextModalQ()"
+          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md cursor-pointer transition-transform active:scale-95 flex items-center gap-1">
+          <span>Lưu & Sang câu tiếp</span> <span>➡️</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
 let _uid = 0;
@@ -1709,21 +1929,8 @@ function examBuilder() {
       if (this.activeTab !== targetTab && this.activeTab !== 'all') {
         this.activeTab = targetTab;
       }
-      const qList = this.exam.parts[part]?.questions || [];
-      const q = qList[index];
-      if (q) {
-        q._editing = true;
-      }
       this.showNavDrawer = false;
-      setTimeout(() => {
-        const elId = `q_card_${part}_${index}`;
-        const el = document.getElementById(elId);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          el.classList.add('ring-4', 'ring-blue-400');
-          setTimeout(() => el.classList.remove('ring-4', 'ring-blue-400'), 1500);
-        }
-      }, 100);
+      this.openEditModal(part, index);
     },
 
     scrollToTop() {
@@ -1750,6 +1957,83 @@ function examBuilder() {
     parsing: false,
     parsedData: null,
     importSummary: '',
+
+    // Modal chỉnh sửa câu hỏi chuyên nghiệp (Azota Style)
+    editingModal: {
+      open: false,
+      part: 'part1',
+      index: 0,
+      activeField: 'text',
+      toolbarTab: 'math',
+      q: null
+    },
+
+    openEditModal(part, index) {
+      const qList = this.exam.parts[part]?.questions || [];
+      if (index < 0 || index >= qList.length) return;
+      this.editingModal.part = part;
+      this.editingModal.index = index;
+      this.editingModal.q = qList[index];
+      this.editingModal.activeField = 'text';
+      this.editingModal.open = true;
+      this.$nextTick(() => {
+        const el = document.getElementById('modal-field-text');
+        if (el) el.focus();
+      });
+    },
+
+    closeEditModal() {
+      this.editingModal.open = false;
+      this.editingModal.q = null;
+    },
+
+    prevModalQ() {
+      if (this.editingModal.index > 0) {
+        this.openEditModal(this.editingModal.part, this.editingModal.index - 1);
+      }
+    },
+
+    nextModalQ() {
+      const qList = this.exam.parts[this.editingModal.part]?.questions || [];
+      if (this.editingModal.index < qList.length - 1) {
+        this.openEditModal(this.editingModal.part, this.editingModal.index + 1);
+      }
+    },
+
+    insertSymbolToModal(symbol, isMathWrap = true) {
+      if (!this.editingModal.q) return;
+      const q = this.editingModal.q;
+      const field = this.editingModal.activeField || 'text';
+      const toInsert = isMathWrap ? `$${symbol}$` : symbol;
+
+      const inputEl = document.getElementById(`modal-field-${field}`);
+      if (inputEl) {
+        const start = inputEl.selectionStart || 0;
+        const end = inputEl.selectionEnd || 0;
+        let curVal = '';
+        if (field === 'text') curVal = q.text || '';
+        else if (field === 'explanation') curVal = q.explanation || '';
+        else if (field === 'answer') curVal = q.answer || '';
+        else if (['A','B','C','D'].includes(field)) curVal = q.options ? (q.options[field] || '') : '';
+        else if (['a','b','c','d'].includes(field)) curVal = (q.items && q.items[field]) ? (q.items[field].text || '') : '';
+
+        const newVal = curVal.slice(0, start) + toInsert + curVal.slice(end);
+
+        if (field === 'text') q.text = newVal;
+        else if (field === 'explanation') q.explanation = newVal;
+        else if (field === 'answer') q.answer = newVal;
+        else if (['A','B','C','D'].includes(field)) { if (!q.options) q.options = {}; q.options[field] = newVal; }
+        else if (['a','b','c','d'].includes(field)) { if (!q.items) q.items = {}; if (!q.items[field]) q.items[field] = {}; q.items[field].text = newVal; }
+
+        this.$nextTick(() => {
+          inputEl.focus();
+          const newPos = start + toInsert.length;
+          inputEl.setSelectionRange(newPos, newPos);
+        });
+      } else {
+        q.text = (q.text || '') + ' ' + toInsert;
+      }
+    },
 
     exam: {
       id: '',
