@@ -1439,7 +1439,7 @@
 <div x-show="editingModal.open && editingModal.q" x-cloak 
   class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 select-none"
   @keydown.escape.window="closeEditModal()"
-  @keydown.ctrl.enter.window="closeEditModal(); showMsg('Đã lưu câu hỏi thành công!', true)">
+  @keydown.ctrl.enter.window="if (editingModal.open) saveModalAndSync(true)">
   
   <div class="relative max-w-6xl w-full max-h-[95vh] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200" @click.stop>
     
@@ -1484,91 +1484,63 @@
       </div>
     </div>
 
-    <!-- TOOLBAR CÔNG THỨC TOÁN - LÝ - HÓA 1 CHẠM -->
-    <div class="bg-gray-100 border-b border-gray-200 px-4 py-2 flex flex-col gap-1.5 flex-shrink-0">
+    <!-- TOOLBAR CÔNG THỨC TOÁN - LÝ - HÓA 1 CHẠM (HIỂN THỊ KATEX, CHÈN LATEX) -->
+    <div class="bg-slate-100 border-b border-gray-200 px-4 py-2.5 flex flex-col gap-2 flex-shrink-0">
+      
+      <!-- HÀNG 1: CÔNG CỤ CƠ BẢN (CHỈ SỐ TRÊN / DƯỚI / BỌC CÔNG THỨC) & CHỌN MÔN -->
       <div class="flex items-center justify-between gap-2 flex-wrap">
-        <div class="flex items-center gap-1.5">
-          <span class="text-xs font-bold text-gray-700 flex items-center gap-1 mr-1">
-            <span>⚡ Chèn nhanh công thức:</span>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="text-xs font-black text-slate-800 flex items-center gap-1 mr-1">
+            <span>⚡ Công cụ nhanh:</span>
           </span>
+          <!-- Nút Chỉ số trên (xⁿ / Số mũ / Điện tích) -->
+          <button type="button" @click="insertSuperscript()"
+            class="btn-sym bg-purple-50 text-purple-900 border-purple-300 hover:bg-purple-100 font-bold"
+            title="Tạo chỉ số trên / số mũ (Bôi đen ký tự rồi bấm, hoặc chèn mới)">
+            <span x-html="renderBtnMath('x^n')"></span>
+            <span class="ml-1 text-[11px] font-semibold text-purple-700">Chỉ số trên</span>
+          </button>
+
+          <!-- Nút Chỉ số dưới (x₁ / Chỉ số chân / Hóa trị) -->
+          <button type="button" @click="insertSubscript()"
+            class="btn-sym bg-indigo-50 text-indigo-900 border-indigo-300 hover:bg-indigo-100 font-bold"
+            title="Tạo chỉ số dưới (Bôi đen ký tự rồi bấm, hoặc chèn mới)">
+            <span x-html="renderBtnMath('x_n')"></span>
+            <span class="ml-1 text-[11px] font-semibold text-indigo-700">Chỉ số dưới</span>
+          </button>
+
+          <!-- Nút Bọc dấu $...$ -->
+          <button type="button" @click="insertMathWrapper()"
+            class="btn-sym bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 font-mono font-bold text-xs"
+            title="Bọc biểu thức vào cặp dấu $ ... $ để thành công thức">
+            <span>$ ... $</span>
+          </button>
+
+          <span class="h-4 w-px bg-gray-300 mx-1 hidden sm:block"></span>
+
+          <!-- Tab chọn môn -->
           <button type="button" @click="editingModal.toolbarTab = 'math'"
             :class="editingModal.toolbarTab === 'math' ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'"
-            class="px-3 py-1 rounded-lg text-xs transition-all cursor-pointer">📐 Toán học</button>
+            class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer">📐 Toán học</button>
           <button type="button" @click="editingModal.toolbarTab = 'phys'"
             :class="editingModal.toolbarTab === 'phys' ? 'bg-indigo-600 text-white font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'"
-            class="px-3 py-1 rounded-lg text-xs transition-all cursor-pointer">⚡ Vật lí</button>
+            class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer">⚡ Vật lí</button>
           <button type="button" @click="editingModal.toolbarTab = 'chem'"
             :class="editingModal.toolbarTab === 'chem' ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'"
-            class="px-3 py-1 rounded-lg text-xs transition-all cursor-pointer">🧪 Hóa học</button>
+            class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer">🧪 Hóa học</button>
         </div>
-        <div class="text-[11px] text-gray-500 italic hidden md:block">
+
+        <div class="text-[11px] text-gray-600 italic hidden md:block">
           💡 Click ký hiệu để chèn vào: <b class="text-indigo-700 uppercase" x-text="editingModal.activeField === 'text' ? 'Nội dung câu' : editingModal.activeField"></b>
         </div>
       </div>
 
-      <!-- CÁC NÚT BẤM KÝ HIỆU THEO TAB -->
+      <!-- HÀNG 2: CÁC NÚT BẤM KÝ HIỆU HIỂN THỊ KATEX CHUẨN ĐẸP -->
       <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs select-none" style="scrollbar-width: thin;">
-        <!-- TAB TOÁN HỌC -->
-        <template x-if="editingModal.toolbarTab === 'math'">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <button type="button" @click="insertSymbolToModal('\\frac{a}{b}')" class="btn-sym" title="Phân số a/b">$\frac{a}{b}$</button>
-            <button type="button" @click="insertSymbolToModal('\\sqrt{x}')" class="btn-sym" title="Căn bậc hai">$\sqrt{x}$</button>
-            <button type="button" @click="insertSymbolToModal('x^{2}')" class="btn-sym" title="Số mũ / Lũy thừa">$x^2$</button>
-            <button type="button" @click="insertSymbolToModal('x_{1}')" class="btn-sym" title="Chỉ số dưới">$x_1$</button>
-            <button type="button" @click="insertSymbolToModal('\\int_{a}^{b} f(x)dx')" class="btn-sym" title="Tích phân">$\int$</button>
-            <button type="button" @click="insertSymbolToModal('\\lim_{x \\to 0}')" class="btn-sym" title="Giới hạn">$\lim$</button>
-            <button type="button" @click="insertSymbolToModal('\\vec{u}')" class="btn-sym" title="Vector">$\vec{u}$</button>
-            <button type="button" @click="insertSymbolToModal('\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}')" class="btn-sym" title="Hệ phương trình">Hệ PT</button>
-            <button type="button" @click="insertSymbolToModal('\\widehat{ABC}')" class="btn-sym" title="Góc">$\widehat{ABC}$</button>
-            <button type="button" @click="insertSymbolToModal('\\Delta')" class="btn-sym" title="Delta">$\Delta$</button>
-            <button type="button" @click="insertSymbolToModal('\\pi')" class="btn-sym" title="Số Pi">$\pi$</button>
-            <button type="button" @click="insertSymbolToModal('\\alpha')" class="btn-sym" title="Alpha">$\alpha$</button>
-            <button type="button" @click="insertSymbolToModal('\\beta')" class="btn-sym" title="Beta">$\beta$</button>
-            <button type="button" @click="insertSymbolToModal('\\in')" class="btn-sym" title="Thuộc">$\in$</button>
-            <button type="button" @click="insertSymbolToModal('\\infty')" class="btn-sym" title="Vô cực">$\infty$</button>
-            <button type="button" @click="insertSymbolToModal('\\le')" class="btn-sym" title="Nhỏ hơn hoặc bằng">$\le$</button>
-            <button type="button" @click="insertSymbolToModal('\\ge')" class="btn-sym" title="Lớn hơn hoặc bằng">$\ge$</button>
-            <button type="button" @click="insertSymbolToModal('\\ne')" class="btn-sym" title="Khác">$\ne$</button>
-            <button type="button" @click="insertSymbolToModal('\\approx')" class="btn-sym" title="Xấp xỉ">$\approx$</button>
-            <button type="button" @click="insertSymbolToModal('\\pm')" class="btn-sym" title="Cộng trừ">$\pm$</button>
-          </div>
-        </template>
-
-        <!-- TAB VẬT LÍ -->
-        <template x-if="editingModal.toolbarTab === 'phys'">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <button type="button" @click="insertSymbolToModal('\\Omega')" class="btn-sym" title="Điện trở Ôm">$\Omega$</button>
-            <button type="button" @click="insertSymbolToModal('\\mu\\text{F}')" class="btn-sym" title="Micro fara">$\mu\text{F}$</button>
-            <button type="button" @click="insertSymbolToModal('\\lambda')" class="btn-sym" title="Bước sóng Lamda">$\lambda$</button>
-            <button type="button" @click="insertSymbolToModal('^\\circ\\text{C}')" class="btn-sym" title="Độ C">$^\circ\text{C}$</button>
-            <button type="button" @click="insertSymbolToModal('\\vec{F}')" class="btn-sym" title="Véc tơ Lực">$\vec{F}$</button>
-            <button type="button" @click="insertSymbolToModal('\\vec{v}')" class="btn-sym" title="Véc tơ Vận tốc">$\vec{v}$</button>
-            <button type="button" @click="insertSymbolToModal('\\vec{B}')" class="btn-sym" title="Cảm ứng từ">$\vec{B}$</button>
-            <button type="button" @click="insertSymbolToModal('\\Delta t')" class="btn-sym" title="Độ biến thiên thời gian">$\Delta t$</button>
-            <button type="button" @click="insertSymbolToModal('\\omega')" class="btn-sym" title="Tần số góc Omega">$\omega$</button>
-            <button type="button" @click="insertSymbolToModal('\\varphi')" class="btn-sym" title="Pha dao động Phi">$\varphi$</button>
-            <button type="button" @click="insertSymbolToModal('10^{-6}')" class="btn-sym" title="Mũ âm">$10^{-6}$</button>
-            <button type="button" @click="insertSymbolToModal('\\text{m/s}^2')" class="btn-sym" title="Gia tốc">$\text{m/s}^2$</button>
-            <button type="button" @click="insertSymbolToModal('\\text{kW}\\cdot\\text{h}')" class="btn-sym" title="Kilowatt giờ">$\text{kWh}$</button>
-          </div>
-        </template>
-
-        <!-- TAB HÓA HỌC -->
-        <template x-if="editingModal.toolbarTab === 'chem'">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <button type="button" @click="insertSymbolToModal('\\rightarrow')" class="btn-sym" title="Mũi tên phản ứng 1 chiều">$\rightarrow$</button>
-            <button type="button" @click="insertSymbolToModal('\\rightleftharpoons')" class="btn-sym" title="Mũi tên phản ứng thuận nghịch">$\rightleftharpoons$</button>
-            <button type="button" @click="insertSymbolToModal('\\downarrow')" class="btn-sym" title="Chất kết tủa">$\downarrow$</button>
-            <button type="button" @click="insertSymbolToModal('\\uparrow')" class="btn-sym" title="Chất bay hơi / khí">$\uparrow$</button>
-            <button type="button" @click="insertSymbolToModal('\\text{Fe}^{3+}')" class="btn-sym" title="Ion Fe 3+">$\text{Fe}^{3+}$</button>
-            <button type="button" @click="insertSymbolToModal('\\text{SO}_4^{2-}')" class="btn-sym" title="Gốc Sunfat">$\text{SO}_4^{2-}$</button>
-            <button type="button" @click="insertSymbolToModal('\\text{OH}^-')" class="btn-sym" title="Ion Hydroxit">$\text{OH}^-$</button>
-            <button type="button" @click="insertSymbolToModal('\\text{H}^+')" class="btn-sym" title="Ion H+">$\text{H}^+$</button>
-            <button type="button" @click="insertSymbolToModal('\\text{H}_2\\text{O}')" class="btn-sym" title="Nước">$\text{H}_2\text{O}$</button>
-            <button type="button" @click="insertSymbolToModal('\\text{CO}_2')" class="btn-sym" title="Khí CO2">$\text{CO}_2$</button>
-            <button type="button" @click="insertSymbolToModal('\\xrightarrow{t^\\circ}')" class="btn-sym" title="Mũi tên nhiệt độ">$\xrightarrow{t^\circ}$</button>
-            <button type="button" @click="insertSymbolToModal('\\xrightarrow{\\text{xt}}')" class="btn-sym" title="Mũi tên xúc tác">$\xrightarrow{\text{xt}}$</button>
-          </div>
+        <template x-for="item in (toolbarSymbols[editingModal.toolbarTab] || [])" :key="item.latex">
+          <button type="button" @click="insertSymbolToModal(item.latex)"
+            class="btn-sym" :title="item.title"
+            x-html="renderBtnMath(item.disp || item.latex)"></button>
         </template>
       </div>
     </div>
@@ -1808,13 +1780,15 @@
           class="px-4 py-2 border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold rounded-xl text-xs sm:text-sm cursor-pointer transition-colors">
           Đóng
         </button>
-        <button type="button" @click="closeEditModal(); showMsg('Đã lưu câu hỏi thành công!', true)"
-          class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md cursor-pointer transition-transform active:scale-95 flex items-center gap-1.5">
+        <button type="button" @click="saveModalAndSync(true)"
+          class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md cursor-pointer transition-transform active:scale-95 flex items-center gap-1.5"
+          title="Lưu câu hỏi và cập nhật ngay vào cơ sở dữ liệu web">
           <span>💾</span><span>Lưu câu hỏi</span>
         </button>
         <button type="button" x-show="editingModal.index < (exam.parts[editingModal.part]?.questions?.length || 0) - 1"
-          @click="nextModalQ()"
-          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md cursor-pointer transition-transform active:scale-95 flex items-center gap-1">
+          @click="saveModalAndSync(false); nextModalQ()"
+          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md cursor-pointer transition-transform active:scale-95 flex items-center gap-1"
+          title="Lưu câu hiện tại và chuyển sang câu kế tiếp">
           <span>Lưu & Sang câu tiếp</span> <span>➡️</span>
         </button>
       </div>
@@ -1958,6 +1932,72 @@ function examBuilder() {
     parsedData: null,
     importSummary: '',
 
+    // Dữ liệu ký hiệu cho Toolbar Modal (Hiển thị KaTeX chuẩn trên nút, chèn mã LaTeX vào ô nhập)
+    toolbarSymbols: {
+      math: [
+        { latex: '\\frac{a}{b}', title: 'Phân số a/b' },
+        { latex: '\\sqrt{x}', title: 'Căn bậc hai' },
+        { latex: '\\sqrt[n]{x}', title: 'Căn bậc n' },
+        { latex: 'x^{2}', title: 'Số mũ lũy thừa' },
+        { latex: 'x_{1}', title: 'Chỉ số dưới' },
+        { latex: '\\int_{a}^{b} f(x)dx', disp: '\\int', title: 'Tích phân' },
+        { latex: '\\lim_{x \\to 0}', disp: '\\lim', title: 'Giới hạn' },
+        { latex: '\\vec{u}', title: 'Vector' },
+        { latex: '\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}', disp: '\\begin{cases} x \\\\ y \\end{cases}', title: 'Hệ phương trình' },
+        { latex: '\\widehat{ABC}', title: 'Góc' },
+        { latex: '\\Delta', title: 'Delta' },
+        { latex: '\\pi', title: 'Số Pi' },
+        { latex: '\\alpha', title: 'Alpha' },
+        { latex: '\\beta', title: 'Beta' },
+        { latex: '\\in', title: 'Thuộc' },
+        { latex: '\\notin', title: 'Không thuộc' },
+        { latex: '\\infty', title: 'Vô cực' },
+        { latex: '\\le', title: 'Nhỏ hơn hoặc bằng' },
+        { latex: '\\ge', title: 'Lớn hơn hoặc bằng' },
+        { latex: '\\ne', title: 'Khác' },
+        { latex: '\\approx', title: 'Xấp xỉ' },
+        { latex: '\\pm', title: 'Cộng trừ' }
+      ],
+      phys: [
+        { latex: '\\Omega', title: 'Điện trở Ôm' },
+        { latex: '\\mu\\text{F}', title: 'Micro Fara' },
+        { latex: '\\lambda', title: 'Bước sóng Lamda' },
+        { latex: '^{\\circ}\\text{C}', title: 'Độ C' },
+        { latex: '\\vec{F}', title: 'Véc tơ Lực' },
+        { latex: '\\vec{v}', title: 'Véc tơ Vận tốc' },
+        { latex: '\\vec{B}', title: 'Cảm ứng từ' },
+        { latex: '\\Delta t', title: 'Độ biến thiên thời gian' },
+        { latex: '\\omega', title: 'Tần số góc Omega' },
+        { latex: '\\varphi', title: 'Pha dao động Phi' },
+        { latex: '10^{-6}', title: 'Mũ âm' },
+        { latex: '\\text{m/s}^2', title: 'Gia tốc m/s²' },
+        { latex: '\\text{kW}\\cdot\\text{h}', title: 'Kilowatt giờ' }
+      ],
+      chem: [
+        { latex: '\\rightarrow', title: 'Mũi tên phản ứng 1 chiều' },
+        { latex: '\\rightleftharpoons', title: 'Mũi tên phản ứng thuận nghịch' },
+        { latex: '\\downarrow', title: 'Chất kết tủa' },
+        { latex: '\\uparrow', title: 'Chất bay hơi / khí' },
+        { latex: '\\xrightarrow{t^{\\circ}}', title: 'Phản ứng có nhiệt độ t°' },
+        { latex: '\\xrightarrow{\\text{xt}, t^{\\circ}}', title: 'Phản ứng có xúc tác, nhiệt độ' },
+        { latex: '\\text{Fe}^{3+}', title: 'Ion Sắt (III)' },
+        { latex: '\\text{Fe}^{2+}', title: 'Ion Sắt (II)' },
+        { latex: '\\text{Cu}^{2+}', title: 'Ion Đồng (II)' },
+        { latex: '\\text{Al}^{3+}', title: 'Ion Nhôm (III)' },
+        { latex: '\\text{SO}_4^{2-}', title: 'Gốc Sunfat' },
+        { latex: '\\text{NO}_3^-', title: 'Gốc Nitrat' },
+        { latex: '\\text{CO}_3^{2-}', title: 'Gốc Cacbonat' },
+        { latex: '\\text{OH}^-', title: 'Ion Hiđroxit' },
+        { latex: '\\text{Cl}^-', title: 'Ion Clorua' },
+        { latex: '\\text{H}^+', title: 'Ion Hiđro' },
+        { latex: '\\text{H}_2\\text{O}', title: 'Phân tử Nước' },
+        { latex: '\\text{CO}_2', title: 'Khí Cacbonic' },
+        { latex: '\\text{H}_2\\text{SO}_4', title: 'Axit Sunfuric' },
+        { latex: '\\text{CaCO}_3', title: 'Canxi Cacbonat' },
+        { latex: '\\text{NaOH}', title: 'Natri Hiđroxit' }
+      ]
+    },
+
     // Modal chỉnh sửa câu hỏi chuyên nghiệp (Azota Style)
     editingModal: {
       open: false,
@@ -1966,6 +2006,36 @@ function examBuilder() {
       activeField: 'text',
       toolbarTab: 'math',
       q: null
+    },
+
+    renderBtnMath(latex) {
+      if (!window.katex || !latex) return latex || '';
+      try {
+        return katex.renderToString(latex, { displayMode: false, throwOnError: false });
+      } catch(e) {
+        return latex;
+      }
+    },
+
+    getModalFieldValue(field) {
+      const q = this.editingModal.q;
+      if (!q) return '';
+      if (field === 'text') return q.text || '';
+      if (field === 'explanation') return q.explanation || '';
+      if (field === 'answer') return q.answer || '';
+      if (['A','B','C','D'].includes(field)) return (q.options && q.options[field]) || '';
+      if (['a','b','c','d'].includes(field)) return (q.items && q.items[field] && q.items[field].text) || '';
+      return '';
+    },
+
+    setModalFieldValue(field, val) {
+      const q = this.editingModal.q;
+      if (!q) return;
+      if (field === 'text') q.text = val;
+      else if (field === 'explanation') q.explanation = val;
+      else if (field === 'answer') q.answer = val;
+      else if (['A','B','C','D'].includes(field)) { if (!q.options) q.options = {}; q.options[field] = val; }
+      else if (['a','b','c','d'].includes(field)) { if (!q.items) q.items = {}; if (!q.items[field]) q.items[field] = {}; q.items[field].text = val; }
     },
 
     openEditModal(part, index) {
@@ -1987,6 +2057,14 @@ function examBuilder() {
       this.editingModal.q = null;
     },
 
+    async saveModalAndSync(close = true) {
+      if (close) {
+        this.closeEditModal();
+      }
+      await this.saveExam(false);
+      this.showMsg('✅ Đã lưu câu hỏi và cập nhật đề thi lên hệ thống web!', true);
+    },
+
     prevModalQ() {
       if (this.editingModal.index > 0) {
         this.openEditModal(this.editingModal.part, this.editingModal.index - 1);
@@ -2000,38 +2078,117 @@ function examBuilder() {
       }
     },
 
+    insertSuperscript() {
+      if (!this.editingModal.q) return;
+      const field = this.editingModal.activeField || 'text';
+      const inputEl = document.getElementById(`modal-field-${field}`);
+      let curVal = this.getModalFieldValue(field);
+      const start = inputEl ? (inputEl.selectionStart || 0) : curVal.length;
+      const end = inputEl ? (inputEl.selectionEnd || 0) : curVal.length;
+      const selectedText = curVal.slice(start, end);
+      
+      let toInsert = selectedText ? `^{${selectedText}}` : `^{}`;
+      let cursorOffset = selectedText ? toInsert.length : 2;
+
+      const beforeText = curVal.slice(0, start);
+      const dollarCountBefore = (beforeText.match(/\$/g) || []).length;
+      const isInsideDollar = dollarCountBefore % 2 !== 0;
+
+      if (!isInsideDollar) {
+        toInsert = `$${toInsert}$`;
+        cursorOffset = selectedText ? toInsert.length : 3;
+      }
+
+      const newVal = curVal.slice(0, start) + toInsert + curVal.slice(end);
+      this.setModalFieldValue(field, newVal);
+      if (inputEl) {
+        this.$nextTick(() => {
+          inputEl.focus();
+          inputEl.setSelectionRange(start + cursorOffset, start + cursorOffset);
+        });
+      }
+    },
+
+    insertSubscript() {
+      if (!this.editingModal.q) return;
+      const field = this.editingModal.activeField || 'text';
+      const inputEl = document.getElementById(`modal-field-${field}`);
+      let curVal = this.getModalFieldValue(field);
+      const start = inputEl ? (inputEl.selectionStart || 0) : curVal.length;
+      const end = inputEl ? (inputEl.selectionEnd || 0) : curVal.length;
+      const selectedText = curVal.slice(start, end);
+      
+      let toInsert = selectedText ? `_{${selectedText}}` : `_{}`;
+      let cursorOffset = selectedText ? toInsert.length : 2;
+
+      const beforeText = curVal.slice(0, start);
+      const dollarCountBefore = (beforeText.match(/\$/g) || []).length;
+      const isInsideDollar = dollarCountBefore % 2 !== 0;
+
+      if (!isInsideDollar) {
+        toInsert = `$${toInsert}$`;
+        cursorOffset = selectedText ? toInsert.length : 3;
+      }
+
+      const newVal = curVal.slice(0, start) + toInsert + curVal.slice(end);
+      this.setModalFieldValue(field, newVal);
+      if (inputEl) {
+        this.$nextTick(() => {
+          inputEl.focus();
+          inputEl.setSelectionRange(start + cursorOffset, start + cursorOffset);
+        });
+      }
+    },
+
+    insertMathWrapper() {
+      if (!this.editingModal.q) return;
+      const field = this.editingModal.activeField || 'text';
+      const inputEl = document.getElementById(`modal-field-${field}`);
+      let curVal = this.getModalFieldValue(field);
+      const start = inputEl ? (inputEl.selectionStart || 0) : curVal.length;
+      const end = inputEl ? (inputEl.selectionEnd || 0) : curVal.length;
+      const selectedText = curVal.slice(start, end);
+      
+      let toInsert = selectedText ? `$${selectedText}$` : `$ $`;
+      let cursorOffset = selectedText ? toInsert.length : 1;
+
+      const newVal = curVal.slice(0, start) + toInsert + curVal.slice(end);
+      this.setModalFieldValue(field, newVal);
+      if (inputEl) {
+        this.$nextTick(() => {
+          inputEl.focus();
+          inputEl.setSelectionRange(start + cursorOffset, start + cursorOffset);
+        });
+      }
+    },
+
     insertSymbolToModal(symbol, isMathWrap = true) {
       if (!this.editingModal.q) return;
-      const q = this.editingModal.q;
       const field = this.editingModal.activeField || 'text';
-      const toInsert = isMathWrap ? `$${symbol}$` : symbol;
-
       const inputEl = document.getElementById(`modal-field-${field}`);
+      let curVal = this.getModalFieldValue(field);
+      let start = inputEl ? (inputEl.selectionStart || 0) : curVal.length;
+      let end = inputEl ? (inputEl.selectionEnd || 0) : curVal.length;
+
+      let toInsert = symbol;
+      if (isMathWrap) {
+        const beforeText = curVal.slice(0, start);
+        const dollarCountBefore = (beforeText.match(/\$/g) || []).length;
+        const isInsideDollar = dollarCountBefore % 2 !== 0;
+        if (!isInsideDollar) {
+          toInsert = `$${symbol}$`;
+        }
+      }
+
+      const newVal = curVal.slice(0, start) + toInsert + curVal.slice(end);
+      this.setModalFieldValue(field, newVal);
+
       if (inputEl) {
-        const start = inputEl.selectionStart || 0;
-        const end = inputEl.selectionEnd || 0;
-        let curVal = '';
-        if (field === 'text') curVal = q.text || '';
-        else if (field === 'explanation') curVal = q.explanation || '';
-        else if (field === 'answer') curVal = q.answer || '';
-        else if (['A','B','C','D'].includes(field)) curVal = q.options ? (q.options[field] || '') : '';
-        else if (['a','b','c','d'].includes(field)) curVal = (q.items && q.items[field]) ? (q.items[field].text || '') : '';
-
-        const newVal = curVal.slice(0, start) + toInsert + curVal.slice(end);
-
-        if (field === 'text') q.text = newVal;
-        else if (field === 'explanation') q.explanation = newVal;
-        else if (field === 'answer') q.answer = newVal;
-        else if (['A','B','C','D'].includes(field)) { if (!q.options) q.options = {}; q.options[field] = newVal; }
-        else if (['a','b','c','d'].includes(field)) { if (!q.items) q.items = {}; if (!q.items[field]) q.items[field] = {}; q.items[field].text = newVal; }
-
         this.$nextTick(() => {
           inputEl.focus();
           const newPos = start + toInsert.length;
           inputEl.setSelectionRange(newPos, newPos);
         });
-      } else {
-        q.text = (q.text || '') + ' ' + toInsert;
       }
     },
 
@@ -2573,8 +2730,8 @@ function examBuilder() {
         return str.replace(/^\s*\$([+-]?\d+(?:[\.,]\d+)?)\$\s*$/, '$1');
       }
 
-      // Tự động sửa số mũ bị lỗi mất ngoặc mở: 3}^{5} -> 3^{5}, {3}^{3} -> 3^{3}
-      str = str.replace(/\{?([a-zA-Z0-9]+)\}\^\{?([a-zA-Z0-9_+-]+)\}?/g, '$1^{$2}');
+      // Tự động sửa số mũ bị lỗi mất ngoặc mở: ví dụ 3}^{5} -> 3^{5} (tuyệt đối không bóc ngoặc của \text{...}, \mathrm{...})
+      str = str.replace(/(^|[^\w\\\{])(\d+)\}\^\{?([a-zA-Z0-9_+-]+)\}?/g, '$1$2^{$3}');
 
       // Tự động sửa tập hợp ở các phương án bị mất ngoặc mở: $1;2;3}$ -> $\{1; 2; 3\}$
       // Không dùng Regex lookbehind để tương thích 100% với Safari/iPadOS/iOS/WebViews
