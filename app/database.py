@@ -94,17 +94,30 @@ def get_connection():
     """Lấy kết nối CSDL (PostgreSQL nếu có cấu hình, SQLite nếu không)."""
     global USE_POSTGRES, _PG_POOL
     if USE_POSTGRES and _PG_POOL:
-        try:
-            raw_conn = _PG_POOL.getconn()
-            return PooledPgConnection(raw_conn, _PG_POOL)
-        except Exception as e:
-            logger.warning(f"Lỗi lấy kết nối từ Neon pool: {e}. Dùng kết nối tạm...")
+        for _ in range(3):
+            raw_conn = None
             try:
-                import psycopg2
-                raw_conn = psycopg2.connect(DATABASE_URL)
-                return PooledPgConnection(raw_conn, None)
-            except Exception as e2:
-                logger.error(f"Kết nối Neon thất bại ({e2}), fallback sang SQLite!")
+                raw_conn = _PG_POOL.getconn()
+                if getattr(raw_conn, 'closed', 0) != 0:
+                    _PG_POOL.putconn(raw_conn, close=True)
+                    continue
+                with raw_conn.cursor() as cur:
+                    cur.execute("SELECT 1;")
+                return PooledPgConnection(raw_conn, _PG_POOL)
+            except Exception as e:
+                try:
+                    if raw_conn:
+                        _PG_POOL.putconn(raw_conn, close=True)
+                except Exception:
+                    pass
+                logger.debug(f"Kết nối Neon bị gián đoạn ({e}), đang tái tạo...")
+
+        try:
+            import psycopg2
+            raw_conn = psycopg2.connect(DATABASE_URL)
+            return PooledPgConnection(raw_conn, None)
+        except Exception as e2:
+            logger.error(f"Kết nối Neon thất bại ({e2}), fallback sang SQLite!")
     
     # SQLite fallback
     conn = sqlite3.connect(str(DB_PATH), timeout=30.0)

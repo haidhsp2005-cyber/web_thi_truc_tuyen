@@ -479,15 +479,37 @@
 
   <!-- ======= DANH SÁCH BÀI NỘP ======= -->
   <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-    <div class="bg-gray-800 text-white px-5 py-4 flex items-center justify-between">
-      <h2 class="font-bold flex items-center gap-2"><span>📋</span>Danh sách bài nộp (<span x-text="filteredSubmissions.length"></span>/<span x-text="submissions.length"></span>)</h2>
-      <div class="flex items-center gap-2">
+    <div class="bg-gray-800 text-white px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 flex-wrap">
+        <h2 class="font-bold flex items-center gap-2"><span>📋</span>Danh sách bài nộp (<span x-text="filteredSubmissions.length"></span>/<span x-text="submissions.length"></span>)</h2>
+        <!-- Badge thông báo khi có học sinh vừa nộp bài -->
+        <span x-show="showNewSubmissionBadge" x-transition x-cloak
+          class="bg-emerald-500 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-full animate-bounce shadow-md flex items-center gap-1">
+          <span>✨</span><span>+<span x-text="newSubmissionCount"></span> bài mới nộp!</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <!-- Nút bật/tắt cập nhật thời gian thực -->
+        <button @click="liveRealtime = !liveRealtime" 
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer shadow-sm"
+          :class="liveRealtime ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 hover:bg-emerald-500/30' : 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'"
+          :title="liveRealtime ? 'Đang tự động quét và hiện bài nộp mới mỗi 5 giây' : 'Bấm để bật tự động làm mới thời gian thực'">
+          <span class="relative flex h-2 w-2">
+            <span x-show="liveRealtime" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2" :class="liveRealtime ? 'bg-emerald-400' : 'bg-gray-500'"></span>
+          </span>
+          <span x-text="liveRealtime ? '⚡ Trực tiếp (5s): BẬT' : '⏸️ Trực tiếp: TẮT'"></span>
+        </button>
+
+        <button @click="loadSubmissions(); loadStats();" class="text-gray-300 hover:text-white text-xs bg-gray-700/60 hover:bg-gray-700 border border-gray-600 px-2.5 py-1.5 rounded-xl font-medium transition-colors flex items-center gap-1 cursor-pointer">
+          <span>🔄</span><span>Làm mới</span>
+        </button>
+
         <button @click="clearAllSubmissions()" :disabled="submissions.length === 0" 
           class="bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           title="Xóa toàn bộ bài nộp để bắt đầu ca thi mới">
-          <span>🗑️</span><span>Xóa toàn bộ bài nộp</span>
+          <span>🗑️</span><span>Xóa tất cả</span>
         </button>
-        <button @click="loadSubmissions()" class="text-gray-300 hover:text-white text-sm cursor-pointer">🔄 Làm mới</button>
       </div>
     </div>
 
@@ -1528,6 +1550,10 @@ function adminApp() {
     },
     showClassPrintModal: false,
     classPrintBatches: [],
+    liveRealtime: true,
+    realtimeTimer: null,
+    newSubmissionCount: 0,
+    showNewSubmissionBadge: false,
     showBankConfigModal: false,
     bankConfigExam: null,
     bankConfigForm: { enabled: false, total_draw: 30, part1_draw: 18, part2_draw: 6, part3_draw: 6, part4_draw: 0 },
@@ -1746,9 +1772,16 @@ function adminApp() {
         this.loadUsers(),
         this.loadStorageInfo()
       ]);
-      // Auto-refresh stats & key status mỗi 30 giây (tiết kiệm CPU, không gây lag giao diện)
+      // Cập nhật danh sách bài nộp và thống kê mỗi 5 giây thời gian thực (không gián đoạn giáo viên)
+      this.realtimeTimer = setInterval(() => { 
+        if (this.liveRealtime) {
+          this.loadSubmissions(true);
+          this.loadStats();
+        }
+      }, 5000);
+
+      // Định kỳ 30s kiểm tra trạng thái API key và dung lượng lưu trữ CSDL
       setInterval(() => { 
-        this.loadStats(); 
         this.loadKeyStatus();
         this.loadStorageInfo();
       }, 30000);
@@ -2110,7 +2143,7 @@ function adminApp() {
       } catch(e) {}
     },
 
-    async loadSubmissions() {
+    async loadSubmissions(silent = false) {
       try {
         const params = new URLSearchParams();
         if (this.selectedSubjectFilter) params.append('subject', this.selectedSubjectFilter);
@@ -2122,7 +2155,14 @@ function adminApp() {
         const r = await fetch(url);
         if (r.ok) {
           const data = await r.json();
-          this.submissions = data.submissions || [];
+          const newSubs = data.submissions || [];
+          if (silent && this.submissions.length > 0 && newSubs.length > this.submissions.length) {
+            const added = newSubs.length - this.submissions.length;
+            this.newSubmissionCount = added;
+            this.showNewSubmissionBadge = true;
+            setTimeout(() => { this.showNewSubmissionBadge = false; }, 4000);
+          }
+          this.submissions = newSubs;
           this.updateAvailableClasses();
         }
       } catch(e) {}
