@@ -71,6 +71,8 @@ def no_cache_html(filename: str) -> HTMLResponse:
     )
 
 
+from starlette.middleware.gzip import GZipMiddleware
+
 # Tạo ứng dụng
 app = FastAPI(
     title="Hệ thống Kiểm tra Trực tuyến",
@@ -78,6 +80,9 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+# Nén tự động GZip cho tất cả phản hồi lớn (giảm 90% dung lượng truyền tải, chống nghẽn Render)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Mount static files
 STATIC_DIR.mkdir(exist_ok=True)

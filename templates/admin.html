@@ -36,10 +36,10 @@
       <template x-if="isSuperAdmin()">
         <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors shadow-2xs cursor-help"
           :class="storageInfo.has_storage_warning ? 'bg-red-600 text-white border-red-400 animate-pulse' : 'bg-blue-800/80 text-blue-100 border-blue-700'"
-          :title="`CSDL: ${storageInfo.engine} - Đã dùng ${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '3 GB'} (${storageInfo.pg_usage_percent}%). SQLite dự phòng: ${storageInfo.sqlite_size_pretty}`">
+          :title="`CSDL: ${storageInfo.engine} - Đã dùng ${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '1 GB'} (${storageInfo.pg_usage_percent}%). SQLite dự phòng: ${storageInfo.sqlite_size_pretty}`">
           <span>☁️</span>
           <span>CSDL Neon:</span>
-          <span class="text-yellow-300 font-extrabold" x-text="`${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '3 GB'}`"></span>
+          <span class="text-yellow-300 font-extrabold" x-text="`${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '1 GB'}`"></span>
           <span class="text-[10px] px-1.5 py-0.5 rounded bg-black/20" x-text="`(${storageInfo.pg_usage_percent}%)`"></span>
         </div>
       </template>
@@ -66,7 +66,7 @@
       <div>
         <div class="flex items-center gap-2">
           <h3 class="text-red-900 font-black text-base uppercase">Cảnh Báo Dung Lượng CSDL Ngoài (Neon Cloud)</h3>
-          <span class="text-xs bg-red-600 text-white font-bold px-2 py-0.5 rounded-full" x-text="`${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '3 GB'} (${storageInfo.pg_usage_percent}%)`"></span>
+          <span class="text-xs bg-red-600 text-white font-bold px-2 py-0.5 rounded-full" x-text="`${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '1 GB'} (${storageInfo.pg_usage_percent}%)`"></span>
         </div>
         <p class="text-red-800 text-sm mt-1 font-medium" x-text="storageInfo.warning_message"></p>
         <p class="text-xs text-red-700 mt-2 font-semibold">
@@ -1453,16 +1453,19 @@
           </p>
         </div>
       </div>
-      <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end flex-shrink-0">
-        <a href="/api/admin/backup/download" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black px-4 py-2.5 rounded-2xl text-xs sm:text-sm transition-all shadow-lg flex items-center gap-2 hover:scale-[1.02] active:scale-95 cursor-pointer" :title="isSuperAdmin() ? 'Tải toàn bộ cơ sở dữ liệu: đề thi, bài thi và tài khoản' : 'Tải sao lưu đề thi và bài làm do chính bạn tạo'">
+      <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-end flex-shrink-0">
+        <a href="/api/admin/backup/download" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-1.5 hover:scale-[1.02] active:scale-95 cursor-pointer" :title="isSuperAdmin() ? 'Tải toàn bộ CSDL dạng file JSON' : 'Tải sao lưu cá nhân dạng JSON'">
           <span>💾</span>
-          <span x-text="isSuperAdmin() ? 'Tải sao lưu toàn bộ' : `Tải sao lưu cá nhân (${currentUser?.username || ''})`"></span>
+          <span x-text="isSuperAdmin() ? 'Tải JSON (.json)' : `Tải JSON (${currentUser?.username || ''})`"></span>
         </a>
-        <a x-show="isSuperAdmin()" href="/api/admin/users/backup/download" class="bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm transition-all border border-white/20 flex items-center gap-2 cursor-pointer" title="Chỉ tải file sao lưu danh sách tài khoản giáo viên">
-          <span>👥</span><span>Sao lưu riêng tài khoản</span>
+        <a href="/api/admin/backup/download?gz=true" class="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-1.5 hover:scale-[1.02] active:scale-95 cursor-pointer" title="Nén dung lượng từ 50MB xuống 3.5MB - Tải cực nhanh trong 1 giây không sợ nghẽn mạng">
+          <span>⚡</span><span>Tải nén siêu tốc (.gz)</span>
         </a>
-        <input type="file" x-ref="backupFileInput" accept=".json" @change="restoreBackup($event)" class="hidden">
-        <button @click="$refs.backupFileInput.click()" :disabled="restoringBackup" class="bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm transition-all border border-white/20 flex items-center gap-2 cursor-pointer" :title="isSuperAdmin() ? 'Khôi phục toàn bộ CSDL' : 'Khôi phục đề và bài thi thuộc tài khoản của bạn'">
+        <a x-show="isSuperAdmin()" href="/api/admin/users/backup/download" class="bg-white/15 hover:bg-white/25 text-white font-bold px-3 py-2.5 rounded-2xl text-xs sm:text-sm transition-all border border-white/20 flex items-center gap-1.5 cursor-pointer" title="Chỉ tải file sao lưu danh sách tài khoản giáo viên">
+          <span>👥</span><span>Tài khoản</span>
+        </a>
+        <input type="file" x-ref="backupFileInput" accept=".json,.gz" @change="restoreBackup($event)" class="hidden">
+        <button @click="$refs.backupFileInput.click()" :disabled="restoringBackup" class="bg-white/15 hover:bg-white/25 text-white font-bold px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm transition-all border border-white/20 flex items-center gap-1.5 cursor-pointer" :title="isSuperAdmin() ? 'Khôi phục toàn bộ CSDL từ file .json hoặc .gz' : 'Khôi phục đề và bài thi thuộc tài khoản của bạn'">
           <span x-show="restoringBackup" class="animate-spin">⏳</span>
           <span x-show="!restoringBackup">📥</span>
           <span x-text="restoringBackup ? 'Đang khôi phục...' : (isSuperAdmin() ? 'Khôi phục từ file' : `Khôi phục (${currentUser?.username || ''})`)"></span>

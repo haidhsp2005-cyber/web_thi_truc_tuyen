@@ -1273,8 +1273,8 @@ def get_database_storage_info() -> dict:
         "is_postgres": USE_POSTGRES,
         "pg_size_bytes": 0,
         "pg_size_pretty": "0 MB",
-        "pg_limit_bytes": 3 * 1024 * 1024 * 1024, # 3 GB (3.072 MB) Free Tier của Neon
-        "pg_limit_pretty": "3 GB",
+        "pg_limit_bytes": 1024 * 1024 * 1024, # 1 GB (1.024 MB) Free Tier chính thức của Neon
+        "pg_limit_pretty": "1 GB",
         "pg_usage_percent": 0.0,
         "sqlite_size_bytes": 0,
         "sqlite_size_pretty": "0 MB",
@@ -1319,7 +1319,7 @@ def get_database_storage_info() -> dict:
                 
                 if pct >= 80.0:
                     info["has_storage_warning"] = True
-                    info["warning_message"] = f"Dung lượng CSDL Neon đã đạt {pct}% ({info['pg_size_pretty']}/3 GB). Đề nghị Super Admin thông báo giáo viên xóa bớt các bài thi cũ!"
+                    info["warning_message"] = f"Dung lượng CSDL Neon đã đạt {pct}% ({info['pg_size_pretty']}/1 GB). Đề nghị Super Admin thông báo giáo viên xóa bớt các bài thi cũ!"
             conn.close()
         except Exception as e:
             info["has_storage_warning"] = True
