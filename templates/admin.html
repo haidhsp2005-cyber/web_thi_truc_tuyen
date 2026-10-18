@@ -32,6 +32,18 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
+      <!-- Huy hiệu trạng thái CSDL ngoài Neon (Dành cho Super Admin) -->
+      <template x-if="isSuperAdmin()">
+        <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors shadow-2xs cursor-help"
+          :class="storageInfo.has_storage_warning ? 'bg-red-600 text-white border-red-400 animate-pulse' : 'bg-blue-800/80 text-blue-100 border-blue-700'"
+          :title="`CSDL: ${storageInfo.engine} - Đã dùng ${storageInfo.pg_size_pretty} / 512 MB (${storageInfo.pg_usage_percent}%). SQLite dự phòng: ${storageInfo.sqlite_size_pretty}`">
+          <span>☁️</span>
+          <span>CSDL Neon:</span>
+          <span class="text-yellow-300 font-extrabold" x-text="`${storageInfo.pg_size_pretty} / 512 MB`"></span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-black/20" x-text="`(${storageInfo.pg_usage_percent}%)`"></span>
+        </div>
+      </template>
+
       <button @click="showApiKeyModal = true" class="bg-indigo-700 hover:bg-indigo-600 text-white font-semibold px-3 py-2 rounded-xl text-sm transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer border border-indigo-500/50" title="Cấu hình API Key Gemini chấm tự luận">
         <span>🔑</span><span class="hidden sm:inline">Cấu hình API Key (.env)</span>
         <span class="w-2 h-2 rounded-full" :class="keyStatus.active_count > 0 ? 'bg-green-400' : 'bg-amber-400'"></span>
@@ -45,6 +57,27 @@
 </div>
 
 <div class="max-w-6xl mx-auto p-6 space-y-6">
+
+  <!-- ======= BANNER CẢNH BÁO DUNG LƯỢNG / SỰ CỐ CSDL NGOÀI (DÀNH CHO SUPER ADMIN) ======= -->
+  <div x-show="isSuperAdmin() && storageInfo.has_storage_warning" x-cloak
+    class="bg-red-50 border-2 border-red-500 rounded-3xl p-5 shadow-lg flex items-start justify-between gap-4 animate-in fade-in duration-300">
+    <div class="flex items-start gap-3.5">
+      <div class="text-3xl flex-shrink-0 animate-bounce">⚠️</div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h3 class="text-red-900 font-black text-base uppercase">Cảnh Báo Dung Lượng CSDL Ngoài (Neon Cloud)</h3>
+          <span class="text-xs bg-red-600 text-white font-bold px-2 py-0.5 rounded-full" x-text="`${storageInfo.pg_size_pretty} / 512 MB (${storageInfo.pg_usage_percent}%)`"></span>
+        </div>
+        <p class="text-red-800 text-sm mt-1 font-medium" x-text="storageInfo.warning_message"></p>
+        <p class="text-xs text-red-700 mt-2 font-semibold">
+          👉 <strong>Biện pháp:</strong> Hệ thống vẫn đang tự động bảo vệ bài thi (lưu dự phòng vào SQLite). Super Admin vui lòng nhắc các giáo viên vào tài khoản của mình xóa bớt các bài thi hoặc đề thi cũ đã kết thúc để giải phóng bộ nhớ!
+        </p>
+      </div>
+    </div>
+    <button @click="dismissStorageAlert()" class="bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold px-3 py-1.5 rounded-xl border border-red-300 transition-all flex-shrink-0 cursor-pointer" title="Đã xem cảnh báo">
+      Đã xem ✕
+    </button>
+  </div>
 
   <!-- ======= MỤC NẠP ĐỀ THI MẪU VÀ TẢI MẪU (CHUẨN GDPT 2026) ======= -->
   <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-950 rounded-3xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-5 border border-indigo-700/50">
@@ -429,17 +462,17 @@
           <span x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter || filterDate || selectedTeacherFilter" class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-cloak>(Theo bộ lọc)</span>
         </a>
 
-        <!-- In PDF tất cả bài thi theo lớp -->
-        <a :href="pdfClassExportUrl" target="_blank"
+        <!-- In PDF tất cả bài thi theo lớp (có chia đợt 40 bài/đợt) -->
+        <button type="button" @click="openClassPrint()"
           :class="filteredSubmissions.length === 0 ? 'opacity-50 pointer-events-none' : ''"
           class="mt-2.5 flex items-center justify-center gap-2 w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-md hover:scale-[1.01] active:scale-98 cursor-pointer"
-          title="In hoặc lưu file PDF toàn bộ bài làm học sinh theo lớp (tự động ngắt trang riêng từng học sinh)">
+          title="In hoặc lưu file PDF toàn bộ bài làm học sinh theo lớp (tự động chia đợt 40 bài để xuất siêu tốc 2s)">
           <span>🖨️</span>
           <span x-text="selectedClassFilter ? `In PDF tất cả bài thi Lớp ${selectedClassFilter}` : 'In PDF tất cả bài thi theo lớp'"></span>
           <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-text="`(${filteredSubmissions.length} bài)`"></span>
           <span x-show="filterDate" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full" x-text="`Ngày: ${filterDate}`" x-cloak></span>
           <span x-show="selectedTeacherFilter" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full" x-text="`GV: ${selectedTeacherFilter}`" x-cloak></span>
-        </a>
+        </button>
       </div>
     </div>
   </div>
@@ -589,7 +622,7 @@
               </td>
             </tr>
           </template>
-          <template x-for="sub in filteredSubmissions" :key="sub.submission_id">
+          <template x-for="sub in paginatedSubmissions" :key="sub.submission_id">
             <tr class="transition-colors" :class="selectedSubmissionIds.includes(sub.submission_id) ? 'bg-blue-50/70 border-l-4 border-l-blue-600' : 'hover:bg-gray-50'">
               <td class="px-3 py-3 text-center">
                 <input type="checkbox" :value="sub.submission_id" x-model="selectedSubmissionIds"
@@ -654,6 +687,32 @@
           </template>
         </tbody>
       </table>
+    </div>
+
+    <!-- Thanh phân trang danh sách bài nộp -->
+    <div x-show="filteredSubmissions.length > submissionPageSize" class="px-5 py-3 bg-gray-50 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-600">
+      <div class="flex items-center gap-2">
+        <span>Hiển thị</span>
+        <span class="font-bold text-gray-900" x-text="((submissionPage - 1) * submissionPageSize) + 1"></span>
+        <span>-</span>
+        <span class="font-bold text-gray-900" x-text="Math.min(submissionPage * submissionPageSize, filteredSubmissions.length)"></span>
+        <span>/</span>
+        <span class="font-bold text-gray-900" x-text="filteredSubmissions.length"></span>
+        <span>bài thi</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button @click="prevSubPage()" :disabled="submissionPage === 1" 
+          class="px-3 py-1.5 rounded-lg border bg-white disabled:opacity-30 disabled:cursor-not-allowed font-bold hover:bg-gray-100 shadow-2xs transition-all cursor-pointer">
+          ◀ Trang trước
+        </button>
+        <div class="px-3 py-1.5 font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg">
+          Trang <span x-text="submissionPage"></span> / <span x-text="submissionTotalPages"></span>
+        </div>
+        <button @click="nextSubPage()" :disabled="submissionPage === submissionTotalPages" 
+          class="px-3 py-1.5 rounded-lg border bg-white disabled:opacity-30 disabled:cursor-not-allowed font-bold hover:bg-gray-100 shadow-2xs transition-all cursor-pointer">
+          Trang sau ▶
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1058,6 +1117,57 @@
     </div>
   </div>
 
+  <!-- Modal Chọn đợt in bài thi theo lớp -->
+  <div x-show="showClassPrintModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div @click.outside="showClassPrintModal = false" class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border space-y-4 animate-in fade-in zoom-in duration-150">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+          <span>🖨️</span>
+          <span>Chọn Đợt In Bài Thi</span>
+          <span class="text-xs bg-indigo-100 text-indigo-800 font-extrabold px-2.5 py-0.5 rounded-full" x-text="`${filteredSubmissions.length} bài nộp`"></span>
+        </h3>
+        <button @click="showClassPrintModal = false" class="text-gray-400 hover:text-gray-600 text-lg cursor-pointer">✕</button>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-2xl p-3 text-xs text-blue-900 flex items-start gap-2">
+        <span class="text-base flex-shrink-0">⚡</span>
+        <p class="leading-relaxed">
+          Số lượng bài thi lớn (<strong><span x-text="filteredSubmissions.length"></span> bài</strong>). Để trình duyệt xuất PDF nhanh trong 2 giây, không bị đơ giật, hệ thống tự động tách thành <strong><span x-text="classPrintBatches.length"></span> đợt</strong> (40 bài/đợt):
+        </p>
+      </div>
+
+      <!-- Danh sách các đợt -->
+      <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
+        <template x-for="item in classPrintBatches" :key="item.batch">
+          <div class="flex items-center justify-between p-3 bg-gray-50 hover:bg-indigo-50/50 rounded-2xl border border-gray-200 transition-all">
+            <div>
+              <div class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold" x-text="item.batch"></span>
+                <span x-text="`Đợt ${item.batch}: Bài ${item.start} - ${item.end}`"></span>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5" x-text="`Gồm ${item.count} bài thi (~${item.count * 2} trang A4)`"></p>
+            </div>
+            <a :href="item.url" target="_blank" @click="showClassPrintModal = false"
+              class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+              <span>🖨️</span><span>Mở đợt <span x-text="item.batch"></span></span>
+            </a>
+          </div>
+        </template>
+      </div>
+
+      <!-- Tùy chọn in tất cả -->
+      <div class="pt-3 border-t flex flex-col sm:flex-row items-center justify-between gap-3">
+        <a :href="`${pdfClassExportUrl}${pdfClassExportUrl.includes('?') ? '&' : '?'}all_pages=1`" target="_blank" @click="showClassPrintModal = false"
+          class="w-full sm:w-auto px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+          title="In toàn bộ cùng một lúc (Khuyên dùng khi máy tính mạnh)">
+          <span>⚡</span><span>In toàn bộ <span x-text="`${filteredSubmissions.length} bài`"></span> một lần</span>
+        </a>
+        <button @click="showClassPrintModal = false" class="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 cursor-pointer">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Đổi mật khẩu -->
   <div x-show="showChangePassModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1374,6 +1484,8 @@ function adminApp() {
     stats: {},
     keyStatus: { keys: [], active_count: 0, total_count: 0 },
     submissions: [],
+    submissionPage: 1,
+    submissionPageSize: 40,
     selectedSubmissionIds: [],
     examList: [],
     userList: [],
@@ -1405,6 +1517,17 @@ function adminApp() {
     uploading: false,
     uploadMsg: '',
     uploadMsgOk: true,
+    storageInfo: {
+      engine: 'PostgreSQL (Neon Cloud)',
+      is_postgres: true,
+      pg_size_pretty: '0 MB',
+      pg_usage_percent: 0.0,
+      sqlite_size_pretty: '0 MB',
+      has_storage_warning: false,
+      warning_message: ''
+    },
+    showClassPrintModal: false,
+    classPrintBatches: [],
     showBankConfigModal: false,
     bankConfigExam: null,
     bankConfigForm: { enabled: false, total_draw: 30, part1_draw: 18, part2_draw: 6, part3_draw: 6, part4_draw: 0 },
@@ -1539,6 +1662,34 @@ function adminApp() {
       });
     },
 
+    get submissionTotalPages() {
+      const len = this.filteredSubmissions ? this.filteredSubmissions.length : 0;
+      return Math.max(1, Math.ceil(len / this.submissionPageSize));
+    },
+
+    get paginatedSubmissions() {
+      const start = (this.submissionPage - 1) * this.submissionPageSize;
+      return this.filteredSubmissions.slice(start, start + this.submissionPageSize);
+    },
+
+    prevSubPage() {
+      if (this.submissionPage > 1) {
+        this.submissionPage--;
+      }
+    },
+
+    nextSubPage() {
+      if (this.submissionPage < this.submissionTotalPages) {
+        this.submissionPage++;
+      }
+    },
+
+    goToSubPage(p) {
+      if (p >= 1 && p <= this.submissionTotalPages) {
+        this.submissionPage = p;
+      }
+    },
+
     get isAllFilteredSelected() {
       if (!this.filteredSubmissions || this.filteredSubmissions.length === 0) return false;
       return this.filteredSubmissions.every(s => this.selectedSubmissionIds.includes(s.submission_id));
@@ -1580,15 +1731,47 @@ function adminApp() {
     },
 
     async onFilterChange() {
+      this.submissionPage = 1;
       // Lọc client-side tức thì, đồng thời cập nhật thống kê và danh sách bài nộp từ server
       await Promise.all([this.loadStats(), this.loadSubmissions()]);
     },
 
     async init() {
       await this.loadCurrentUser();
-      await Promise.all([this.loadStats(), this.loadKeyStatus(), this.loadSubmissions(), this.loadExamList(), this.loadUsers()]);
-      // Auto-refresh mỗi 10 giây
-      setInterval(() => { this.loadStats(); this.loadSubmissions(); this.loadKeyStatus(); }, 10000);
+      await Promise.all([
+        this.loadStats(), 
+        this.loadKeyStatus(), 
+        this.loadSubmissions(), 
+        this.loadExamList(), 
+        this.loadUsers(),
+        this.loadStorageInfo()
+      ]);
+      // Auto-refresh stats & key status mỗi 30 giây (tiết kiệm CPU, không gây lag giao diện)
+      setInterval(() => { 
+        this.loadStats(); 
+        this.loadKeyStatus();
+        this.loadStorageInfo();
+      }, 30000);
+    },
+
+    async loadStorageInfo() {
+      if (!this.isSuperAdmin()) return;
+      try {
+        const r = await fetch('/api/admin/system/storage-info');
+        if (r.ok) {
+          this.storageInfo = await r.json();
+        }
+      } catch(e) {}
+    },
+
+    async dismissStorageAlert() {
+      try {
+        const r = await fetch('/api/admin/system/clear-storage-alert', { method: 'POST' });
+        if (r.ok) {
+          this.storageInfo.has_storage_warning = false;
+          this.storageInfo.warning_message = '';
+        }
+      } catch(e) {}
     },
 
     async loadCurrentUser() {
@@ -1601,6 +1784,9 @@ function adminApp() {
           // Mặc định selectedSubjectFilter = '' để hiển thị ngay 100% tất cả bài nộp của các đề thuộc giáo viên đó
           this.selectedSubjectFilter = '';
           this.adminExamFilterSubject = '';
+          if (this.isSuperAdmin()) {
+            this.loadStorageInfo();
+          }
         }
       } catch(e) {}
     },
@@ -2152,6 +2338,36 @@ function adminApp() {
 
     clearSelectedSubmissions() {
       this.selectedSubmissionIds = [];
+    },
+
+    openClassPrint() {
+      const total = this.filteredSubmissions.length;
+      if (total === 0) {
+        alert('Không có bài thi nào trong bộ lọc hiện tại để in!');
+        return;
+      }
+      if (total <= 40) {
+        window.open(this.pdfClassExportUrl, '_blank');
+        return;
+      }
+      const batchSize = 40;
+      const numBatches = Math.ceil(total / batchSize);
+      const batches = [];
+      const base = this.pdfClassExportUrl;
+      const sep = base.includes('?') ? '&' : '?';
+      for (let b = 1; b <= numBatches; b++) {
+        const start = (b - 1) * batchSize + 1;
+        const end = Math.min(b * batchSize, total);
+        batches.push({
+          batch: b,
+          start: start,
+          end: end,
+          count: end - start + 1,
+          url: `${base}${sep}batch=${b}&batch_size=40`
+        });
+      }
+      this.classPrintBatches = batches;
+      this.showClassPrintModal = true;
     },
 
     printSelectedSubmissions() {

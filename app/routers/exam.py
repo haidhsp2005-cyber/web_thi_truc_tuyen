@@ -74,6 +74,7 @@ async def get_current_exam(
         "is_bank": bool(exam.get("is_bank", False)) or bool(exam.get("is_bank_drawn", False)),
         "bank_seed": exam.get("bank_seed"),
         "drawn_question_count": exam.get("drawn_question_count"),
+        "author_name": exam.get("author_name") or exam.get("author") or "GV THPT Long Cang",
         "parts": {}
     }
     

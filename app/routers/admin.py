@@ -875,9 +875,31 @@ async def print_class_submissions(
             status_code=200
         )
 
-    # 1. Nạp đầy đủ thông tin bài nộp (bao gồm cả nội dung câu hỏi, bài làm và kết quả từng phần)
+    # 1. Sắp xếp danh sách học sinh theo Lớp và Tên để đồng bộ với bộ chia đợt in
+    sorted_subs = sorted(
+        submissions,
+        key=lambda s: (
+            (s.get("student_class") or "").strip().upper(),
+            (s.get("student_name") or "").strip().lower()
+        )
+    )
+
+    # 2. TỐI ƯU SIÊU TỐC: Chỉ nạp chi tiết đúng 40 bài của đợt in hiện tại (thay vì nạp tất cả 1.200 bài)
+    b_size = max(10, min(int(batch_size or 40), 200))
+    total_subs = len(sorted_subs)
+    total_batches = (total_subs + b_size - 1) // b_size if total_subs > 0 else 1
+
+    if not all_pages and total_subs > b_size:
+        curr_b = max(1, min(int(batch or 1), total_batches))
+        s_idx = (curr_b - 1) * b_size
+        e_idx = min(s_idx + b_size, total_subs)
+        target_subs = sorted_subs[s_idx:e_idx]
+    else:
+        target_subs = sorted_subs
+
+    # 3. Nạp đầy đủ thông tin bài nộp cho đúng các bài cần in trong đợt
     full_submissions = []
-    for s in submissions:
+    for s in target_subs:
         sub_id = s.get("submission_id") or s.get("id")
         full_sub = get_submission(sub_id) if sub_id else None
         if full_sub:
@@ -886,7 +908,7 @@ async def print_class_submissions(
             full_submissions.append(s)
     submissions = full_submissions
 
-    # 2. Nạp thông tin các đề thi tương ứng (từ SQLite hoặc file JSON)
+    # 4. Nạp thông tin các đề thi tương ứng (tận dụng In-Memory Exam Cache siêu tốc)
     exams_cache = {}
     for s in submissions:
         eid = s.get("exam_id")
@@ -909,10 +931,34 @@ async def print_class_submissions(
         class_name=clean_cls or "Tất cả các lớp",
         exam_id=clean_eid,
         subject=clean_sub,
-        batch=batch,
-        batch_size=batch_size or 40,
+        batch=curr_b,
+        batch_size=b_size,
         all_pages=all_pages,
-        request_query=dict(request.query_params)
+        request_query=dict(request.query_params),
+        total_count=total_subs,
+        curr_batch=curr_b,
+        total_batches=total_batches
     )
     return HTMLResponse(content=html)
+
+
+@router.get("/system/storage-info")
+async def get_storage_info_api(request: Request):
+    """Kiểm tra dung lượng CSDL ngoài (Neon Cloud) và SQLite dự phòng dành cho Super Admin."""
+    current_user = get_current_user_from_request(request)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Chưa đăng nhập!")
+    from ..database import get_database_storage_info
+    return get_database_storage_info()
+
+
+@router.post("/system/clear-storage-alert")
+async def clear_storage_alert_api(request: Request):
+    """Xóa cảnh báo dung lượng sau khi Super Admin đã xử lý xong."""
+    current_user = get_current_user_from_request(request)
+    if not current_user or not (current_user.get("is_protected") or current_user.get("username", "").lower() == "admin"):
+        raise HTTPException(status_code=403, detail="Chỉ Super Admin mới có quyền thực hiện!")
+    from ..database import clear_storage_alert
+    clear_storage_alert()
+    return {"ok": True, "message": "Đã xóa cảnh báo dung lượng."}
 

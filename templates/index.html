@@ -81,14 +81,14 @@
           class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-lg uppercase font-semibold">
       </div>
 
-      <!-- Lọc đề theo Môn & Lớp -->
+      <!-- Lọc đề theo Môn, Lớp & Giáo viên ra đề -->
       <div x-show="!loadingExams && examList.length > 1" x-cloak class="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-2">
-        <p class="text-xs font-bold text-blue-800 flex items-center gap-1.5">🔍 Lọc nhanh theo Môn & Lớp:</p>
-        <div class="grid grid-cols-2 gap-2">
+        <p class="text-xs font-bold text-blue-800 flex items-center gap-1.5">🔍 Lọc nhanh theo Môn, Khối & Giáo viên:</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <div>
             <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Môn học:</label>
             <select x-model="filterSubject" @change="onFilterChange()"
-              class="w-full text-sm border-2 border-gray-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:border-blue-500">
+              class="w-full text-sm border-2 border-gray-200 rounded-xl px-2.5 py-2 bg-white focus:outline-none focus:border-blue-500">
               <option value="">-- Tất cả môn --</option>
               <template x-for="s in subjectOptions" :key="s">
                 <option :value="s" x-text="s"></option>
@@ -98,10 +98,20 @@
           <div>
             <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Khối lớp:</label>
             <select x-model="filterGrade" @change="onFilterChange()"
-              class="w-full text-sm border-2 border-gray-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:border-blue-500">
+              class="w-full text-sm border-2 border-gray-200 rounded-xl px-2.5 py-2 bg-white focus:outline-none focus:border-blue-500">
               <option value="">-- Tất cả khối --</option>
               <template x-for="g in gradeOptions" :key="g">
                 <option :value="g" x-text="`Khối ${g}`"></option>
+              </template>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">Giáo viên ra đề:</label>
+            <select x-model="filterAuthor" @change="onFilterChange()"
+              class="w-full text-sm border-2 border-gray-200 rounded-xl px-2.5 py-2 bg-white focus:outline-none focus:border-blue-500">
+              <option value="">-- Tất cả giáo viên --</option>
+              <template x-for="a in authorOptions" :key="a">
+                <option :value="a" x-text="a"></option>
               </template>
             </select>
           </div>
@@ -113,13 +123,13 @@
         <label class="block text-sm font-semibold text-gray-700 mb-1">📋 Chọn đề thi <span class="text-red-500">*</span></label>
         <div x-show="loadingExams" class="text-center py-3 text-gray-400 text-sm">⏳ Đang tải danh sách đề...</div>
         <div x-show="!loadingExams && filteredExamList.length === 0 && examList.length > 0" x-cloak class="text-center py-3 text-yellow-600 text-sm bg-yellow-50 rounded-xl border border-yellow-200">
-          ⚠️ Không có đề thi nào khớp bộ lọc. Hãy thay đổi Môn hoặc Khối lớp.
+          ⚠️ Không có đề thi nào khớp bộ lọc. Hãy thay đổi Môn, Khối lớp hoặc Giáo viên.
         </div>
         <select x-show="!loadingExams && filteredExamList.length > 0" id="exam_id" x-model="selectedExamId" @change="updateExamInfo()"
           class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-base bg-white">
           <option value="">-- Chọn đề thi --</option>
           <template x-for="e in filteredExamList" :key="e.id">
-            <option :value="e.id" x-text="`${e.is_bank ? '🎲 [Đề trộn] ' : ''}${e.title} (${e.subject}, Lớp ${e.grade})`"></option>
+            <option :value="e.id" x-text="`${e.is_bank ? '🎲 [Đề trộn] ' : ''}${e.title} — [GV: ${e.author_name || 'Bộ môn'}] (${e.subject}, Lớp ${e.grade})`"></option>
           </template>
         </select>
       </div>
@@ -140,6 +150,15 @@
               <span>Trộn đề ngẫu nhiên</span>
             </span>
           </template>
+        </div>
+
+        <!-- Giáo viên ra đề nổi bật -->
+        <div class="mb-3 p-2.5 bg-white/95 rounded-xl border border-blue-200 text-xs flex items-center justify-between shadow-2xs">
+          <div class="flex items-center gap-2 text-gray-800">
+            <span class="text-base">👨‍🏫</span>
+            <span>Giáo viên ra đề: <strong class="text-blue-900 text-sm font-bold" x-text="selectedExam?.author_name || 'Bộ môn / Trường THPT Long Cang'"></strong></span>
+          </div>
+          <span class="text-[11px] px-2 py-0.5 rounded-full font-bold bg-blue-100 text-blue-800" x-text="selectedExam?.subject ? `${selectedExam.subject} - Khối ${selectedExam.grade}` : ''"></span>
         </div>
 
         <!-- Chú thích riêng khi bật chế độ Trộn đề ngẫu nhiên / Ngân hàng -->
@@ -248,6 +267,7 @@ function loginApp() {
     selectedExam: null,
     filterSubject: '',
     filterGrade: '',
+    filterAuthor: '',
 
     get subjectOptions() {
       const seen = new Set();
@@ -259,6 +279,19 @@ function loginApp() {
       return this.examList.filter(e => { if (e.grade && !seen.has(e.grade)) { seen.add(e.grade); return true; } return false; }).map(e => e.grade);
     },
 
+    get authorOptions() {
+      const seen = new Set();
+      return this.examList
+        .map(e => (e.author_name || '').trim())
+        .filter(a => {
+          if (a && !seen.has(a)) {
+            seen.add(a);
+            return true;
+          }
+          return false;
+        });
+    },
+
     get filteredExamList() {
       return this.examList.filter(e => {
         // Chỉ hiện đề thi đã xuất bản (màu xanh), tuyệt đối không hiện đề màu đỏ
@@ -266,6 +299,7 @@ function loginApp() {
         if (!isPub) return false;
         if (this.filterSubject && e.subject !== this.filterSubject) return false;
         if (this.filterGrade && e.grade !== this.filterGrade) return false;
+        if (this.filterAuthor && (e.author_name || '').trim() !== this.filterAuthor) return false;
         return true;
       });
     },

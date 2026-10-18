@@ -26,3 +26,5 @@ Thumbs.db
 scratch/
 *.exe
 cloudflared.exe
+scripts/
+data/backup_online/

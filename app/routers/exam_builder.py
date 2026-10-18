@@ -27,6 +27,18 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
     """Lấy danh sách tất cả đề thi từ bảng SQLite exams và thư mục data/ (không bao giờ mất đề)."""
     exams_map = {}
 
+    # Bản đồ tên đầy đủ của giáo viên ra đề
+    user_name_map = {}
+    try:
+        from ..database import get_all_users
+        for u in get_all_users():
+            uname = (u.get("username") or "").strip().lower()
+            fname = (u.get("full_name") or "").strip()
+            if uname and fname:
+                user_name_map[uname] = fname
+    except Exception:
+        pass
+
     # 1. Quét từ bảng SQLite exams
     try:
         conn = get_connection()
@@ -41,6 +53,10 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                 if is_bank:
                     from ..services.bank_service import normalize_bank_config
                     bank_cfg = normalize_bank_config(data)
+                creator = (r[5] or data.get("created_by") or "").strip()
+                author = data.get("author_name") or data.get("author") or user_name_map.get(creator.lower()) or creator
+                if not author or author.lower() in ("admin", "root", "system", "quản trị viên mặc định", "quản trị viên"):
+                    author = "GV THPT Long Cang"
                 exams_map[eid] = {
                     "file": eid,
                     "id": eid,
@@ -52,7 +68,8 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
-                    "created_by": (r[5] or data.get("created_by") or "").strip(),
+                    "created_by": creator,
+                    "author_name": author,
                     "is_online_exam": bool(data.get("is_online_exam", False)),
                     "is_published": is_exam_published(data.get("is_published")),
                     "is_bank": is_bank,
@@ -77,6 +94,10 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                 if is_bank:
                     from ..services.bank_service import normalize_bank_config
                     bank_cfg = normalize_bank_config(data)
+                creator = (data.get("created_by") or "").strip()
+                author = data.get("author_name") or data.get("author") or user_name_map.get(creator.lower()) or creator
+                if not author or author.lower() in ("admin", "root", "system", "quản trị viên mặc định", "quản trị viên"):
+                    author = "GV THPT Long Cang"
                 exams_map[eid] = {
                     "file": f.stem,
                     "id": eid,
@@ -88,7 +109,8 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                     "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
                     "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
                     "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
-                    "created_by": (data.get("created_by") or "").strip(),
+                    "created_by": creator,
+                    "author_name": author,
                     "is_online_exam": bool(data.get("is_online_exam", False)),
                     "is_published": is_exam_published(data.get("is_published")),
                     "is_bank": is_bank,

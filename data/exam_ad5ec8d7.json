@@ -1636,22 +1636,22 @@
   },
   "id": "exam_ad5ec8d7",
   "created_by": "haidhsp2005",
-  "is_published": true,
+  "is_published": false,
   "scoring": {
     "part1_total": 24.25,
     "part1_per_question": 0.25,
-    "part2_total": 15.0,
-    "part2_per_question": 1.0,
+    "part2_total": 15,
+    "part2_per_question": 1,
     "part2_rubric": {
       "1_correct": 0.1,
       "2_correct": 0.25,
       "3_correct": 0.5,
-      "4_correct": 1.0
+      "4_correct": 1
     },
     "part3_total": 5.5,
     "part3_per_question": 0.5,
-    "part4_total": 0.0,
-    "part4_per_question": 0.0,
+    "part4_total": 0,
+    "part4_per_question": 0,
     "custom_scoring": true
   },
   "is_online_exam": true,
@@ -1666,5 +1666,6 @@
     "part4_draw": 0
   },
   "department_name": "Sở GD&ĐT Tây Ninh",
-  "school_name": "Trường THPT Long Cang"
+  "school_name": "Trường THPT Long Cang",
+  "author_name": "Trần Long Hải"
 }
