@@ -424,7 +424,7 @@
 
             <!-- Bộ lọc Lớp: Hỗ trợ chọn 2 hoặc nhiều lớp cùng lúc bằng Checkbox -->
             <div class="relative" x-data="{ openTopClassDropdown: false, classQuery: '' }" @click.away="openTopClassDropdown = false">
-              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">🏫 Lớp (chọn nhiều lớp):</label>
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5 truncate">🏫 Lớp:</label>
               <button type="button" @click="openTopClassDropdown = !openTopClassDropdown"
                 class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white hover:border-green-500 text-gray-800 font-medium focus:outline-none focus:border-green-600 flex items-center justify-between text-left cursor-pointer transition-colors shadow-2xs">
                 <span class="truncate pr-1" x-text="selectedClassFilters.length === 0 ? '-- Tất cả các lớp --' : (selectedClassFilters.length === 1 ? 'Lớp ' + selectedClassFilters[0] : selectedClassFilters.length + ' lớp: ' + selectedClassFilters.join(', '))"></span>
