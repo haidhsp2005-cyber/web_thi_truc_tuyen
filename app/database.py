@@ -33,7 +33,11 @@ PASSWORD_SALT = "longcang_exam_salt_2026"
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 # Tự động chuyển đổi nếu Render vẫn còn lưu DATABASE_URL của Neon cũ
 if not DATABASE_URL or "neon.tech" in DATABASE_URL:
-    DATABASE_URL = "postgresql://postgres.sacdknvxyhufnvukgzcg:Longcang2026%40@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+    DATABASE_URL = "postgresql://postgres.sacdknvxyhufnvukgzcg:Longcang2026%40@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+
+# Tự động chuyển sang cổng 6543 (Transaction Pooler) để tránh lỗi EMAXCONNSESSION giới hạn 15 kết nối
+if "pooler.supabase.com:5432" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("pooler.supabase.com:5432", "pooler.supabase.com:6543")
 
 USE_POSTGRES = bool(DATABASE_URL and (DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://")))
 
@@ -50,7 +54,7 @@ if USE_POSTGRES:
         _test_conn.close()
 
         # Kết nối tới Supabase PostgreSQL Singapore với connection pool đa luồng
-        _PG_POOL = ThreadedConnectionPool(minconn=2, maxconn=25, dsn=DATABASE_URL)
+        _PG_POOL = ThreadedConnectionPool(minconn=1, maxconn=10, dsn=DATABASE_URL)
         logger.info("Đã khởi tạo ThreadedConnectionPool kết nối Supabase PostgreSQL thành công.")
     except Exception as e:
         logger.warning(f"Không thể kết nối Supabase PostgreSQL ({e}). Hệ thống tự động chuyển 100% sang SQLite an toàn.")
