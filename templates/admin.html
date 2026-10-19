@@ -407,7 +407,7 @@
         <div class="mt-4 pt-4 border-t space-y-2.5">
           <div class="text-xs font-bold uppercase text-gray-700 flex items-center justify-between">
             <span class="flex items-center gap-1.5"><span>🎯</span><span>Lọc thống kê & Excel:</span></span>
-            <button x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter || filterDate || selectedTeacherFilter" @click="selectedSubjectFilter=''; selectedClassFilter=''; selectedExamFilter=''; filterDate=''; selectedTeacherFilter=''; onFilterChange();" class="text-blue-600 hover:underline font-bold text-[11px] cursor-pointer" x-cloak>
+            <button x-show="selectedSubjectFilter || selectedClassFilters.length > 0 || selectedExamFilter || filterDate || selectedTeacherFilter" @click="selectedSubjectFilter=''; selectedClassFilters=[]; selectedExamFilter=''; filterDate=''; selectedTeacherFilter=''; onFilterChange();" class="text-blue-600 hover:underline font-bold text-[11px] cursor-pointer" x-cloak>
               ✕ Bỏ lọc
             </button>
           </div>
@@ -421,15 +421,58 @@
                 </template>
               </select>
             </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">🏫 Lớp:</label>
-              <select x-model="selectedClassFilter" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
-                <option value="">-- Tất cả các lớp --</option>
-                <template x-for="c in availableClasses" :key="c">
-                  <option :value="c" x-text="`Lớp ${c}`"></option>
-                </template>
-              </select>
+
+            <!-- Bộ lọc Lớp: Hỗ trợ chọn 2 hoặc nhiều lớp cùng lúc bằng Checkbox -->
+            <div class="relative" x-data="{ openTopClassDropdown: false, classQuery: '' }" @click.away="openTopClassDropdown = false">
+              <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">🏫 Lớp (chọn nhiều lớp):</label>
+              <button type="button" @click="openTopClassDropdown = !openTopClassDropdown"
+                class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white hover:border-green-500 text-gray-800 font-medium focus:outline-none focus:border-green-600 flex items-center justify-between text-left cursor-pointer transition-colors shadow-2xs">
+                <span class="truncate pr-1" x-text="selectedClassFilters.length === 0 ? '-- Tất cả các lớp --' : (selectedClassFilters.length === 1 ? 'Lớp ' + selectedClassFilters[0] : selectedClassFilters.length + ' lớp: ' + selectedClassFilters.join(', '))"></span>
+                <span class="text-[10px] text-gray-400 shrink-0 transition-transform duration-200" :class="openTopClassDropdown ? 'rotate-180 text-green-600' : ''">▼</span>
+              </button>
+
+              <!-- Popover danh sách lớp với checkbox và tìm kiếm -->
+              <div x-show="openTopClassDropdown" x-cloak
+                class="absolute left-0 top-full mt-1.5 w-64 bg-white border border-gray-200 rounded-2xl shadow-2xl p-2.5 z-50 text-xs">
+                
+                <!-- Ô tìm nhanh tên lớp -->
+                <div class="mb-2">
+                  <input type="text" x-model="classQuery" placeholder="🔍 Tìm nhanh tên lớp..."
+                    class="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg text-xs bg-gray-50 focus:bg-white focus:outline-none focus:border-green-500">
+                </div>
+
+                <!-- Thao tác nhanh -->
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-100">
+                  <span class="font-bold text-gray-700 text-[11px]">Chọn 1 hoặc nhiều lớp:</span>
+                  <div class="flex items-center gap-2">
+                    <button type="button" @click="selectedClassFilters = []; onFilterChange();" 
+                      class="text-[10px] text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer">Tất cả</button>
+                    <button type="button" @click="selectedClassFilters = [...availableClasses]; onFilterChange();" 
+                      class="text-[10px] text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer">Chọn hết</button>
+                  </div>
+                </div>
+
+                <!-- Danh sách checkbox các lớp -->
+                <div class="space-y-0.5 max-h-56 overflow-y-auto pr-1">
+                  <template x-for="c in (classQuery ? availableClasses.filter(cls => cls.toLowerCase().includes(classQuery.toLowerCase().trim())) : availableClasses)" :key="c">
+                    <label class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-green-50 cursor-pointer select-none transition-colors"
+                      :class="selectedClassFilters.includes(c) ? 'bg-green-50 font-bold text-green-900 border border-green-200/60' : 'text-gray-700'">
+                      <input type="checkbox" :value="c" x-model="selectedClassFilters" @change="onFilterChange()"
+                        class="w-3.5 h-3.5 rounded text-green-600 focus:ring-green-500 cursor-pointer accent-green-600">
+                      <span x-text="`Lớp ${c}`"></span>
+                    </label>
+                  </template>
+                  <div x-show="availableClasses.length === 0" class="text-center py-3 text-gray-400 text-[11px]">
+                    Chưa có bài nộp nào
+                  </div>
+                  <div x-show="availableClasses.length > 0 && (availableClasses.filter(cls => cls.toLowerCase().includes(classQuery.toLowerCase().trim())).length === 0)" 
+                    class="text-center py-3 text-gray-400 text-[11px]">
+                    Không tìm thấy lớp phù hợp
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div>
               <label class="block text-[11px] font-semibold text-gray-500 mb-0.5">📝 Đề thi:</label>
               <select x-model="selectedExamFilter" @change="onFilterChange()" class="w-full text-xs border-2 border-gray-200 rounded-xl p-2 bg-white text-gray-800 font-medium focus:outline-none focus:border-green-600">
@@ -453,13 +496,27 @@
               </select>
             </div>
           </div>
+
+          <!-- Các lớp đang chọn hiển thị thành các thẻ pill có thể xóa nhanh -->
+          <div x-show="selectedClassFilters.length > 0" class="flex flex-wrap items-center gap-1.5 pt-1" x-cloak>
+            <span class="text-[11px] font-bold text-gray-600">Lớp đã chọn:</span>
+            <template x-for="c in selectedClassFilters" :key="c">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs bg-green-100 text-green-800 font-bold border border-green-300 shadow-2xs">
+                <span x-text="`Lớp ${c}`"></span>
+                <button type="button" @click="selectedClassFilters = selectedClassFilters.filter(item => item !== c); onFilterChange();" 
+                  class="hover:text-red-700 hover:bg-green-200 rounded-full w-4 h-4 inline-flex items-center justify-center text-[10px] cursor-pointer" title="Bỏ chọn lớp này">✕</button>
+              </span>
+            </template>
+            <button type="button" @click="selectedClassFilters = []; onFilterChange();" 
+              class="text-[11px] text-red-600 hover:text-red-800 hover:underline font-semibold ml-1 cursor-pointer">Xóa hết lớp</button>
+          </div>
         </div>
 
         <!-- Xuất Excel -->
         <a :href="excelExportUrl" class="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-md hover:scale-[1.01] active:scale-98">
           <span>📥</span>
           <span>Xuất bảng điểm Excel (.xlsx)</span>
-          <span x-show="selectedSubjectFilter || selectedClassFilter || selectedExamFilter || filterDate || selectedTeacherFilter" class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-cloak>(Theo bộ lọc)</span>
+          <span x-show="selectedSubjectFilter || selectedClassFilters.length > 0 || selectedExamFilter || filterDate || selectedTeacherFilter" class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-cloak>(Theo bộ lọc)</span>
         </a>
 
         <!-- In PDF tất cả bài thi theo lớp (có chia đợt 40 bài/đợt) -->
@@ -533,7 +590,7 @@
               <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-lg" x-text="'📚 Môn: ' + currentUser.subject"></span>
             </div>
             <!-- Bộ lọc Lớp: Listbox / Multi-select hỗ trợ chọn 2 hoặc 3 lớp cùng lúc -->
-            <div class="relative flex items-center gap-1.5" x-data="{ openClassDropdown: false }" @click.away="openClassDropdown = false">
+            <div class="relative flex items-center gap-1.5" x-data="{ openClassDropdown: false, classQuery: '' }" @click.away="openClassDropdown = false">
               <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Lớp:</label>
               <button type="button" @click="openClassDropdown = !openClassDropdown"
                 class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white hover:border-blue-400 focus:outline-none focus:border-blue-500 font-medium flex items-center gap-1.5 min-w-[130px] max-w-[220px] justify-between cursor-pointer shadow-2xs transition-colors">
@@ -544,6 +601,13 @@
               <!-- Popover chọn nhiều lớp có checkbox -->
               <div x-show="openClassDropdown" x-cloak
                 class="absolute left-0 top-full mt-1.5 w-60 bg-white border border-gray-200 rounded-2xl shadow-2xl p-2.5 z-50 text-xs">
+                
+                <!-- Ô tìm nhanh tên lớp -->
+                <div class="mb-2">
+                  <input type="text" x-model="classQuery" placeholder="🔍 Tìm nhanh lớp..."
+                    class="w-full px-2 py-1 border border-gray-200 rounded-lg text-xs bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+
                 <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-100">
                   <span class="font-bold text-gray-700 text-[11px]">Chọn 1 hoặc nhiều lớp:</span>
                   <div class="flex items-center gap-2">
@@ -553,7 +617,7 @@
                 </div>
 
                 <div class="space-y-0.5 max-h-56 overflow-y-auto pr-1">
-                  <template x-for="c in availableClasses" :key="c">
+                  <template x-for="c in (classQuery ? availableClasses.filter(cls => cls.toLowerCase().includes(classQuery.toLowerCase().trim())) : availableClasses)" :key="c">
                     <label class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-blue-50 cursor-pointer select-none transition-colors"
                       :class="selectedClassFilters.includes(c) ? 'bg-blue-50 font-bold text-blue-900 border border-blue-200/60' : 'text-gray-700'">
                       <input type="checkbox" :value="c" x-model="selectedClassFilters" @change="onFilterChange()"
@@ -563,6 +627,10 @@
                   </template>
                   <div x-show="availableClasses.length === 0" class="text-center py-3 text-gray-400 text-[11px]">
                     Chưa có bài nộp nào
+                  </div>
+                  <div x-show="availableClasses.length > 0 && (availableClasses.filter(cls => cls.toLowerCase().includes(classQuery.toLowerCase().trim())).length === 0)" 
+                    class="text-center py-3 text-gray-400 text-[11px]">
+                    Không tìm thấy lớp phù hợp
                   </div>
                 </div>
               </div>
@@ -596,6 +664,20 @@
               @click="selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilters=[]; filterDate=''; selectedTeacherFilter=''; onFilterChange();" x-cloak
               class="text-xs text-gray-600 hover:text-gray-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
           </div>
+        </div>
+
+        <!-- Các lớp đang chọn hiển thị thành các thẻ pill có thể xóa nhanh -->
+        <div x-show="selectedClassFilters.length > 0" class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-gray-200 mt-2" x-cloak>
+          <span class="text-[11px] font-bold text-gray-600">Lớp đã chọn:</span>
+          <template x-for="c in selectedClassFilters" :key="c">
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 font-bold border border-blue-300 shadow-2xs">
+              <span x-text="`Lớp ${c}`"></span>
+              <button type="button" @click="selectedClassFilters = selectedClassFilters.filter(item => item !== c); onFilterChange();" 
+                class="hover:text-red-700 hover:bg-blue-200 rounded-full w-4 h-4 inline-flex items-center justify-center text-[10px] cursor-pointer" title="Bỏ chọn lớp này">✕</button>
+            </span>
+          </template>
+          <button type="button" @click="selectedClassFilters = []; onFilterChange();" 
+            class="text-[11px] text-red-600 hover:text-red-800 hover:underline font-semibold ml-1 cursor-pointer">Xóa hết lớp</button>
         </div>
       </div>
     </div>
