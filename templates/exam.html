@@ -187,7 +187,7 @@
 <!-- Thủy vân bảo mật chống chụp hình bằng điện thoại ngoài (Watermark) -->
 <div x-show="isOnlineExam && hasStartedOnlineExam && !submitted" class="exam-watermark-overlay" aria-hidden="true">
   <template x-for="i in 32" :key="i">
-    <div class="exam-watermark-item" x-text="`${studentName || 'Thí sinh'} • Lớp ${studentClass || '...'} • ${examId}`"></div>
+    <div class="exam-watermark-item" x-text="`${studentName || 'Thí sinh'} • Lớp ${studentClass || '...'}${studentStt ? ' • STT ' + studentStt : ''} • ${examId}`"></div>
   </template>
 </div>
 
@@ -203,7 +203,7 @@
           <span x-show="!isOnlineExam" class="inline-flex items-center gap-0.5 text-[10px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap" title="Chế độ đề luyện tập tự do: Không giới hạn rời màn hình">📖 Đề luyện tập</span>
         </div>
         <p class="text-blue-300 text-[11px] sm:text-xs truncate">
-          <span x-text="`${studentName} - Lớp ${studentClass}`"></span>
+          <span x-text="`${studentName} - Lớp ${studentClass}${studentStt ? ' - STT ' + studentStt : ''}`"></span>
           <template x-if="examData?.author_name">
             <span class="text-amber-300 font-medium" x-text="` • GV: ${examData.author_name}`"></span>
           </template>
@@ -852,7 +852,7 @@
     <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
       <div class="bg-gradient-to-r from-red-600 to-amber-600 h-2.5 rounded-full animate-pulse" style="width: 100%"></div>
     </div>
-    <p class="text-xs text-gray-500 font-bold" x-text="`${studentName} - Lớp ${studentClass}`"></p>
+    <p class="text-xs text-gray-500 font-bold" x-text="`${studentName} - Lớp ${studentClass}${studentStt ? ' - STT ' + studentStt : ''}`"></p>
   </div>
 </div>
 
@@ -1002,7 +1002,7 @@
     <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
       <div class="bg-gradient-to-r from-blue-600 to-indigo-600 h-2.5 rounded-full animate-pulse" style="width: 100%"></div>
     </div>
-    <p class="text-xs text-blue-600 font-bold" x-text="`${studentName} - Lớp ${studentClass}`"></p>
+    <p class="text-xs text-blue-600 font-bold" x-text="`${studentName} - Lớp ${studentClass}${studentStt ? ' - STT ' + studentStt : ''}`"></p>
   </div>
 </div>
 
@@ -1058,6 +1058,7 @@ function examApp() {
     examData: null,
     studentName: '',
     studentClass: '',
+    studentStt: '',
     examId: 'exam_001',
     startedAt: '',
     
@@ -1360,6 +1361,7 @@ function examApp() {
       // Lấy thông tin học sinh từ sessionStorage
       this.studentName = (sessionStorage.getItem('student_name') || '').trim().toUpperCase();
       this.studentClass = (sessionStorage.getItem('student_class') || '').trim().toUpperCase();
+      this.studentStt = (sessionStorage.getItem('student_stt') || '').trim();
       this.startedAt = sessionStorage.getItem('started_at') || new Date().toISOString();
       
       if (!this.studentName) {
@@ -2521,6 +2523,7 @@ function examApp() {
       const payload = {
         student_name: (this.studentName || '').trim().toUpperCase(),
         student_class: (this.studentClass || '').trim().toUpperCase(),
+        student_stt: (this.studentStt || '').trim(),
         exam_id: this.examId,
         exam_title: this.examData?.title || '',
         started_at: this.startedAt,
@@ -2574,6 +2577,7 @@ function examApp() {
       }
       sessionStorage.removeItem('student_name');
       sessionStorage.removeItem('student_class');
+      sessionStorage.removeItem('student_stt');
 
       if (submitSuccess && submitResult?.submission_id) {
         this.timeUpMsg = '✅ Đã thu bài và nộp thành công! Đang chuyển đến bảng kết quả...';
@@ -2614,6 +2618,7 @@ function examApp() {
       const payload = {
         student_name: (this.studentName || '').trim().toUpperCase(),
         student_class: (this.studentClass || '').trim().toUpperCase(),
+        student_stt: (this.studentStt || '').trim(),
         exam_id: this.examId,
         exam_title: this.examData?.title || '',
         started_at: this.startedAt,

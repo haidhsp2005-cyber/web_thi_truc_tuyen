@@ -374,7 +374,8 @@ function resultApp() {
     get studentInfo() {
       if (!this.result) return '';
       const dt = this.formatDateTime(this.result.submitted_at);
-      return `Thí sinh: ${this.result.student_name} - Lớp: ${this.result.student_class} | Nộp lúc: ${dt}`;
+      const sttText = this.result.student_stt ? ` - STT: ${this.result.student_stt}` : '';
+      return `Thí sinh: ${this.result.student_name} - Lớp: ${this.result.student_class}${sttText} | Nộp lúc: ${dt}`;
     },
 
     get p1Stats() {

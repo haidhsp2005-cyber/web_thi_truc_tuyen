@@ -168,18 +168,18 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
     center = Alignment(horizontal='center', vertical='center')
 
     # Tiêu đề
-    ws.merge_cells("A1:I1")
+    ws.merge_cells("A1:J1")
     ws["A1"] = exam_title
     ws["A1"].font = title_font
     ws["A1"].alignment = center
 
-    ws.merge_cells("A2:I2")
+    ws.merge_cells("A2:J2")
     ws["A2"] = f"Ngày xuất: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
     ws["A2"].alignment = center
 
     # Header
-    headers = ["STT", "Họ và Tên", "Lớp", "Phần I", "Phần II", "Phần III", "Phần IV", "Tổng điểm\n(10đ)", "Xếp loại"]
-    col_widths = [5, 25, 8, 10, 10, 10, 10, 12, 12]
+    headers = ["STT", "STT Lớp", "Họ và Tên", "Lớp", "Phần I", "Phần II", "Phần III", "Phần IV", "Tổng điểm\n(10đ)", "Xếp loại"]
+    col_widths = [5, 10, 25, 8, 10, 10, 10, 10, 12, 12]
 
     for col, (h, w) in enumerate(zip(headers, col_widths), 1):
         cell = ws.cell(row=4, column=col, value=h)
@@ -202,7 +202,7 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
     rank_colors = {"Giỏi": "D1FAE5", "Khá": "DBEAFE", "Trung bình": "FEF9C3", "Yếu": "FEE2E2"}
 
     if not submissions_sorted:
-        ws.merge_cells("A5:I5")
+        ws.merge_cells("A5:J5")
         empty_cell = ws["A5"]
         empty_cell.value = "Chưa có bài thi nào phù hợp với bộ lọc đã chọn"
         empty_cell.font = Font(italic=True, color="6B7280")
@@ -213,9 +213,11 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
         scores = sub.get("scores") or {}
         rank = scores.get("rank", "") or ""
         fill_color = rank_colors.get(rank, "FFFFFF")
+        stt_lop = sub.get("student_stt") or ""
 
         values = [
             stt,
+            stt_lop,
             sub.get("student_name", "") or "",
             sub.get("student_class", "") or "",
             float(scores.get("part1_score") or 0),
@@ -232,7 +234,7 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
             cell.border = border
             if fill_color != "FFFFFF":
                 cell.fill = PatternFill("solid", fgColor=fill_color)
-            if col == 8:
+            if col == 9:
                 cell.font = Font(bold=True, size=12)
 
     # Thống kê cuối
@@ -369,7 +371,7 @@ def export_result_html(submission: dict, exam_data: dict) -> str:
     </div>
     <div>
       <span class="text-gray-500 block text-xs">Lớp</span>
-      <strong class="text-gray-900 text-base">{submission.get('student_class','')}</strong>
+      <strong class="text-gray-900 text-base">{submission.get('student_class','')}{f" (STT: {submission['student_stt']})" if submission.get('student_stt') else ""}</strong>
     </div>
     <div>
       <span class="text-gray-500 block text-xs">Thời gian nộp bài</span>
@@ -875,7 +877,7 @@ def render_single_student_exam_inner_html(submission: dict, exam_data: dict) -> 
   <!-- Thông tin học sinh & Thống kê điểm -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-gray-50 p-3.5 rounded-xl border text-xs mb-5">
     <div><span>Học sinh:</span> <strong class="text-sm block text-gray-900">{submission.get('student_name','')}</strong></div>
-    <div><span>Lớp:</span> <strong class="text-sm block text-gray-900">{submission.get('student_class','')}</strong></div>
+    <div><span>Lớp:</span> <strong class="text-sm block text-gray-900">{submission.get('student_class','')}{f" (STT: {submission['student_stt']})" if submission.get('student_stt') else ""}</strong></div>
     <div><span>Thời gian nộp:</span> <strong class="block text-gray-800">{submitted_at}</strong></div>
     <div><span>Điểm từng phần:</span> <strong class="block text-indigo-900">{parts_score_summary_str}</strong></div>
   </div>

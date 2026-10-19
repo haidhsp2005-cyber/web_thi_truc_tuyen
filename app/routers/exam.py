@@ -182,8 +182,11 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     
     student_name = data.get("student_name", "").strip().upper()
     student_class = data.get("student_class", "").strip().upper()
+    student_stt = str(data.get("student_stt", "")).strip()
     if not student_name:
         raise HTTPException(status_code=400, detail="Vui lòng nhập họ tên!")
+    if not student_class:
+        raise HTTPException(status_code=400, detail="Vui lòng nhập lớp!")
     
     # Nếu là đề ngân hàng, tái tạo chính xác bộ câu hỏi của học sinh này theo seed để chấm
     from ..services.bank_service import is_bank_exam, generate_student_exam_from_bank, get_student_seed
@@ -249,6 +252,7 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         "submission_id": submission_id,
         "student_name": student_name,
         "student_class": student_class,
+        "student_stt": student_stt,
         "exam_id": exam_id,
         "is_online_exam": is_online_exam,
         "started_at": data.get("started_at", ""),
@@ -268,6 +272,7 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
     
     result_data = {
         "scores": scores,
+        "student_stt": student_stt,
         "is_online_exam": is_online_exam,
         "part1_result": p1_result,
         "part2_result": p2_result,
@@ -294,6 +299,7 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         "submission_id": submission_id,
         "student_name": student_name,
         "student_class": student_class,
+        "student_stt": student_stt,
         "exam_id": exam_id,
         "is_online_exam": is_online_exam,
         "started_at": submission_data["started_at"],

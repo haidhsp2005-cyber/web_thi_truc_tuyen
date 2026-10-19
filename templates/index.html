@@ -73,12 +73,66 @@
           class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-lg uppercase font-semibold" autocomplete="name">
       </div>
 
-      <!-- Lớp -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">🏫 Lớp <span class="text-red-500">*</span></label>
-        <input id="student_class" type="text" placeholder="Ví dụ: 10A1, 11B2..."
-          oninput="this.value = this.value.toUpperCase()"
-          class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors text-lg uppercase font-semibold">
+      <!-- Lớp và Số thứ tự (STT) trong lớp -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">🏫 Lớp <span class="text-red-500">*</span></label>
+          <input id="student_class" type="text" placeholder="Ví dụ: 10A1..."
+            oninput="this.value = this.value.toUpperCase()"
+            class="w-full border-2 border-gray-200 rounded-xl px-3.5 py-3 focus:outline-none focus:border-blue-500 transition-colors text-base sm:text-lg uppercase font-semibold">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">🔢 STT trong lớp <span class="text-red-500">*</span></label>
+          <select id="student_stt"
+            class="w-full border-2 border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:border-blue-500 transition-colors text-base sm:text-lg font-semibold bg-white text-gray-800 cursor-pointer">
+            <option value="">-- Chọn STT --</option>
+            <option value="01">STT 01</option>
+            <option value="02">STT 02</option>
+            <option value="03">STT 03</option>
+            <option value="04">STT 04</option>
+            <option value="05">STT 05</option>
+            <option value="06">STT 06</option>
+            <option value="07">STT 07</option>
+            <option value="08">STT 08</option>
+            <option value="09">STT 09</option>
+            <option value="10">STT 10</option>
+            <option value="11">STT 11</option>
+            <option value="12">STT 12</option>
+            <option value="13">STT 13</option>
+            <option value="14">STT 14</option>
+            <option value="15">STT 15</option>
+            <option value="16">STT 16</option>
+            <option value="17">STT 17</option>
+            <option value="18">STT 18</option>
+            <option value="19">STT 19</option>
+            <option value="20">STT 20</option>
+            <option value="21">STT 21</option>
+            <option value="22">STT 22</option>
+            <option value="23">STT 23</option>
+            <option value="24">STT 24</option>
+            <option value="25">STT 25</option>
+            <option value="26">STT 26</option>
+            <option value="27">STT 27</option>
+            <option value="28">STT 28</option>
+            <option value="29">STT 29</option>
+            <option value="30">STT 30</option>
+            <option value="31">STT 31</option>
+            <option value="32">STT 32</option>
+            <option value="33">STT 33</option>
+            <option value="34">STT 34</option>
+            <option value="35">STT 35</option>
+            <option value="36">STT 36</option>
+            <option value="37">STT 37</option>
+            <option value="38">STT 38</option>
+            <option value="39">STT 39</option>
+            <option value="40">STT 40</option>
+            <option value="41">STT 41</option>
+            <option value="42">STT 42</option>
+            <option value="43">STT 43</option>
+            <option value="44">STT 44</option>
+            <option value="45">STT 45</option>
+          </select>
+        </div>
       </div>
 
       <!-- Lọc đề theo Môn, Lớp & Giáo viên ra đề -->
@@ -352,10 +406,12 @@ function showError(msg) {
 function startExam() {
   const name = document.getElementById('student_name').value.trim().toUpperCase();
   const cls = document.getElementById('student_class').value.trim().toUpperCase();
+  const stt = (document.getElementById('student_stt')?.value || '').trim();
   const examId = document.getElementById('exam_id').value;
 
   if (!name) { showError('Vui lòng nhập họ và tên!'); document.getElementById('student_name').focus(); return; }
   if (!cls) { showError('Vui lòng nhập lớp!'); document.getElementById('student_class').focus(); return; }
+  if (!stt) { showError('Vui lòng chọn số thứ tự (STT) trong lớp từ 1 đến 45!'); document.getElementById('student_stt').focus(); return; }
   if (!examId) { showError('Vui lòng chọn đề thi!'); return; }
 
   // KIỂM TRA CHẶN: Đề chưa xuất bản tuyệt đối không được phép vào phòng thi
@@ -392,6 +448,7 @@ function startExam() {
 
   sessionStorage.setItem('student_name', name);
   sessionStorage.setItem('student_class', cls);
+  sessionStorage.setItem('student_stt', stt);
   sessionStorage.setItem('exam_id', examId);
   sessionStorage.setItem('started_at', new Date().toISOString());
   window.location.href = '/exam';

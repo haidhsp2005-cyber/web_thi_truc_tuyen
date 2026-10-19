@@ -468,7 +468,7 @@
           class="mt-2.5 flex items-center justify-center gap-2 w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-md hover:scale-[1.01] active:scale-98 cursor-pointer"
           title="In hoặc lưu file PDF toàn bộ bài làm học sinh theo lớp (tự động chia đợt 40 bài để xuất siêu tốc 2s)">
           <span>🖨️</span>
-          <span x-text="selectedClassFilter ? `In PDF tất cả bài thi Lớp ${selectedClassFilter}` : 'In PDF tất cả bài thi theo lớp'"></span>
+          <span x-text="selectedClassFilters.length > 0 ? `In PDF bài thi Lớp ${selectedClassFilters.join(', ')}` : 'In PDF tất cả bài thi theo lớp'"></span>
           <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full" x-text="`(${filteredSubmissions.length} bài)`"></span>
           <span x-show="filterDate" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full" x-text="`Ngày: ${filterDate}`" x-cloak></span>
           <span x-show="selectedTeacherFilter" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full" x-text="`GV: ${selectedTeacherFilter}`" x-cloak></span>
@@ -532,15 +532,40 @@
             <div class="flex items-center gap-1.5" x-show="!isSuperAdmin() && currentUser?.subject">
               <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-lg" x-text="'📚 Môn: ' + currentUser.subject"></span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <!-- Bộ lọc Lớp: Listbox / Multi-select hỗ trợ chọn 2 hoặc 3 lớp cùng lúc -->
+            <div class="relative flex items-center gap-1.5" x-data="{ openClassDropdown: false }" @click.away="openClassDropdown = false">
               <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Lớp:</label>
-              <select x-model="selectedClassFilter" @change="onFilterChange()"
-                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:border-gray-500 font-medium">
-                <option value="">-- Tất cả lớp --</option>
-                <template x-for="c in availableClasses" :key="c">
-                  <option :value="c" x-text="`Lớp ${c}`"></option>
-                </template>
-              </select>
+              <button type="button" @click="openClassDropdown = !openClassDropdown"
+                class="text-xs border-2 border-gray-200 rounded-xl px-2.5 py-1.5 bg-white hover:border-blue-400 focus:outline-none focus:border-blue-500 font-medium flex items-center gap-1.5 min-w-[130px] max-w-[220px] justify-between cursor-pointer shadow-2xs transition-colors">
+                <span class="truncate text-left" x-text="selectedClassFilters.length === 0 ? '-- Tất cả lớp --' : (selectedClassFilters.length === 1 ? 'Lớp ' + selectedClassFilters[0] : selectedClassFilters.length + ' lớp: ' + selectedClassFilters.join(', '))"></span>
+                <span class="text-[9px] text-gray-400 transition-transform duration-200" :class="openClassDropdown ? 'rotate-180 text-blue-600' : ''">▼</span>
+              </button>
+
+              <!-- Popover chọn nhiều lớp có checkbox -->
+              <div x-show="openClassDropdown" x-cloak
+                class="absolute left-0 top-full mt-1.5 w-60 bg-white border border-gray-200 rounded-2xl shadow-2xl p-2.5 z-50 text-xs">
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-100">
+                  <span class="font-bold text-gray-700 text-[11px]">Chọn 1 hoặc nhiều lớp:</span>
+                  <div class="flex items-center gap-2">
+                    <button type="button" @click="selectedClassFilters = []; onFilterChange();" class="text-[10px] text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer">Tất cả</button>
+                    <button type="button" @click="selectedClassFilters = [...availableClasses]; onFilterChange();" class="text-[10px] text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer">Chọn hết</button>
+                  </div>
+                </div>
+
+                <div class="space-y-0.5 max-h-56 overflow-y-auto pr-1">
+                  <template x-for="c in availableClasses" :key="c">
+                    <label class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-blue-50 cursor-pointer select-none transition-colors"
+                      :class="selectedClassFilters.includes(c) ? 'bg-blue-50 font-bold text-blue-900 border border-blue-200/60' : 'text-gray-700'">
+                      <input type="checkbox" :value="c" x-model="selectedClassFilters" @change="onFilterChange()"
+                        class="w-3.5 h-3.5 rounded text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600">
+                      <span x-text="`Lớp ${c}`"></span>
+                    </label>
+                  </template>
+                  <div x-show="availableClasses.length === 0" class="text-center py-3 text-gray-400 text-[11px]">
+                    Chưa có bài nộp nào
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="flex items-center gap-1.5">
               <label class="text-[11px] font-semibold text-gray-500 whitespace-nowrap">Đề thi:</label>
@@ -567,8 +592,8 @@
                 </template>
               </select>
             </div>
-            <button x-show="selectedSubjectFilter || selectedExamFilter || selectedClassFilter || filterDate || selectedTeacherFilter" 
-              @click="selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilter=''; filterDate=''; selectedTeacherFilter=''; onFilterChange();" x-cloak
+            <button x-show="selectedSubjectFilter || selectedExamFilter || selectedClassFilters.length > 0 || filterDate || selectedTeacherFilter" 
+              @click="selectedSubjectFilter=''; selectedExamFilter=''; selectedClassFilters=[]; filterDate=''; selectedTeacherFilter=''; onFilterChange();" x-cloak
               class="text-xs text-gray-600 hover:text-gray-900 font-bold underline cursor-pointer">✕ Bỏ lọc</button>
           </div>
         </div>
@@ -674,8 +699,12 @@
                     <span x-show="sub.exam_created_by || examMap[sub.exam_id]?.created_by" class="text-slate-600 font-semibold text-[9px] px-1 bg-slate-100 rounded" x-text="'GV: ' + (sub.exam_created_by || examMap[sub.exam_id]?.created_by)"></span>
                   </span>
                 </div>
+              <td class="px-4 py-3 text-center">
+                <div class="font-bold text-gray-700" x-text="sub.student_class"></div>
+                <template x-if="sub.student_stt">
+                  <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 mt-0.5" x-text="'STT: ' + sub.student_stt"></span>
+                </template>
               </td>
-              <td class="px-4 py-3 text-center text-gray-600" x-text="sub.student_class"></td>
               <td class="px-4 py-3 text-center text-gray-500 text-xs" x-text="sub.submitted_at ? new Date(sub.submitted_at).toLocaleString('vi-VN') : '—'"></td>
               <td class="px-4 py-3 text-center text-gray-500 text-xs" x-text="sub.duration_seconds ? Math.floor(sub.duration_seconds/60) + 'p ' + (sub.duration_seconds%60) + 's' : '—'"></td>
               <td class="px-4 py-3 text-center">
@@ -1516,7 +1545,15 @@ function adminApp() {
     userList: [],
     selectedSubjectFilter: '',
     selectedExamFilter: '',
-    selectedClassFilter: '',
+    selectedClassFilters: [],
+    get selectedClassFilter() {
+      return (this.selectedClassFilters || []).join(',');
+    },
+    set selectedClassFilter(val) {
+      if (!val) this.selectedClassFilters = [];
+      else if (Array.isArray(val)) this.selectedClassFilters = val;
+      else this.selectedClassFilters = String(val).split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+    },
     filterDate: '',
     selectedTeacherFilter: '',
     availableClasses: [],
@@ -1666,13 +1703,16 @@ function adminApp() {
     get filteredSubmissions() {
       const eMap = this.examMap;
       const subFilter = this.selectedSubjectFilter ? this.selectedSubjectFilter.trim().toLowerCase() : '';
-      const clsFilter = this.selectedClassFilter ? this.selectedClassFilter.trim().toUpperCase() : '';
+      const clsFilters = (this.selectedClassFilters || []).map(c => c.trim().toUpperCase()).filter(Boolean);
       const dateFilter = this.filterDate ? this.filterDate.trim() : '';
       const teacherFilter = this.selectedTeacherFilter ? this.selectedTeacherFilter.trim().toLowerCase() : '';
 
       return this.submissions.filter(sub => {
         if (this.selectedExamFilter && sub.exam_id !== this.selectedExamFilter) return false;
-        if (clsFilter && (sub.student_class || '').trim().toUpperCase() !== clsFilter) return false;
+        if (clsFilters.length > 0) {
+          const sCls = (sub.student_class || '').trim().toUpperCase();
+          if (!clsFilters.includes(sCls)) return false;
+        }
         if (dateFilter) {
           const subDate = (sub.submitted_at || '').substring(0, 10);
           if (subDate !== dateFilter) return false;

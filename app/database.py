@@ -488,6 +488,7 @@ def init_db():
                     id VARCHAR(100) PRIMARY KEY,
                     student_name VARCHAR(255),
                     student_class VARCHAR(100),
+                    student_stt VARCHAR(20),
                     exam_id VARCHAR(100),
                     started_at VARCHAR(100),
                     submitted_at VARCHAR(100),
@@ -500,6 +501,7 @@ def init_db():
                 CREATE INDEX IF NOT EXISTS idx_submissions_exam_id ON submissions(exam_id);
                 CREATE INDEX IF NOT EXISTS idx_submissions_student_class ON submissions(student_class);
                 CREATE INDEX IF NOT EXISTS idx_submissions_submitted_at ON submissions(submitted_at DESC);
+                ALTER TABLE submissions ADD COLUMN IF NOT EXISTS student_stt VARCHAR(20);
 
                 CREATE TABLE IF NOT EXISTS admin_users (
                     id SERIAL PRIMARY KEY,
@@ -556,6 +558,7 @@ def init_db():
             id TEXT PRIMARY KEY,
             student_name TEXT NOT NULL,
             student_class TEXT NOT NULL,
+            student_stt TEXT,
             exam_id TEXT NOT NULL,
             started_at TEXT,
             submitted_at TEXT DEFAULT (datetime('now')),
@@ -565,6 +568,12 @@ def init_db():
             status TEXT DEFAULT 'pending'
         )
     """)
+    try:
+        sq_cols = [r[1] for r in c.execute("PRAGMA table_info(submissions)").fetchall()]
+        if "student_stt" not in sq_cols:
+            c.execute("ALTER TABLE submissions ADD COLUMN student_stt TEXT")
+    except Exception:
+        pass
     c.execute("CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT)")
     c.execute("""
         CREATE TABLE IF NOT EXISTS exams (
@@ -850,6 +859,7 @@ def save_submission(submission_data: dict, result_data: dict = None):
     is_online = bool(submission_data.get("is_online_exam", False))
     switch_count = int(submission_data.get("screen_switch_count", 0)) if is_online else 0
     switch_viols = submission_data.get("switch_violations", []) if is_online else []
+    s_stt = str(submission_data.get("student_stt", "")).strip()
 
     answers = {
         "part1": submission_data.get("part1_answers", {}),
@@ -857,6 +867,7 @@ def save_submission(submission_data: dict, result_data: dict = None):
         "part3": submission_data.get("part3_answers", {}),
         "part4_question_id": submission_data.get("part4_question_id"),
         "part4_answer": submission_data.get("part4_answer", ""),
+        "student_stt": s_stt,
         "is_online_exam": is_online,
         "screen_switch_count": switch_count,
         "switch_violations": switch_viols,
@@ -864,6 +875,7 @@ def save_submission(submission_data: dict, result_data: dict = None):
 
     if result_data:
         result_data["is_online_exam"] = is_online
+        result_data["student_stt"] = s_stt
         result_data["screen_switch_count"] = switch_count
         result_data["switch_violations"] = switch_viols
         if submission_data.get("exam_data"):
@@ -893,8 +905,8 @@ def save_submission(submission_data: dict, result_data: dict = None):
             c = conn.cursor()
             c.execute("""
                 INSERT INTO submissions 
-                (id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status, scores_json, is_online_exam, screen_switch_count)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status, scores_json, is_online_exam, screen_switch_count, student_stt)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (id) DO UPDATE SET
                     student_name = EXCLUDED.student_name,
                     student_class = EXCLUDED.student_class,
@@ -907,8 +919,9 @@ def save_submission(submission_data: dict, result_data: dict = None):
                     status = EXCLUDED.status,
                     scores_json = EXCLUDED.scores_json,
                     is_online_exam = EXCLUDED.is_online_exam,
-                    screen_switch_count = EXCLUDED.screen_switch_count
-            """, (sub_id, s_name, s_class, e_id, start_at, sub_at, dur, ans_j, res_j, st, sc_j, is_online, switch_count))
+                    screen_switch_count = EXCLUDED.screen_switch_count,
+                    student_stt = EXCLUDED.student_stt
+            """, (sub_id, s_name, s_class, e_id, start_at, sub_at, dur, ans_j, res_j, st, sc_j, is_online, switch_count, s_stt))
             conn.commit()
             conn.close()
             saved_to_pg = True
@@ -931,9 +944,9 @@ def save_submission(submission_data: dict, result_data: dict = None):
             c_sq = sq_conn.cursor()
             c_sq.execute("""
                 INSERT OR REPLACE INTO submissions 
-                (id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (sub_id, s_name, s_class, e_id, start_at, sub_at, dur, ans_j, res_j, st))
+                (id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status, student_stt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (sub_id, s_name, s_class, e_id, start_at, sub_at, dur, ans_j, res_j, st, s_stt))
             sq_conn.commit()
             sq_conn.close()
             logger.info(f"Đã lưu bài thi {sub_id} an toàn vào SQLite dự phòng.")
@@ -946,9 +959,9 @@ def get_submission(submission_id: str) -> Optional[dict]:
     conn = get_connection()
     c = conn.cursor()
     if USE_POSTGRES:
-        c.execute("SELECT id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status FROM submissions WHERE id = %s", (submission_id,))
+        c.execute("SELECT id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status, student_stt FROM submissions WHERE id = %s", (submission_id,))
     else:
-        c.execute("SELECT id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status FROM submissions WHERE id = ?", (submission_id,))
+        c.execute("SELECT id, student_name, student_class, exam_id, started_at, submitted_at, duration_seconds, answers_json, result_json, status, student_stt FROM submissions WHERE id = ?", (submission_id,))
     
     row = c.fetchone()
     conn.close()
@@ -956,10 +969,12 @@ def get_submission(submission_id: str) -> Optional[dict]:
     if not row:
         return None
 
+    stt_val = str(row[10] or "").strip() if len(row) > 10 and row[10] is not None else ""
     result = {
         "submission_id": row[0],
         "student_name": row[1],
         "student_class": row[2],
+        "student_stt": stt_val,
         "exam_id": row[3],
         "started_at": row[4],
         "submitted_at": row[5],
@@ -976,6 +991,8 @@ def get_submission(submission_id: str) -> Optional[dict]:
             result["answers"] = ans_data
             result["part4_answer"] = ans_data.get("part4_answer", "")
             result["part4_question_id"] = ans_data.get("part4_question_id")
+            if not result["student_stt"] and ans_data.get("student_stt"):
+                result["student_stt"] = str(ans_data["student_stt"]).strip()
             if "is_online_exam" in ans_data:
                 result["is_online_exam"] = bool(ans_data["is_online_exam"])
             if "screen_switch_count" in ans_data:
@@ -989,6 +1006,8 @@ def get_submission(submission_id: str) -> Optional[dict]:
         try:
             result_data = json.loads(row[8])
             result.update(result_data)
+            if not result["student_stt"] and result_data.get("student_stt"):
+                result["student_stt"] = str(result_data["student_stt"]).strip()
             if "is_online_exam" in result_data:
                 result["is_online_exam"] = bool(result_data["is_online_exam"])
             if "screen_switch_count" in result_data:
@@ -1002,7 +1021,7 @@ def get_submission(submission_id: str) -> Optional[dict]:
 
 
 def get_all_submissions(exam_id: str = None, student_class: str = None, submission_date: str = None) -> List[dict]:
-    """Lấy danh sách bài nộp phục vụ bảng quản trị và thống kê."""
+    """Lấy danh sách bài nộp phục vụ bảng quản trị và thống kê (Hỗ trợ lọc nhiều lớp cùng lúc)."""
     conn = get_connection()
     c = conn.cursor()
 
@@ -1024,9 +1043,9 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
         pass
 
     if USE_POSTGRES:
-        query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, status, scores_json, is_online_exam, screen_switch_count FROM submissions"
+        query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, status, scores_json, is_online_exam, screen_switch_count, student_stt FROM submissions"
     else:
-        query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status, answers_json FROM submissions"
+        query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status, answers_json, student_stt FROM submissions"
     conditions = []
     params = []
 
@@ -1036,8 +1055,14 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
         conditions.append(f"exam_id = {placeholder}")
         params.append(exam_id.strip())
     if student_class and student_class.strip() and student_class.strip() != "all":
-        conditions.append(f"UPPER(student_class) = UPPER({placeholder})")
-        params.append(student_class.strip())
+        classes = [c.strip().upper() for c in student_class.split(',') if c.strip()]
+        if len(classes) == 1:
+            conditions.append(f"UPPER(student_class) = UPPER({placeholder})")
+            params.append(classes[0])
+        elif len(classes) > 1:
+            placeholders = ", ".join([placeholder] * len(classes))
+            conditions.append(f"UPPER(student_class) IN ({placeholders})")
+            params.extend(classes)
     if submission_date and submission_date.strip() and submission_date.strip() != "all":
         conditions.append(f"submitted_at LIKE {placeholder}")
         params.append(f"{submission_date.strip()}%")
@@ -1052,10 +1077,12 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
 
     results = []
     for row in rows:
+        stt_val = str(row[10] or "").strip() if len(row) > 10 and row[10] is not None else ""
         item = {
             "submission_id": row[0],
             "student_name": row[1],
             "student_class": row[2],
+            "student_stt": stt_val,
             "exam_id": row[3],
             "submitted_at": row[4],
             "duration_seconds": row[5],
@@ -1079,6 +1106,8 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
                 try:
                     res_d = json.loads(row[6])
                     item["scores"] = res_d.get("scores", {}) or {}
+                    if not item["student_stt"] and res_d.get("student_stt"):
+                        item["student_stt"] = str(res_d["student_stt"]).strip()
                     if "is_online_exam" in res_d:
                         item["is_online_exam"] = bool(res_d["is_online_exam"])
                     if "screen_switch_count" in res_d:
@@ -1091,6 +1120,8 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
             if len(row) > 8 and row[8]:
                 try:
                     ans_d = json.loads(row[8])
+                    if not item["student_stt"] and ans_d.get("student_stt"):
+                        item["student_stt"] = str(ans_d["student_stt"]).strip()
                     if not item["is_online_exam"] and "is_online_exam" in ans_d:
                         item["is_online_exam"] = bool(ans_d["is_online_exam"])
                     if item["screen_switch_count"] == 0 and "screen_switch_count" in ans_d:
@@ -1108,6 +1139,8 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
             item["is_online_exam"] = True
 
         results.append(item)
+
+    return results
 
     return results
 
