@@ -1,0 +1,616 @@
+{
+  "title": "CÂU HỎI BÀI 3, 4, 5",
+  "subject": "Tin học",
+  "grade": "11",
+  "duration_minutes": 50,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Đông Thạnh",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Chương trình được viết bằng ngôn ngữ lập trình bậc cao dưới dạng văn bản gần với ngôn ngữ tự nhiên được gọi là gì?",
+          "options": {
+            "A": "Mã máy",
+            "B": "Mã nguồn",
+            "C": "Mã hóa",
+            "D": "Mã vạch"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Phần mềm được chuyển giao dưới dạng mã máy thường được gọi là gì?",
+          "options": {
+            "A": "Phần mềm nguồn mở",
+            "B": "Phần mềm tự do",
+            "C": "Phần mềm nguồn đóng",
+            "D": "Phần mềm trực tuyến"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Phần mềm soạn thảo văn bản Microsoft Word thuộc loại phần mềm nào?",
+          "options": {
+            "A": "Phần mềm nguồn mở",
+            "B": "Phần mềm tự do",
+            "C": "Phần mềm chạy trên Internet",
+            "D": "Phần mềm thương mại"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Phần mềm nguồn mở là phần mềm có đặc điểm nào sau đây?",
+          "options": {
+            "A": "Được cung cấp cả mã nguồn để người dùng có thể sửa đổi, cải tiến, phát triển",
+            "B": "Chỉ cung cấp mã máy",
+            "C": "Bắt buộc phải mua bản quyền",
+            "D": "Chỉ chạy trên Internet"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Giấy phép công cộng nào được áp dụng rộng rãi nhất cho phần mềm nguồn mở?",
+          "options": {
+            "A": "Microsoft EULA",
+            "B": "GNU GPL",
+            "C": "Adobe License",
+            "D": "Apple License"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Phần mềm xử lí ảnh nguồn mở nào có thể thay thế Photoshop?",
+          "options": {
+            "A": "Word",
+            "B": "Excel",
+            "C": "GIMP",
+            "D": "MySQL"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Bộ phần mềm văn phòng nguồn mở gồm Writer, Calc, Impress có thể thay thế cho bộ phần mềm nào?",
+          "options": {
+            "A": "Microsoft Word, Excel, PowerPoint",
+            "B": "Photoshop",
+            "C": "Windows",
+            "D": "Acrobat Pro DC"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Hệ quản trị cơ sở dữ liệu nguồn mở nào sau đây có thể thay cho SQL Server của Microsoft?",
+          "options": {
+            "A": "Oracle của Microsoft",
+            "B": "Photoshop",
+            "C": "Inkscape",
+            "D": "MySQL"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Phần mềm Google Docs dùng để làm gì?",
+          "options": {
+            "A": "Chỉnh sửa ảnh",
+            "B": "Soạn thảo văn bản trực tuyến",
+            "C": "Quản lí cơ sở dữ liệu",
+            "D": "Quản lí thư mục và tệp"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Phần mềm chạy trên Internet là phần mềm như thế nào?",
+          "options": {
+            "A": "Phải cài đặt vào máy mới sử dụng được",
+            "B": "Chỉ dùng được khi không có mạng",
+            "C": "Cho phép sử dụng qua Internet mà không cần cài đặt vào máy",
+            "D": "Chỉ dùng được trên điện thoại"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Vì sao phần mềm thương mại thường được chuyển giao dưới dạng mã máy?",
+          "options": {
+            "A": "Vì mã máy dễ đọc hơn mã nguồn",
+            "B": "Vì mã máy giúp bảo vệ chống đánh cắp ý tưởng và sửa đổi phần mềm",
+            "C": "Vì mã máy chạy được trên mọi hệ điều hành",
+            "D": "Vì mã máy có dung lượng lớn hơn"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Điểm khác biệt giữa phần mềm tự do và phần mềm miễn phí là gì?",
+          "options": {
+            "A": "Không có sự khác biệt",
+            "B": "Phần mềm tự do bắt buộc phải mất tiền",
+            "C": "Phần mềm tự do không chỉ miễn phí mà còn được tự do sử dụng, không phải xin phép",
+            "D": "Phần mềm tự do chỉ tồn tại ở dạng mã nguồn"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Vì sao Acrobat Reader là phần mềm tự do còn Acrobat Pro DC là phần mềm thương mại?",
+          "options": {
+            "A": "Acrobat Reader miễn phí, dùng tự do nhưng chỉ ở dạng mã máy và chỉ đọc, ghi chú, in; muốn tính năng cao hơn phải mua bản Pro DC",
+            "B": "Vì Acrobat Reader cung cấp mã nguồn",
+            "C": "Vì Acrobat Pro DC miễn phí",
+            "D": "Vì cả hai đều là phần mềm nguồn mở"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Vì sao cần có giấy phép cho phần mềm nguồn mở?",
+          "options": {
+            "A": "Để bán phần mềm với giá cao hơn",
+            "B": "Để giải quyết mâu thuẫn giữa quy định bản quyền và quyền sử dụng phần mềm nguồn mở",
+            "C": "Để cấm người dùng sửa mã nguồn",
+            "D": "Để phần mềm chạy nhanh hơn"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Yêu cầu “phần mềm sửa đổi từ phần mềm nguồn mở theo GPL cũng phải mở theo giấy phép GPL” có ý nghĩa gì?",
+          "options": {
+            "A": "Ngăn không cho ai sửa đổi phần mềm",
+            "B": "Bắt người dùng phải trả phí cho tác giả gốc",
+            "C": "Chỉ nhằm bảo vệ phần mềm thương mại",
+            "D": "Đảm bảo sự phát triển bền vững của phần mềm nguồn mở"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "Ưu điểm nổi bật của phần mềm thương mại dạng “đặt hàng” là gì?",
+          "options": {
+            "A": "Miễn phí hoàn toàn",
+            "B": "Đáp ứng đúng yêu cầu riêng của khách hàng và được bảo hành theo hợp đồng",
+            "C": "Mã nguồn được công khai",
+            "D": "Ai cũng được sao chép, phân phối"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Vì sao phần mềm nguồn mở không thể thay thế hoàn toàn phần mềm thương mại trong thực tế?",
+          "options": {
+            "A": "Vì phần mềm nguồn mở chạy chậm",
+            "B": "Vì phần mềm nguồn mở không có giao diện",
+            "C": "Vì nhu cầu riêng của mỗi người phong phú, chỉ phần mềm đặt hàng mới đáp ứng được",
+            "D": "Vì phần mềm nguồn mở luôn có giá cao"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Ưu điểm của phần mềm nguồn mở so với phần mềm thương mại là gì?",
+          "options": {
+            "A": "Luôn được bảo hành đầy đủ",
+            "B": "Chi phí thấp, minh bạch, ít phụ thuộc vào nhà cung cấp",
+            "C": "Luôn hoàn chỉnh hơn",
+            "D": "Không cho phép sửa đổi"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Vì sao phần mềm thương mại vẫn có vai trò quan trọng đối với sự phát triển công nghệ thông tin?",
+          "options": {
+            "A": "Vì là nguồn thu nhập chính để duy trì các tổ chức làm phần mềm chuyên nghiệp",
+            "B": "Vì luôn miễn phí",
+            "C": "Vì chỉ chạy trên Internet",
+            "D": "Vì không có bản quyền"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Lợi ích lớn nhất của phần mềm chạy trên Internet là gì?",
+          "options": {
+            "A": "Chỉ dùng được ở một máy cố định",
+            "B": "Dùng được ở bất cứ đâu, bất cứ lúc nào, trên máy tính nào có kết nối Internet, chi phí rẻ hoặc không mất phí",
+            "C": "Không cần Internet",
+            "D": "Phải cài đặt bằng đĩa CD"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q20"
+        },
+        {
+          "text": "Bộ xử lí trung tâm (CPU) được cấu tạo từ hai bộ phận chính nào?",
+          "options": {
+            "A": "Bộ nhớ trong và bộ nhớ ngoài",
+            "B": "Bộ số học và logic (ALU) và bộ điều khiển (Control Unit)",
+            "C": "Thanh ghi và bộ nhớ đệm (cache)",
+            "D": "Bảng mạch chính và các cổng kết nối"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q21"
+        },
+        {
+          "text": "Tất cả các thiết bị bên trong máy tính được gắn với nhau thông qua bộ phận nào?",
+          "options": {
+            "A": "Bảng mạch chính (mainboard)",
+            "B": "Bộ nguồn",
+            "C": "Ổ đĩa cứng",
+            "D": "Bộ xử lí trung tâm"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q22"
+        },
+        {
+          "text": "Loại bộ nhớ nào sau đây sẽ bị xoá dữ liệu khi tắt máy?",
+          "options": {
+            "A": "ROM (Read Only Memory)",
+            "B": "Ổ đĩa cứng",
+            "C": "RAM (Random Access Memory)",
+            "D": "Đĩa quang"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q23"
+        },
+        {
+          "text": "Phép nhân logic (AND) của hai đại lượng logic cho kết quả bằng 1 khi nào?",
+          "options": {
+            "A": "Có ít nhất một đại lượng bằng 1",
+            "B": "Hai đại lượng có giá trị khác nhau",
+            "C": "Cả hai đại lượng đều bằng 0",
+            "D": "Cả hai đại lượng đều bằng 1"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q24"
+        },
+        {
+          "text": "Kết quả của phép phủ định logic NOT 1 là:",
+          "options": {
+            "A": "0",
+            "B": "1",
+            "C": "10",
+            "D": "Không xác định"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q25"
+        },
+        {
+          "text": "Thiết bị vào thông dụng nhất để nhập dữ liệu cho máy tính là:",
+          "options": {
+            "A": "Máy chiếu",
+            "B": "Máy in",
+            "C": "Bàn phím",
+            "D": "Màn hình"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q26"
+        },
+        {
+          "text": "Hai thông số quan trọng nhất của chuột là:",
+          "options": {
+            "A": "Kích thước màn hình và tần số quét",
+            "B": "Phương thức kết nối và độ phân giải (dpi)",
+            "C": "Tốc độ in và độ phân giải",
+            "D": "Dung lượng và thời gian truy cập"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q27"
+        },
+        {
+          "text": "Cổng kết nối HDMI có đặc điểm nào sau đây?",
+          "options": {
+            "A": "Chỉ truyền tín hiệu hình ảnh tương tự",
+            "B": "Chỉ truyền âm thanh",
+            "C": "Là cổng dùng để kết nối mạng",
+            "D": "Truyền tín hiệu số, đồng thời cả âm thanh và hình ảnh"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q28"
+        },
+        {
+          "text": "Tốc độ của bộ xử lí trung tâm (CPU) thường được tính bằng đơn vị nào?",
+          "options": {
+            "A": "GB (dung lượng)",
+            "B": "GHz (tần số xung nhịp)",
+            "C": "dpi (độ phân giải)",
+            "D": "ms (thời gian phản hồi)"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q29"
+        },
+        {
+          "text": "Vì sao CPU đa lõi (multi-core) xử lí nhanh hơn CPU một lõi?",
+          "options": {
+            "A": "Vì có dung lượng ổ cứng lớn hơn",
+            "B": "Vì không cần dùng đến RAM",
+            "C": "Vì có đồng hồ xung chạy chậm hơn",
+            "D": "Vì có thể thực hiện song song nhiều công việc"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q30"
+        },
+        {
+          "text": "Điểm khác biệt chính giữa bộ nhớ trong và bộ nhớ ngoài là:",
+          "options": {
+            "A": "Bộ nhớ trong chứa dữ liệu khi máy hoạt động; bộ nhớ ngoài lưu trữ dữ liệu lâu dài, không cần nguồn nuôi",
+            "B": "Bộ nhớ trong lưu dữ liệu lâu dài, bộ nhớ ngoài chỉ lưu tạm thời",
+            "C": "Bộ nhớ trong luôn có dung lượng lớn hơn bộ nhớ ngoài",
+            "D": "Bộ nhớ trong luôn nằm ngoài thân máy"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q31"
+        },
+        {
+          "text": "Trong mạch điện thực hiện phép nhân logic (AND) gồm hai rơ le K1, K2 mắc nối tiếp với bóng đèn, đèn sáng khi nào?",
+          "options": {
+            "A": "Chỉ cần K1 có điện",
+            "B": "Chỉ cần K2 có điện",
+            "C": "Cả K1 và K2 đều có điện (đóng mạch)",
+            "D": "Cả K1 và K2 đều không có điện"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q32"
+        },
+        {
+          "text": "Phép toán XOR của hai đại lượng logic x, y cho kết quả bằng 1 khi:",
+          "options": {
+            "A": "x và y cùng bằng 1",
+            "B": "x và y có giá trị khác nhau",
+            "C": "x và y có giá trị giống nhau",
+            "D": "x và y cùng bằng 0"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q33"
+        },
+        {
+          "text": "Giá trị thập phân của số nhị phân 1101 là:",
+          "options": {
+            "A": "11",
+            "B": "15",
+            "C": "13",
+            "D": "12"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q34"
+        },
+        {
+          "text": "Khi độ phân giải của màn hình càng lớn thì:",
+          "options": {
+            "A": "Số điểm ảnh càng nhiều, ảnh càng nét",
+            "B": "Màn hình càng nhỏ",
+            "C": "Ảnh càng mờ",
+            "D": "Thời gian phản hồi càng chậm"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q35"
+        },
+        {
+          "text": "Vì sao cần tuỳ chỉnh tốc độ chuột cho phù hợp?",
+          "options": {
+            "A": "Để chuột kết nối được với máy tính",
+            "B": "Để tăng dung lượng bộ nhớ của máy",
+            "C": "Để máy tính khởi động nhanh hơn",
+            "D": "Để thao tác chính xác, thuận tiện, vì tốc độ quá cao hoặc quá thấp sẽ khó làm việc"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q36"
+        },
+        {
+          "text": "Điểm khác nhau giữa cổng VGA và cổng HDMI là:",
+          "options": {
+            "A": "VGA truyền tín hiệu số, HDMI truyền tín hiệu tương tự",
+            "B": "VGA truyền tín hiệu hình ảnh tương tự, không truyền âm thanh; HDMI truyền tín hiệu số gồm cả hình ảnh và âm thanh",
+            "C": "VGA truyền cả âm thanh và hình ảnh, HDMI chỉ truyền hình ảnh",
+            "D": "VGA và HDMI đều chỉ dùng để kết nối mạng"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q37"
+        },
+        {
+          "text": "Kết quả của phép cộng hai số nhị phân 1010 + 101 là:",
+          "options": {
+            "A": "1101",
+            "B": "1011",
+            "C": "1111",
+            "D": "10001"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q38"
+        },
+        {
+          "text": "Kết quả của phép cộng hai số nhị phân 1001 + 1011 là:",
+          "options": {
+            "A": "10100",
+            "B": "10010",
+            "C": "10101",
+            "D": "11000"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q39"
+        },
+        {
+          "text": "Với x = 1, y = 0, biểu thức nào sau đây có giá trị bằng 1?",
+          "options": {
+            "A": "x AND y",
+            "B": "x XOR y",
+            "C": "NOT x",
+            "D": "(NOT x) OR y"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q40"
+        },
+        {
+          "text": "Cần thiết kế mạch điện để bóng đèn sáng khi có ít nhất một trong hai công tắc (rơ le) được đóng. Mạch đó thực hiện phép toán logic nào?",
+          "options": {
+            "A": "Phép nhân logic AND (hai rơ le mắc nối tiếp)",
+            "B": "Phép phủ định NOT",
+            "C": "Phép cộng nhị phân nhiều bit",
+            "D": "Phép cộng logic OR (hai rơ le mắc song song)"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q41"
+        },
+        {
+          "text": "Một mạch dùng rơ le thường đóng: khi cấp điện cho rơ le thì đèn tắt, khi ngắt điện thì đèn sáng. Mạch này thực hiện phép toán logic nào?",
+          "options": {
+            "A": "AND (nhân logic)",
+            "B": "OR (cộng logic)",
+            "C": "NOT (phủ định)",
+            "D": "XOR (loại trừ)"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q42"
+        },
+        {
+          "text": "Một người thuận tay trái muốn đổi chức năng hai nút chuột. Cần mở Setting \\rightarrow  Devices \\rightarrow  Mouse rồi làm gì?",
+          "options": {
+            "A": "Kéo thanh Cursor speed sang trái",
+            "B": "Chọn nút chính (primary button) là nút phải (Right)",
+            "C": "Đổi độ phân giải màn hình",
+            "D": "Chọn Mass Storage"
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q43"
+        },
+        {
+          "text": "Máy tính chạy chậm, giật khi mở cùng lúc nhiều chương trình. Việc nâng cấp nào sau đây hợp lí nhất để cải thiện?",
+          "options": {
+            "A": "Tăng dung lượng bộ nhớ RAM",
+            "B": "Thay màn hình có kích thước lớn hơn",
+            "C": "Thay chuột không dây",
+            "D": "Thêm loa ngoài"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q44"
+        },
+        {
+          "text": "Văn phòng cần in nhiều tài liệu với tốc độ nhanh, chất lượng tốt. Nên chọn loại máy in nào?",
+          "options": {
+            "A": "Máy in kim",
+            "B": "Máy in nhiệt",
+            "C": "Máy in phun",
+            "D": "Máy in laser"
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q45"
+        },
+        {
+          "text": "Khi cắm máy ảnh vào máy tính bằng cáp USB, máy ảnh hiện thông báo “USB Mode, Mass Storage”. Điều này có nghĩa là:",
+          "options": {
+            "A": "Máy ảnh đang sạc pin",
+            "B": "Máy ảnh đang chuyển sang chế độ chụp ảnh",
+            "C": "Bộ nhớ của máy ảnh được chia sẻ qua cổng USB, có thể truy cập như một bộ nhớ ngoài (ví dụ mở thư mục DCIM để xem ảnh)",
+            "D": "Máy tính đang cài lại hệ điều hành"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q46"
+        },
+        {
+          "text": "Lần đầu kết nối tai nghe bluetooth với điện thoại, cần làm gì trước tiên?",
+          "options": {
+            "A": "Bật bluetooth ở cả hai thiết bị và ghép đôi (pairing), nhập mã xác nhận nếu được yêu cầu",
+            "B": "Dùng cáp VGA nối hai thiết bị",
+            "C": "Cài lại hệ điều hành cho điện thoại",
+            "D": "Chỉ cần đặt hai thiết bị gần nhau, không cần bật bluetooth"
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q47"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": []
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": []
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_af0a77d8",
+  "created_by": "thanhtruc",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 11.75,
+    "part1_per_question": 0.25,
+    "part2_total": 0,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 0.0,
+    "part3_per_question": 0.0,
+    "part4_total": 0.0,
+    "part4_per_question": 0.0,
+    "custom_scoring": false
+  },
+  "is_online_exam": false
+}

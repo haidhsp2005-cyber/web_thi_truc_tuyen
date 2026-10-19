@@ -189,7 +189,7 @@
           "id": "p1_q15"
         },
         {
-          "text": "Một mảnh vườn hình chữ nhật có diện tích  $300$   $m^{2}$ . Nếu tăng chiều dài thêm  $5$  m và giảm chiều rộng đi  $4$  m thì diện tích không đổi. Chiều dài mảnh vườn là:",
+          "text": "Một mảnh vườn hình chữ nhật có diện tích  $300 m^{2}$ . Nếu tăng chiều dài thêm  $5$  m và giảm chiều rộng đi  $4$  m thì diện tích không đổi. Chiều dài mảnh vườn là:",
           "options": {
             "A": "$30$  m",
             "B": "$25$  m",
@@ -255,7 +255,7 @@
       "instruction": "",
       "questions": [
         {
-          "text": "Một khu vườn hình chữ nhật có chu vi  $100$  m. Nếu giảm chiều dài đi  $5$  m và tăng chiều rộng lên  $5$  m thì diện tích tăng thêm  $75$   $m^{2}$ . Xét các mệnh đề sau:",
+          "text": "Một khu vườn hình chữ nhật có chu vi  $100$  m. Nếu giảm chiều dài đi  $5$  m và tăng chiều rộng lên  $5$  m thì diện tích tăng thêm  $75 m^{2}$ . Xét các mệnh đề sau:",
           "items": {
             "a": {
               "text": "Gọi chiều dài là  $x$ , chiều rộng là  $y$ , ta có phương trình tổng chiều dài và chiều rộng là  $x+y=100$ .",

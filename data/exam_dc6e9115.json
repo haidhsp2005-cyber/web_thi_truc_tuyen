@@ -322,7 +322,7 @@
   },
   "id": "exam_dc6e9115",
   "created_by": "haidhsp2005",
-  "is_published": true,
+  "is_published": false,
   "scoring": {
     "part1_total": 3.0,
     "part1_per_question": 0.25,
@@ -340,5 +340,7 @@
     "part4_per_question": 0.0,
     "custom_scoring": false
   },
-  "is_online_exam": false
+  "is_online_exam": false,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Long Cang"
 }

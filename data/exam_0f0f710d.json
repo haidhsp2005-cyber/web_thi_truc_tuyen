@@ -430,7 +430,7 @@
     }
   },
   "id": "exam_0f0f710d",
-  "is_published": true,
+  "is_published": false,
   "created_by": "haidhsp2005",
   "scoring": {
     "part1_total": 7.0,
@@ -449,5 +449,7 @@
     "part4_per_question": 0.0,
     "custom_scoring": false
   },
-  "is_online_exam": true
+  "is_online_exam": false,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Long Cang"
 }

@@ -1,0 +1,292 @@
+{
+  "title": "KT TX TIN11 BAI4 5 6 DE3 (1)",
+  "subject": "Tin học",
+  "grade": "11",
+  "duration_minutes": 15,
+  "department_name": "Sở GD&ĐT Tây Ninh",
+  "school_name": "Trường THPT Gò Đen",
+  "parts": {
+    "part1": {
+      "name": "Phần I. Trắc nghiệm nhiều lựa chọn",
+      "instruction": "",
+      "questions": [
+        {
+          "text": "Bộ điều khiển của CPU có chức năng nào?",
+          "options": {
+            "A": "Điều khiển máy tính hoạt động theo chương trình.",
+            "B": "Lưu tệp lâu dài trên đĩa.",
+            "C": "In dữ liệu ra giấy.",
+            "D": "Chiếu hình ảnh lên màn chiếu."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q1"
+        },
+        {
+          "text": "Bộ số học và logic (ALU) thực hiện công việc nào?",
+          "options": {
+            "A": "Chỉ lưu dữ liệu lâu dài.",
+            "B": "Chỉ kết nối với mạng máy tính.",
+            "C": "Thực hiện các phép tính số học và logic.",
+            "D": "Chỉ hiển thị hình ảnh."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q2"
+        },
+        {
+          "text": "Đơn vị thường dùng để đo tốc độ xung nhịp CPU là gì?",
+          "options": {
+            "A": "GB.",
+            "B": "GHz.",
+            "C": "Inch.",
+            "D": "Số trang/phút."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q3"
+        },
+        {
+          "text": "Dữ liệu trong RAM sẽ thế nào khi máy tính bị ngắt nguồn?",
+          "options": {
+            "A": "Được giữ nguyên vĩnh viễn.",
+            "B": "Tự chuyển toàn bộ sang máy in.",
+            "C": "Tự chuyển toàn bộ sang ROM.",
+            "D": "Bị mất."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q4"
+        },
+        {
+          "text": "Thiết bị nào sau đây thuộc bộ nhớ ngoài?",
+          "options": {
+            "A": "SSD.",
+            "B": "Bộ nhớ đệm của CPU.",
+            "C": "Thanh ghi.",
+            "D": "RAM."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q5"
+        },
+        {
+          "text": "Thiết bị nào sau đây là thiết bị vào?",
+          "options": {
+            "A": "Máy in.",
+            "B": "Màn hình không cảm ứng.",
+            "C": "Bàn phím.",
+            "D": "Máy chiếu."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q6"
+        },
+        {
+          "text": "Thiết bị nào sau đây là thiết bị ra?",
+          "options": {
+            "A": "Máy đọc mã vạch.",
+            "B": "Máy chiếu.",
+            "C": "Chuột.",
+            "D": "Máy quét ảnh."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q7"
+        },
+        {
+          "text": "Thiết bị nào có chức năng vừa vào vừa ra?",
+          "options": {
+            "A": "Máy in.",
+            "B": "Chuột.",
+            "C": "Bàn phím.",
+            "D": "Màn hình cảm ứng."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q8"
+        },
+        {
+          "text": "Kích thước màn hình tính bằng inch được đo theo chiều nào?",
+          "options": {
+            "A": "Đường chéo màn hình.",
+            "B": "Chiều ngang màn hình.",
+            "C": "Chiều dọc màn hình.",
+            "D": "Chu vi màn hình."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q9"
+        },
+        {
+          "text": "Cổng nào truyền được cả âm thanh và hình ảnh bằng tín hiệu số?",
+          "options": {
+            "A": "PS/2.",
+            "B": "HDMI.",
+            "C": "Ethernet.",
+            "D": "VGA."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q10"
+        },
+        {
+          "text": "Đồng hồ xung trong CPU có chức năng nào?",
+          "options": {
+            "A": "Lưu tệp lâu dài khi tắt máy.",
+            "B": "In hình ảnh ra giấy.",
+            "C": "Tạo xung điện áp để đồng bộ hoạt động.",
+            "D": "Đo chiều dài đường chéo màn hình."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q11"
+        },
+        {
+          "text": "Các mạch logic có thể được xây dựng từ ba cổng cơ bản nào?",
+          "options": {
+            "A": "OR, XOR, NOT.",
+            "B": "AND, OR, XOR.",
+            "C": "AND, XOR, NOT.",
+            "D": "AND, OR, NOT."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q12"
+        },
+        {
+          "text": "Bộ nhớ nào thường lưu chương trình kiểm tra, khởi động máy tính?",
+          "options": {
+            "A": "Máy chiếu.",
+            "B": "RAM.",
+            "C": "Bàn phím.",
+            "D": "ROM."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q13"
+        },
+        {
+          "text": "Khi đọc thông số chuột, DPI liên quan đến đặc điểm nào?",
+          "options": {
+            "A": "Dung lượng lưu trữ.",
+            "B": "Số lõi CPU.",
+            "C": "Kích thước giấy in.",
+            "D": "Độ nhạy."
+          },
+          "answer": "D",
+          "explanation": "",
+          "id": "p1_q14"
+        },
+        {
+          "text": "Thời gian phản hồi của màn hình là gì?",
+          "options": {
+            "A": "Độ dài đường chéo màn hình.",
+            "B": "Thời gian để một điểm ảnh đổi màu.",
+            "C": "Số trang máy in thực hiện mỗi phút.",
+            "D": "Số lần hiển thị lại hình ảnh mỗi giây."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q15"
+        },
+        {
+          "text": "VGA truyền loại tín hiệu nào theo tài liệu?",
+          "options": {
+            "A": "Hình ảnh dạng tương tự.",
+            "B": "Chỉ lệnh bàn phím PS/2.",
+            "C": "Chỉ dữ liệu mạng.",
+            "D": "Âm thanh và hình ảnh dạng số."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q16"
+        },
+        {
+          "text": "Kết quả phép cộng hai số nhị phân 1001 + 0101 là số nhị phân nào?",
+          "options": {
+            "A": "1101",
+            "B": "10000",
+            "C": "1110",
+            "D": "1111"
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q17"
+        },
+        {
+          "text": "Hai máy in A, B cùng hỗ trợ A4, in màu và cùng tốc độ 24 trang/phút. A có độ phân giải 1200 dpi, B có 2400 dpi. Các điều kiện khác như nhau. Muốn ưu tiên độ phân giải cao hơn, chọn máy nào và vì sao?",
+          "options": {
+            "A": "Chọn B vì có độ phân giải cao hơn.",
+            "B": "Chọn A vì có tốc độ in cao hơn.",
+            "C": "Chọn B vì chỉ B hỗ trợ giấy A4.",
+            "D": "Chọn A vì chỉ A có khả năng in màu."
+          },
+          "answer": "A",
+          "explanation": "",
+          "id": "p1_q18"
+        },
+        {
+          "text": "Trước khi mất điện, tệp X đã lưu vào SSD; phần chỉnh sửa mới của tệp Y chỉ nằm trong RAM, chưa được lưu. ROM chứa chương trình khởi động. Thiết bị đều không hỏng. Sau khi cấp điện lại, kết luận nào đúng về cả ba phần dữ liệu?",
+          "options": {
+            "A": "X vẫn được giữ; phần chỉnh sửa của Y vẫn còn; chương trình ROM bị mất.",
+            "B": "X bị mất; phần chỉnh sửa của Y vẫn còn; ROM vẫn giữ chương trình.",
+            "C": "X vẫn được giữ; phần chỉnh sửa chưa lưu của Y bị mất; chương trình trong ROM vẫn còn.",
+            "D": "X vẫn được giữ; phần chỉnh sửa của Y tự chuyển sang ROM."
+          },
+          "answer": "C",
+          "explanation": "",
+          "id": "p1_q19"
+        },
+        {
+          "text": "Cần màn hình có độ phân giải ít nhất 1920 \\times  1080, tần số quét ít nhất 120 Hz; trong các màn đạt hai yêu cầu, ưu tiên thời gian phản hồi nhỏ nhất. Các điều kiện khác như nhau. Chọn màn hình nào?",
+          "options": {
+            "A": "A: 1920 \\times  1080, 144 Hz, 5 ms.",
+            "B": "C: 1920 \\times  1080, 120 Hz, 2 ms.",
+            "C": "D: 1280 \\times  720, 165 Hz, 1 ms.",
+            "D": "B: 2560 \\times  1440, 60 Hz, 1 ms."
+          },
+          "answer": "B",
+          "explanation": "",
+          "id": "p1_q20"
+        }
+      ]
+    },
+    "part2": {
+      "name": "Phần II. Trắc nghiệm Đúng / Sai",
+      "instruction": "",
+      "questions": []
+    },
+    "part3": {
+      "name": "Phần III. Trả lời ngắn",
+      "instruction": "",
+      "questions": []
+    },
+    "part4": {
+      "name": "Phần IV. Tự luận",
+      "instruction": "",
+      "questions": []
+    }
+  },
+  "id": "exam_14ae15b5",
+  "created_by": "nhuphuong",
+  "is_published": true,
+  "scoring": {
+    "part1_total": 10,
+    "part1_per_question": 0.5,
+    "part2_total": 0,
+    "part2_per_question": 1,
+    "part2_rubric": {
+      "1_correct": 0.1,
+      "2_correct": 0.25,
+      "3_correct": 0.5,
+      "4_correct": 1
+    },
+    "part3_total": 0,
+    "part3_per_question": 0,
+    "part4_total": 0,
+    "part4_per_question": 0,
+    "custom_scoring": true
+  },
+  "is_online_exam": true
+}
