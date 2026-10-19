@@ -41,12 +41,17 @@ if USE_POSTGRES:
         from psycopg2.pool import ThreadedConnectionPool
         from psycopg2.extras import execute_values
         
+        # Test kết nối thực tế để bắt lỗi quota hoặc network ngay lập tức
+        _test_conn = psycopg2.connect(DATABASE_URL, connect_timeout=5)
+        _test_conn.close()
+
         # Kết nối tới Neon PostgreSQL Singapore với connection pool đa luồng
         _PG_POOL = ThreadedConnectionPool(minconn=2, maxconn=25, dsn=DATABASE_URL)
         logger.info("Đã khởi tạo ThreadedConnectionPool kết nối Neon PostgreSQL thành công.")
     except Exception as e:
-        logger.error(f"Không thể khởi tạo kết nối Neon PostgreSQL: {e}. Hệ thống sẽ dùng SQLite fallback.")
+        logger.warning(f"Không thể kết nối Neon PostgreSQL ({e}). Hệ thống tự động chuyển 100% sang SQLite an toàn.")
         USE_POSTGRES = False
+        _PG_POOL = None
 
 
 class PooledPgConnection:
@@ -114,10 +119,12 @@ def get_connection():
 
         try:
             import psycopg2
-            raw_conn = psycopg2.connect(DATABASE_URL)
+            raw_conn = psycopg2.connect(DATABASE_URL, connect_timeout=5)
             return PooledPgConnection(raw_conn, None)
         except Exception as e2:
-            logger.error(f"Kết nối Neon thất bại ({e2}), fallback sang SQLite!")
+            logger.warning(f"Kết nối Neon thất bại ({e2}), chuyển sang SQLite an toàn!")
+            USE_POSTGRES = False
+            _PG_POOL = None
     
     # SQLite fallback
     conn = sqlite3.connect(str(DB_PATH), timeout=30.0)
@@ -127,6 +134,11 @@ def get_connection():
     except Exception:
         pass
     return conn
+
+
+def is_pg(conn) -> bool:
+    """Kiểm tra đối tượng kết nối là PostgreSQL hay SQLite fallback."""
+    return isinstance(conn, PooledPgConnection)
 
 
 # ===================== IN-MEMORY EXAM CACHE =====================
@@ -1355,7 +1367,7 @@ def get_user_by_username(username: str) -> Optional[dict]:
     c = conn.cursor()
     uname = username.strip().lower()
 
-    if USE_POSTGRES:
+    if is_pg(conn):
         c.execute("""
             SELECT id, username, password_hash, full_name, role, is_protected, created_at, updated_at, subject
             FROM admin_users WHERE LOWER(username) = %s
