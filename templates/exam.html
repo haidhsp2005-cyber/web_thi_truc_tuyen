@@ -2112,10 +2112,41 @@ function examApp() {
 
     renderLatex(rawText) {
       if (!rawText) return '';
-      if (!window.katex) {
-        return rawText;
-      }
       let str = String(rawText);
+
+      // 1. Bảo vệ bảng số liệu/bảng biến thiên hệ thống (từ docx)
+      const tablePlaceholders = [];
+      str = str.replace(/<div[^>]*class="[^"]*overflow-x-auto[^"]*"[\s\S]*?<\/div>/gi, (m) => {
+        tablePlaceholders.push(m);
+        return `___SYS_TABLE_${tablePlaceholders.length - 1}___`;
+      });
+
+      // 2. Bảo vệ các khối công thức toán LaTeX ($$, $, \[, \() để không bị ảnh hưởng bởi phép so sánh < và >
+      const mathPlaceholders = [];
+      str = str.replace(/(\$\$[\s\S]*?\$\$|\$[^\$]+?\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g, (m) => {
+        mathPlaceholders.push(m);
+        return `___SYS_MATH_${mathPlaceholders.length - 1}___`;
+      });
+
+      // 3. Tự động chuyển đổi các thẻ HTML môn Tin học 12 (như <p>, <a>, <h1>, <br>, <div>, <img>, <table>...)
+      // thành ký tự an toàn &lt;...&gt; để trình duyệt hiển thị đúng dạng văn bản/code thay vì nuốt mất thẻ vào DOM
+      str = str.replace(/<\/?[a-zA-Z][a-zA-Z0-9]*(?:\s+[^<>]*)?\/?>/g, (tag) => {
+        return tag.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      });
+
+      // 4. Phục hồi các khối công thức toán
+      for (let i = 0; i < mathPlaceholders.length; i++) {
+        str = str.replace(`___SYS_MATH_${i}___`, mathPlaceholders[i]);
+      }
+
+      // 5. Phục hồi các bảng hệ thống
+      for (let i = 0; i < tablePlaceholders.length; i++) {
+        str = str.replace(`___SYS_TABLE_${i}___`, tablePlaceholders[i]);
+      }
+
+      if (!window.katex) {
+        return str;
+      }
 
       // Dọn dẹp mã HTML lỗi KaTeX nếu bị rò rỉ vào text
       str = str.replace(/<span[^>]*class="katex-error"[^>]*>([\s\S]*?)<\/span>/gi, '$1')

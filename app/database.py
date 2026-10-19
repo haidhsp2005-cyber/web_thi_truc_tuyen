@@ -679,6 +679,16 @@ def load_exam(exam_id: str = "exam_001", fallback_to_any: bool = False) -> Optio
 
     exam_id = str(exam_id).strip()
 
+    # 0. Kiểm tra danh sách đề đã xóa vĩnh viễn (deleted_exams)
+    try:
+        deleted_list = get_config("deleted_exams", [])
+        if isinstance(deleted_list, list):
+            variants = {exam_id, f"exam_{exam_id}", exam_id.replace("exam_", "")}
+            if any(v in deleted_list for v in variants if v):
+                return None
+    except Exception:
+        pass
+
     # 1. Bộ nhớ RAM Cache (0.0001s, không tốn tài nguyên DB)
     cached = get_cached_exam(exam_id)
     if cached:
@@ -718,7 +728,13 @@ def load_exam(exam_id: str = "exam_001", fallback_to_any: bool = False) -> Optio
     except Exception as ex:
         logger.warning(f"Lỗi đọc đề {exam_id} từ CSDL: {ex}")
 
-    # 3. Quét từ file JSON đĩa
+    # 3. Quét từ file JSON đĩa (chỉ khi không dùng PostgreSQL hoặc là đề mẫu hệ thống)
+    if USE_POSTGRES and exam_id not in ("sample_exam", "exam_toan_12_101", "exam_sample_exam"):
+        if fallback_to_any and _EXAM_CACHE:
+            first_key = next(iter(_EXAM_CACHE))
+            return _wrap_exam(copy.deepcopy(_EXAM_CACHE[first_key]))
+        return None
+
     path = EXAMS_DIR / f"{exam_id}.json"
     if path.exists():
         try:
@@ -755,6 +771,17 @@ def save_exam_record(exam_data: dict):
     exam_id = exam_data.get("id")
     if not exam_id:
         return
+
+    # Xóa khỏi danh sách deleted_exams nếu giáo viên đang lưu đề này
+    try:
+        deleted_list = get_config("deleted_exams", [])
+        if isinstance(deleted_list, list):
+            to_remove = {exam_id, f"exam_{exam_id}", exam_id.replace("exam_", "")}
+            if any(x in deleted_list for x in to_remove):
+                updated_deleted = [x for x in deleted_list if x not in to_remove]
+                set_config("deleted_exams", updated_deleted)
+    except Exception:
+        pass
 
     created_by = (exam_data.get("created_by") or "").strip()
     if not created_by:
@@ -810,6 +837,23 @@ def delete_exam_record(exam_id: str) -> bool:
     """Xóa đề thi khỏi CSDL, file JSON và xóa khỏi RAM Cache."""
     invalidate_cached_exam(exam_id)
     deleted = False
+
+    # Ghi nhận vào danh sách deleted_exams trong CSDL để không bao giờ bị phục hồi lại từ file rác trên đĩa khi redeploy
+    try:
+        deleted_list = get_config("deleted_exams", [])
+        if not isinstance(deleted_list, list):
+            deleted_list = []
+        clean_eid = exam_id.strip()
+        variants = {clean_eid, f"exam_{clean_eid}", clean_eid.replace("exam_", "")}
+        changed = False
+        for v in variants:
+            if v and v not in deleted_list:
+                deleted_list.append(v)
+                changed = True
+        if changed:
+            set_config("deleted_exams", deleted_list)
+    except Exception as e:
+        logger.warning(f"Lỗi lưu danh sách deleted_exams: {e}")
 
     # Xóa file JSON
     for cand in [EXAMS_DIR / f"{exam_id}.json", EXAMS_DIR / f"{exam_id.replace('exam_', '')}.json"]:

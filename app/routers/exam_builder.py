@@ -24,7 +24,16 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _list_exam_files(current_user: dict = None) -> List[dict]:
-    """Lấy danh sách tất cả đề thi từ bảng SQLite exams và thư mục data/ (không bao giờ mất đề)."""
+    """Lấy danh sách tất cả đề thi từ bảng SQLite/PostgreSQL exams và thư mục data/ (không bao giờ mất đề, không tải lại đề đã xóa)."""
+    from ..database import get_config, USE_POSTGRES
+    deleted_exams = set()
+    try:
+        d_cfg = get_config("deleted_exams", [])
+        if isinstance(d_cfg, list):
+            deleted_exams = set(d_cfg)
+    except Exception:
+        pass
+
     exams_map = {}
 
     # Bản đồ tên đầy đủ của giáo viên ra đề
@@ -39,15 +48,17 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
     except Exception:
         pass
 
-    # 1. Quét từ bảng SQLite exams
+    # 1. Quét từ bảng CSDL (PostgreSQL / SQLite)
     try:
         conn = get_connection()
         c = conn.cursor()
         c.execute("SELECT id, title, subject, grade, data_json, created_by FROM exams")
         for r in c.fetchall():
             try:
+                eid = str(r[0]).strip()
+                if eid in deleted_exams or f"exam_{eid}" in deleted_exams or eid.replace("exam_", "") in deleted_exams:
+                    continue
                 data = json.loads(r[4])
-                eid = r[0]
                 is_bank = bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False))
                 bank_cfg = {}
                 if is_bank:
@@ -79,15 +90,26 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                 pass
         conn.close()
     except Exception as ex:
-        logger.warning(f"Lỗi đọc danh sách đề từ SQLite: {ex}")
+        logger.warning(f"Lỗi đọc danh sách đề từ CSDL: {ex}")
 
-    # 2. Quét thêm từ các file JSON trong EXAMS_DIR
+    # 2. Quét thêm từ các file JSON trong EXAMS_DIR (chỉ cho các mẫu chuẩn hoặc khi không dùng PostgreSQL)
     for f in sorted(EXAMS_DIR.glob("*.json")):
         if f.name.endswith(".sqlite"):
             continue
         try:
+            stem = f.stem
+            if stem in deleted_exams or f"exam_{stem}" in deleted_exams or stem.replace("exam_", "") in deleted_exams:
+                continue
+            # Nếu đang chạy PostgreSQL trên Cloud, các đề thi chính thức đều nằm trong PostgreSQL.
+            # Không tự động phục hồi các file JSON giáo viên cũ trên đĩa nếu không có trong PostgreSQL,
+            # NGOẠI TRỪ 2 đề mẫu hệ thống: sample_exam và exam_toan_12_101.
+            if USE_POSTGRES and stem not in ("sample_exam", "exam_toan_12_101"):
+                continue
+
             data = json.loads(f.read_text(encoding="utf-8"))
             eid = data.get("id", f.stem)
+            if eid in deleted_exams or f"exam_{eid}" in deleted_exams or eid.replace("exam_", "") in deleted_exams:
+                continue
             if eid not in exams_map:
                 is_bank = bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False))
                 bank_cfg = {}
@@ -1411,11 +1433,7 @@ def _extract_blocks(text_segment: str) -> List[str]:
 
 def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty_if_missing: bool = False) -> Optional[dict]:
     """Phân tích một khối câu hỏi thành câu trắc nghiệm 4 lựa chọn (Phần I)."""
-    # Gỡ bỏ các thẻ HTML table bọc quanh phương án nếu bị rò rỉ từ bảng Word
-    clean_block = re.sub(r'<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>', '\n', q_block, flags=re.I)
-    clean_block = re.sub(r'</?(?:table|tbody|tr|div)[^>]*>', '\n', clean_block, flags=re.I)
-    clean_block = re.sub(r'<td[^>]*>', '  ', clean_block, flags=re.I)
-    clean_block = re.sub(r'</td>', '  ', clean_block, flags=re.I)
+    clean_block = q_block
 
     # Ưu tiên số 1: Luôn tìm các phương án IN HOA A, B, C, D trước
     upper_opt_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[A-D])[\)\]]|(?P<key_plain>[A-D])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
@@ -1481,7 +1499,6 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
         val = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", val)
         val = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", val, flags=re.IGNORECASE|re.MULTILINE)
         val = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", val, flags=re.IGNORECASE).strip()
-        val = re.sub(r"<[^>]+>", "", val).strip()
 
         options[key] = val
         if is_marked and not detected_answer:
@@ -1505,10 +1522,7 @@ def _parse_part1_block(q_block: str, allow_lowercase: bool = False, create_empty
 
 def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_missing: bool = False) -> Optional[dict]:
     """Phân tích một khối câu hỏi thành câu trắc nghiệm Đúng/Sai (Phần II)."""
-    clean_block = re.sub(r'<div[^>]*class="[^"]*overflow-x-auto[^"]*"[^>]*>', '\n', q_block, flags=re.I)
-    clean_block = re.sub(r'</?(?:table|tbody|tr|div)[^>]*>', '\n', clean_block, flags=re.I)
-    clean_block = re.sub(r'<td[^>]*>', '  ', clean_block, flags=re.I)
-    clean_block = re.sub(r'</td>', '  ', clean_block, flags=re.I)
+    clean_block = q_block
 
     item_regex = r'(?:^|[\s\n>]|(?<=\}\}))(?P<prefix>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?:(?P<bracket>[\(\[])(?P<key_b>[a-d])[\)\]]|(?P<key_plain>[a-d])[\.\)\:\/\-])\s*(?P<mid>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)(?P<post>(?:\{\{/?(?:RED|UNDERLINE)\}\}\s*)*)'
     matches = list(re.finditer(item_regex, clean_block))
@@ -1580,7 +1594,6 @@ def _parse_part2_block(q_block: str, doc_has_red: bool = False, create_empty_if_
         val = re.sub(r"\[IMAGE:\s*[^\]]+\]", "", val)
         val = re.sub(r"(?:^|\n)\s*Hình(?:\s*minh\s*họa|\s*vẽ)?(?:\s*bên)?[:\s\.]*$", "", val, flags=re.IGNORECASE|re.MULTILINE)
         val = re.sub(r"(?:^|\n)\s*Hình\s*:\s*[^\n]+", "", val, flags=re.IGNORECASE).strip()
-        val = re.sub(r"<[^>]+>", "", val).strip()
         items[key] = {"text": _sanitize_math_symbols(val), "answer": ans}
 
     res_p2 = {
