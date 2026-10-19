@@ -31,6 +31,10 @@ DB_PATH = EXAMS_DIR / "exam_db.sqlite"
 PASSWORD_SALT = "longcang_exam_salt_2026"
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+# Tự động chuyển đổi nếu Render vẫn còn lưu DATABASE_URL của Neon cũ
+if not DATABASE_URL or "neon.tech" in DATABASE_URL:
+    DATABASE_URL = "postgresql://postgres.sacdknvxyhufnvukgzcg:Longcang2026%40@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+
 USE_POSTGRES = bool(DATABASE_URL and (DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://")))
 
 # ===================== POSTGRESQL CONNECTION POOL =====================
@@ -45,11 +49,11 @@ if USE_POSTGRES:
         _test_conn = psycopg2.connect(DATABASE_URL, connect_timeout=5)
         _test_conn.close()
 
-        # Kết nối tới Neon PostgreSQL Singapore với connection pool đa luồng
+        # Kết nối tới Supabase PostgreSQL Singapore với connection pool đa luồng
         _PG_POOL = ThreadedConnectionPool(minconn=2, maxconn=25, dsn=DATABASE_URL)
-        logger.info("Đã khởi tạo ThreadedConnectionPool kết nối Neon PostgreSQL thành công.")
+        logger.info("Đã khởi tạo ThreadedConnectionPool kết nối Supabase PostgreSQL thành công.")
     except Exception as e:
-        logger.warning(f"Không thể kết nối Neon PostgreSQL ({e}). Hệ thống tự động chuyển 100% sang SQLite an toàn.")
+        logger.warning(f"Không thể kết nối Supabase PostgreSQL ({e}). Hệ thống tự động chuyển 100% sang SQLite an toàn.")
         USE_POSTGRES = False
         _PG_POOL = None
 
@@ -1279,14 +1283,14 @@ def set_config(key: str, value):
 
 
 def get_database_storage_info() -> dict:
-    """Kiểm tra dung lượng CSDL ngoài (Neon PostgreSQL) và SQLite dự phòng."""
+    """Kiểm tra dung lượng CSDL ngoài (Supabase PostgreSQL) và SQLite dự phòng."""
     info = {
-        "engine": "PostgreSQL (Neon Cloud)" if USE_POSTGRES else "SQLite (Local)",
+        "engine": "PostgreSQL (Supabase Cloud)" if USE_POSTGRES else "SQLite (Local)",
         "is_postgres": USE_POSTGRES,
         "pg_size_bytes": 0,
         "pg_size_pretty": "0 MB",
-        "pg_limit_bytes": 1024 * 1024 * 1024, # 1 GB (1.024 MB) Free Tier chính thức của Neon
-        "pg_limit_pretty": "1 GB",
+        "pg_limit_bytes": 500 * 1024 * 1024, # 500 MB Free Tier chính thức của Supabase
+        "pg_limit_pretty": "500 MB",
         "pg_usage_percent": 0.0,
         "sqlite_size_bytes": 0,
         "sqlite_size_pretty": "0 MB",
@@ -1316,7 +1320,7 @@ def get_database_storage_info() -> dict:
         except Exception:
             pass
 
-    # 2. Kích thước PostgreSQL (Neon)
+    # 2. Kích thước PostgreSQL (Supabase)
     if USE_POSTGRES:
         try:
             conn = get_connection()
@@ -1331,11 +1335,11 @@ def get_database_storage_info() -> dict:
                 
                 if pct >= 80.0:
                     info["has_storage_warning"] = True
-                    info["warning_message"] = f"Dung lượng CSDL Neon đã đạt {pct}% ({info['pg_size_pretty']}/1 GB). Đề nghị Super Admin thông báo giáo viên xóa bớt các bài thi cũ!"
+                    info["warning_message"] = f"Dung lượng CSDL Supabase đã đạt {pct}% ({info['pg_size_pretty']}/500 MB). Đề nghị Super Admin thông báo giáo viên xóa bớt các bài thi cũ!"
             conn.close()
         except Exception as e:
             info["has_storage_warning"] = True
-            info["warning_message"] = f"Lỗi kiểm tra dung lượng Neon: {e}"
+            info["warning_message"] = f"Lỗi kiểm tra dung lượng Supabase: {e}"
             
     if info.get("storage_alert"):
         info["has_storage_warning"] = True

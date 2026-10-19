@@ -32,14 +32,14 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <!-- Huy hiệu trạng thái CSDL ngoài Neon (Dành cho Super Admin) -->
+      <!-- Huy hiệu trạng thái CSDL ngoài Supabase (Dành cho Super Admin) -->
       <template x-if="isSuperAdmin()">
         <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors shadow-2xs cursor-help"
-          :class="storageInfo.has_storage_warning ? 'bg-red-600 text-white border-red-400 animate-pulse' : 'bg-blue-800/80 text-blue-100 border-blue-700'"
-          :title="`CSDL: ${storageInfo.engine} - Đã dùng ${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '1 GB'} (${storageInfo.pg_usage_percent}%). SQLite dự phòng: ${storageInfo.sqlite_size_pretty}`">
-          <span>☁️</span>
-          <span>CSDL Neon:</span>
-          <span class="text-yellow-300 font-extrabold" x-text="`${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '1 GB'}`"></span>
+          :class="storageInfo.has_storage_warning ? 'bg-red-600 text-white border-red-400 animate-pulse' : 'bg-emerald-800/80 text-emerald-100 border-emerald-700'"
+          :title="`CSDL: ${storageInfo.engine} - Đã dùng ${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '500 MB'} (${storageInfo.pg_usage_percent}%). SQLite dự phòng: ${storageInfo.sqlite_size_pretty}`">
+          <span>⚡</span>
+          <span>CSDL Supabase:</span>
+          <span class="text-yellow-300 font-extrabold" x-text="`${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '500 MB'}`"></span>
           <span class="text-[10px] px-1.5 py-0.5 rounded bg-black/20" x-text="`(${storageInfo.pg_usage_percent}%)`"></span>
         </div>
       </template>
@@ -65,8 +65,8 @@
       <div class="text-3xl flex-shrink-0 animate-bounce">⚠️</div>
       <div>
         <div class="flex items-center gap-2">
-          <h3 class="text-red-900 font-black text-base uppercase">Cảnh Báo Dung Lượng CSDL Ngoài (Neon Cloud)</h3>
-          <span class="text-xs bg-red-600 text-white font-bold px-2 py-0.5 rounded-full" x-text="`${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '1 GB'} (${storageInfo.pg_usage_percent}%)`"></span>
+          <h3 class="text-red-900 font-black text-base uppercase">Cảnh Báo Dung Lượng CSDL Ngoài (Supabase Cloud)</h3>
+          <span class="text-xs bg-red-600 text-white font-bold px-2 py-0.5 rounded-full" x-text="`${storageInfo.pg_size_pretty} / ${storageInfo.pg_limit_pretty || '500 MB'} (${storageInfo.pg_usage_percent}%)`"></span>
         </div>
         <p class="text-red-800 text-sm mt-1 font-medium" x-text="storageInfo.warning_message"></p>
         <p class="text-xs text-red-700 mt-2 font-semibold">
@@ -1543,7 +1543,7 @@ function adminApp() {
     uploadMsg: '',
     uploadMsgOk: true,
     storageInfo: {
-      engine: 'PostgreSQL (Neon Cloud)',
+      engine: 'PostgreSQL (Supabase Cloud)',
       is_postgres: true,
       pg_size_pretty: '0 MB',
       pg_usage_percent: 0.0,
