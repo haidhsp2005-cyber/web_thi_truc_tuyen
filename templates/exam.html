@@ -2291,6 +2291,16 @@ function examApp() {
         return this.safeKatex(match.trim(), false);
       });
 
+      // 9. Bảo toàn thụt đầu dòng (Indentation) cho mã lập trình Python / văn bản
+      str = str.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+      str = str.replace(/(^|\n|<br\s*\/?>)( +)/gi, (match, prefix, spaces) => {
+        return prefix + '&nbsp;'.repeat(spaces.length);
+      });
+      str = str.replace(/ {2,}/g, (match) => {
+        return '&nbsp;'.repeat(match.length);
+      });
+      str = str.replace(/\n/g, '<br>');
+
       return str;
     },
 

@@ -768,6 +768,9 @@ def _extract_element_runs_and_math(elem, p, images_map: dict = None) -> List[str
                     if r_id and r_id in images_map:
                         parts.append(f"\n[IMAGE: {images_map[r_id]}]\n")
 
+            # Hỗ trợ thụt đầu dòng dạng tab cho mã nguồn Python
+            if child.xpath('.//*[local-name()="tab"]'):
+                parts.append("    ")
             r = docx.text.run.Run(child, p)
             txt = r.text
             if not txt:
@@ -834,9 +837,9 @@ def _extract_docx_paragraphs_with_format(doc, images_map: dict = None) -> List[s
         if tag == "p":
             p = docx.text.paragraph.Paragraph(child, doc)
             annotated_runs = _extract_element_runs_and_math(child, p, images_map)
-            line = "".join(annotated_runs).strip()
-            if line:
-                paragraphs.append(line)
+            raw_line = "".join(annotated_runs)
+            if raw_line.strip():
+                paragraphs.append(raw_line.rstrip())
         elif tag == "tbl":
             table = docx.table.Table(child, doc)
             
