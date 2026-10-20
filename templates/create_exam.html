@@ -26,6 +26,27 @@
     color: inherit !important;
     font-family: inherit !important;
   }
+  /* Khắc phục xung đột Tailwind Preflight làm mất dấu căn (\sqrt) và ký hiệu toán KaTeX SVG */
+  .katex svg {
+    display: inline !important;
+    vertical-align: baseline !important;
+    fill: currentColor !important;
+    max-width: none !important;
+  }
+  .katex .svg-align {
+    display: inline-block !important;
+  }
+  .katex .sqrt {
+    display: inline-block !important;
+  }
+  .katex svg path, .katex svg rect {
+    fill: currentColor !important;
+    stroke-width: 0 !important;
+  }
+  .katex .katex-html {
+    display: inline-block !important;
+    position: relative !important;
+  }
   /* CSS Fallback đảm bảo câu hỏi luôn kéo dãn 100% toàn bộ chiều ngang trang */
   textarea.input-base, input.input-base, .input-base {
     width: 100% !important;

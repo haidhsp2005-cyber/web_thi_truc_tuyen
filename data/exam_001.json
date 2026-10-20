@@ -436,7 +436,7 @@
         {
           "id": "p4_q1",
           "title": "Câu 1 (Cơ bản): Giải phương trình và biện luận",
-          "text": "$\\begin{cases} Cho phương trình $x^2 - (m+3)x + 2m + 2 = 0$ (ẩn $x$, tham số $m$\\begin{cases} ). \\\\ a) Giải phương trình khi \\end{cases}$m = 1$\\begin{cases} . \\\\ b) Tìm \\end{cases}$m$ để phương trình có hai nghiệm phân biệt $x_1, x_2$ thỏa mãn $x_1^2 + x_2^2 = 10$. \\end{cases}$",
+          "text": "Cho phương trình $x^2 - (m+3)x + 2m + 2 = 0$ (ẩn $x$, tham số $m$).\n\na) Giải phương trình khi $m = 1$.\n\nb) Tìm $m$ để phương trình có hai nghiệm phân biệt $x_1, x_2$ thỏa mãn $x_1^2 + x_2^2 = 10$.",
           "rubric": {
             "max_score": 1.0,
             "criteria": [

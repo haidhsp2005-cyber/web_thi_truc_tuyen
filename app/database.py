@@ -328,23 +328,10 @@ def heal_exam_data(exam: dict) -> bool:
             if not isinstance(q, dict):
                 continue
             text = q.get("text", "")
-            if text:
-                new_text = clean_math_for_print(text)
-                if new_text != text:
-                    q["text"] = new_text
-                    text = new_text
-                    modified = True
-
             if heal_question_images(q):
                 modified = True
 
             opts = q.get("options") or {}
-            for k, v in list(opts.items()):
-                if isinstance(v, str) and v:
-                    cleaned_v = clean_math_for_print(v)
-                    if cleaned_v != v:
-                        opts[k] = cleaned_v
-                        modified = True
 
             has_valid_opts = any(v and str(v).strip() for v in opts.values())
             if not has_valid_opts and text:
@@ -383,30 +370,10 @@ def heal_exam_data(exam: dict) -> bool:
             if not isinstance(q, dict):
                 continue
             text = q.get("text", "")
-            if text:
-                new_text = clean_math_for_print(text)
-                if new_text != text:
-                    q["text"] = new_text
-                    text = new_text
-                    modified = True
-
             if heal_question_images(q):
                 modified = True
 
             items = q.get("items") or {}
-            for k, it in list(items.items()):
-                if isinstance(it, dict) and "text" in it:
-                    it_txt = it["text"]
-                    if isinstance(it_txt, str) and it_txt:
-                        cleaned_it = clean_math_for_print(it_txt)
-                        if cleaned_it != it_txt:
-                            it["text"] = cleaned_it
-                            modified = True
-                elif isinstance(it, str) and it:
-                    cleaned_it = clean_math_for_print(it)
-                    if cleaned_it != it:
-                        items[k] = cleaned_it
-                        modified = True
 
             has_valid_items = any(
                 (isinstance(v, dict) and v.get("text", "").strip()) or (isinstance(v, str) and v.strip())
@@ -449,12 +416,6 @@ def heal_exam_data(exam: dict) -> bool:
                 if isinstance(q, dict):
                     if heal_question_images(q):
                         modified = True
-                    text = q.get("text", "")
-                    if text:
-                        new_text = clean_math_for_print(text)
-                        if new_text != text:
-                            q["text"] = new_text
-                            modified = True
 
     return modified
 
