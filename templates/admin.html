@@ -1122,6 +1122,11 @@
                   <td class="px-4 py-3 text-center text-xs text-gray-500" x-text="u.created_at || 'Mặc định'"></td>
                   <td class="px-4 py-3 text-center">
                     <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                      <button @click="openEditTeacherModal(u)" 
+                        class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-amber-200"
+                        title="Chỉnh sửa thông tin giáo viên (họ tên, môn học, vai trò)">
+                        ✏️ Sửa
+                      </button>
                       <button @click="openChangePassModal(u.username)" 
                         class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-900 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-blue-200"
                         title="Đổi mật khẩu cho tài khoản này">
@@ -1172,11 +1177,18 @@
                     <span class="font-mono text-gray-400 tracking-widest text-lg font-black select-none">••••••••</span>
                   </td>
                   <td class="px-5 py-4 text-center">
-                    <button @click="openChangePassModal(u.username)" 
-                      class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-900 rounded-xl text-xs font-bold transition-all border border-blue-200 shadow-sm cursor-pointer"
-                      title="Đổi mật khẩu tài khoản của bạn">
-                      <span>🔄</span><span>Đổi mật khẩu</span>
-                    </button>
+                    <div class="inline-flex items-center justify-center gap-2">
+                      <button @click="openEditTeacherModal(u)" 
+                        class="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 rounded-xl text-xs font-bold transition-all border border-amber-200 shadow-sm cursor-pointer"
+                        title="Chỉnh sửa họ và tên giáo viên">
+                        <span>✏️</span><span>Sửa thông tin</span>
+                      </button>
+                      <button @click="openChangePassModal(u.username)" 
+                        class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-900 rounded-xl text-xs font-bold transition-all border border-blue-200 shadow-sm cursor-pointer"
+                        title="Đổi mật khẩu tài khoản của bạn">
+                        <span>🔄</span><span>Đổi mật khẩu</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </template>
@@ -1210,7 +1222,7 @@
           <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mật khẩu (≥ 6 ký tự)</label>
           <input x-model="newTeacherForm.password" type="password" placeholder="Mật khẩu..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
         </div>
-        <div x-show="isSuperAdmin()">
+        <div x-show="isAdmin()">
           <label class="block text-xs font-bold text-gray-700 uppercase mb-1">🛡️ Phân quyền tài khoản</label>
           <select x-model="newTeacherForm.role" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600 bg-white">
             <option value="teacher">👨‍🏫 Giáo viên</option>
@@ -1247,6 +1259,66 @@
       <div class="flex items-center justify-end gap-2 pt-2 border-t">
         <button @click="showCreateTeacherModal = false" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">Hủy</button>
         <button @click="submitCreateTeacher()" class="px-5 py-2 rounded-xl text-sm font-bold bg-green-600 hover:bg-green-700 text-white shadow-md cursor-pointer">Tạo tài khoản</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Chỉnh sửa thông tin giáo viên -->
+  <div x-show="showEditTeacherModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div @click.outside="showEditTeacherModal = false" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4 animate-in fade-in zoom-in duration-150">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+          <span>✏️</span>
+          <span>Chỉnh Sửa Thông Tin Giáo Viên</span>
+        </h3>
+        <button @click="showEditTeacherModal = false" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tên đăng nhập</label>
+          <input :value="editTeacherForm.username" type="text" disabled class="w-full border-2 border-gray-100 bg-gray-50 text-gray-500 rounded-xl px-3 py-2 text-sm font-bold cursor-not-allowed">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Họ và tên Giáo viên</label>
+          <input x-model="editTeacherForm.fullName" type="text" placeholder="Ví dụ: Thầy Trương Minh Tường..." class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+        </div>
+        <div x-show="isAdmin()">
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">📚 Môn phụ trách</label>
+          <select x-model="editTeacherForm.subject" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600 bg-white">
+            <option value="">-- Chọn môn --</option>
+            <option value="Toán">Toán học</option>
+            <option value="Vật lý">Vật lí</option>
+            <option value="Hóa học">Hóa học</option>
+            <option value="Sinh học">Sinh học</option>
+            <option value="Ngữ văn">Ngữ văn</option>
+            <option value="Tiếng Anh">Tiếng Anh</option>
+            <option value="Lịch sử">Lịch sử</option>
+            <option value="Địa lý">Địa lí</option>
+            <option value="Giáo dục kinh tế và pháp luật">Giáo dục kinh tế và pháp luật</option>
+            <option value="Giáo dục quốc phòng">Giáo dục quốc phòng</option>
+            <option value="Mỹ thuật">Mỹ thuật</option>
+            <option value="Âm nhạc">Âm nhạc</option>
+            <option value="Tin học">Tin học</option>
+            <option value="Công nghệ">Công nghệ</option>
+            <option value="Thể dục">Thể dục (Giáo dục thể chất)</option>
+            <option value="GDCD">GDCD</option>
+            <option value="Khác">Khác</option>
+          </select>
+          <p class="text-[11px] text-blue-600 mt-1">⚠️ Giáo viên chỉ được xem và quản lý đề thi thuộc môn của mình.</p>
+        </div>
+        <div x-show="isSuperAdmin() && editTeacherForm.username.toLowerCase() !== 'admin'">
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">🛡️ Phân quyền tài khoản</label>
+          <select x-model="editTeacherForm.role" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-600 bg-white">
+            <option value="teacher">👨‍🏫 Giáo viên</option>
+            <option value="admin">🛡️ Quản trị viên</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t">
+        <button @click="showEditTeacherModal = false" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 cursor-pointer">Hủy</button>
+        <button @click="submitEditTeacher()" class="px-5 py-2 rounded-xl text-sm font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-md cursor-pointer">Lưu thay đổi</button>
       </div>
     </div>
   </div>
@@ -1649,6 +1721,8 @@ function adminApp() {
     backupMsg: '',
     backupMsgOk: true,
     showCreateTeacherModal: false,
+    showEditTeacherModal: false,
+    editTeacherForm: { username: '', fullName: '', subject: '', role: 'teacher' },
     showChangePassModal: false,
     showApiKeyModal: false,
     userActionMsg: '',
@@ -2042,7 +2116,7 @@ function adminApp() {
             username: u,
             full_name: this.newTeacherForm.fullName.trim(),
             password: this.newTeacherForm.password,
-            role: (this.isSuperAdmin() && this.newTeacherForm.role) ? this.newTeacherForm.role : 'teacher',
+            role: (this.isAdmin() && this.newTeacherForm.role) ? this.newTeacherForm.role : 'teacher',
             subject: this.newTeacherForm.subject
           })
         });
@@ -2055,6 +2129,45 @@ function adminApp() {
           await this.loadUsers();
         } else {
           alert(data.detail || 'Không thể tạo tài khoản!');
+        }
+      } catch(e) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    openEditTeacherModal(u) {
+      if (!u) return;
+      this.editTeacherForm = {
+        username: u.username || '',
+        fullName: u.full_name || '',
+        subject: u.subject || '',
+        role: u.role || 'teacher'
+      };
+      this.showEditTeacherModal = true;
+    },
+
+    async submitEditTeacher() {
+      const u = this.editTeacherForm.username;
+      if (!u) return;
+      try {
+        const r = await fetch('/api/admin/users/update-info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: u,
+            full_name: this.editTeacherForm.fullName.trim(),
+            subject: this.editTeacherForm.subject,
+            role: this.editTeacherForm.role
+          })
+        });
+        const data = await r.json();
+        if (r.ok && data.success) {
+          this.userActionMsg = data.message;
+          this.userActionOk = true;
+          this.showEditTeacherModal = false;
+          await this.loadUsers();
+        } else {
+          alert(data.detail || 'Không thể cập nhật thông tin!');
         }
       } catch(e) {
         alert('Lỗi kết nối máy chủ!');

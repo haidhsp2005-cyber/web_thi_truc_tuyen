@@ -74,6 +74,13 @@ class UpdateRoleRequest(BaseModel):
     role: str
 
 
+class UpdateUserInfoRequest(BaseModel):
+    username: str
+    full_name: Optional[str] = None
+    subject: Optional[str] = None
+    role: Optional[str] = None
+
+
 class ExamConfig(BaseModel):
     exam_id: str
     duration_minutes: int = 45

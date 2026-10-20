@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from ..database import (
     get_all_submissions, get_submission, get_config, set_config, load_exam,
     delete_submission, delete_all_submissions, delete_submissions_batch,
-    get_all_users, create_user, update_user_password, delete_user, update_user_role,
+    get_all_users, create_user, update_user_password, delete_user, update_user_role, update_user_info,
     get_user_by_username, hash_password, export_full_backup, import_full_backup,
     export_users_backup, import_users_backup
 )
@@ -28,7 +28,7 @@ from ..services.export_service import (
 )
 from ..models import (
     APIKeyRequest, AdminLoginRequest,
-    CreateUserRequest, ChangePasswordRequest, DeleteUserRequest, UpdateRoleRequest,
+    CreateUserRequest, ChangePasswordRequest, DeleteUserRequest, UpdateRoleRequest, UpdateUserInfoRequest,
     DeleteBatchSubmissionsRequest
 )
 import logging
@@ -132,8 +132,9 @@ async def create_new_user(req: CreateUserRequest, request: Request):
             detail="Chỉ có tài khoản Quản trị viên mới có quyền tạo tài khoản giáo viên mới!"
         )
 
-    # Giáo viên được ủy quyền quản trị chỉ có thể tạo tài khoản với vai trò Giáo viên
-    user_role = (req.role or "teacher") if is_super_admin else "teacher"
+    # Super admin hoặc Quản trị viên đều có thể tạo tài khoản Giáo viên hoặc Quản trị viên
+    req_role = (req.role or "teacher").strip().lower()
+    user_role = req_role if req_role in ("admin", "teacher") else "teacher"
 
     try:
         new_u = create_user(
@@ -143,12 +144,67 @@ async def create_new_user(req: CreateUserRequest, request: Request):
             role=user_role,
             subject=req.subject or ""
         )
-        return {"success": True, "message": f"Tạo tài khoản giáo viên '{new_u['username']}' thành công! Môn phụ trách: {new_u.get('subject','')}", "user": new_u}
+        role_label = "Quản trị viên" if user_role == "admin" else "Giáo viên"
+        return {
+            "success": True,
+            "message": f"Tạo tài khoản {role_label} '{new_u['username']}' thành công! Môn phụ trách: {new_u.get('subject','')}",
+            "user": new_u
+        }
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         logger.error(f"Lỗi khi tạo user: {e}")
-        raise HTTPException(status_code=500, detail="Lỗi máy chủ khi tạo tài khoản!")
+        raise HTTPException(status_code=500, detail=f"Lỗi khi tạo tài khoản: {e}")
+
+
+@router.post("/users/update-info")
+async def update_user_information(req: UpdateUserInfoRequest, request: Request):
+    """
+    Cập nhật thông tin giáo viên (họ và tên, môn học phụ trách, vai trò).
+    - Quản trị viên (admin / super admin): có quyền cập nhật thông tin của bất kỳ giáo viên nào.
+    - Giáo viên: có thể tự cập nhật họ tên của chính mình.
+    """
+    current_user = get_current_user_from_request(request)
+    if not current_user:
+        raise HTTPException(
+            status_code=401,
+            detail="Vui lòng đăng nhập vào trang quản trị để thực hiện thao tác này!"
+        )
+
+    my_username = (current_user.get("username") or "").lower()
+    target_username = req.username.strip().lower()
+
+    is_super_admin = bool(
+        current_user.get("is_protected") or current_user.get("username", "").lower() == "admin"
+    )
+    is_admin = current_user.get("role") == "admin" or is_super_admin
+
+    if not is_admin and my_username != target_username:
+        raise HTTPException(
+            status_code=403,
+            detail="Bạn chỉ có quyền cập nhật thông tin tài khoản của chính mình!"
+        )
+
+    allowed_subject = req.subject if is_admin else None
+    allowed_role = req.role if is_admin else None
+
+    try:
+        updated = update_user_info(
+            username=target_username,
+            full_name=req.full_name,
+            subject=allowed_subject,
+            role=allowed_role
+        )
+        return {
+            "success": True,
+            "message": f"Cập nhật thông tin giáo viên '{target_username}' thành công!",
+            "user": updated
+        }
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Lỗi cập nhật thông tin user: {e}")
+        raise HTTPException(status_code=500, detail=f"Lỗi khi cập nhật thông tin: {e}")
 
 
 @router.post("/users/change-password")

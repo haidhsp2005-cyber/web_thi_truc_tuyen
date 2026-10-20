@@ -528,7 +528,7 @@ def init_db():
             if not c.fetchone():
                 c.execute("""
                     INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject)
-                    VALUES ('admin', %s, 'Quản trị viên mặc định', 'admin', 1, '')
+                    VALUES ('admin', %s, 'Quản trị viên mặc định', 'admin', TRUE, '')
                 """, (hash_password("Longcang2026@"),))
                 conn.commit()
 
@@ -1535,10 +1535,33 @@ def create_user(username: str, password: str, full_name: str = "", role: str = "
     if USE_POSTGRES:
         c.execute("""
             INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject)
-            VALUES (%s, %s, %s, %s, 0, %s)
+            VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING id
-        """, (clean_username, p_hash, full_name.strip(), role.strip(), subject.strip()))
+        """, (clean_username, p_hash, full_name.strip(), role.strip(), False, subject.strip()))
         user_id = c.fetchone()[0]
+        conn.commit()
+        conn.close()
+
+        # ĐỒNG BỘ 100%: Ghi luôn vào SQLite dự phòng nếu có
+        if DB_PATH.exists():
+            try:
+                sq_conn = sqlite3.connect(str(DB_PATH), timeout=10.0)
+                sq_conn.execute("""
+                    INSERT OR REPLACE INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, 0, ?, datetime('now'), datetime('now'))
+                """, (clean_username, p_hash, full_name.strip(), role.strip(), subject.strip()))
+                sq_conn.commit()
+                sq_conn.close()
+            except Exception:
+                pass
+        return {
+            "id": user_id,
+            "username": clean_username,
+            "full_name": full_name.strip(),
+            "role": role,
+            "is_protected": False,
+            "subject": subject.strip()
+        }
     else:
         c.execute("""
             INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
@@ -1587,6 +1610,64 @@ def update_user_password(username: str, new_password: str) -> bool:
     conn.commit()
     conn.close()
     return True
+
+
+def update_user_info(username: str, full_name: str = None, subject: str = None, role: str = None) -> dict:
+    """Cập nhật thông tin chi tiết giáo viên (họ và tên, môn phụ trách, vai trò)."""
+    clean_username = username.strip().lower()
+    user = get_user_by_username(clean_username)
+    if not user:
+        raise ValueError(f"Không tìm thấy tài khoản '{username}'!")
+
+    new_full_name = full_name.strip() if full_name is not None else (user.get("full_name") or "")
+    new_subject = subject.strip() if subject is not None else (user.get("subject") or "")
+    new_role = user.get("role") or "teacher"
+    if role is not None and role.strip().lower() in ("admin", "teacher"):
+        if not user.get("is_protected") and clean_username != "admin":
+            new_role = role.strip().lower()
+
+    conn = get_connection()
+    c = conn.cursor()
+    if USE_POSTGRES:
+        c.execute("""
+            UPDATE admin_users 
+            SET full_name = %s, subject = %s, role = %s, updated_at = CURRENT_TIMESTAMP
+            WHERE LOWER(username) = %s
+        """, (new_full_name, new_subject, new_role, clean_username))
+        conn.commit()
+        conn.close()
+
+        if DB_PATH.exists():
+            try:
+                sq_conn = sqlite3.connect(str(DB_PATH), timeout=10.0)
+                sq_conn.execute("""
+                    UPDATE admin_users 
+                    SET full_name = ?, subject = ?, role = ?, updated_at = datetime('now')
+                    WHERE LOWER(username) = ?
+                """, (new_full_name, new_subject, new_role, clean_username))
+                sq_conn.commit()
+                sq_conn.close()
+            except Exception:
+                pass
+    else:
+        c.execute("""
+            UPDATE admin_users 
+            SET full_name = ?, subject = ?, role = ?, updated_at = datetime('now')
+            WHERE LOWER(username) = ?
+        """, (new_full_name, new_subject, new_role, clean_username))
+        conn.commit()
+        conn.close()
+
+    # Xóa cache tên giáo viên để các trang lập tức hiển thị tên mới
+    global _TEACHER_NAME_CACHE
+    _TEACHER_NAME_CACHE.clear()
+
+    return {
+        "username": clean_username,
+        "full_name": new_full_name,
+        "subject": new_subject,
+        "role": new_role
+    }
 
 
 def delete_user(username: str) -> bool:
@@ -1832,7 +1913,7 @@ def import_full_backup(backup: dict, allowed_subject: str = None, allowed_owner:
                             role = EXCLUDED.role,
                             subject = EXCLUDED.subject,
                             updated_at = CURRENT_TIMESTAMP
-                    """, (uname, phash, u.get("full_name", ""), u.get("role", "teacher"), 1 if u.get("is_protected") else 0, u.get("subject", "")))
+                    """, (uname, phash, u.get("full_name", ""), u.get("role", "teacher"), bool(u.get("is_protected")), u.get("subject", "")))
                 else:
                     c.execute("SELECT id, is_protected FROM admin_users WHERE LOWER(username) = LOWER(?)", (uname,))
                     ex_u = c.fetchone()
@@ -1845,7 +1926,7 @@ def import_full_backup(backup: dict, allowed_subject: str = None, allowed_owner:
                         c.execute("""
                             INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
                             VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-                        """, (uname, phash, u.get("full_name", ""), u.get("role", "teacher"), 1 if u.get("is_protected") else 0, u.get("subject", "")))
+                        """, (uname, phash, u.get("full_name", ""), u.get("role", "teacher"), bool(u.get("is_protected")), u.get("subject", "")))
                 restored_users += 1
             except Exception:
                 pass
@@ -1918,7 +1999,7 @@ def import_users_backup(backup: dict) -> dict:
                         role = EXCLUDED.role,
                         subject = EXCLUDED.subject,
                         updated_at = CURRENT_TIMESTAMP
-                """, (uname, phash, u.get("full_name", ""), u.get("role", "teacher"), 1 if u.get("is_protected") else 0, u.get("subject", "")))
+                """, (uname, phash, u.get("full_name", ""), u.get("role", "teacher"), bool(u.get("is_protected")), u.get("subject", "")))
                 restored += 1
             else:
                 c.execute("SELECT id, is_protected FROM admin_users WHERE LOWER(username) = LOWER(?)", (uname,))
@@ -1933,7 +2014,7 @@ def import_users_backup(backup: dict) -> dict:
                     c.execute("""
                         INSERT INTO admin_users (username, password_hash, full_name, role, is_protected, subject, created_at, updated_at)
                         VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-                    """, (uname, phash, u.get("full_name", ""), u.get("role", "teacher"), 1 if u.get("is_protected") else 0, u.get("subject", "")))
+                    """, (uname, phash, u.get("full_name", ""), u.get("role", "teacher"), bool(u.get("is_protected")), u.get("subject", "")))
                     restored += 1
         except Exception as e:
             logger.warning(f"Lỗi khôi phục tài khoản {uname}: {e}")
