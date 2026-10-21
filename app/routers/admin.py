@@ -969,9 +969,9 @@ async def print_class_submissions(
     b_size = max(10, min(int(batch_size or 40), 200))
     total_subs = len(sorted_subs)
     total_batches = (total_subs + b_size - 1) // b_size if total_subs > 0 else 1
+    curr_b = max(1, min(int(batch or 1), total_batches))
 
     if not all_pages and total_subs > b_size:
-        curr_b = max(1, min(int(batch or 1), total_batches))
         s_idx = (curr_b - 1) * b_size
         e_idx = min(s_idx + b_size, total_subs)
         target_subs = sorted_subs[s_idx:e_idx]
