@@ -2275,6 +2275,12 @@ function examApp() {
         str = str + '$';
       }
 
+      // Tự động chuyển đổi dạng vectơ viết kèm mũi tên:
+      // 1. Vectơ nhiều chữ cái: AB\rightarrow hoặc AB→ -> \overrightarrow{AB}
+      str = str.replace(/([A-Z]{2,3})\s*(?:\\rightarrow|→)/g, '\\overrightarrow{$1}');
+      // 2. Vectơ 1 chữ cái hoặc số 0: a\rightarrow -> \vec{a}, u\rightarrow -> \vec{u}, 0\rightarrow -> \vec{0}
+      str = str.replace(/(^|[\s\$\(\x5b\+\-=\\cdot\d])([a-zA-Z0]|\\alpha|\\beta)\s*(?:\\rightarrow|→)(?=\s*(?:[=+\-,;\)\x5d\$\\]|$))/g, '$1\\vec{$2}');
+
       // Nhận diện góc mũ viết dạng tự nhiên: A^, B^, C^, ABC^ kèm theo dấu chấm, phẩy, hỏi, đóng ngoặc...
       str = str.replace(/(^|[\s(\[])([A-Z]{1,3})\^(?=\s*[,;=\.\?\!\:\)\]\$]|\s+|$)/g, '$1$\\widehat{$2}$');
 
@@ -2299,7 +2305,7 @@ function examApp() {
       });
 
       // 8. Standalone LaTeX commands without $...$
-      str = str.replace(/(\\(?:frac|sqrt|widehat|hat|angle|vec|overline|underline|perp|parallel|int|sum|lim|alpha|beta|gamma|pi|Delta|delta|omega|theta|infty|le|ge|neq|pm|times|cdot)\b(?:\{[^{}]*\}|[a-zA-Z0-9_\^\{\}]+)*)/g, (match) => {
+      str = str.replace(/(\\(?:frac|sqrt|widehat|hat|angle|vec|overrightarrow|overline|underline|perp|parallel|int|sum|lim|alpha|beta|gamma|pi|Delta|delta|omega|theta|infty|le|ge|neq|pm|times|cdot)\b(?:\{[^{}]*\}|[a-zA-Z0-9_\^\{\}]+)*)/g, (match) => {
         return pushMath(match.trim(), false);
       });
 

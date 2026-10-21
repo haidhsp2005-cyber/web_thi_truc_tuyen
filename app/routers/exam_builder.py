@@ -432,6 +432,12 @@ def _sanitize_math_symbols(math_latex: str) -> str:
         ("φ", "\\varphi "),
         ("Φ", "\\Phi "),
     ]
+    # Tự động chuyển đổi dạng vectơ viết kèm mũi tên trong công thức Toán
+    # 1. Vectơ nhiều chữ cái: AB\rightarrow hoặc AB→ -> \overrightarrow{AB}
+    math_latex = re.sub(r'([A-Z]{2,3})\s*(?:\\rightarrow|→)', r'\\overrightarrow{\1}', math_latex)
+    # 2. Vectơ 1 chữ cái hoặc số 0: a\rightarrow -> \vec{a}, u\rightarrow -> \vec{u}, 0\rightarrow -> \vec{0}
+    math_latex = re.sub(r'(^|[\s\$\(\x5b\+\-=\\cdot\d])([a-zA-Z0]|\\alpha|\\beta)\s*(?:\\rightarrow|→)(?=\s*(?:[=+\-,;\)\x5d\$\\]|$))', r'\1\\vec{\2}', math_latex)
+
     for orig, rep in replacements:
         math_latex = math_latex.replace(orig, rep)
     
@@ -634,6 +640,22 @@ def _omml_node_to_latex(node) -> str:
     elif tag == "groupChr":  # Dấu vectơ hoặc gạch ngang trên đầu: \vec{u}
         e = "".join(_omml_node_to_latex(c) for c in (node.xpath('./*[local-name()="e"]') or []))
         return f"\\vec{{{e}}}"
+    elif tag == "acc":  # Dấu mũ, dấu vectơ trong Word OMML
+        chr_val = ""
+        acc_pr = node.xpath('./*[local-name()="accPr"]/*[local-name()="chr"]/@*[local-name()="val"]')
+        if acc_pr:
+            chr_val = acc_pr[0]
+        e = "".join(_omml_node_to_latex(c) for c in (node.xpath('./*[local-name()="e"]') or []))
+        if chr_val in ["→", "\u20d7", "\u2192", "\u21c0", "\u20d6"]:
+            return f"\\vec{{{e}}}"
+        elif chr_val in ["^", "\u0302", "\u02c6", "\u2303"]:
+            return f"\\widehat{{{e}}}"
+        elif chr_val in ["¯", "\u0304", "\u00af", "_", "-"]:
+            return f"\\overline{{{e}}}"
+        elif chr_val in [".", "\u0307"]:
+            return f"\\dot{{{e}}}"
+        else:
+            return f"\\vec{{{e}}}"
     else:
         parts = [_omml_node_to_latex(c) for c in node]
         if len(node) == 0 and node.text:
