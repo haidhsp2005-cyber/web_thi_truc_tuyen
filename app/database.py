@@ -219,8 +219,47 @@ def is_exam_published(val) -> bool:
     return bool(val)
 
 
+def upload_to_supabase_storage(image_bytes: bytes, ext: str = "webp") -> Optional[str]:
+    """Upload ảnh lên Supabase Storage bucket 'exam-images' nếu có cấu hình."""
+    supabase_url = os.environ.get("SUPABASE_URL")
+    supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_KEY") or os.environ.get("SUPABASE_ANON_KEY")
+    
+    if not supabase_url:
+        db_url = os.environ.get("DATABASE_URL", "")
+        m = re.search(r'postgres\.([a-z0-9]+):', db_url)
+        if m:
+            supabase_url = f"https://{m.group(1)}.supabase.co"
+            
+    if not supabase_url or not supabase_key:
+        return None
+        
+    try:
+        import urllib.request
+        import uuid
+        clean_ext = ext.lstrip(".").lower()
+        filename = f"img_{uuid.uuid4().hex[:12]}.{clean_ext}"
+        bucket = "exam-images"
+        endpoint = f"{supabase_url.rstrip('/')}/storage/v1/object/{bucket}/{filename}"
+        
+        headers = {
+            "Authorization": f"Bearer {supabase_key}",
+            "apikey": supabase_key,
+            "Content-Type": f"image/{clean_ext}"
+        }
+        req = urllib.request.Request(endpoint, data=image_bytes, headers=headers, method="POST")
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status in (200, 201):
+                public_url = f"{supabase_url.rstrip('/')}/storage/v1/object/public/{bucket}/{filename}"
+                logger.info(f"Đã lưu ảnh thành công vào Supabase Storage: {public_url}")
+                return public_url
+    except Exception as e:
+        logger.warning(f"Không thể upload vào Supabase Storage (sẽ fallback sang WebP Data URI): {e}")
+        
+    return None
+
+
 def convert_bytes_to_base64_data_uri(image_bytes: bytes, ext: str = "png") -> str:
-    """Chuyển đổi dữ liệu ảnh thành chuỗi Base64 Data URI."""
+    """Chuyển đổi dữ liệu ảnh thành chuỗi Base64 Data URI với nén tối ưu WebP/JPEG."""
     try:
         from PIL import Image
         img = Image.open(io.BytesIO(image_bytes))
@@ -229,16 +268,18 @@ def convert_bytes_to_base64_data_uri(image_bytes: bytes, ext: str = "png") -> st
             img.thumbnail((max_dim, max_dim), Image.Resampling.LANCZOS)
             
         out_buf = io.BytesIO()
-        fmt = img.format if img.format else "PNG"
-        if fmt.upper() in ("JPEG", "JPG"):
-            img.convert("RGB").save(out_buf, format="JPEG", quality=85, optimize=True)
-            mime = "image/jpeg"
-        elif fmt.upper() == "WEBP":
-            img.save(out_buf, format="WEBP", quality=85)
+        try:
+            # Ưu tiên nén WebP để tiết kiệm ~90% dung lượng
+            img.save(out_buf, format="WEBP", quality=82, method=4)
             mime = "image/webp"
-        else:
-            img.save(out_buf, format="PNG", optimize=True)
-            mime = "image/png"
+        except Exception:
+            fmt = img.format if img.format else "PNG"
+            if fmt.upper() in ("JPEG", "JPG"):
+                img.convert("RGB").save(out_buf, format="JPEG", quality=85, optimize=True)
+                mime = "image/jpeg"
+            else:
+                img.save(out_buf, format="PNG", optimize=True)
+                mime = "image/png"
             
         b64 = base64.b64encode(out_buf.getvalue()).decode("ascii")
         return f"data:{mime};base64,{b64}"
@@ -253,6 +294,35 @@ def convert_bytes_to_base64_data_uri(image_bytes: bytes, ext: str = "png") -> st
             mime = "image/webp"
         b64 = base64.b64encode(image_bytes).decode("ascii")
         return f"data:{mime};base64,{b64}"
+
+
+def store_exam_image(image_bytes: bytes, ext: str = "png") -> str:
+    """
+    Tối ưu hóa và lưu trữ ảnh đề thi:
+    1. Ưu tiên upload lên Supabase Storage (nếu có key) -> trả về link URL siêu nhẹ.
+    2. Fallback: nén tự động bằng WebP chất lượng cao -> dung lượng siêu nhỏ (~90% tiết kiệm).
+    """
+    compressed_bytes = image_bytes
+    out_ext = "webp"
+    try:
+        from PIL import Image
+        img = Image.open(io.BytesIO(image_bytes))
+        max_dim = 1200
+        if img.width > max_dim or img.height > max_dim:
+            img.thumbnail((max_dim, max_dim), Image.Resampling.LANCZOS)
+        out_buf = io.BytesIO()
+        img.save(out_buf, format="WEBP", quality=82, method=4)
+        compressed_bytes = out_buf.getvalue()
+    except Exception:
+        out_ext = ext.lstrip(".").lower()
+
+    # Thử upload Supabase Storage nếu có cấu hình
+    storage_url = upload_to_supabase_storage(compressed_bytes, out_ext)
+    if storage_url:
+        return storage_url
+
+    # Fallback: Data URI nén WebP
+    return convert_bytes_to_base64_data_uri(image_bytes, ext)
 
 
 def file_url_to_base64(url: str, static_dir: Path = None) -> str:

@@ -12,7 +12,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from fastapi.responses import JSONResponse, Response, StreamingResponse, FileResponse
 
-from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, file_url_to_base64, is_exam_published
+from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, store_exam_image, file_url_to_base64, is_exam_published
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
@@ -754,7 +754,7 @@ def _extract_images_from_docx(doc, exam_id: str) -> dict:
                 filepath = UPLOADS_DIR / filename
                 filepath.write_bytes(img_part.blob)
                 # Nhúng trực tiếp Base64 Data URI vào map để lưu vĩnh viễn trong file JSON
-                images_map[r_id] = convert_bytes_to_base64_data_uri(img_part.blob, ext)
+                images_map[r_id] = store_exam_image(img_part.blob, ext)
     except Exception as e:
         logger.warning(f"Lỗi trích xuất ảnh docx: {e}")
     return images_map
@@ -2468,7 +2468,7 @@ async def upload_question_image(file: UploadFile = File(...)):
     target_path.write_bytes(content)
     
     # Tạo Base64 Data URI để nhúng trực tiếp và lưu trữ vĩnh viễn trong file JSON
-    base64_url = convert_bytes_to_base64_data_uri(content, ext)
+    base64_url = store_exam_image(content, ext)
     return {
         "success": True,
         "url": base64_url,
