@@ -432,11 +432,14 @@ def _sanitize_math_symbols(math_latex: str) -> str:
         ("φ", "\\varphi "),
         ("Φ", "\\Phi "),
     ]
+    # 0. Chuẩn hóa ký hiệu hình học: vuông góc ⟂ (U+27C2) và ⊥ (U+22A5), song song ∥, góc ∠
+    math_latex = math_latex.replace('⟂', ' \\perp ').replace('⊥', ' \\perp ').replace('∥', ' \\parallel ').replace('∠', ' \\angle ')
+
     # Tự động chuyển đổi dạng vectơ viết kèm mũi tên trong công thức Toán
-    # 1. Vectơ nhiều chữ cái: AB\rightarrow hoặc AB→ -> \overrightarrow{AB}
-    math_latex = re.sub(r'([A-Z]{2,3})\s*(?:\\rightarrow|→)', r'\\overrightarrow{\1}', math_latex)
-    # 2. Vectơ 1 chữ cái hoặc số 0: a\rightarrow -> \vec{a}, u\rightarrow -> \vec{u}, 0\rightarrow -> \vec{0}
-    math_latex = re.sub(r'(^|[\s\$\(\x5b\+\-=\\cdot\d])([a-zA-Z0]|\\alpha|\\beta)\s*(?:\\rightarrow|→)(?=\s*(?:[=+\-,;\)\x5d\$\\]|$))', r'\1\\vec{\2}', math_latex)
+    # 1. Vectơ 2-3 điểm (hỗ trợ cả dấu phẩy trên ' hoặc ′ như AA', A'B', AC', A'C, SA'):
+    math_latex = re.sub(r'([A-Z]['′]?[A-Z]['′]?)\s*(?:\\rightarrow|→)', r'\\overrightarrow{\1}', math_latex)
+    # 2. Vectơ 1 chữ cái hoặc có chỉ số dưới (a, b, u, v, n, 0, u_1, a', b'):
+    math_latex = re.sub(r'([a-zA-Z0]['′]?(?:_\d+)?)\s*(?:\\rightarrow|→)(?!\s*(?:[+-]?\d|[+-]?\\infty|x_0))', r'\\vec{\1}', math_latex)
 
     for orig, rep in replacements:
         math_latex = math_latex.replace(orig, rep)
