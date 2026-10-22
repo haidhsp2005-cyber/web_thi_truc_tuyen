@@ -60,7 +60,7 @@ if USE_POSTGRES:
         _test_conn.close()
 
         # Kết nối tới Supabase PostgreSQL Singapore với connection pool đa luồng
-        _PG_POOL = ThreadedConnectionPool(minconn=1, maxconn=10, dsn=DATABASE_URL)
+        _PG_POOL = ThreadedConnectionPool(minconn=2, maxconn=50, dsn=DATABASE_URL)
         logger.info("Đã khởi tạo ThreadedConnectionPool kết nối Supabase PostgreSQL thành công.")
     except Exception as e:
         logger.warning(f"Không thể kết nối Supabase PostgreSQL ({e}). Hệ thống tự động chuyển 100% sang SQLite an toàn.")
@@ -136,9 +136,7 @@ def get_connection():
             raw_conn = psycopg2.connect(DATABASE_URL, connect_timeout=5)
             return PooledPgConnection(raw_conn, None)
         except Exception as e2:
-            logger.warning(f"Kết nối Neon thất bại ({e2}), chuyển sang SQLite an toàn!")
-            USE_POSTGRES = False
-            _PG_POOL = None
+            logger.warning(f"Kết nối Supabase tạm thời thất bại ({e2}), chuyển sang SQLite an toàn!")
     
     # SQLite fallback
     conn = sqlite3.connect(str(DB_PATH), timeout=30.0)
