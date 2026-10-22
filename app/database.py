@@ -33,7 +33,7 @@ PASSWORD_SALT = "longcang_exam_salt_2026"
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 # Tự động chuyển đổi nếu Render vẫn còn lưu DATABASE_URL của Neon cũ
 if not DATABASE_URL or "neon.tech" in DATABASE_URL:
-    DATABASE_URL = "postgresql://postgres.sacdknvxyhufnvukgzcg:Longcang2026%40@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+    DATABASE_URL = "postgresql://postgres.ljjretoztccpuonejrur:Haidhsp2005%40@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
 
 # Tự động chuyển sang cổng 6543 (Transaction Pooler) để tránh lỗi EMAXCONNSESSION giới hạn 15 kết nối
 if "pooler.supabase.com:5432" in DATABASE_URL:
