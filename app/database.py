@@ -31,9 +31,15 @@ DB_PATH = EXAMS_DIR / "exam_db.sqlite"
 PASSWORD_SALT = "longcang_exam_salt_2026"
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
-# Tự động chuyển đổi nếu Render vẫn còn lưu DATABASE_URL của Neon cũ
-if not DATABASE_URL or "neon.tech" in DATABASE_URL:
-    DATABASE_URL = "postgresql://postgres.ljjretoztccpuonejrur:Haidhsp2005%40@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+# Tự động trỏ sang Supabase Tokyo chuẩn nếu DATABASE_URL trống, hoặc là Neon cũ, hoặc là project Supabase cũ (sacdknvxyhufnvukgzcg)
+TARGET_DB_URL = "postgresql://postgres.ljjretoztccpuonejrur:Haidhsp2005%40@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+if (
+    not DATABASE_URL 
+    or "neon.tech" in DATABASE_URL 
+    or "sacdknvxyhufnvukgzcg" in DATABASE_URL 
+    or "ljjretoztccpuonejrur" not in DATABASE_URL
+):
+    DATABASE_URL = TARGET_DB_URL
 
 # Tự động chuyển sang cổng 6543 (Transaction Pooler) để tránh lỗi EMAXCONNSESSION giới hạn 15 kết nối
 if "pooler.supabase.com:5432" in DATABASE_URL:
@@ -593,18 +599,23 @@ def init_db():
                 """, (hash_password("Longcang2026@"),))
                 conn.commit()
 
-            # Pre-warm In-Memory Cache từ PostgreSQL
-            c.execute("SELECT id, data_json FROM exams")
-            rows = c.fetchall()
-            for eid, dj in rows:
-                if eid and dj:
-                    try:
-                        d = safe_parse_json(dj, {})
-                        set_cached_exam(eid, d)
-                    except Exception:
-                        pass
-            conn.close()
-            logger.info(f"Khởi tạo Neon PostgreSQL hoàn tất. Đã nạp {len(rows)} đề thi vào RAM cache.")
+            # Pre-warm In-Memory Cache từ PostgreSQL (ưu tiên nạp các đề thi trực tuyến đang mở, siêu tốc < 0.5s)
+            try:
+                c.execute("SELECT id, data_json FROM exams WHERE is_online_exam = TRUE")
+                rows = c.fetchall()
+                for eid, dj in rows:
+                    if eid and dj:
+                        try:
+                            d = safe_parse_json(dj, {})
+                            if d:
+                                set_cached_exam(eid, d)
+                        except Exception:
+                            pass
+                logger.info(f"Khởi tạo Supabase PostgreSQL hoàn tất. Đã nạp {len(rows)} đề thi trực tuyến vào RAM cache.")
+            except Exception as e_cache:
+                logger.warning(f"Lỗi pre-warm cache: {e_cache}")
+            finally:
+                conn.close()
             return
         except Exception as e:
             logger.error(f"Lỗi khởi tạo Neon PostgreSQL: {e}. Fallback SQLite...")
@@ -760,23 +771,30 @@ def load_exam(exam_id: str = "exam_001", fallback_to_any: bool = False) -> Optio
         conn = get_connection()
         c = conn.cursor()
         param = exam_id
+        variants = [param]
+        if param.startswith("exam_"):
+            variants.append(param[5:])
+        else:
+            variants.append(f"exam_{param}")
+
+        row = None
         if USE_POSTGRES:
-            c.execute("SELECT id, data_json FROM exams WHERE id = %s", (param,))
-            row = c.fetchone()
-            if not row and not exam_id.startswith("exam_"):
-                c.execute("SELECT id, data_json FROM exams WHERE id = %s", (f"exam_{exam_id}",))
+            for v in variants:
+                c.execute("SELECT id, data_json FROM exams WHERE id = %s", (v,))
                 row = c.fetchone()
+                if row:
+                    break
             if not row:
-                c.execute("SELECT id, data_json FROM exams WHERE title = %s LIMIT 1", (exam_id,))
+                c.execute("SELECT id, data_json FROM exams WHERE LOWER(TRIM(title)) = LOWER(TRIM(%s)) LIMIT 1", (param,))
                 row = c.fetchone()
         else:
-            c.execute("SELECT id, data_json FROM exams WHERE id = ?", (param,))
-            row = c.fetchone()
-            if not row and not exam_id.startswith("exam_"):
-                c.execute("SELECT id, data_json FROM exams WHERE id = ?", (f"exam_{exam_id}",))
+            for v in variants:
+                c.execute("SELECT id, data_json FROM exams WHERE id = ?", (v,))
                 row = c.fetchone()
+                if row:
+                    break
             if not row:
-                c.execute("SELECT id, data_json FROM exams WHERE title = ? LIMIT 1", (exam_id,))
+                c.execute("SELECT id, data_json FROM exams WHERE LOWER(TRIM(title)) = LOWER(TRIM(?)) LIMIT 1", (param,))
                 row = c.fetchone()
         conn.close()
 
@@ -785,6 +803,8 @@ def load_exam(exam_id: str = "exam_001", fallback_to_any: bool = False) -> Optio
             exam_data = safe_parse_json(row[1], {})
             heal_exam_data(exam_data)
             set_cached_exam(real_id, exam_data)
+            if exam_id != real_id:
+                set_cached_exam(exam_id, exam_data)
             return _wrap_exam(exam_data)
     except Exception as ex:
         logger.warning(f"Lỗi đọc đề {exam_id} từ CSDL: {ex}")
