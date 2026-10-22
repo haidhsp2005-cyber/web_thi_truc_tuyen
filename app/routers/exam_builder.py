@@ -23,128 +23,142 @@ UPLOADS_DIR = STATIC_DIR / "uploads"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+
+_EXAM_FILES_CACHE = {
+    "all": None,
+    "time": 0.0
+}
+
+def invalidate_exam_list_cache():
+    global _EXAM_FILES_CACHE
+    _EXAM_FILES_CACHE["all"] = None
+    _EXAM_FILES_CACHE["time"] = 0.0
+
 def _list_exam_files(current_user: dict = None) -> List[dict]:
     """Lấy danh sách tất cả đề thi từ bảng SQLite/PostgreSQL exams và thư mục data/ (không bao giờ mất đề, không tải lại đề đã xóa)."""
+    global _EXAM_FILES_CACHE
+    import time, copy
     from ..database import get_config, USE_POSTGRES
-    deleted_exams = set()
-    try:
-        d_cfg = get_config("deleted_exams", [])
-        if isinstance(d_cfg, list):
-            deleted_exams = set(d_cfg)
-    except Exception:
-        pass
 
-    exams_map = {}
+    now = time.time()
+    if _EXAM_FILES_CACHE["all"] is not None and (now - _EXAM_FILES_CACHE["time"] < 15.0):
+        exams_map = copy.deepcopy(_EXAM_FILES_CACHE["all"])
+    else:
+        deleted_exams = set()
+        try:
+            d_cfg = get_config("deleted_exams", [])
+            if isinstance(d_cfg, list):
+                deleted_exams = set(d_cfg)
+        except Exception:
+            pass
 
-    # Bản đồ tên đầy đủ của giáo viên ra đề
-    user_name_map = {}
-    try:
-        from ..database import get_all_users
-        for u in get_all_users():
-            uname = (u.get("username") or "").strip().lower()
-            fname = (u.get("full_name") or "").strip()
-            if uname and fname:
-                user_name_map[uname] = fname
-    except Exception:
-        pass
+        exams_map = {}
 
-    # 1. Quét từ bảng CSDL (PostgreSQL / SQLite) - Siêu tốc và siêu nhẹ (không tải 50MB data_json)
-    try:
-        conn = get_connection()
-        c = conn.cursor()
-        c.execute("SELECT id, title, subject, grade, created_by, is_online_exam FROM exams")
-        for r in c.fetchall():
+        # Bản đồ tên đầy đủ của giáo viên ra đề
+        user_name_map = {}
+        try:
+            from ..database import get_all_users
+            for u in get_all_users():
+                uname = (u.get("username") or "").strip().lower()
+                fname = (u.get("full_name") or "").strip()
+                if uname and fname:
+                    user_name_map[uname] = fname
+        except Exception:
+            pass
+
+        # 1. Quét từ bảng CSDL (PostgreSQL / SQLite) - Siêu tốc và siêu nhẹ (không tải 50MB data_json)
+        try:
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT id, title, subject, grade, created_by, is_online_exam FROM exams")
+            for r in c.fetchall():
+                try:
+                    eid = str(r[0]).strip()
+                    if eid in deleted_exams or f"exam_{eid}" in deleted_exams or eid.replace("exam_", "") in deleted_exams:
+                        continue
+                    cached = get_cached_exam(eid) or {}
+                    creator = (r[4] or cached.get("created_by") or "").strip()
+                    author = cached.get("author_name") or cached.get("author") or user_name_map.get(creator.lower()) or creator
+                    if not author or author.lower() in ("admin", "root", "system", "quản trị viên mặc định", "quản trị viên"):
+                        author = "GV THPT Long Cang"
+                    is_bank = bool(cached.get("is_bank", False)) or bool(cached.get("bank_config", {}).get("enabled", False))
+                    is_online = bool(r[5]) if len(r) > 5 and r[5] is not None else bool(cached.get("is_online_exam", False))
+                    exams_map[eid] = {
+                        "file": eid,
+                        "id": eid,
+                        "title": cached.get("title") or r[1] or eid,
+                        "subject": cached.get("subject") or r[2] or "Khác",
+                        "grade": str(cached.get("grade") or r[3] or ""),
+                        "duration_minutes": cached.get("duration_minutes", 45),
+                        "part1_count": len(cached.get("parts", {}).get("part1", {}).get("questions", [])),
+                        "part2_count": len(cached.get("parts", {}).get("part2", {}).get("questions", [])),
+                        "part3_count": len(cached.get("parts", {}).get("part3", {}).get("questions", [])),
+                        "part4_count": len(cached.get("parts", {}).get("part4", {}).get("questions", [])),
+                        "created_by": creator,
+                        "author_name": author,
+                        "is_online_exam": is_online,
+                        "is_published": is_exam_published(cached.get("is_published", True)),
+                        "is_bank": is_bank,
+                        "bank_config": cached.get("bank_config", {}),
+                    }
+                except Exception:
+                    pass
+            conn.close()
+        except Exception as ex:
+            logger.warning(f"Lỗi đọc danh sách đề từ CSDL: {ex}")
+
+        # 2. Quét thêm từ các file JSON trong EXAMS_DIR (chỉ cho các mẫu chuẩn hoặc khi không dùng PostgreSQL)
+        for f in sorted(EXAMS_DIR.glob("*.json")):
+            if f.name.endswith(".sqlite"):
+                continue
             try:
-                eid = str(r[0]).strip()
+                stem = f.stem
+                if stem in deleted_exams or f"exam_{stem}" in deleted_exams or stem.replace("exam_", "") in deleted_exams:
+                    continue
+                if USE_POSTGRES and stem not in ("sample_exam", "exam_toan_12_101"):
+                    continue
+
+                data = json.loads(f.read_text(encoding="utf-8"))
+                eid = data.get("id", f.stem)
                 if eid in deleted_exams or f"exam_{eid}" in deleted_exams or eid.replace("exam_", "") in deleted_exams:
                     continue
-                cached = get_cached_exam(eid) or {}
-                creator = (r[4] or cached.get("created_by") or "").strip()
-                author = cached.get("author_name") or cached.get("author") or user_name_map.get(creator.lower()) or creator
-                if not author or author.lower() in ("admin", "root", "system", "quản trị viên mặc định", "quản trị viên"):
-                    author = "GV THPT Long Cang"
-                is_bank = bool(cached.get("is_bank", False)) or bool(cached.get("bank_config", {}).get("enabled", False))
-                is_online = bool(r[5]) if len(r) > 5 and r[5] is not None else bool(cached.get("is_online_exam", False))
-                exams_map[eid] = {
-                    "file": eid,
-                    "id": eid,
-                    "title": cached.get("title") or r[1] or eid,
-                    "subject": cached.get("subject") or r[2] or "Khác",
-                    "grade": str(cached.get("grade") or r[3] or ""),
-                    "duration_minutes": cached.get("duration_minutes", 45),
-                    "part1_count": len(cached.get("parts", {}).get("part1", {}).get("questions", [])),
-                    "part2_count": len(cached.get("parts", {}).get("part2", {}).get("questions", [])),
-                    "part3_count": len(cached.get("parts", {}).get("part3", {}).get("questions", [])),
-                    "part4_count": len(cached.get("parts", {}).get("part4", {}).get("questions", [])),
-                    "created_by": creator,
-                    "author_name": author,
-                    "is_online_exam": is_online,
-                    "is_published": is_exam_published(cached.get("is_published", True)),
-                    "is_bank": is_bank,
-                    "bank_config": cached.get("bank_config", {}),
-                }
-            except Exception:
-                pass
-        conn.close()
-    except Exception as ex:
-        logger.warning(f"Lỗi đọc danh sách đề từ CSDL: {ex}")
+                if eid not in exams_map:
+                    is_bank = bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False))
+                    bank_cfg = {}
+                    if is_bank:
+                        from ..services.bank_service import normalize_bank_config
+                        bank_cfg = normalize_bank_config(data)
+                    creator = (data.get("created_by") or "").strip()
+                    author = data.get("author_name") or data.get("author") or user_name_map.get(creator.lower()) or creator
+                    if not author or author.lower() in ("admin", "root", "system", "quản trị viên mặc định", "quản trị viên"):
+                        author = "GV THPT Long Cang"
+                    exams_map[eid] = {
+                        "file": f.stem,
+                        "id": eid,
+                        "title": data.get("title", f.stem),
+                        "subject": data.get("subject", "Khác"),
+                        "grade": str(data.get("grade", "")),
+                        "duration_minutes": data.get("duration_minutes", 45),
+                        "part1_count": len(data.get("parts", {}).get("part1", {}).get("questions", [])),
+                        "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
+                        "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
+                        "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
+                        "created_by": creator,
+                        "author_name": author,
+                        "is_online_exam": bool(data.get("is_online_exam", False)),
+                        "is_published": is_exam_published(data.get("is_published")),
+                        "is_bank": is_bank,
+                        "bank_config": bank_cfg if is_bank else data.get("bank_config", {}),
+                    }
+            except Exception as e:
+                logger.warning(f"Bỏ qua file {f.name}: {e}")
 
-    # 2. Quét thêm từ các file JSON trong EXAMS_DIR (chỉ cho các mẫu chuẩn hoặc khi không dùng PostgreSQL)
-    for f in sorted(EXAMS_DIR.glob("*.json")):
-        if f.name.endswith(".sqlite"):
-            continue
-        try:
-            stem = f.stem
-            if stem in deleted_exams or f"exam_{stem}" in deleted_exams or stem.replace("exam_", "") in deleted_exams:
-                continue
-            # Nếu đang chạy PostgreSQL trên Cloud, các đề thi chính thức đều nằm trong PostgreSQL.
-            # Không tự động phục hồi các file JSON giáo viên cũ trên đĩa nếu không có trong PostgreSQL,
-            # NGOẠI TRỪ 2 đề mẫu hệ thống: sample_exam và exam_toan_12_101.
-            if USE_POSTGRES and stem not in ("sample_exam", "exam_toan_12_101"):
-                continue
-
-            data = json.loads(f.read_text(encoding="utf-8"))
-            eid = data.get("id", f.stem)
-            if eid in deleted_exams or f"exam_{eid}" in deleted_exams or eid.replace("exam_", "") in deleted_exams:
-                continue
-            if eid not in exams_map:
-                is_bank = bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False))
-                bank_cfg = {}
-                if is_bank:
-                    from ..services.bank_service import normalize_bank_config
-                    bank_cfg = normalize_bank_config(data)
-                creator = (data.get("created_by") or "").strip()
-                author = data.get("author_name") or data.get("author") or user_name_map.get(creator.lower()) or creator
-                if not author or author.lower() in ("admin", "root", "system", "quản trị viên mặc định", "quản trị viên"):
-                    author = "GV THPT Long Cang"
-                exams_map[eid] = {
-                    "file": f.stem,
-                    "id": eid,
-                    "title": data.get("title", f.stem),
-                    "subject": data.get("subject", "Khác"),
-                    "grade": str(data.get("grade", "")),
-                    "duration_minutes": data.get("duration_minutes", 45),
-                    "part1_count": len(data.get("parts", {}).get("part1", {}).get("questions", [])),
-                    "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
-                    "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
-                    "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
-                    "created_by": creator,
-                    "author_name": author,
-                    "is_online_exam": bool(data.get("is_online_exam", False)),
-                    "is_published": is_exam_published(data.get("is_published")),
-                    "is_bank": is_bank,
-                    "bank_config": bank_cfg if is_bank else data.get("bank_config", {}),
-                }
-        except Exception as e:
-            logger.warning(f"Bỏ qua file {f.name}: {e}")
+        _EXAM_FILES_CACHE["all"] = copy.deepcopy(exams_map)
+        _EXAM_FILES_CACHE["time"] = now
 
     exams_list = list(exams_map.values())
 
     # RBAC: PHÂN LẬP ĐỀ THI THEO TÀI KHOẢN GIÁO VIÊN
-    # 1. Chỉ tài khoản Super Admin (username='admin' hoặc is_protected) mới có toàn quyền xem đề thi của tất cả giáo viên.
-    # 2. Mọi tài khoản giáo viên (kể cả giáo viên được phân quyền vai trò admin):
-    #    CHỈ xem và quản lý các đề thi do chính tài khoản của mình tạo ra (created_by == username).
-    #    Giáo viên cùng môn tuyệt đối KHÔNG thấy đề thi của giáo viên khác.
     is_super_admin = bool(
         current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
     )
@@ -156,7 +170,6 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
         ]
 
     return exams_list
-
 
 @router.get("/list")
 async def list_exams(request: Request, include_unpublished: bool = False, published_only: bool = True):
@@ -203,7 +216,7 @@ async def add_sample_exam_to_system():
     if not src.exists():
         raise HTTPException(404, "Không tìm thấy file mẫu đề thi Toán 12!")
     data = json.loads(src.read_text(encoding="utf-8"))
-    save_exam_record(data)
+    save_exam_record(data); invalidate_exam_list_cache()
     src.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return {
         "success": True,
@@ -1010,7 +1023,7 @@ async def upload_exam_file(request: Request, file: UploadFile = File(...)):
             current_user = get_current_user_from_request(request)
             if current_user and not data.get("created_by"):
                 data["created_by"] = current_user.get("username", "")
-            save_exam_record(data)
+            save_exam_record(data); invalidate_exam_list_cache()
             out_path = DATA_DIR / f"{data['id']}.json"
             out_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
             return {
@@ -1340,7 +1353,7 @@ async def delete_exam(exam_id: str, request: Request):
 
     if exam_id in ("sample_exam", "exam_toan_12_101"):
         raise HTTPException(400, "Không thể xóa đề thi mẫu chuẩn của hệ thống!")
-    delete_exam_record(exam_id)
+    delete_exam_record(exam_id); invalidate_exam_list_cache()
     return {"success": True, "message": "Đã xóa đề thi thành công!"}
 
 

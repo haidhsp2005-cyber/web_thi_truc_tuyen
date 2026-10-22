@@ -149,6 +149,19 @@ def is_pg(conn) -> bool:
     return isinstance(conn, PooledPgConnection)
 
 
+
+# ===================== IN-MEMORY SUBMISSIONS CACHE =====================
+_SUBMISSIONS_CACHE = {
+    "all": None,
+    "time": 0.0
+}
+
+def invalidate_submissions_cache():
+    """Xóa cache bài thi trên RAM để cập nhật bài thi mới."""
+    global _SUBMISSIONS_CACHE
+    _SUBMISSIONS_CACHE["all"] = None
+    _SUBMISSIONS_CACHE["time"] = 0.0
+
 # ===================== IN-MEMORY EXAM CACHE =====================
 # Lưu trữ đề thi trên RAM để phản hồi trong 0.0001s, chống nghẽn 100% khi 200 thí sinh vào thi
 _EXAM_CACHE: Dict[str, dict] = {}
@@ -1059,7 +1072,8 @@ def get_submission(submission_id: str) -> Optional[dict]:
     conn.close()
 
     if not row:
-        return None
+        invalidate_submissions_cache()
+    return None
 
     stt_val = str(row[10] or "").strip() if len(row) > 10 and row[10] is not None else ""
     result = {
@@ -1113,131 +1127,126 @@ def get_submission(submission_id: str) -> Optional[dict]:
 
 
 def get_all_submissions(exam_id: str = None, student_class: str = None, submission_date: str = None) -> List[dict]:
-    """Lấy danh sách bài nộp phục vụ bảng quản trị và thống kê (Hỗ trợ lọc nhiều lớp cùng lúc)."""
-    conn = get_connection()
-    c = conn.cursor()
+    """Lấy danh sách bài nộp phục vụ bảng quản trị và thống kê (Hỗ trợ lọc nhiều lớp cùng lúc và cache RAM siêu tốc)."""
+    global _SUBMISSIONS_CACHE
+    import time
 
-    # Bản đồ metadata đề thi
-    exam_meta_map = {}
-    try:
-        if USE_POSTGRES:
-            c.execute("SELECT id, is_online_exam, title, subject, created_by FROM exams")
-        else:
-            c.execute("SELECT id, 0, title, subject, created_by FROM exams")
-        for row_e in c.fetchall():
-            exam_meta_map[row_e[0]] = {
-                "is_online_exam": bool(row_e[1]),
-                "title": (row_e[2] or "").strip(),
-                "subject": (row_e[3] or "").strip(),
-                "created_by": (row_e[4] or "").strip(),
-            }
-    except Exception:
-        pass
-
-    if USE_POSTGRES:
-        query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, status, scores_json, is_online_exam, screen_switch_count, student_stt FROM submissions"
+    now = time.time()
+    if _SUBMISSIONS_CACHE["all"] is not None and (now - _SUBMISSIONS_CACHE["time"] < 15.0):
+        all_subs = _SUBMISSIONS_CACHE["all"]
     else:
-        query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status, answers_json, student_stt FROM submissions"
-    conditions = []
-    params = []
+        conn = get_connection()
+        c = conn.cursor()
 
-    placeholder = "%s" if USE_POSTGRES else "?"
-
-    if exam_id and exam_id.strip() and exam_id.strip() != "all":
-        conditions.append(f"exam_id = {placeholder}")
-        params.append(exam_id.strip())
-    if student_class and student_class.strip() and student_class.strip() != "all":
-        classes = [c.strip().upper() for c in student_class.split(',') if c.strip()]
-        if len(classes) == 1:
-            conditions.append(f"UPPER(student_class) = UPPER({placeholder})")
-            params.append(classes[0])
-        elif len(classes) > 1:
-            placeholders = ", ".join([placeholder] * len(classes))
-            conditions.append(f"UPPER(student_class) IN ({placeholders})")
-            params.extend(classes)
-    if submission_date and submission_date.strip() and submission_date.strip() != "all":
-        conditions.append(f"submitted_at LIKE {placeholder}")
-        params.append(f"{submission_date.strip()}%")
-
-    if conditions:
-        query += " WHERE " + " AND ".join(conditions)
-
-    query += " ORDER BY submitted_at DESC"
-    c.execute(query, tuple(params))
-    rows = c.fetchall()
-    conn.close()
-
-    results = []
-    for row in rows:
-        stt_val = str(row[10] or "").strip() if len(row) > 10 and row[10] is not None else ""
-        item = {
-            "submission_id": row[0],
-            "student_name": row[1],
-            "student_class": row[2],
-            "student_stt": stt_val,
-            "exam_id": row[3],
-            "submitted_at": row[4],
-            "duration_seconds": row[5],
-            "status": row[6] if USE_POSTGRES else row[7],
-            "scores": {},
-            "is_online_exam": False,
-            "screen_switch_count": 0,
-            "switch_violations": [],
-        }
+        # Bản đồ metadata đề thi
+        exam_meta_map = {}
+        try:
+            if USE_POSTGRES:
+                c.execute("SELECT id, is_online_exam, title, subject, created_by FROM exams")
+            else:
+                c.execute("SELECT id, 0, title, subject, created_by FROM exams")
+            for row_e in c.fetchall():
+                exam_meta_map[row_e[0]] = {
+                    "is_online_exam": bool(row_e[1]),
+                    "title": (row_e[2] or "").strip(),
+                    "subject": (row_e[3] or "").strip(),
+                    "created_by": (row_e[4] or "").strip(),
+                }
+        except Exception:
+            pass
 
         if USE_POSTGRES:
-            if row[7]:
-                try:
-                    item["scores"] = safe_parse_json(row[7], {}) or {}
-                except Exception:
-                    pass
-            item["is_online_exam"] = bool(row[8]) if len(row) > 8 and row[8] is not None else False
-            item["screen_switch_count"] = int(row[9]) if len(row) > 9 and row[9] is not None else 0
+            query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, status, scores_json, is_online_exam, screen_switch_count, student_stt FROM submissions ORDER BY submitted_at DESC"
         else:
-            if row[6]:
-                try:
-                    res_d = safe_parse_json(row[6], {})
-                    item["scores"] = res_d.get("scores", {}) or {}
-                    if not item["student_stt"] and res_d.get("student_stt"):
-                        item["student_stt"] = str(res_d["student_stt"]).strip()
-                    if "is_online_exam" in res_d:
-                        item["is_online_exam"] = bool(res_d["is_online_exam"])
-                    if "screen_switch_count" in res_d:
-                        item["screen_switch_count"] = int(res_d["screen_switch_count"])
-                    if "switch_violations" in res_d:
-                        item["switch_violations"] = res_d["switch_violations"]
-                except Exception:
-                    pass
+            query = "SELECT id, student_name, student_class, exam_id, submitted_at, duration_seconds, result_json, status, answers_json, student_stt FROM submissions ORDER BY submitted_at DESC"
 
-            if len(row) > 8 and row[8]:
-                try:
-                    ans_d = safe_parse_json(row[8], {})
-                    if not item["student_stt"] and ans_d.get("student_stt"):
-                        item["student_stt"] = str(ans_d["student_stt"]).strip()
-                    if not item["is_online_exam"] and "is_online_exam" in ans_d:
-                        item["is_online_exam"] = bool(ans_d["is_online_exam"])
-                    if item["screen_switch_count"] == 0 and "screen_switch_count" in ans_d:
-                        item["screen_switch_count"] = int(ans_d["screen_switch_count"])
-                    if not item["switch_violations"] and "switch_violations" in ans_d:
-                        item["switch_violations"] = ans_d["switch_violations"]
-                except Exception:
-                    pass
+        c.execute(query)
+        rows = c.fetchall()
+        conn.close()
 
-        meta = exam_meta_map.get(item["exam_id"], {})
-        item["exam_title"] = meta.get("title", "")
-        item["subject"] = meta.get("subject", "")
-        item["exam_created_by"] = meta.get("created_by", "")
-        if not item["is_online_exam"] and meta.get("is_online_exam"):
-            item["is_online_exam"] = True
+        results = []
+        for row in rows:
+            stt_val = str(row[10] or "").strip() if len(row) > 10 and row[10] is not None else ""
+            item = {
+                "submission_id": row[0],
+                "student_name": row[1],
+                "student_class": row[2],
+                "student_stt": stt_val,
+                "exam_id": row[3],
+                "submitted_at": row[4],
+                "duration_seconds": row[5],
+                "status": row[6] if USE_POSTGRES else row[7],
+                "scores": {},
+                "is_online_exam": False,
+                "screen_switch_count": 0,
+                "switch_violations": [],
+            }
 
-        results.append(item)
+            if USE_POSTGRES:
+                if row[7]:
+                    try:
+                        item["scores"] = safe_parse_json(row[7], {}) or {}
+                    except Exception:
+                        pass
+                item["is_online_exam"] = bool(row[8]) if len(row) > 8 and row[8] is not None else False
+                item["screen_switch_count"] = int(row[9]) if len(row) > 9 and row[9] is not None else 0
+            else:
+                if row[6]:
+                    try:
+                        res_d = safe_parse_json(row[6], {})
+                        item["scores"] = res_d.get("scores", {}) or {}
+                        if not item["student_stt"] and res_d.get("student_stt"):
+                            item["student_stt"] = str(res_d["student_stt"]).strip()
+                        if "is_online_exam" in res_d:
+                            item["is_online_exam"] = bool(res_d["is_online_exam"])
+                        if "screen_switch_count" in res_d:
+                            item["screen_switch_count"] = int(res_d["screen_switch_count"])
+                        if "switch_violations" in res_d:
+                            item["switch_violations"] = res_d["switch_violations"]
+                    except Exception:
+                        pass
 
-    return results
+                if len(row) > 8 and row[8]:
+                    try:
+                        ans_d = safe_parse_json(row[8], {})
+                        if not item["student_stt"] and ans_d.get("student_stt"):
+                            item["student_stt"] = str(ans_d["student_stt"]).strip()
+                        if not item["is_online_exam"] and "is_online_exam" in ans_d:
+                            item["is_online_exam"] = bool(ans_d["is_online_exam"])
+                        if item["screen_switch_count"] == 0 and "screen_switch_count" in ans_d:
+                            item["screen_switch_count"] = int(ans_d["screen_switch_count"])
+                    except Exception:
+                        pass
 
-    return results
+            meta = exam_meta_map.get(item["exam_id"], {})
+            item["exam_title"] = meta.get("title", "")
+            item["subject"] = meta.get("subject", "")
+            item["exam_created_by"] = meta.get("created_by", "")
+            if not item["is_online_exam"] and meta.get("is_online_exam"):
+                item["is_online_exam"] = True
 
+            results.append(item)
+
+        all_subs = results
+        _SUBMISSIONS_CACHE["all"] = all_subs
+        _SUBMISSIONS_CACHE["time"] = now
+
+    # Lọc siêu tốc trên RAM (0.05ms)
+    filtered = all_subs
+    if exam_id and exam_id.strip() and exam_id.strip() != "all":
+        clean_eid = exam_id.strip()
+        filtered = [s for s in filtered if s.get("exam_id") == clean_eid]
+    if student_class and student_class.strip() and student_class.strip() != "all":
+        classes = {c.strip().upper() for c in student_class.split(',') if c.strip()}
+        filtered = [s for s in filtered if (s.get("student_class") or "").strip().upper() in classes]
+    if submission_date and submission_date.strip() and submission_date.strip() != "all":
+        prefix = submission_date.strip()
+        filtered = [s for s in filtered if (s.get("submitted_at") or "").startswith(prefix)]
+
+    return filtered
 
 def delete_submission(submission_id: str, allowed_exam_ids: List[str] = None) -> bool:
+    invalidate_submissions_cache()
     """Xóa một bài nộp của học sinh (đồng bộ xóa cả trên Neon và SQLite cục bộ)."""
     deleted = False
 
@@ -1281,6 +1290,7 @@ def delete_submission(submission_id: str, allowed_exam_ids: List[str] = None) ->
 
 
 def delete_all_submissions(exam_id: str = None, exam_ids: List[str] = None) -> int:
+    invalidate_submissions_cache()
     """Xóa tất cả bài nộp (hoặc theo đề thi) - đồng bộ xóa cả trên Neon và SQLite."""
     count = 0
 
@@ -1330,6 +1340,7 @@ def delete_all_submissions(exam_id: str = None, exam_ids: List[str] = None) -> i
 
 
 def delete_submissions_batch(submission_ids: List[str], allowed_exam_ids: List[str] = None) -> int:
+    invalidate_submissions_cache()
     """Xóa hàng loạt bài nộp đã chọn qua checkbox (đồng bộ xóa cả trên Neon và SQLite)."""
     clean_ids = [str(sid).strip() for sid in submission_ids if str(sid).strip()]
     if not clean_ids:
