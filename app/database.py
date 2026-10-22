@@ -200,6 +200,23 @@ def invalidate_cached_exam(exam_id: str):
 
 # ===================== TIỆN ÍCH MẬT KHẨU & MATH =====================
 
+
+def safe_parse_json(val, default=None):
+    """Phân tích JSON an toàn: hỗ trợ cả dict/list (từ PostgreSQL JSONB) và chuỗi TEXT (từ SQLite)."""
+    if val is None:
+        return default
+    if isinstance(val, (dict, list)):
+        return val
+    if isinstance(val, str):
+        s = val.strip()
+        if not s:
+            return default
+        try:
+            return json.loads(s)
+        except Exception:
+            return default
+    return default
+
 def hash_password(password: str) -> str:
     """Băm mật khẩu an toàn với salt cố định."""
     raw = f"{PASSWORD_SALT}:{password.strip()}"
@@ -569,7 +586,7 @@ def init_db():
             for eid, dj in rows:
                 if eid and dj:
                     try:
-                        d = json.loads(dj)
+                        d = safe_parse_json(dj, {})
                         set_cached_exam(eid, d)
                     except Exception:
                         pass
@@ -639,7 +656,7 @@ def init_db():
         for eid, dj in c.fetchall():
             if eid and dj:
                 try:
-                    set_cached_exam(eid, json.loads(dj))
+                    set_cached_exam(eid, safe_parse_json(dj, {}))
                 except Exception:
                     pass
     except Exception:
@@ -752,7 +769,7 @@ def load_exam(exam_id: str = "exam_001", fallback_to_any: bool = False) -> Optio
 
         if row and row[1]:
             real_id = row[0]
-            exam_data = json.loads(row[1])
+            exam_data = safe_parse_json(row[1], {})
             heal_exam_data(exam_data)
             set_cached_exam(real_id, exam_data)
             return _wrap_exam(exam_data)
@@ -1062,7 +1079,7 @@ def get_submission(submission_id: str) -> Optional[dict]:
 
     if row[7]:
         try:
-            ans_data = json.loads(row[7])
+            ans_data = safe_parse_json(row[7], {})
             result["answers"] = ans_data
             result["part4_answer"] = ans_data.get("part4_answer", "")
             result["part4_question_id"] = ans_data.get("part4_question_id")
@@ -1079,7 +1096,7 @@ def get_submission(submission_id: str) -> Optional[dict]:
 
     if row[8]:
         try:
-            result_data = json.loads(row[8])
+            result_data = safe_parse_json(row[8], {})
             result.update(result_data)
             if not result["student_stt"] and result_data.get("student_stt"):
                 result["student_stt"] = str(result_data["student_stt"]).strip()
@@ -1171,7 +1188,7 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
         if USE_POSTGRES:
             if row[7]:
                 try:
-                    item["scores"] = json.loads(row[7]) or {}
+                    item["scores"] = safe_parse_json(row[7], {}) or {}
                 except Exception:
                     pass
             item["is_online_exam"] = bool(row[8]) if len(row) > 8 and row[8] is not None else False
@@ -1179,7 +1196,7 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
         else:
             if row[6]:
                 try:
-                    res_d = json.loads(row[6])
+                    res_d = safe_parse_json(row[6], {})
                     item["scores"] = res_d.get("scores", {}) or {}
                     if not item["student_stt"] and res_d.get("student_stt"):
                         item["student_stt"] = str(res_d["student_stt"]).strip()
@@ -1194,7 +1211,7 @@ def get_all_submissions(exam_id: str = None, student_class: str = None, submissi
 
             if len(row) > 8 and row[8]:
                 try:
-                    ans_d = json.loads(row[8])
+                    ans_d = safe_parse_json(row[8], {})
                     if not item["student_stt"] and ans_d.get("student_stt"):
                         item["student_stt"] = str(ans_d["student_stt"]).strip()
                     if not item["is_online_exam"] and "is_online_exam" in ans_d:
@@ -1372,7 +1389,7 @@ def get_config(key: str, default=None):
     conn.close()
     if row:
         try:
-            return json.loads(row[0])
+            return safe_parse_json(row[0], default)
         except Exception:
             return row[0]
     return default
@@ -1778,7 +1795,7 @@ def export_full_backup(subject: str = None, owner: str = None) -> dict:
     c.execute("SELECT id, title, subject, grade, data_json, created_by FROM exams")
     for r in c.fetchall():
         try:
-            ex = json.loads(r[4])
+            ex = safe_parse_json(r[4], {})
             ex_sub = (r[2] or ex.get("subject") or "").strip().lower()
             ex_owner = (r[5] or ex.get("created_by") or "").strip().lower()
             if clean_owner and ex_owner != clean_owner:

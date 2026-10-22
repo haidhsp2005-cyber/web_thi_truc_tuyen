@@ -12,7 +12,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from fastapi.responses import JSONResponse, Response, StreamingResponse, FileResponse
 
-from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, store_exam_image, file_url_to_base64, is_exam_published
+from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, get_cached_exam, safe_parse_json, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, store_exam_image, file_url_to_base64, is_exam_published
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam-builder", tags=["exam-builder"])
@@ -48,43 +48,40 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
     except Exception:
         pass
 
-    # 1. Quét từ bảng CSDL (PostgreSQL / SQLite)
+    # 1. Quét từ bảng CSDL (PostgreSQL / SQLite) - Siêu tốc và siêu nhẹ (không tải 50MB data_json)
     try:
         conn = get_connection()
         c = conn.cursor()
-        c.execute("SELECT id, title, subject, grade, data_json, created_by FROM exams")
+        c.execute("SELECT id, title, subject, grade, created_by, is_online_exam FROM exams")
         for r in c.fetchall():
             try:
                 eid = str(r[0]).strip()
                 if eid in deleted_exams or f"exam_{eid}" in deleted_exams or eid.replace("exam_", "") in deleted_exams:
                     continue
-                data = json.loads(r[4])
-                is_bank = bool(data.get("is_bank", False)) or bool(data.get("bank_config", {}).get("enabled", False))
-                bank_cfg = {}
-                if is_bank:
-                    from ..services.bank_service import normalize_bank_config
-                    bank_cfg = normalize_bank_config(data)
-                creator = (r[5] or data.get("created_by") or "").strip()
-                author = data.get("author_name") or data.get("author") or user_name_map.get(creator.lower()) or creator
+                cached = get_cached_exam(eid) or {}
+                creator = (r[4] or cached.get("created_by") or "").strip()
+                author = cached.get("author_name") or cached.get("author") or user_name_map.get(creator.lower()) or creator
                 if not author or author.lower() in ("admin", "root", "system", "quản trị viên mặc định", "quản trị viên"):
                     author = "GV THPT Long Cang"
+                is_bank = bool(cached.get("is_bank", False)) or bool(cached.get("bank_config", {}).get("enabled", False))
+                is_online = bool(r[5]) if len(r) > 5 and r[5] is not None else bool(cached.get("is_online_exam", False))
                 exams_map[eid] = {
                     "file": eid,
                     "id": eid,
-                    "title": data.get("title", r[1]),
-                    "subject": data.get("subject", r[2] or "Khác"),
-                    "grade": str(data.get("grade", r[3] or "")),
-                    "duration_minutes": data.get("duration_minutes", 45),
-                    "part1_count": len(data.get("parts", {}).get("part1", {}).get("questions", [])),
-                    "part2_count": len(data.get("parts", {}).get("part2", {}).get("questions", [])),
-                    "part3_count": len(data.get("parts", {}).get("part3", {}).get("questions", [])),
-                    "part4_count": len(data.get("parts", {}).get("part4", {}).get("questions", [])),
+                    "title": cached.get("title") or r[1] or eid,
+                    "subject": cached.get("subject") or r[2] or "Khác",
+                    "grade": str(cached.get("grade") or r[3] or ""),
+                    "duration_minutes": cached.get("duration_minutes", 45),
+                    "part1_count": len(cached.get("parts", {}).get("part1", {}).get("questions", [])),
+                    "part2_count": len(cached.get("parts", {}).get("part2", {}).get("questions", [])),
+                    "part3_count": len(cached.get("parts", {}).get("part3", {}).get("questions", [])),
+                    "part4_count": len(cached.get("parts", {}).get("part4", {}).get("questions", [])),
                     "created_by": creator,
                     "author_name": author,
-                    "is_online_exam": bool(data.get("is_online_exam", False)),
-                    "is_published": is_exam_published(data.get("is_published")),
+                    "is_online_exam": is_online,
+                    "is_published": is_exam_published(cached.get("is_published", True)),
                     "is_bank": is_bank,
-                    "bank_config": bank_cfg if is_bank else data.get("bank_config", {}),
+                    "bank_config": cached.get("bank_config", {}),
                 }
             except Exception:
                 pass
