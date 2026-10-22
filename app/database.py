@@ -32,7 +32,7 @@ PASSWORD_SALT = "longcang_exam_salt_2026"
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 # Tự động trỏ sang Supabase Tokyo chuẩn nếu DATABASE_URL trống, hoặc là Neon cũ, hoặc là project Supabase cũ (sacdknvxyhufnvukgzcg)
-TARGET_DB_URL = "postgresql://postgres.ljjretoztccpuonejrur:Haidhsp2005%40@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+TARGET_DB_URL = "postgresql://postgres.ljjretoztccpuonejrur:Haidhsp2005%40@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
 if (
     not DATABASE_URL 
     or "neon.tech" in DATABASE_URL 
@@ -41,9 +41,9 @@ if (
 ):
     DATABASE_URL = TARGET_DB_URL
 
-# Tự động chuyển sang cổng 6543 (Transaction Pooler) để tránh lỗi EMAXCONNSESSION giới hạn 15 kết nối
-if "pooler.supabase.com:5432" in DATABASE_URL:
-    DATABASE_URL = DATABASE_URL.replace("pooler.supabase.com:5432", "pooler.supabase.com:6543")
+# Giữ cổng 5432 ổn định (Session Pooler) chống rớt kết nối SSL
+if ":6543" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace(":6543", ":5432")
 
 USE_POSTGRES = bool(DATABASE_URL and (DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://")))
 
