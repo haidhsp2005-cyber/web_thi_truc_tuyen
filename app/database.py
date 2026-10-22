@@ -1092,8 +1092,7 @@ def get_submission(submission_id: str) -> Optional[dict]:
     conn.close()
 
     if not row:
-        invalidate_submissions_cache()
-    return None
+        return None
 
     stt_val = str(row[10] or "").strip() if len(row) > 10 and row[10] is not None else ""
     result = {
