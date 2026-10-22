@@ -437,9 +437,9 @@ def _sanitize_math_symbols(math_latex: str) -> str:
 
     # Tự động chuyển đổi dạng vectơ viết kèm mũi tên trong công thức Toán
     # 1. Vectơ 2-3 điểm (hỗ trợ cả dấu phẩy trên ' hoặc ′ như AA', A'B', AC', A'C, SA'):
-    math_latex = re.sub(r'([A-Z]['′]?[A-Z]['′]?)\s*(?:\\rightarrow|→)', r'\\overrightarrow{\1}', math_latex)
+    math_latex = re.sub(r"([A-Z]['\u2032]?[A-Z]['\u2032]?)\s*(?:\\rightarrow|→)", r'\\overrightarrow{\1}', math_latex)
     # 2. Vectơ 1 chữ cái hoặc có chỉ số dưới (a, b, u, v, n, 0, u_1, a', b'):
-    math_latex = re.sub(r'([a-zA-Z0]['′]?(?:_\d+)?)\s*(?:\\rightarrow|→)(?!\s*(?:[+-]?\d|[+-]?\\infty|x_0))', r'\\vec{\1}', math_latex)
+    math_latex = re.sub(r"([a-zA-Z0]['\u2032]?(?:_\d+)?)\s*(?:\\rightarrow|→)(?!\s*(?:[+-]?\d|[+-]?\\infty|x_0))", r'\\vec{\1}', math_latex)
 
     for orig, rep in replacements:
         math_latex = math_latex.replace(orig, rep)
