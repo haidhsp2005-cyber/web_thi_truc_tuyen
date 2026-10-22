@@ -1557,12 +1557,12 @@ def get_user_by_username(username: str) -> Optional[dict]:
     }
 
 
-def get_all_users() -> List[dict]:
-    """Lấy danh sách tất cả tài khoản người dùng."""
+def get_all_users(include_hash: bool = False) -> List[dict]:
+    """Lấy danh sách tất cả tài khoản người dùng (hỗ trợ include_hash cho xác thực siêu tốc 1 truy vấn)."""
     conn = get_connection()
     c = conn.cursor()
     c.execute("""
-        SELECT id, username, full_name, role, is_protected, created_at, updated_at, subject
+        SELECT id, username, full_name, role, is_protected, created_at, updated_at, subject, password_hash
         FROM admin_users ORDER BY is_protected DESC, id ASC
     """)
     rows = c.fetchall()
@@ -1570,7 +1570,7 @@ def get_all_users() -> List[dict]:
 
     users = []
     for r in rows:
-        users.append({
+        u = {
             "id": r[0],
             "username": r[1],
             "full_name": r[2] or "",
@@ -1579,7 +1579,10 @@ def get_all_users() -> List[dict]:
             "created_at": str(r[5]),
             "updated_at": str(r[6]),
             "subject": r[7] or ""
-        })
+        }
+        if include_hash:
+            u["password_hash"] = r[8] or ""
+        users.append(u)
     return users
 
 
