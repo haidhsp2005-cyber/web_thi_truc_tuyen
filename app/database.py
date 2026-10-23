@@ -999,8 +999,6 @@ def delete_exam_record(exam_id: str) -> bool:
 
 def save_submission(submission_data: dict, result_data: dict = None):
     """Lưu bài nộp của học sinh vào CSDL (PostgreSQL / SQLite)."""
-    conn = get_connection()
-    c = conn.cursor()
 
     is_online = bool(submission_data.get("is_online_exam", False))
     switch_count = int(submission_data.get("screen_switch_count", 0)) if is_online else 0
