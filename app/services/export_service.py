@@ -28,6 +28,26 @@ def clean_math_for_print(text: str) -> str:
     # 0. Dọn dẹp mã HTML lỗi KaTeX nếu có
     s = re.sub(r'<span[^>]*class="katex-error"[^>]*>([\s\S]*?)</span>', r'\1', s)
     s = re.sub(r'style="color:\s*#cc0000"[^>]*>', '', s)
+
+    # 0.1. Ký hiệu vuông góc unicode \u27c2 -> \perp
+    s = s.replace('\u27c2', ' \\perp ')
+
+    # 0.2. Chuẩn hóa vector điểm hình học (2-4 ký tự hoa kèm dấu ' nếu có: AC', AA', AB, MN, A'B')
+    s = re.sub(
+        r"(?<!\\overrightarrow\{)(?<!\\vec\{)([A-Z][A-Za-z0-9']{1,4})\s*(?:\\rightarrow|->|→)",
+        r"\\overrightarrow{\1}",
+        s
+    )
+
+    # 0.3. Chuẩn hóa vector đơn lẻ 1 ký tự: a\rightarrow, b\rightarrow, u\rightarrow, v\rightarrow, i\rightarrow, j\rightarrow, k\rightarrow, 0\rightarrow
+    s = re.sub(
+        r"(?<![\\a-zA-Z])([a-z0-9])\s*(?:\\rightarrow|->|→)(?=\s*(?:[=+\-|,\)\$]|\\perp|\\cdot|\\times))",
+        r"\\vec{\1}",
+        s
+    )
+
+    # 0.4. Chuẩn hóa \vec{AB} (2 chữ cái hoa trở lên) thành \overrightarrow{AB} để KaTeX vẽ mũi tên kéo dài đẹp
+    s = re.sub(r"\\vec\{([A-Z][A-Za-z0-9']{1,4})\}", r"\\overrightarrow{\1}", s)
     
     # Dọn dẹp lỗi ngoặc nhọn mồ côi: { (m^{2}) -> (m^{2}) hoặc 200{ m^{2} -> 200 m^{2}
     s = re.sub(r'\{(\s*\([^\)]+\))\}?', r'\1', s)
@@ -917,7 +937,7 @@ def export_student_exam_print_html(submission: dict, exam_data: dict) -> str:
             res_data = json.loads(res_data)
         except Exception:
             res_data = {}
-    scores = res_data.get('scores') or {}
+    scores = submission.get('scores') or res_data.get('scores') or {}
     total_score = scores.get('total_score', submission.get('total_score', ''))
     sub_id = submission.get('submission_id') or submission.get('id', '')
 
