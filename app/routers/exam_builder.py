@@ -935,8 +935,17 @@ def _extract_docx_paragraphs_with_format(doc, images_map: dict = None) -> List[s
 
 def _extract_pdf_pages_with_inline_images(content_bytes: bytes, exam_id: str) -> str:
     """Trích xuất nội dung văn bản kèm hình ảnh đồ thị, bảng biến thiên từ PDF theo đúng tọa độ Y."""
-    import fitz
-    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        import fitz
+    except ImportError:
+        from pypdf import PdfReader
+        import io
+        reader = PdfReader(io.BytesIO(content_bytes))
+        return "\n\n".join([page.extract_text() or "" for page in reader.pages])
+    try:
+        UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
     doc = fitz.open(stream=content_bytes, filetype="pdf")
     all_lines = []
     

@@ -84,6 +84,17 @@ app = FastAPI(
 # Nén tự động GZip cho tất cả phản hồi lớn (giảm 90% dung lượng truyền tải, chống nghẽn Render)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+from starlette.middleware.base import BaseHTTPMiddleware
+
+class VercelPathMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path == "/api/index.py" or request.url.path.startswith("/api/index.py"):
+            forwarded = request.headers.get("x-forwarded-uri") or request.headers.get("x-matched-path") or "/"
+            request.scope["path"] = forwarded.split("?")[0]
+        return await call_next(request)
+
+app.add_middleware(VercelPathMiddleware)
+
 # Mount static files
 try:
     STATIC_DIR.mkdir(exist_ok=True)
