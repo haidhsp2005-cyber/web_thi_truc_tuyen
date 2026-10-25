@@ -85,9 +85,12 @@ app = FastAPI(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Mount static files
-STATIC_DIR.mkdir(exist_ok=True)
-(STATIC_DIR / "js").mkdir(exist_ok=True)
-(STATIC_DIR / "css").mkdir(exist_ok=True)
+try:
+    STATIC_DIR.mkdir(exist_ok=True)
+    (STATIC_DIR / "js").mkdir(exist_ok=True)
+    (STATIC_DIR / "css").mkdir(exist_ok=True)
+except Exception:
+    pass
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # Include routers

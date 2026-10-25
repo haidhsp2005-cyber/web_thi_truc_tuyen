@@ -22,12 +22,15 @@ logger = logging.getLogger(__name__)
 DATA_DIR_ENV = os.getenv("DATA_DIR")
 if DATA_DIR_ENV:
     EXAMS_DIR = Path(DATA_DIR_ENV)
-elif os.getenv("VERCEL"):
+elif os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
     EXAMS_DIR = Path("/tmp/data")
 else:
     EXAMS_DIR = Path(__file__).parent.parent / "data"
 
-EXAMS_DIR.mkdir(parents=True, exist_ok=True)
+try:
+    EXAMS_DIR.mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass
 DATA_DIR = EXAMS_DIR
 DB_PATH = EXAMS_DIR / "exam_db.sqlite" 
 PASSWORD_SALT = "longcang_exam_salt_2026"
