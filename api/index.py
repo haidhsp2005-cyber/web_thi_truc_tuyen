@@ -8,6 +8,7 @@ if root_dir not in sys.path:
 
 from app.main import app
 
+# Mangum adapter ho tro AWS Lambda / Vercel Serverless
 try:
     from mangum import Mangum
     handler = Mangum(app, lifespan="off")

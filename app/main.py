@@ -84,25 +84,6 @@ app = FastAPI(
 # Nén tự động GZip cho tất cả phản hồi lớn (giảm 90% dung lượng truyền tải, chống nghẽn Render)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-from starlette.middleware.base import BaseHTTPMiddleware
-
-class VercelPathMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        # Kiểm tra xem Vercel có gửi header đường dẫn gốc không
-        if request.url.path in ("/api/index.py", "/app.py") or request.url.path.startswith(("/api/index.py", "/app.py")):
-            orig_path = (
-                request.headers.get("x-invoke-path")
-                or request.headers.get("x-forwarded-uri")
-                or request.headers.get("x-real-path")
-                or request.headers.get("x-matched-path")
-                or request.scope.get("raw_path", b"").decode("latin-1")
-            )
-            if orig_path and not orig_path.startswith(("/api/index", "/app.py")):
-                request.scope["path"] = orig_path.split("?")[0]
-        return await call_next(request)
-
-app.add_middleware(VercelPathMiddleware)
-
 # Mount static files
 try:
     STATIC_DIR.mkdir(exist_ok=True)
@@ -116,16 +97,6 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.include_router(exam_router.router)
 app.include_router(admin_router.router)
 app.include_router(exam_builder_router.router)
-
-
-@app.get("/debug-headers")
-async def debug_headers(request: Request):
-    return {
-        "url": str(request.url),
-        "path": request.url.path,
-        "scope_path": request.scope.get("path"),
-        "headers": dict(request.headers)
-    }
 
 
 @app.get("/health")
@@ -183,15 +154,6 @@ async def create_exam_page(request: Request):
         return RedirectResponse(url="/admin/login?next=/create-exam", status_code=303)
     return no_cache_html("create_exam.html")
 
-
-@app.get("/debug-headers")
-async def debug_headers(request: Request):
-    return {
-        "url": str(request.url),
-        "path": request.url.path,
-        "scope_path": request.scope.get("path"),
-        "headers": dict(request.headers)
-    }
 
 
 @app.get("/health")
