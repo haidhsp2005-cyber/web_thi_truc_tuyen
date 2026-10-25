@@ -1,3 +1,13 @@
+---
+title: He Thong Thi Truc Tuyen Long Cang 2026
+emoji: 📝
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Hệ Thống Kiểm Tra Trực Tuyến - Chuẩn GDPT 2025
 
 Hệ thống web kiểm tra trực tuyến với AI chấm bài tự luận, xoay vòng API key Gemini miễn phí.
