@@ -88,7 +88,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 class VercelPathMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        if request.url.path == "/api/index.py" or request.url.path.startswith("/api/index.py"):
+        if request.url.path in ("/api/index.py", "/app.py") or request.url.path.startswith(("/api/index.py", "/app.py")):
             forwarded = request.headers.get("x-forwarded-uri") or request.headers.get("x-matched-path") or "/"
             request.scope["path"] = forwarded.split("?")[0]
         return await call_next(request)
