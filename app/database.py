@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 DATA_DIR_ENV = os.getenv("DATA_DIR")
 if DATA_DIR_ENV:
     EXAMS_DIR = Path(DATA_DIR_ENV)
+elif os.getenv("VERCEL"):
+    EXAMS_DIR = Path("/tmp/data")
 else:
     EXAMS_DIR = Path(__file__).parent.parent / "data"
 
