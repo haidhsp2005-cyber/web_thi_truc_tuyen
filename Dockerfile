@@ -2,19 +2,19 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Cài đặt các thư viện hệ thống cần thiết
+# Cai dat cac thu vien he thong can thiet
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Cài đặt Python dependencies
+# Cai dat Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy toàn bộ mã nguồn
+# Copy toan bo ma nguon
 COPY . .
 
-# Chuẩn bị quyền thư mục cho user mặc định (UID 1000) của Hugging Face Spaces
+# Chuan bi quyen thu muc cho app
 RUN mkdir -p /app/data && \
     useradd -m -u 1000 user && \
     chown -R user:user /app
@@ -22,9 +22,9 @@ RUN mkdir -p /app/data && \
 USER user
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH \
-    PORT=7860
+    PORT=8000
 
-EXPOSE 7860
+EXPOSE 8000
 
-# Chạy ứng dụng trên cổng 7860 theo chuẩn Hugging Face Spaces
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860"]
+# Chay ung dung tren cong $PORT (mac dinh 8000)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
