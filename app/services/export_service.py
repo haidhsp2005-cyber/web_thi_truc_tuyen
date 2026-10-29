@@ -8,13 +8,6 @@ import logging
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional, Dict
 
-import openpyxl
-from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-from openpyxl.utils import get_column_letter
-from docx import Document
-from docx.shared import Inches, Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-
 logger = logging.getLogger(__name__)
 
 import re
@@ -173,6 +166,10 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
     Xuất bảng điểm toàn lớp ra file Excel.
     submissions: List các kết quả bài thi đã chấm.
     """
+    import openpyxl
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.utils import get_column_letter
+
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Bảng điểm"
