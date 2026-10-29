@@ -70,19 +70,39 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
         try:
             conn = get_connection()
             c = conn.cursor()
-            c.execute("SELECT id, title, subject, grade, created_by, is_online_exam FROM exams")
+            c.execute("SELECT id, title, subject, grade, created_by, is_online_exam, data_json FROM exams")
+            from ..database import safe_parse_json, set_cached_exam
             for r in c.fetchall():
                 try:
                     eid = str(r[0]).strip()
                     if eid in deleted_exams or f"exam_{eid}" in deleted_exams or eid.replace("exam_", "") in deleted_exams:
                         continue
-                    cached = get_cached_exam(eid) or {}
+                    cached = get_cached_exam(eid)
+                    if not cached and len(r) > 6 and r[6]:
+                        cached = safe_parse_json(r[6], default={})
+                        if cached:
+                            set_cached_exam(eid, cached)
+                    if not cached:
+                        cached = {}
+
                     creator = (r[4] or cached.get("created_by") or "").strip()
                     author = cached.get("author_name") or cached.get("author") or user_name_map.get(creator.lower()) or creator
                     if not author or author.lower() in ("admin", "root", "system", "quản trị viên mặc định", "quản trị viên"):
                         author = "GV THPT Long Cang"
                     is_bank = bool(cached.get("is_bank", False)) or bool(cached.get("bank_config", {}).get("enabled", False))
                     is_online = bool(r[5]) if len(r) > 5 and r[5] is not None else bool(cached.get("is_online_exam", False))
+
+                    parts = cached.get("parts", {})
+                    p1_count = len(parts.get("part1", {}).get("questions", []))
+                    p2_count = len(parts.get("part2", {}).get("questions", []))
+                    p3_count = len(parts.get("part3", {}).get("questions", []))
+                    p4_count = len(parts.get("part4", {}).get("questions", []))
+
+                    if p1_count == 0 and p2_count == 0 and p3_count == 0 and p4_count == 0:
+                        raw_qs = cached.get("questions", [])
+                        if raw_qs:
+                            p1_count = len(raw_qs)
+
                     exams_map[eid] = {
                         "file": eid,
                         "id": eid,
@@ -90,10 +110,10 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
                         "subject": cached.get("subject") or r[2] or "Khác",
                         "grade": str(cached.get("grade") or r[3] or ""),
                         "duration_minutes": cached.get("duration_minutes", 45),
-                        "part1_count": len(cached.get("parts", {}).get("part1", {}).get("questions", [])),
-                        "part2_count": len(cached.get("parts", {}).get("part2", {}).get("questions", [])),
-                        "part3_count": len(cached.get("parts", {}).get("part3", {}).get("questions", [])),
-                        "part4_count": len(cached.get("parts", {}).get("part4", {}).get("questions", [])),
+                        "part1_count": p1_count,
+                        "part2_count": p2_count,
+                        "part3_count": p3_count,
+                        "part4_count": p4_count,
                         "created_by": creator,
                         "author_name": author,
                         "is_online_exam": is_online,
