@@ -123,6 +123,8 @@ def _list_exam_files(current_user: dict = None, force_refresh: bool = False) -> 
                         "is_published": is_exam_published(cached.get("is_published", True)),
                         "is_bank": is_bank,
                         "bank_config": cached.get("bank_config", {}),
+                        "limit_attempts": bool(cached.get("limit_attempts", False)),
+                        "max_attempts": int(cached.get("max_attempts") or 1),
                     }
                 except Exception:
                     pass
@@ -172,6 +174,8 @@ def _list_exam_files(current_user: dict = None, force_refresh: bool = False) -> 
                         "is_published": is_exam_published(data.get("is_published")),
                         "is_bank": is_bank,
                         "bank_config": bank_cfg if is_bank else data.get("bank_config", {}),
+                        "limit_attempts": bool(data.get("limit_attempts", False)),
+                        "max_attempts": int(data.get("max_attempts") or 1),
                     }
             except Exception as e:
                 logger.warning(f"Bỏ qua file {f.name}: {e}")
@@ -1531,6 +1535,12 @@ async def save_exam(request: Request = None, exam_data: dict = None):
     if "bank_config" not in exam_data and existing and existing.get("bank_config") is not None:
         exam_data["bank_config"] = existing.get("bank_config")
 
+    # Giữ nguyên cấu hình giới hạn số lần làm bài nếu sửa đề thi từ giao diện soạn đề
+    if "limit_attempts" not in exam_data and existing and existing.get("limit_attempts") is not None:
+        exam_data["limit_attempts"] = existing.get("limit_attempts")
+    if "max_attempts" not in exam_data and existing and existing.get("max_attempts") is not None:
+        exam_data["max_attempts"] = existing.get("max_attempts")
+
     exam_id = exam_data["id"]
     save_exam_record(exam_data)
     invalidate_exam_list_cache()
@@ -1594,6 +1604,40 @@ async def toggle_exam_publish_status(exam_id: str, request: Request):
         "success": True,
         "is_published": new_val,
         "message": f"Đã chuyển trạng thái đề thi sang: {status_str}"
+    }
+
+
+@router.post("/update-attempts/{exam_id}")
+async def update_exam_attempts(exam_id: str, request: Request, payload: dict = Body(...)):
+    """Cập nhật cấu hình giới hạn số lần làm bài của học sinh (limit_attempts, max_attempts)."""
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    is_super_admin = bool(current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'))
+
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+
+    if current_user and not is_super_admin:
+        owner = (exam.get("created_by") or "").strip().lower()
+        my_name = (current_user.get("username") or "").strip().lower()
+        if owner and owner != my_name:
+            raise HTTPException(403, "Bạn không có quyền chỉnh sửa đề thi của giáo viên khác!")
+
+    limit = bool(payload.get("limit_attempts", False))
+    max_att = max(1, int(payload.get("max_attempts") or 1)) if limit else 1
+
+    exam["limit_attempts"] = limit
+    exam["max_attempts"] = max_att
+    save_exam_record(exam)
+    invalidate_exam_list_cache()
+
+    status_str = f"Giới hạn tối đa {max_att} lần / học sinh" if limit else "Làm bài tự do không giới hạn"
+    return {
+        "success": True,
+        "limit_attempts": limit,
+        "max_attempts": max_att,
+        "message": f"Đã cập nhật cấu hình cho đề '{exam.get('title')}': {status_str}."
     }
 
 

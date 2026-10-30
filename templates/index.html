@@ -228,6 +228,19 @@
           </div>
         </template>
 
+        <!-- Chú thích khi đề thi có Giới hạn số lần làm bài -->
+        <template x-if="selectedExam?.limit_attempts">
+          <div class="mb-3 p-2.5 bg-amber-50 text-amber-900 border border-amber-300 rounded-xl text-xs space-y-1 shadow-2xs">
+            <div class="font-bold flex items-center gap-1.5 text-amber-900">
+              <span>🔒</span>
+              <span>Đề thi có giới hạn lượt làm bài:</span>
+            </div>
+            <p class="text-amber-800 text-[11px] leading-relaxed">
+              Mỗi học sinh chỉ được phép nộp bài tối đa <strong><span x-text="selectedExam?.max_attempts || 1"></span> lần</strong>. Hãy kiểm tra chính xác Họ tên, Lớp & STT trước khi bắt đầu!
+            </p>
+          </div>
+        </template>
+
         <div class="grid grid-cols-2 gap-2 text-sm">
           <!-- Phần 1 -->
           <div class="flex items-center gap-2 text-gray-700">
@@ -403,7 +416,7 @@ function showError(msg) {
   setTimeout(() => box.classList.add('hidden'), 4000);
 }
 
-function startExam() {
+async function startExam() {
   const name = document.getElementById('student_name').value.trim().toUpperCase();
   const cls = document.getElementById('student_class').value.trim().toUpperCase();
   const stt = (document.getElementById('student_stt')?.value || '').trim();
@@ -418,9 +431,30 @@ function startExam() {
   const appEl = document.querySelector('[x-data]');
   const appData = appEl && window.Alpine ? Alpine.$data(appEl) : null;
   const validList = (appData && appData.filteredExamList) ? appData.filteredExamList : [];
-  if (!validList.find(e => e.id === examId)) {
+  const selected = validList.find(e => e.id === examId);
+  if (!selected) {
     showError('Đề thi này đang ở trạng thái CHƯA XUẤT BẢN hoặc không tồn tại! Không thể vào làm bài.');
     return;
+  }
+
+  // KIỂM TRA GIỚI HẠN SỐ LẦN LÀM BÀI (NẾU ĐỀ THI CÓ GIỚI HẠN)
+  if (selected.limit_attempts) {
+    const btn = document.querySelector('button[onclick="startExam()"]');
+    if (btn) { btn.disabled = true; btn.innerText = 'Đang kiểm tra lượt làm...'; }
+    try {
+      const r = await fetch(`/api/exam/check-attempts?exam_id=${encodeURIComponent(examId)}&student_name=${encodeURIComponent(name)}&student_class=${encodeURIComponent(cls)}&student_stt=${encodeURIComponent(stt)}`);
+      if (r.ok) {
+        const data = await r.json();
+        if (!data.allowed) {
+          alert(`🚫 KHÔNG THỂ VÀO PHÒNG THI:\n\nEm "${name}" (Lớp ${cls}) đã hoàn thành đủ số lần làm bài quy định (${data.attempts_used}/${data.max_attempts} lần).\nĐề thi này không cho phép làm thêm!\n\nNếu em gặp sự cố ngoài ý muốn, vui lòng liên hệ thầy/cô giáo phụ trách.`);
+          if (btn) { btn.disabled = false; btn.innerText = 'Bắt đầu làm bài ➔'; }
+          return;
+        }
+      }
+    } catch(err) {
+      console.warn("Lỗi kiểm tra số lần làm:", err);
+    }
+    if (btn) { btn.disabled = false; btn.innerText = 'Bắt đầu làm bài ➔'; }
   }
 
   // Khi bắt đầu lượt thi mới: dọn sạch sẽ toàn bộ bài cũ và mốc thời gian cũ để cấp lượt mới

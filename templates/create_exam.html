@@ -306,6 +306,58 @@
         </div>
       </div>
 
+      <!-- Cấu hình Giới hạn số lần làm bài của học sinh -->
+      <div class="md:col-span-3 rounded-2xl p-4 sm:p-5 border-2 transition-all shadow-xs"
+        :class="exam.limit_attempts ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300' : 'bg-gray-50 border-gray-200'">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xl">🔒</span>
+              <label for="limit_attempts_cb" class="font-black text-gray-900 text-sm sm:text-base cursor-pointer">
+                Giới hạn lượt làm bài: <span x-text="exam.limit_attempts ? `Tối đa ${exam.max_attempts || 1} lần / học sinh` : 'Không giới hạn (Làm tự do)'"></span>
+              </label>
+              <span x-show="exam.limit_attempts" class="bg-amber-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                ✓ Đang giới hạn
+              </span>
+              <span x-show="!exam.limit_attempts" class="bg-gray-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                ♾️ Làm tự do
+              </span>
+            </div>
+            <p class="text-xs text-gray-600 leading-relaxed">
+              <template x-if="exam.limit_attempts">
+                <span class="text-amber-900 font-medium">
+                  Mỗi học sinh (xác định qua <strong>Họ tên + Lớp</strong>) chỉ được phép nộp bài tối đa <strong><span x-text="exam.max_attempts || 1"></span> lần</strong>. Khi đã nộp đủ số lần, hệ thống sẽ tự động khóa không cho phép học sinh làm lại đề này.
+                </span>
+              </template>
+              <template x-if="!exam.limit_attempts">
+                <span>
+                  Chế độ bình thường: Học sinh được phép làm bài và nộp lại nhiều lần để ôn luyện mà không bị giới hạn.
+                </span>
+              </template>
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0 flex-wrap">
+            <template x-if="exam.limit_attempts">
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-amber-300 shadow-2xs">
+                <span class="text-xs font-bold text-gray-700">Số lần tối đa:</span>
+                <select x-model.number="exam.max_attempts" class="text-xs font-bold border border-amber-300 rounded-lg px-2 py-1 bg-amber-50 text-amber-900 focus:outline-none cursor-pointer">
+                  <option :value="1">1 lần (Thi chính thức)</option>
+                  <option :value="2">2 lần</option>
+                  <option :value="3">3 lần</option>
+                  <option :value="5">5 lần</option>
+                  <option :value="10">10 lần</option>
+                </select>
+              </div>
+            </template>
+            <label class="flex items-center gap-2 cursor-pointer bg-white px-3.5 py-2 rounded-xl border border-gray-300 shadow-xs hover:border-amber-400 transition-all">
+              <input type="checkbox" id="limit_attempts_cb" x-model="exam.limit_attempts" class="w-5 h-5 text-amber-600 rounded-md focus:ring-amber-500 cursor-pointer">
+              <span class="text-xs font-bold text-gray-800 select-none">Bật giới hạn số lần làm bài</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <!-- Trạng thái xuất bản (Đỏ: Chưa xuất bản / Xanh: Đã xuất bản) -->
       <div class="md:col-span-3 rounded-2xl p-4 sm:p-5 border-2 transition-all shadow-xs"
         :class="exam.is_published ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-300' : 'bg-gradient-to-r from-red-50 to-rose-50 border-red-300'">
@@ -2133,6 +2185,8 @@ function examBuilder() {
       school_name: 'Trường THPT Long Cang',
       is_online_exam: false,
       is_published: false,
+      limit_attempts: false,
+      max_attempts: 1,
       scoring: {},
       parts: {
         part1: {
@@ -2297,6 +2351,8 @@ function examBuilder() {
       this.exam.school_name = (data.school_name || '').trim() || 'Trường THPT Long Cang';
       this.exam.is_online_exam = data.is_online_exam !== undefined ? Boolean(data.is_online_exam) : false;
       this.exam.is_published = data.is_published !== undefined ? Boolean(data.is_published) : true;
+      this.exam.limit_attempts = Boolean(data.limit_attempts);
+      this.exam.max_attempts = data.max_attempts !== undefined ? Number(data.max_attempts) : 1;
       if (isClone) {
         this.exam.id = ''; // Xoá id để khi bấm Lưu sẽ tạo thành đề mới độc lập
         this.exam.title = (data.title || '').replace(' (Bản sao)', '') + ' (Bản sao)';

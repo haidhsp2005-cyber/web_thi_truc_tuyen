@@ -970,6 +970,17 @@
                       <span x-text="e.is_online_exam ? '🛡️ Thi trực tuyến' : '📖 Luyện tập'"></span>
                       <span class="text-[10px] text-gray-500">⇄</span>
                     </button>
+                    <!-- Nút cấu hình Giới hạn số lần làm bài -->
+                    <button 
+                      @click="toggleExamAttempts(e)" 
+                      type="button"
+                      :class="e.limit_attempts ? 'bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300 font-bold' : 'bg-gray-100 hover:bg-gray-200 text-gray-600 border-gray-300'"
+                      class="px-2 py-0.5 rounded-full text-[11px] border transition-all cursor-pointer inline-flex items-center gap-1 shadow-2xs"
+                      :title="e.limit_attempts ? `Đang giới hạn tối đa ${e.max_attempts || 1} lần làm bài/học sinh. Bấm để thay đổi hoặc hủy.` : 'Đang cho học sinh làm bài tự do. Bấm để đặt giới hạn số lần làm bài.'"
+                    >
+                      <span x-text="e.limit_attempts ? `🔒 Tối đa ${e.max_attempts || 1} lần` : '♾️ Lượt tự do'"></span>
+                      <span class="text-[9px] opacity-75">⚙️</span>
+                    </button>
                     <!-- Huy hiệu Ngân hàng bốc đề ngẫu nhiên -->
                     <template x-if="e.is_bank">
                       <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-800 border border-purple-300 inline-flex items-center gap-1 shadow-2xs"
@@ -2534,6 +2545,60 @@ function adminApp() {
         }
       } catch(e) {
         if (item) item.is_published = oldVal;
+        alert('Lỗi kết nối máy chủ!');
+      }
+    },
+
+    async toggleExamAttempts(e) {
+      const currentLimit = Boolean(e.limit_attempts);
+      const currentMax = Number(e.max_attempts || 1);
+      
+      let newLimit = false;
+      let newMax = 1;
+
+      if (currentLimit) {
+        const choice = confirm(`Đề thi "${e.title}" hiện đang GIỚI HẠN tối đa ${currentMax} lần làm/học sinh.\n\n• Bấm [OK] để THAY ĐỔI số lần làm bài.\n• Bấm [Cancel] để HỦY GIỚI HẠN (cho học sinh làm bài tự do).`);
+        if (choice) {
+          const val = prompt(`Nhập số lần làm bài tối đa mới cho mỗi học sinh:`, currentMax);
+          if (val === null) return;
+          const num = parseInt(val);
+          if (isNaN(num) || num <= 0) {
+            alert('Số lần không hợp lệ! Đã giữ nguyên cấu hình cũ.');
+            return;
+          }
+          newLimit = true;
+          newMax = num;
+        } else {
+          newLimit = false;
+          newMax = 1;
+        }
+      } else {
+        const val = prompt(`Cài đặt GIỚI HẠN SỐ LẦN LÀM BÀI cho đề:\n"${e.title}"\n\nNhập số lần tối đa mỗi học sinh được phép làm (Ví dụ: 1 để thi chính thức, hoặc 2, 3...):`, '1');
+        if (val === null) return;
+        const num = parseInt(val);
+        if (isNaN(num) || num <= 0) {
+          alert('Số lần không hợp lệ! Vui lòng nhập số nguyên dương lớn hơn 0.');
+          return;
+        }
+        newLimit = true;
+        newMax = num;
+      }
+
+      try {
+        const r = await fetch(`/api/exam-builder/update-attempts/${e.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ limit_attempts: newLimit, max_attempts: newMax })
+        });
+        const data = await r.json();
+        if (r.ok) {
+          e.limit_attempts = newLimit;
+          e.max_attempts = newMax;
+          alert(data.message || 'Cập nhật giới hạn thành công!');
+        } else {
+          alert(data.detail || 'Lỗi khi cập nhật!');
+        }
+      } catch(err) {
         alert('Lỗi kết nối máy chủ!');
       }
     },

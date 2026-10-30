@@ -453,6 +453,11 @@ def heal_exam_data(exam: dict) -> bool:
     from app.services.export_service import clean_math_for_print
     modified = False
 
+    if "limit_attempts" not in exam:
+        exam["limit_attempts"] = False
+    if "max_attempts" not in exam:
+        exam["max_attempts"] = 1
+
     # 1. Phần I
     p1 = exam.get("parts", {}).get("part1", {})
     if isinstance(p1, dict) and "questions" in p1 and isinstance(p1["questions"], list):
@@ -1374,6 +1379,45 @@ def delete_submission(submission_id: str, allowed_exam_ids: List[str] = None) ->
             pass
 
     return deleted
+
+
+def count_student_submissions(exam_id: str, student_name: str, student_class: str) -> int:
+    """Đếm số lần một học sinh (Họ tên + Lớp) đã nộp bài cho một đề thi cụ thể."""
+    clean_eid = (exam_id or "").strip()
+    clean_name = (student_name or "").strip().upper()
+    clean_cls = (student_class or "").strip().upper()
+    if not clean_eid or not clean_name or not clean_cls:
+        return 0
+
+    eid_variants = list({clean_eid, f"exam_{clean_eid}", clean_eid.replace("exam_", "")})
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        if USE_POSTGRES:
+            placeholders = ", ".join(["%s"] * len(eid_variants))
+            query = f"""
+                SELECT COUNT(*) FROM submissions 
+                WHERE exam_id IN ({placeholders})
+                  AND UPPER(TRIM(student_name)) = %s 
+                  AND UPPER(TRIM(student_class)) = %s
+            """
+            c.execute(query, (*eid_variants, clean_name, clean_cls))
+        else:
+            placeholders = ", ".join(["?"] * len(eid_variants))
+            query = f"""
+                SELECT COUNT(*) FROM submissions 
+                WHERE exam_id IN ({placeholders})
+                  AND UPPER(TRIM(student_name)) = ? 
+                  AND UPPER(TRIM(student_class)) = ?
+            """
+            c.execute(query, (*eid_variants, clean_name, clean_cls))
+        row = c.fetchone()
+        count = row[0] if row else 0
+        conn.close()
+        return int(count)
+    except Exception as e:
+        logger.error(f"Lỗi đếm số bài nộp của học sinh {student_name} ({student_class}): {e}")
+        return 0
 
 
 def delete_all_submissions(exam_id: str = None, exam_ids: List[str] = None) -> int:

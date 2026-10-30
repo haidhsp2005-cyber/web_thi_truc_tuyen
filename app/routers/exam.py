@@ -28,6 +28,40 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/exam", tags=["exam"])
 
 
+@router.get("/check-attempts")
+async def check_student_attempts(
+    exam_id: str = Query(...),
+    student_name: str = Query(""),
+    student_class: str = Query(""),
+    student_stt: str = Query("")
+):
+    """Kiểm tra số lần học sinh đã nộp bài cho đề thi có giới hạn số lần làm bài hay không."""
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+
+    limit_attempts = bool(exam.get("limit_attempts", False))
+    max_attempts = int(exam.get("max_attempts") or 1) if limit_attempts else 0
+
+    from ..database import count_student_submissions
+    attempts_used = count_student_submissions(exam_id, student_name, student_class)
+
+    allowed = True
+    if limit_attempts and attempts_used >= max_attempts:
+        allowed = False
+
+    return {
+        "exam_id": exam_id,
+        "student_name": student_name,
+        "student_class": student_class,
+        "limit_attempts": limit_attempts,
+        "max_attempts": max_attempts,
+        "attempts_used": attempts_used,
+        "allowed": allowed,
+        "message": f"Bạn đã làm {attempts_used}/{max_attempts} lần." if limit_attempts else "Đề thi không giới hạn số lần làm bài."
+    }
+
+
 @router.get("/current")
 async def get_current_exam(
     request: Request,
@@ -46,6 +80,17 @@ async def get_current_exam(
             status_code=403, 
             detail="Đề thi này đang ở trạng thái CHƯA XUẤT BẢN. Không thể vào làm bài thi!"
         )
+
+    limit_attempts = bool(exam.get("limit_attempts", False))
+    max_attempts = int(exam.get("max_attempts") or 1) if limit_attempts else 0
+    if limit_attempts and student_name and student_class:
+        from ..database import count_student_submissions
+        used = count_student_submissions(exam_id, student_name, student_class)
+        if used >= max_attempts:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Em '{student_name}' lớp '{student_class}' đã hoàn thành đủ số lần làm bài quy định ({used}/{max_attempts} lần). Không thể làm thêm!"
+            )
 
     heal_exam_data(exam)
 
@@ -75,6 +120,8 @@ async def get_current_exam(
         "bank_seed": exam.get("bank_seed"),
         "drawn_question_count": exam.get("drawn_question_count"),
         "author_name": exam.get("author_name") or exam.get("author") or "GV THPT Long Cang",
+        "limit_attempts": limit_attempts,
+        "max_attempts": max_attempts,
         "parts": {}
     }
     
@@ -187,6 +234,18 @@ async def submit_exam(data: dict, background_tasks: BackgroundTasks):
         raise HTTPException(status_code=400, detail="Vui lòng nhập họ tên!")
     if not student_class:
         raise HTTPException(status_code=400, detail="Vui lòng nhập lớp!")
+
+    # Kiểm tra giới hạn số lần làm bài (nếu giáo viên có bật)
+    limit_attempts = bool(exam.get("limit_attempts", False))
+    max_attempts = int(exam.get("max_attempts") or 1) if limit_attempts else 0
+    if limit_attempts:
+        from ..database import count_student_submissions
+        used = count_student_submissions(exam_id, student_name, student_class)
+        if used >= max_attempts:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Em '{student_name}' lớp '{student_class}' đã nộp đủ {used}/{max_attempts} lần làm bài quy định. Không thể nộp thêm!"
+            )
     
     # Nếu là đề ngân hàng, tái tạo chính xác bộ câu hỏi của học sinh này theo seed để chấm
     from ..services.bank_service import is_bank_exam, generate_student_exam_from_bank, get_student_seed
