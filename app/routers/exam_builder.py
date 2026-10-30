@@ -34,14 +34,14 @@ def invalidate_exam_list_cache():
     _EXAM_FILES_CACHE["all"] = None
     _EXAM_FILES_CACHE["time"] = 0.0
 
-def _list_exam_files(current_user: dict = None) -> List[dict]:
+def _list_exam_files(current_user: dict = None, force_refresh: bool = False) -> List[dict]:
     """Lấy danh sách tất cả đề thi từ bảng SQLite/PostgreSQL exams và thư mục data/ (không bao giờ mất đề, không tải lại đề đã xóa)."""
     global _EXAM_FILES_CACHE
     import time, copy
     from ..database import get_config, USE_POSTGRES
 
     now = time.time()
-    if _EXAM_FILES_CACHE["all"] is not None and (now - _EXAM_FILES_CACHE["time"] < 15.0):
+    if not force_refresh and _EXAM_FILES_CACHE["all"] is not None and (now - _EXAM_FILES_CACHE["time"] < 15.0):
         exams_map = copy.deepcopy(_EXAM_FILES_CACHE["all"])
     else:
         deleted_exams = set()
@@ -66,11 +66,14 @@ def _list_exam_files(current_user: dict = None) -> List[dict]:
         except Exception:
             pass
 
-        # 1. Quét từ bảng CSDL (PostgreSQL / SQLite) - Siêu tốc và siêu nhẹ (không tải 50MB data_json)
+        # 1. Quét từ bảng CSDL (PostgreSQL / SQLite) - Mới nhất lên đầu (ORDER BY updated_at DESC)
         try:
             conn = get_connection()
             c = conn.cursor()
-            c.execute("SELECT id, title, subject, grade, created_by, is_online_exam, data_json FROM exams")
+            try:
+                c.execute("SELECT id, title, subject, grade, created_by, is_online_exam, data_json FROM exams ORDER BY updated_at DESC")
+            except Exception:
+                c.execute("SELECT id, title, subject, grade, created_by, is_online_exam, data_json FROM exams")
             from ..database import safe_parse_json, set_cached_exam
             for r in c.fetchall():
                 try:
@@ -196,7 +199,8 @@ async def list_exams(request: Request, include_unpublished: bool = False, publis
     """Danh sách đề thi. Mặc định CHỈ trả về đề đã xuất bản. Chỉ Admin/Giáo viên có yêu cầu rõ ràng include_unpublished=True mới xem được đề ẩn."""
     from ..services.auth_service import get_current_user_from_request
     current_user = get_current_user_from_request(request)
-    exams = _list_exam_files(current_user)
+    force_refresh = bool(request.query_params.get("_t") or request.query_params.get("refresh") or request.query_params.get("nocache"))
+    exams = _list_exam_files(current_user, force_refresh=force_refresh)
     
     # Chỉ cho phép xem đề chưa xuất bản nếu là admin/giáo viên đã đăng nhập và yêu cầu include_unpublished=True
     allow_unpublished = bool(current_user and include_unpublished and not published_only)
@@ -272,6 +276,7 @@ async def save_bank_config(request: Request, payload: dict):
     exam["bank_config"] = cfg
     
     save_exam_record(exam)
+    invalidate_exam_list_cache()
     return {
         "success": True,
         "message": f"Đã cập nhật cấu hình Ngân hàng câu hỏi cho đề '{exam.get('title')}' thành công!",
@@ -1286,6 +1291,7 @@ async def save_exam(request: Request = None, exam_data: dict = None):
 
     exam_id = exam_data["id"]
     save_exam_record(exam_data)
+    invalidate_exam_list_cache()
     logger.info(f"Đã lưu đề thi vào CSDL và file: {exam_id} - {exam_data['title']} (Người tạo: {exam_data['created_by']}, Thi trực tuyến: {exam_data['is_online_exam']})")
     return {"success": True, "exam_id": exam_id, "message": f"Đã lưu đề thi '{exam_data['title']}' thành công!"}
 
@@ -1310,6 +1316,7 @@ async def toggle_exam_online_mode(exam_id: str, request: Request):
     current_val = bool(exam.get("is_online_exam", False))
     exam["is_online_exam"] = not current_val
     save_exam_record(exam)
+    invalidate_exam_list_cache()
     status_str = "Thi trực tuyến (Có giám sát chống gian lận)" if exam["is_online_exam"] else "Đề luyện tập tự do"
     return {
         "success": True,
@@ -1339,6 +1346,7 @@ async def toggle_exam_publish_status(exam_id: str, request: Request):
     new_val = not current_val
     exam["is_published"] = new_val
     save_exam_record(exam)
+    invalidate_exam_list_cache()
     status_str = "Đã xuất bản (Hiện trên trang thi học sinh)" if new_val else "Chưa xuất bản (Ẩn khỏi học sinh)"
     return {
         "success": True,
@@ -1456,6 +1464,7 @@ async def update_exam_scoring(exam_id: str, body: dict, request: Request):
     }
 
     save_exam_record(exam)
+    invalidate_exam_list_cache()
     s = exam["scoring"]
     total = round(s["part1_total"] + s["part2_total"] + s["part3_total"] + s["part4_total"], 2)
     

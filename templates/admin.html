@@ -852,7 +852,7 @@
 
 
   <!-- ======= DANH SÁCH ĐỀ THI ======= -->
-  <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+  <div id="admin-exam-list-section" class="bg-white rounded-2xl shadow-sm border overflow-hidden">
     <div class="bg-yellow-600 text-white px-5 py-4 flex items-center justify-between">
       <h2 class="font-bold flex items-center gap-2"><span>📋</span>Quản lý đề thi (<span x-text="filteredAdminExamList.length"></span>/<span x-text="examList.length"></span> đề)</h2>
       <div class="flex gap-2">
@@ -2539,6 +2539,10 @@ function adminApp() {
         const data = await r.json();
         if (r.ok) {
           alert('🎉 ' + data.message);
+          this.adminExamFilterSubject = '';
+          this.adminExamFilterGrade = '';
+          this.adminExamFilterPublish = '';
+          this.adminExamFilterTeacher = '';
           await this.loadExamList();
         } else {
           alert(data.detail || 'Không thể nạp đề thi mẫu!');
@@ -2573,7 +2577,17 @@ function adminApp() {
         if (r.ok) {
           this.uploadMsg = (data.message || 'Tải file và nạp đề thành công!') + ' 🔴 Đề đang ẩn (Chưa xuất bản) — Hãy bấm nút 🔴 trong danh sách bên dưới để xuất bản cho học sinh làm bài!';
           this.uploadMsgOk = true;
+          // Xóa các bộ lọc đề thi để đề vừa nạp lập tức hiển thị trên cùng bảng
+          this.adminExamFilterSubject = '';
+          this.adminExamFilterGrade = '';
+          this.adminExamFilterPublish = '';
+          this.adminExamFilterTeacher = '';
           await this.loadExamList();
+          // Tự động cuộn mượt xuống danh sách đề để giáo viên thấy ngay đề vừa nạp
+          setTimeout(() => {
+            const sec = document.getElementById('admin-exam-list-section');
+            if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 150);
         } else {
           this.uploadMsg = data.detail || `Lỗi máy chủ (${r.status}) khi xử lý đề!`;
           this.uploadMsgOk = false;

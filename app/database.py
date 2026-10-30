@@ -972,10 +972,21 @@ def save_exam_record(exam_data: dict):
     except Exception as e:
         logger.error(f"Lỗi lưu đề thi vào CSDL: {e}")
 
+    try:
+        from .routers.exam_builder import invalidate_exam_list_cache
+        invalidate_exam_list_cache()
+    except Exception:
+        pass
+
 
 def delete_exam_record(exam_id: str) -> bool:
     """Xóa đề thi khỏi CSDL, file JSON và xóa khỏi RAM Cache."""
     invalidate_cached_exam(exam_id)
+    try:
+        from .routers.exam_builder import invalidate_exam_list_cache
+        invalidate_exam_list_cache()
+    except Exception:
+        pass
     deleted = False
 
     # Ghi nhận vào danh sách deleted_exams trong CSDL để không bao giờ bị phục hồi lại từ file rác trên đĩa khi redeploy
