@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 
-from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File, Body
 from fastapi.responses import JSONResponse, Response, StreamingResponse, FileResponse
 
 from ..database import load_exam, save_exam_record, delete_exam_record, get_connection, get_cached_exam, safe_parse_json, EXAMS_DIR, DATA_DIR, heal_exam_data, convert_bytes_to_base64_data_uri, store_exam_image, file_url_to_base64, is_exam_published

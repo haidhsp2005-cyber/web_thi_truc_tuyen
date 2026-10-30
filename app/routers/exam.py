@@ -6,7 +6,7 @@ import logging
 from datetime import datetime, timezone, timedelta
 
 VIETNAM_TZ = timezone(timedelta(hours=7))
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request, Query
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from typing import Optional
 import io
