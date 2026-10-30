@@ -749,8 +749,11 @@ def _append_text_and_math_to_docx_p(p, text: str, is_red: bool = False, bold: bo
     Tách đoạn văn bản chứa công thức $...$ và chèn công thức Word Equation (OMML) trực tiếp vào đoạn văn.
     Nhờ đó khi mở file Word (.docx), công thức hiển thị dạng toán học chuẩn như sách giáo khoa (phân số gạch ngang, căn bậc hai, logarit...).
     """
+    if not text:
+        return
     from docx.shared import RGBColor
-    tokens = re.split(r'(\$[^$]+?\$)', text)
+    clean_text = str(text).replace("\\[", "$").replace("\\]", "$").replace("\\(", "$").replace("\\)", "$")
+    tokens = re.split(r'(\$[^$]+?\$)', clean_text)
     for tok in tokens:
         if not tok:
             continue
@@ -769,6 +772,245 @@ def _append_text_and_math_to_docx_p(p, text: str, is_red: bool = False, bold: bo
             r.bold = bold
             if is_red:
                 r.font.color.rgb = RGBColor(255, 0, 0)
+
+
+def _add_image_to_docx(doc, img_src: str):
+    """Chèn hình ảnh minh họa (Base64 hoặc URL static cục bộ) vào tài liệu Word docx."""
+    if not img_src:
+        return
+    import io, base64
+    from pathlib import Path
+    from docx.shared import Inches
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    try:
+        img_bytes = None
+        clean_src = str(img_src).strip()
+        if clean_src.startswith("data:image/"):
+            parts = clean_src.split(",", 1)
+            if len(parts) == 2:
+                img_bytes = base64.b64decode(parts[1])
+        elif clean_src.startswith("/static/"):
+            rel_path = clean_src.lstrip("/")
+            local_path = Path(__file__).parent.parent / rel_path
+            if local_path.exists():
+                img_bytes = local_path.read_bytes()
+        
+        if img_bytes:
+            p_img = doc.add_paragraph()
+            p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p_img.add_run()
+            run.add_picture(io.BytesIO(img_bytes), width=Inches(3.8))
+    except Exception as e:
+        logger.warning(f"Lỗi chèn ảnh vào docx: {e}")
+
+
+def generate_exam_docx_bytes(exam_data: dict):
+    """
+    Tạo file Word (.docx) hoàn chỉnh chuẩn cấu trúc đề thi Bộ GD&ĐT 2026:
+    - Tiêu đề Sở/Trường, Tên đề, Môn học, Khối lớp, Thời gian làm bài.
+    - Phần I: Trắc nghiệm nhiều lựa chọn (đáp án đúng tô màu đỏ).
+    - Phần II: Trắc nghiệm Đúng/Sai (ý đúng tô màu đỏ, ý sai màu đen).
+    - Phần III: Trắc nghiệm trả lời ngắn (kèm đáp án số).
+    - Phần IV: Tự luận (nếu có).
+    - Công thức toán học chuyển thành Word Equation (OMML).
+    - Tự động nhúng hình ảnh minh họa nếu câu hỏi có ảnh.
+    """
+    import io
+    import docx
+    from docx.shared import Pt, RGBColor, Inches
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+    doc = docx.Document()
+
+    # Thiết lập lề trang chuẩn văn bản
+    for section in doc.sections:
+        section.top_margin = Inches(0.75)
+        section.bottom_margin = Inches(0.75)
+        section.left_margin = Inches(0.75)
+        section.right_margin = Inches(0.75)
+
+    title = exam_data.get("title", "ĐỀ KIỂM TRA ĐỊNH KỲ").strip().upper()
+    subject = exam_data.get("subject", "Toán học").strip()
+    grade = str(exam_data.get("grade", "12")).strip()
+    duration = exam_data.get("duration_minutes", 50)
+    dept_name = (exam_data.get("department_name") or "SỞ GD&ĐT TÂY NINH").strip().upper()
+    school_name = (exam_data.get("school_name") or "TRƯỜNG THPT LONG CANG").strip().upper()
+
+    # Tiêu đề trường / sở và tên đề
+    p_head = doc.add_paragraph()
+    p_head.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r1 = p_head.add_run(f"{dept_name} - {school_name}\n")
+    r1.bold = True
+    r1.font.size = Pt(12)
+
+    r2 = p_head.add_run(f"{title}\n")
+    r2.bold = True
+    r2.font.size = Pt(14)
+
+    r3 = p_head.add_run(f"Môn: {subject.upper()} - Lớp: {grade} (Thời gian làm bài: {duration} phút)\n")
+    r3.italic = True
+    r3.font.size = Pt(11)
+
+    p_line = doc.add_paragraph("─" * 45)
+    p_line.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    parts = exam_data.get("parts", {})
+
+    # ================= PHẦN I =================
+    p1_qs = parts.get("part1", {}).get("questions", [])
+    if p1_qs:
+        p1_name = parts.get("part1", {}).get("name") or "PHẦN I. Câu trắc nghiệm nhiều phương án lựa chọn"
+        p1_inst = parts.get("part1", {}).get("instruction") or f"Thí sinh trả lời từ câu 1 đến câu {len(p1_qs)}. Mỗi câu hỏi thí sinh chỉ chọn một phương án."
+        h1 = doc.add_heading(f"{p1_name} ({p1_inst})", level=2)
+        if h1.runs:
+            h1.runs[0].font.size = Pt(12)
+            h1.runs[0].bold = True
+
+        for idx, q in enumerate(p1_qs, 1):
+            p_q = doc.add_paragraph()
+            r_num = p_q.add_run(f"Câu {idx}: ")
+            r_num.bold = True
+            _append_text_and_math_to_docx_p(p_q, q.get("text", ""))
+
+            if q.get("image"):
+                _add_image_to_docx(doc, q.get("image"))
+
+            opts = q.get("options", {})
+            correct_opt = str(q.get("answer") or q.get("correct") or "").strip().upper()
+
+            if isinstance(opts, dict):
+                for k in ["A", "B", "C", "D"]:
+                    v = opts.get(k) or opts.get(k.lower())
+                    if v is not None:
+                        p_opt = doc.add_paragraph()
+                        p_opt.paragraph_format.left_indent = Inches(0.25)
+                        is_corr = (k == correct_opt)
+                        r_k = p_opt.add_run(f"{k}. ")
+                        r_k.bold = True
+                        if is_corr:
+                            r_k.font.color.rgb = RGBColor(255, 0, 0)
+                        _append_text_and_math_to_docx_p(p_opt, str(v), is_red=is_corr, bold=is_corr)
+            elif isinstance(opts, list):
+                for opt_idx, opt_val in enumerate(opts):
+                    k = chr(ord('A') + opt_idx)
+                    p_opt = doc.add_paragraph()
+                    p_opt.paragraph_format.left_indent = Inches(0.25)
+                    is_corr = (k == correct_opt)
+                    r_k = p_opt.add_run(f"{k}. ")
+                    r_k.bold = True
+                    if is_corr:
+                        r_k.font.color.rgb = RGBColor(255, 0, 0)
+                    _append_text_and_math_to_docx_p(p_opt, str(opt_val), is_red=is_corr, bold=is_corr)
+
+    # ================= PHẦN II =================
+    p2_qs = parts.get("part2", {}).get("questions", [])
+    if p2_qs:
+        p2_name = parts.get("part2", {}).get("name") or "PHẦN II. Câu trắc nghiệm đúng sai"
+        p2_inst = parts.get("part2", {}).get("instruction") or f"Thí sinh trả lời từ câu 1 đến câu {len(p2_qs)}. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai."
+        h2 = doc.add_heading(f"{p2_name} ({p2_inst})", level=2)
+        if h2.runs:
+            h2.runs[0].font.size = Pt(12)
+            h2.runs[0].bold = True
+
+        for idx, q in enumerate(p2_qs, 1):
+            p_q = doc.add_paragraph()
+            r_num = p_q.add_run(f"Câu {idx}: ")
+            r_num.bold = True
+            _append_text_and_math_to_docx_p(p_q, q.get("text", ""))
+
+            if q.get("image"):
+                _add_image_to_docx(doc, q.get("image"))
+
+            items = q.get("items", {})
+            if isinstance(items, dict):
+                for k in ["a", "b", "c", "d"]:
+                    v = items.get(k) or items.get(k.upper())
+                    if v is not None:
+                        if isinstance(v, dict):
+                            item_text = v.get("text", "")
+                            is_true = bool(v.get("answer") is True or v.get("correct") is True)
+                        else:
+                            item_text = str(v)
+                            is_true = False
+                        p_sub = doc.add_paragraph()
+                        p_sub.paragraph_format.left_indent = Inches(0.25)
+                        r_lbl = p_sub.add_run(f"{k}) ")
+                        r_lbl.bold = True
+                        if is_true:
+                            r_lbl.font.color.rgb = RGBColor(255, 0, 0)
+                        _append_text_and_math_to_docx_p(p_sub, item_text, is_red=is_true, bold=is_true)
+            elif isinstance(items, list):
+                for it in items:
+                    k = str(it.get("key", "")).lower()
+                    item_text = it.get("text", "")
+                    is_true = bool(it.get("answer") is True or it.get("correct") is True)
+                    p_sub = doc.add_paragraph()
+                    p_sub.paragraph_format.left_indent = Inches(0.25)
+                    r_lbl = p_sub.add_run(f"{k}) ")
+                    r_lbl.bold = True
+                    if is_true:
+                        r_lbl.font.color.rgb = RGBColor(255, 0, 0)
+                    _append_text_and_math_to_docx_p(p_sub, item_text, is_red=is_true, bold=is_true)
+
+    # ================= PHẦN III =================
+    p3_qs = parts.get("part3", {}).get("questions", [])
+    if p3_qs:
+        p3_name = parts.get("part3", {}).get("name") or "PHẦN III. Câu trắc nghiệm trả lời ngắn"
+        p3_inst = parts.get("part3", {}).get("instruction") or f"Thí sinh trả lời từ câu 1 đến câu {len(p3_qs)}. Điền kết quả ngắn."
+        h3 = doc.add_heading(f"{p3_name} ({p3_inst})", level=2)
+        if h3.runs:
+            h3.runs[0].font.size = Pt(12)
+            h3.runs[0].bold = True
+
+        for idx, q in enumerate(p3_qs, 1):
+            p_q = doc.add_paragraph()
+            r_num = p_q.add_run(f"Câu {idx}: ")
+            r_num.bold = True
+            _append_text_and_math_to_docx_p(p_q, q.get("text", ""))
+
+            if q.get("image"):
+                _add_image_to_docx(doc, q.get("image"))
+
+            ans_str = str(q.get("answer") or q.get("correct") or "").strip()
+            if ans_str:
+                p_ans = doc.add_paragraph()
+                p_ans.paragraph_format.left_indent = Inches(0.25)
+                r_ans_lbl = p_ans.add_run("Đáp án: ")
+                r_ans_lbl.bold = True
+                _append_text_and_math_to_docx_p(p_ans, ans_str, bold=True)
+
+    # ================= PHẦN IV =================
+    p4_qs = parts.get("part4", {}).get("questions", [])
+    if p4_qs:
+        p4_name = parts.get("part4", {}).get("name") or "PHẦN IV. Tự luận"
+        p4_inst = parts.get("part4", {}).get("instruction") or "Thí sinh trình bày chi tiết các bước giải."
+        h4 = doc.add_heading(f"{p4_name} ({p4_inst})", level=2)
+        if h4.runs:
+            h4.runs[0].font.size = Pt(12)
+            h4.runs[0].bold = True
+
+        for idx, q in enumerate(p4_qs, 1):
+            p_q = doc.add_paragraph()
+            r_num = p_q.add_run(f"Câu {idx}: ")
+            r_num.bold = True
+            _append_text_and_math_to_docx_p(p_q, q.get("text", ""))
+
+            if q.get("image"):
+                _add_image_to_docx(doc, q.get("image"))
+
+            guide = q.get("guide") or q.get("solution") or q.get("rubric")
+            if guide and isinstance(guide, str):
+                p_g = doc.add_paragraph()
+                p_g.paragraph_format.left_indent = Inches(0.25)
+                r_g = p_g.add_run("Hướng dẫn chấm / Lời giải tham khảo: ")
+                r_g.bold = True
+                r_g.italic = True
+                _append_text_and_math_to_docx_p(p_g, guide)
+
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf
 
 
 def _extract_images_from_docx(doc, exam_id: str) -> dict:
@@ -1368,6 +1610,38 @@ async def export_exam_json(exam_id: str):
         content=content.encode("utf-8"),
         media_type="application/json",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+
+@router.get("/export/docx/{exam_id}")
+async def export_exam_docx(exam_id: str, request: Request):
+    """Xuất đề thi ra file Word (.docx) chuẩn cấu trúc Bộ GD&ĐT 2026 với công thức toán học Word Equation và đáp án (Chỉ dành cho Super Admin)."""
+    from ..services.auth_service import get_current_user_from_request
+    current_user = get_current_user_from_request(request)
+    is_super_admin = bool(current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin'))
+    if not is_super_admin:
+        raise HTTPException(403, "Chức năng tải file Word của đề thi chỉ dành riêng cho Quản trị viên (Super Admin)!")
+
+    exam = load_exam(exam_id)
+    if not exam:
+        raise HTTPException(404, "Không tìm thấy đề thi!")
+
+    heal_exam_data(exam)
+    docx_buf = generate_exam_docx_bytes(exam)
+
+    import urllib.parse
+    safe_title = re.sub(r'[\\/*?:"<>|]', "", exam.get("title", exam_id)).strip().replace(" ", "_")
+    if not safe_title:
+        safe_title = f"de_thi_{exam_id}"
+    filename = f"{safe_title}.docx"
+    encoded_filename = urllib.parse.quote(filename)
+
+    return StreamingResponse(
+        docx_buf,
+        media_type="application/vnd.openxmlformats-officedoc.wordprocessingml.document",
+        headers={
+            "Content-Disposition": f"attachment; filename=\"{exam_id}.docx\"; filename*=UTF-8''{encoded_filename}"
+        }
     )
 
 

@@ -860,6 +860,13 @@ async def print_exam_answers(exam_id: str, request: Request):
     return HTMLResponse(content=html)
 
 
+@router.get("/export/docx/{exam_id}")
+async def admin_export_exam_docx(exam_id: str, request: Request):
+    """Xuất đề thi ra file Word (.docx) chuẩn Bộ GD&ĐT 2026 (Chỉ Super Admin)."""
+    from .exam_builder import export_exam_docx
+    return await export_exam_docx(exam_id, request)
+
+
 @router.get("/print/submissions/class", response_class=HTMLResponse)
 async def print_class_submissions(
     request: Request,
