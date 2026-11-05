@@ -99,8 +99,8 @@ app.include_router(admin_router.router)
 app.include_router(exam_builder_router.router)
 
 
-@app.get("/health")
-@app.get("/ping")
+@app.api_route("/health", methods=["GET", "HEAD"])
+@app.api_route("/ping", methods=["GET", "HEAD"])
 async def health_check():
     """Endpoint Keep-Alive cho UptimeRobot / Cron-job chống ngủ đông Render."""
     return {"status": "ok", "message": "Hệ thống thi trực tuyến đang hoạt động bình thường", "year": 2026}
@@ -108,22 +108,22 @@ async def health_check():
 
 # ===================== HTML Routes =====================
 
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def home():
     return no_cache_html("index.html")
 
 
-@app.get("/exam", response_class=HTMLResponse)
+@app.api_route("/exam", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def exam_page():
     return no_cache_html("exam.html")
 
 
-@app.get("/result", response_class=HTMLResponse)
+@app.api_route("/result", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def result_page():
     return no_cache_html("result.html")
 
 
-@app.get("/admin/login", response_class=HTMLResponse)
+@app.api_route("/admin/login", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def admin_login_page(request: Request):
     """Trang đăng nhập Admin."""
     if is_authenticated_admin(request):
@@ -131,7 +131,7 @@ async def admin_login_page(request: Request):
     return no_cache_html("login.html")
 
 
-@app.get("/admin/logout")
+@app.api_route("/admin/logout", methods=["GET", "POST"])
 async def admin_logout_page():
     """Đăng xuất Admin."""
     resp = RedirectResponse(url="/admin/login", status_code=303)
@@ -139,7 +139,7 @@ async def admin_logout_page():
     return resp
 
 
-@app.get("/admin", response_class=HTMLResponse)
+@app.api_route("/admin", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def admin_page(request: Request):
     """Trang quản trị (yêu cầu đăng nhập)."""
     if not is_authenticated_admin(request):
@@ -147,15 +147,9 @@ async def admin_page(request: Request):
     return no_cache_html("admin.html")
 
 
-@app.get("/create-exam", response_class=HTMLResponse)
+@app.api_route("/create-exam", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def create_exam_page(request: Request):
     """Trang tạo đề thi (yêu cầu đăng nhập)."""
     if not is_authenticated_admin(request):
         return RedirectResponse(url="/admin/login?next=/create-exam", status_code=303)
     return no_cache_html("create_exam.html")
-
-
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "message": "Hệ thống đang hoạt động!"}
