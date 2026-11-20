@@ -226,14 +226,19 @@ Hãy đọc kỹ câu hỏi, hướng dẫn chấm và bài làm của học sin
 **BÀI LÀM CỦA HỌC SINH:**
 {student_answer if student_answer.strip() else "[Học sinh không làm bài này - bài làm để trống]"}
 
-**QUY TẮC PHẢN HỒI:**
-- Nếu học sinh để trống hoặc không trả lời: Cho 0.0 điểm.
-- Trả về DUY NHẤT một đối tượng JSON hợp lệ (không kèm theo văn bản giải thích nào ngoài cặp ngoặc nhọn {{ }}):
+**QUY TẮC CHẤM TỪNG Ý & PHẢN HỒI:**
+1. NGUYÊN TẮC CHẤM TỪNG Ý (CHẤM THEO BAREM CHI TIẾT):
+   - Nếu trong "ĐÁP ÁN MẪU / HƯỚNG DẪN CHẤM" hoặc "THANG ĐIỂM" giáo viên đã chia sẵn từng ý/từng bước (ví dụ: Ý 1: ... 0.5đ, Ý 2: ... 1.0đ, hoặc các gạch đầu dòng kèm điểm số):
+     -> BẮT BUỘC bạn phải tạo `criteria_scores` tương ứng đúng từng ý đó, kiểm tra xem học sinh làm đúng ý nào thì cho điểm ý đó (đúng ý nào ăn điểm ý đó).
+   - Nếu đáp án mẫu chưa chia điểm chi tiết: bạn hãy tự phân rã đáp án thành các ý kiến thức / các bước giải logic và cho điểm từng phần.
+2. Nếu học sinh để trống hoặc không trả lời: Cho 0.0 điểm.
+3. Điểm tổng "score" phải bằng tổng điểm "earned" của từng ý trong "criteria_scores" (làm tròn 2 chữ số thập phân, không vượt quá {max_score}).
+4. Trả về DUY NHẤT một đối tượng JSON hợp lệ (không kèm theo văn bản giải thích nào ngoài cặp ngoặc nhọn {{ }}):
 {{
   "score": <số điểm đạt được, kiểu float từ 0.0 đến {max_score}>,
   "percentage": <phần trăm điểm từ 0 đến 100, kiểu int>,
   "criteria_scores": [
-    {{"criterion": "<tên tiêu chí/bước>", "earned": <điểm đạt float>, "max": <điểm tối đa float>, "comment": "<nhận xét ngắn bước này>"}}
+    {{"criterion": "<tên ý hoặc bước giải>", "earned": <điểm đạt float>, "max": <điểm tối đa của ý này float>, "comment": "<nhận xét ngắn gọn về ý này>"}}
   ],
   "strengths": "<ưu điểm nổi bật của bài làm, 1-2 câu sư phạm>",
   "weaknesses": "<điểm cần hoàn thiện hoặc lưu ý sửa đổi nếu có, 1-2 câu>",
