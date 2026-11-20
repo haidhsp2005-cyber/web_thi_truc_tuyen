@@ -161,10 +161,38 @@ def format_datetime_vn(iso_str: str) -> str:
         return str(iso_str)
 
 
-def export_class_results_excel(submissions: List[dict], exam_title: str = "Bảng điểm") -> bytes:
+def _get_vn_name_sort_key(full_name: str) -> str:
+    """Tách tên chính để sắp xếp theo bảng chữ cái tiếng Việt (Tên trước, Họ & tên lót sau)."""
+    parts = (full_name or "").strip().split()
+    if not parts:
+        return ""
+    # Ví dụ: "Nguyễn Văn An" -> "an nguyễn văn" (để xếp vần An trước Bình)
+    return (parts[-1] + " " + " ".join(parts[:-1])).lower()
+
+
+def _get_stt_sort_key(sub: dict) -> tuple:
+    """Key sắp xếp theo Lớp -> STT lớp tăng dần (1, 2, 3...) -> Tên học sinh."""
+    s_class = str(sub.get("student_class") or "").strip().upper()
+    raw_stt = str(sub.get("student_stt") or "").strip()
+    m = re.search(r'\d+', raw_stt)
+    if m:
+        stt_num = int(m.group())
+        has_stt = 0
+    else:
+        stt_num = 999999
+        has_stt = 1
+    vn_name = _get_vn_name_sort_key(sub.get("student_name") or "")
+    return (s_class, has_stt, stt_num, vn_name)
+
+
+def export_class_results_excel(submissions: List[dict], exam_title: str = "Bảng điểm", sort_by: str = "score_desc") -> bytes:
     """
     Xuất bảng điểm toàn lớp ra file Excel.
     submissions: List các kết quả bài thi đã chấm.
+    sort_by:
+        - 'score_desc': Điểm giảm dần (Cao ➔ Thấp)
+        - 'stt_asc': STT lớp tăng dần (1 ➔ 50)
+        - 'name_asc': Tên học sinh A ➔ Z
     """
     import openpyxl
     from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
@@ -190,8 +218,37 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
     ws["A1"].font = title_font
     ws["A1"].alignment = center
 
+    # Thứ tự sắp xếp học sinh
+    sort_by_clean = (sort_by or "score_desc").strip().lower()
+    if sort_by_clean == "stt_asc":
+        sort_label = "STT lớp tăng dần (1 ➔ 50)"
+        submissions_sorted = sorted(
+            submissions,
+            key=_get_stt_sort_key
+        )
+    elif sort_by_clean == "name_asc":
+        sort_label = "Tên học sinh (A ➔ Z)"
+        submissions_sorted = sorted(
+            submissions,
+            key=lambda s: (
+                (s.get("student_class") or "").strip().upper(),
+                _get_vn_name_sort_key(s.get("student_name") or ""),
+                -float((s.get("scores") or {}).get("total_score") or 0)
+            )
+        )
+    else:
+        sort_label = "Điểm giảm dần (Cao ➔ Thấp)"
+        submissions_sorted = sorted(
+            submissions,
+            key=lambda s: (
+                -float((s.get("scores") or {}).get("total_score") or 0),
+                (s.get("student_class") or "").strip().upper(),
+                _get_stt_sort_key(s)
+            )
+        )
+
     ws.merge_cells("A2:J2")
-    ws["A2"] = f"Ngày xuất: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    ws["A2"] = f"Ngày xuất: {datetime.now().strftime('%d/%m/%Y %H:%M')} | Sắp xếp: {sort_label}"
     ws["A2"].alignment = center
 
     # Header
@@ -207,15 +264,6 @@ def export_class_results_excel(submissions: List[dict], exam_title: str = "Bản
         ws.column_dimensions[get_column_letter(col)].width = w
 
     ws.row_dimensions[4].height = 35
-
-    # Dữ liệu học sinh — sắp xếp theo tổng điểm giảm dần (từ cao xuống thấp)
-    submissions_sorted = sorted(
-        submissions,
-        key=lambda s: (
-            -float((s.get("scores") or {}).get("total_score") or 0),
-            (s.get("student_name") or "").strip().lower()
-        )
-    )
     rank_colors = {"Giỏi": "D1FAE5", "Khá": "DBEAFE", "Trung bình": "FEF9C3", "Yếu": "FEE2E2"}
 
     if not submissions_sorted:

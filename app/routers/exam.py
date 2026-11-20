@@ -480,9 +480,10 @@ async def export_excel(
     student_class: Optional[str] = None,
     subject: Optional[str] = None,
     date: Optional[str] = None,
-    teacher: Optional[str] = None
+    teacher: Optional[str] = None,
+    sort_by: Optional[str] = Query("score_desc")
 ):
-    """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Môn thi, Đề thi, theo Lớp, Ngày nộp và Giáo viên tạo."""
+    """Xuất bảng điểm toàn lớp ra Excel có bộ lọc linh hoạt theo Môn thi, Đề thi, theo Lớp, Ngày nộp, Giáo viên tạo và Thứ tự sắp xếp."""
     try:
         from ..services.auth_service import get_current_user_from_request
         from .exam_builder import _list_exam_files
@@ -496,6 +497,7 @@ async def export_excel(
         clean_subject = subject.strip() if subject and subject.strip() and subject.strip() != "all" else None
         clean_date = date.strip() if date and date.strip() and date.strip() != "all" else None
         clean_teacher = teacher.strip().lower() if teacher and teacher.strip() and teacher.strip() != "all" else None
+        clean_sort = (sort_by or "score_desc").strip().lower()
         
         submissions = get_all_submissions(exam_id=clean_exam_id, student_class=clean_class, submission_date=clean_date)
         all_exams = _list_exam_files()
@@ -523,7 +525,7 @@ async def export_excel(
         if clean_teacher:
             title += f" - GV {clean_teacher.upper()}"
         
-        excel_bytes = export_class_results_excel(submissions, title)
+        excel_bytes = export_class_results_excel(submissions, title, sort_by=clean_sort)
         
         # Tạo tên file an toàn chuẩn RFC 5987 (tránh lỗi Header Unicode latin-1 của Starlette/Uvicorn)
         fn_ascii_parts = ["bangdiem"]
@@ -543,6 +545,12 @@ async def export_excel(
         if clean_date:
             fn_ascii_parts.append(clean_date)
             fn_utf8_parts.append(clean_date)
+        if clean_sort == "stt_asc":
+            fn_ascii_parts.append("theo_stt")
+            fn_utf8_parts.append("theo_stt")
+        elif clean_sort == "name_asc":
+            fn_ascii_parts.append("theo_ten")
+            fn_utf8_parts.append("theo_ten")
             
         ascii_filename = "_".join(fn_ascii_parts) + ".xlsx"
         utf8_filename = "_".join(fn_utf8_parts) + ".xlsx"
