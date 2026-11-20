@@ -425,40 +425,41 @@ async def import_env_keys(file: Optional[UploadFile] = File(None), env_content: 
     """Đọc file .env hoặc nội dung chuỗi .env, trích xuất tất cả API Key Gemini và lưu vào CSDL."""
     import re as _re
     content = ""
-    if file:
+    if env_content and env_content.strip():
+        content = env_content
+    elif file:
         content_bytes = await file.read()
         content = content_bytes.decode("utf-8", errors="ignore")
-    elif env_content:
-        content = env_content
     
     if not content or not content.strip():
         raise HTTPException(status_code=400, detail="Vui lòng chọn file .env hoặc nhập nội dung .env!")
     
     found_keys = []
     
-    # 1. Quét theo các biến chuẩn: GEMINI_API_KEYS, GEMINI_API_KEY, GOOGLE_API_KEY...
+    # 1. Quét theo cú pháp key=value của file .env (hỗ trợ GEMINI_API_KEY_1, GEMINI_API_KEY_2, GEMINI_API_KEYS...)
     for line in content.splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
         if "=" in line:
-            k, v = line.split("=", 1)
-            k = k.strip().upper()
-            v = v.strip().strip("'\"")
-            if k in ("GEMINI_API_KEYS", "GEMINI_API_KEY", "GOOGLE_API_KEY", "GEMINI_KEYS", "API_KEYS"):
-                for item in v.split(","):
+            var_name, var_val = line.split("=", 1)
+            var_name = var_name.strip().upper()
+            var_val = var_val.strip().strip("'\"")
+            if var_name.startswith("GEMINI_API_KEY") or var_name.startswith("GOOGLE_API_KEY") or "GEMINI" in var_name or "API_KEY" in var_name:
+                for item in var_val.split(","):
                     clean = item.strip().strip("'\"")
-                    if clean and len(clean) >= 15 and clean not in ("key1_cua_ban", "key2_cua_ban", "key3_cua_ban") and clean not in found_keys:
+                    if len(clean) >= 15 and clean not in ("key1_cua_ban", "key2_cua_ban", "key3_cua_ban", "AizaSyYourKey1Here", "AIzaSyYourKey2Here", "AIzaSyYourKey3Here") and clean not in found_keys:
                         found_keys.append(clean)
     
-    # 2. Quét regex tất cả các token dạng AIzaSy...
-    regex_matches = _re.findall(r'AIzaSy[A-Za-z0-9_-]{30,}', content)
+    # 2. Quét regex mở rộng (hỗ trợ cả khóa AIzaSy... và khóa thế hệ mới AQ.Ab8RN...)
+    regex_matches = _re.findall(r'(?:AIzaSy|AQ\.)[A-Za-z0-9_\.-]{25,}', content)
     for m in regex_matches:
-        if m not in found_keys:
-            found_keys.append(m)
+        m_clean = m.strip().strip("'\"").strip(";")
+        if m_clean not in found_keys and "YourKey" not in m_clean:
+            found_keys.append(m_clean)
             
     if not found_keys:
-        raise HTTPException(status_code=400, detail="Không tìm thấy API Key Gemini hợp lệ nào trong file .env! (Khóa thường bắt đầu bằng AIzaSy...)")
+        raise HTTPException(status_code=400, detail="Không tìm thấy API Key Gemini hợp lệ nào trong file .env! (Khóa Gemini thường bắt đầu bằng AQ. hoặc AIzaSy...)")
     
     # Nạp vào Key Manager và CSDL Supabase
     try:
@@ -484,7 +485,7 @@ async def import_env_keys(file: Optional[UploadFile] = File(None), env_content: 
         "keys_found": len(found_keys),
         "added_count": added_count,
         "total_active": len(existing),
-        "message": f"Thành công! Đã tìm thấy {len(found_keys)} key từ file .env (thêm mới {added_count} key). Hiện có tổng cộng {len(existing)} key đang hoạt động."
+        "message": f"Thành công! Đã tìm thấy {len(found_keys)} key từ file .env (bổ sung mới {added_count} key). Hiện có tổng cộng {len(existing)} key đang hoạt động."
     }
 
 

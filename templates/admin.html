@@ -1632,9 +1632,9 @@
             </span>
             <span class="text-[10px] text-emerald-700 bg-white px-2 py-0.5 rounded-full border border-emerald-200 font-semibold">Tự động trích xuất key</span>
           </div>
-          <p class="text-[11px] text-emerald-800 leading-relaxed">Chọn file <code class="font-bold bg-white px-1 py-0.5 rounded border border-emerald-200">.env</code> trên máy tính, hệ thống sẽ tự động quét các dòng <code class="font-bold">GEMINI_API_KEYS</code> hoặc mã <code class="font-bold">AIzaSy...</code> và lưu vào CSDL Supabase.</p>
+          <p class="text-[11px] text-emerald-800 leading-relaxed">Chọn file <code class="font-bold bg-white px-1 py-0.5 rounded border border-emerald-200">.env</code> trên máy tính, hệ thống sẽ tự động quét các dòng <code class="font-bold">GEMINI_API_KEY_...</code> hoặc mã <code class="font-bold">AQ... / AIzaSy...</code> và lưu vào CSDL Supabase.</p>
           <div class="flex items-center gap-2 pt-1">
-            <input type="file" id="env-file-upload" accept=".env,text/plain" @change="uploadEnvFile($event)" class="hidden">
+            <input type="file" id="env-file-upload" accept="*/*" @change="uploadEnvFile($event)" class="hidden">
             <button type="button" @click="document.getElementById('env-file-upload').click()" :disabled="importingEnv" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
               <span x-show="!importingEnv">📂 Chọn file .env từ máy tính</span>
               <span x-show="importingEnv" class="animate-spin">⏳</span>
@@ -3221,30 +3221,42 @@ function adminApp() {
       if (!file) return;
       this.importingEnv = true;
       this.keyMsg = '';
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const res = await fetch('/api/admin/keys/import-env', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          this.keyMsg = data.message;
-          this.keyMsgOk = true;
-          await this.loadKeyStatus();
-        } else {
-          this.keyMsg = data.detail || 'Lỗi khi nạp file .env!';
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const text = e.target.result || '';
+        try {
+          const formData = new FormData();
+          formData.append('env_content', text);
+          formData.append('file', file);
+          const res = await fetch('/api/admin/keys/import-env', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            this.keyMsg = data.message;
+            this.keyMsgOk = true;
+            await this.loadKeyStatus();
+          } else {
+            this.keyMsg = data.detail || 'Lỗi khi nạp file .env!';
+            this.keyMsgOk = false;
+          }
+        } catch (err) {
+          this.keyMsg = 'Lỗi kết nối khi nạp file: ' + err.message;
           this.keyMsgOk = false;
+        } finally {
+          this.importingEnv = false;
+          event.target.value = '';
+          setTimeout(() => { this.keyMsg = ''; }, 6000);
         }
-      } catch (e) {
-        this.keyMsg = 'Lỗi kết nối khi tải file .env: ' + e.message;
+      };
+      reader.onerror = () => {
+        this.keyMsg = 'Không thể đọc nội dung file từ máy tính!';
         this.keyMsgOk = false;
-      } finally {
         this.importingEnv = false;
-        event.target.value = '';
-        setTimeout(() => { this.keyMsg = ''; }, 6000);
-      }
+      };
+      reader.readAsText(file);
     },
 
     async removeKey(keyLabel) {

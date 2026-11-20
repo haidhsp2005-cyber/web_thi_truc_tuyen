@@ -39,8 +39,18 @@ async def lifespan(app: FastAPI):
     init_db()
     logger.info("✅ Database khởi tạo thành công.")
     
+    env_keys = []
     env_keys_str = os.getenv("GEMINI_API_KEYS", "")
-    env_keys = [k.strip() for k in env_keys_str.split(",") if k.strip() and k.strip() not in ("key1_cua_ban","key2_cua_ban","key3_cua_ban")]
+    for k in env_keys_str.split(","):
+        k = k.strip().strip("'\"")
+        if k and len(k) >= 15 and "key1_cua_ban" not in k and "YourKey" not in k:
+            env_keys.append(k)
+    for env_name, env_val in os.environ.items():
+        if env_name.upper().startswith("GEMINI_API_KEY") or env_name.upper().startswith("GOOGLE_API_KEY"):
+            for k in env_val.split(","):
+                k = k.strip().strip("'\"")
+                if k and len(k) >= 15 and "YourKey" not in k and k not in env_keys:
+                    env_keys.append(k)
     db_keys = get_config("api_keys", [])
     all_keys = list(dict.fromkeys(env_keys + db_keys))
     
