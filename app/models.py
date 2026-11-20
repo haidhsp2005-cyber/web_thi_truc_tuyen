@@ -90,3 +90,10 @@ class ExamConfig(BaseModel):
 class DeleteBatchSubmissionsRequest(BaseModel):
     submission_ids: List[str]
 
+
+class UpdateEssayScoreRequest(BaseModel):
+    submission_id: str
+    part4_score: float
+    teacher_comment: Optional[str] = ""
+
+

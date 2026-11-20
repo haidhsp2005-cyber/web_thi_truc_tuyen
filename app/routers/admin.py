@@ -29,7 +29,7 @@ from ..services.export_service import (
 from ..models import (
     APIKeyRequest, AdminLoginRequest,
     CreateUserRequest, ChangePasswordRequest, DeleteUserRequest, UpdateRoleRequest, UpdateUserInfoRequest,
-    DeleteBatchSubmissionsRequest
+    DeleteBatchSubmissionsRequest, UpdateEssayScoreRequest
 )
 import logging
 
@@ -595,6 +595,279 @@ async def clear_all_submissions(request: Request, exam_id: str = None, subject: 
             count = delete_all_submissions()
 
         return {"success": True, "message": f"Đã xóa {count} bài thi thành công!", "count": count}
+
+
+# ===================== CHẤM TỰ LUẬN & ĐIỀU CHỈNH ĐIỂM (PHẦN IV) =====================
+
+@router.get("/submissions/essay/detail/{submission_id}")
+async def get_essay_detail(submission_id: str, request: Request):
+    """Lấy chi tiết bài thi tự luận (câu hỏi, bài làm của học sinh, đáp án mẫu, kết quả AI) cho giáo viên."""
+    from ..routers.exam_builder import _list_exam_files
+    current_user = get_current_user_from_request(request)
+    sub = get_submission(submission_id)
+    if not sub:
+        raise HTTPException(status_code=404, detail="Không tìm thấy bài thi!")
+
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
+        my_exam_ids = {e['id'] for e in _list_exam_files(current_user)}
+        if sub.get('exam_id') not in my_exam_ids:
+            raise HTTPException(status_code=403, detail="Bạn không có quyền xem bài thi của giáo viên khác!")
+
+    exam = load_exam(sub.get("exam_id"))
+    if not exam:
+        raise HTTPException(status_code=404, detail="Không tìm thấy thông tin đề thi tương ứng!")
+
+    p4_questions = exam.get("parts", {}).get("part4", {}).get("questions", [])
+    p4_qid = sub.get("part4_question_id") or sub.get("answers", {}).get("part4_question_id")
+    
+    question = None
+    if p4_qid:
+        question = next((q for q in p4_questions if q.get("id") == p4_qid), None)
+    if not question and p4_questions:
+        question = p4_questions[0]
+
+    rubric = question.get("rubric", {}) if question else {}
+    sample_answer = (
+        rubric.get("sample_answer")
+        or (question.get("guide") if question else "")
+        or (question.get("solution") if question else "")
+        or (question.get("answer") if question else "")
+        or ""
+    )
+
+    max_score = float(
+        (question.get("points") if question else None)
+        or rubric.get("max_score")
+        or exam.get("scoring", {}).get("part4_total", 1.0)
+    )
+
+    part4_ans = sub.get("part4_answer") or sub.get("answers", {}).get("part4_answer", "")
+    part4_res = sub.get("part4_result") or {}
+
+    return {
+        "success": True,
+        "submission_id": submission_id,
+        "student_name": sub.get("student_name", ""),
+        "student_class": sub.get("student_class", ""),
+        "student_stt": sub.get("student_stt", ""),
+        "exam_id": sub.get("exam_id", ""),
+        "exam_title": exam.get("title", ""),
+        "subject": exam.get("subject", ""),
+        "grade": str(exam.get("grade", "")),
+        "question_id": p4_qid,
+        "question_text": question.get("text", "") if question else "Không tìm thấy câu hỏi tự luận",
+        "question_image": question.get("image") if question else None,
+        "sample_answer": sample_answer,
+        "student_answer": part4_ans,
+        "max_score": max_score,
+        "current_part4_score": float((sub.get("scores") or {}).get("part4_score", 0.0)),
+        "total_score": float((sub.get("scores") or {}).get("total_score", 0.0)),
+        "part4_result": part4_res,
+        "teacher_comment": part4_res.get("teacher_comment", ""),
+        "graded_by": part4_res.get("graded_by", "pending")
+    }
+
+
+@router.post("/submissions/essay/update-score")
+async def update_essay_score(req: UpdateEssayScoreRequest, request: Request):
+    """Giáo viên chấm điểm trực tiếp / điều chỉnh điểm tự luận và lời phê cho học sinh."""
+    from ..routers.exam_builder import _list_exam_files
+    from ..services.grading_service import calculate_total_score
+    from ..database import save_submission, invalidate_submissions_cache
+
+    current_user = get_current_user_from_request(request)
+    sub = get_submission(req.submission_id)
+    if not sub:
+        raise HTTPException(status_code=404, detail="Không tìm thấy bài thi!")
+
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
+        my_exam_ids = {e['id'] for e in _list_exam_files(current_user)}
+        if sub.get('exam_id') not in my_exam_ids:
+            raise HTTPException(status_code=403, detail="Bạn không có quyền sửa điểm bài thi của giáo viên khác!")
+
+    exam = load_exam(sub.get("exam_id"))
+    if not exam:
+        raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
+
+    p4_max = float(exam.get("scoring", {}).get("part4_total", 1.0))
+    if req.part4_score < 0 or req.part4_score > p4_max:
+        raise HTTPException(status_code=400, detail=f"Điểm tự luận phải từ 0 đến {p4_max} điểm!")
+
+    part4_res = sub.get("part4_result") or {}
+    part4_res["score"] = round(req.part4_score, 2)
+    part4_res["status"] = "graded"
+    part4_res["graded_by"] = "teacher"
+    part4_res["teacher_comment"] = (req.teacher_comment or "").strip()
+    part4_res["teacher_username"] = current_user.get("username") if current_user else "admin"
+    part4_res["teacher_updated_at"] = datetime.now().isoformat()
+
+    p1_res = sub.get("part1_result") or {"score": 0.0, "max_score": 0.0}
+    p2_res = sub.get("part2_result") or {"score": 0.0, "max_score": 0.0}
+    p3_res = sub.get("part3_result") or {"score": 0.0, "max_score": 0.0}
+
+    new_scores = calculate_total_score(p1_res, p2_res, p3_res, req.part4_score, exam)
+
+    submission_data = {
+        "submission_id": sub["submission_id"],
+        "student_name": sub.get("student_name", ""),
+        "student_class": sub.get("student_class", ""),
+        "student_stt": sub.get("student_stt", ""),
+        "exam_id": sub.get("exam_id", ""),
+        "is_online_exam": sub.get("is_online_exam", False),
+        "started_at": sub.get("started_at", ""),
+        "submitted_at": sub.get("submitted_at", ""),
+        "duration_seconds": sub.get("duration_seconds", 0),
+        "screen_switch_count": sub.get("screen_switch_count", 0),
+        "switch_violations": sub.get("switch_violations", []),
+        "part1_answers": sub.get("answers", {}).get("part1", {}),
+        "part2_answers": sub.get("answers", {}).get("part2", {}),
+        "part3_answers": sub.get("answers", {}).get("part3", {}),
+        "part4_question_id": sub.get("part4_question_id") or sub.get("answers", {}).get("part4_question_id"),
+        "part4_answer": sub.get("part4_answer") or sub.get("answers", {}).get("part4_answer", ""),
+    }
+    result_data = {
+        "scores": new_scores,
+        "student_stt": sub.get("student_stt", ""),
+        "is_online_exam": sub.get("is_online_exam", False),
+        "part1_result": p1_res,
+        "part2_result": p2_res,
+        "part3_result": p3_res,
+        "part4_result": part4_res,
+        "screen_switch_count": sub.get("screen_switch_count", 0),
+        "switch_violations": sub.get("switch_violations", []),
+        "submitted_at": sub.get("submitted_at", ""),
+        "duration_seconds": sub.get("duration_seconds", 0),
+    }
+
+    save_submission(submission_data, result_data)
+    invalidate_submissions_cache()
+
+    return {
+        "success": True,
+        "message": f"Đã lưu điểm tự luận ({req.part4_score:.2f} đ) và cập nhật tổng điểm ({new_scores['total_score']:.2f} đ) thành công!",
+        "new_scores": new_scores,
+        "part4_result": part4_res
+    }
+
+
+@router.post("/submissions/essay/regrade/{submission_id}")
+async def regrade_essay_submission(submission_id: str, request: Request):
+    """Yêu cầu AI chấm lại bài tự luận cho một thí sinh cụ thể."""
+    from ..routers.exam_builder import _list_exam_files
+    from ..services.grading_service import calculate_total_score
+    from ..services.ai_service import grade_essay
+    from ..database import save_submission, invalidate_submissions_cache
+
+    current_user = get_current_user_from_request(request)
+    sub = get_submission(submission_id)
+    if not sub:
+        raise HTTPException(status_code=404, detail="Không tìm thấy bài thi!")
+
+    is_super_admin = bool(
+        current_user and (current_user.get('is_protected') or current_user.get('username', '').lower() == 'admin')
+    )
+    if current_user and not is_super_admin:
+        my_exam_ids = {e['id'] for e in _list_exam_files(current_user)}
+        if sub.get('exam_id') not in my_exam_ids:
+            raise HTTPException(status_code=403, detail="Bạn không có quyền chấm bài thi của giáo viên khác!")
+
+    part4_ans = sub.get("part4_answer") or sub.get("answers", {}).get("part4_answer", "")
+    if not part4_ans.strip():
+        raise HTTPException(status_code=400, detail="Học sinh không làm bài tự luận (để trống), không thể chấm AI!")
+
+    exam = load_exam(sub.get("exam_id"))
+    if not exam:
+        raise HTTPException(status_code=404, detail="Không tìm thấy đề thi!")
+
+    p4_questions = exam.get("parts", {}).get("part4", {}).get("questions", [])
+    p4_qid = sub.get("part4_question_id") or sub.get("answers", {}).get("part4_question_id")
+    question = next((q for q in p4_questions if q.get("id") == p4_qid), None) if p4_qid else None
+    if not question and p4_questions:
+        question = p4_questions[0]
+
+    rubric = question.get("rubric", {}) if question else {}
+    sample_answer = (
+        rubric.get("sample_answer")
+        or (question.get("guide") if question else "")
+        or (question.get("solution") if question else "")
+        or (question.get("answer") if question else "")
+        or ""
+    )
+
+    q_points = question.get("points") if question else None
+    if q_points is not None:
+        try:
+            rubric["max_score"] = float(q_points)
+        except Exception:
+            pass
+    elif not rubric.get("max_score"):
+        rubric["max_score"] = float(exam.get("scoring", {}).get("part4_total", 1.0))
+
+    ai_result = await grade_essay(
+        question_text=question.get("text", "") if question else "Câu hỏi tự luận",
+        student_answer=part4_ans,
+        rubric=rubric,
+        sample_answer=sample_answer,
+        subject=exam.get("subject", "Toán học"),
+        grade=str(exam.get("grade", ""))
+    )
+
+    p4_score = ai_result.get("score", 0.0)
+    ai_result["status"] = "graded"
+
+    p1_res = sub.get("part1_result") or {"score": 0.0, "max_score": 0.0}
+    p2_res = sub.get("part2_result") or {"score": 0.0, "max_score": 0.0}
+    p3_res = sub.get("part3_result") or {"score": 0.0, "max_score": 0.0}
+
+    new_scores = calculate_total_score(p1_res, p2_res, p3_res, p4_score, exam)
+
+    submission_data = {
+        "submission_id": sub["submission_id"],
+        "student_name": sub.get("student_name", ""),
+        "student_class": sub.get("student_class", ""),
+        "student_stt": sub.get("student_stt", ""),
+        "exam_id": sub.get("exam_id", ""),
+        "is_online_exam": sub.get("is_online_exam", False),
+        "started_at": sub.get("started_at", ""),
+        "submitted_at": sub.get("submitted_at", ""),
+        "duration_seconds": sub.get("duration_seconds", 0),
+        "screen_switch_count": sub.get("screen_switch_count", 0),
+        "switch_violations": sub.get("switch_violations", []),
+        "part1_answers": sub.get("answers", {}).get("part1", {}),
+        "part2_answers": sub.get("answers", {}).get("part2", {}),
+        "part3_answers": sub.get("answers", {}).get("part3", {}),
+        "part4_question_id": p4_qid,
+        "part4_answer": part4_ans,
+    }
+    result_data = {
+        "scores": new_scores,
+        "student_stt": sub.get("student_stt", ""),
+        "is_online_exam": sub.get("is_online_exam", False),
+        "part1_result": p1_res,
+        "part2_result": p2_res,
+        "part3_result": p3_res,
+        "part4_result": ai_result,
+        "screen_switch_count": sub.get("screen_switch_count", 0),
+        "switch_violations": sub.get("switch_violations", []),
+        "submitted_at": sub.get("submitted_at", ""),
+        "duration_seconds": sub.get("duration_seconds", 0),
+    }
+
+    save_submission(submission_data, result_data)
+    invalidate_submissions_cache()
+
+    return {
+        "success": True,
+        "message": f"AI đã chấm xong! Điểm tự luận: {p4_score:.2f} đ, Tổng điểm mới: {new_scores['total_score']:.2f} đ",
+        "new_scores": new_scores,
+        "ai_result": ai_result
+    }
 
 
 @router.get("/stats")

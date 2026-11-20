@@ -845,6 +845,11 @@
               </td>
               <td class="px-4 py-3 text-center">
                 <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                  <button type="button" @click="openEssayModal(sub.submission_id)" 
+                    class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 hover:text-amber-900 rounded-lg text-xs font-bold transition-colors border border-amber-300 flex items-center gap-1 cursor-pointer shadow-2xs"
+                    title="Xem bài tự luận, nhận xét AI và chấm/sửa điểm">
+                    <span>✍️</span><span>Tự luận</span>
+                  </button>
                   <a :href="`/api/admin/print/submission/${sub.submission_id}`" target="_blank" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 hover:text-indigo-900 rounded-lg text-xs font-bold transition-colors border border-indigo-200 flex items-center gap-1" title="In toàn bộ bài thi học sinh (có đề bài, câu trả lời, đáp án chuẩn, điểm số và nhận xét)">
                     <span>🖨️</span><span>In bài thi</span>
                   </a>
@@ -1673,6 +1678,209 @@
     </div>
   </div>
 
+  <!-- Modal Chi tiết bài thi tự luận & Giáo viên chấm điểm (Phần IV) -->
+  <div x-show="showEssayModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+    <div @click.outside="showEssayModal = false" class="bg-white rounded-3xl max-w-3xl w-full p-5 sm:p-6 shadow-2xl border space-y-4 max-h-[92vh] overflow-y-auto">
+      <!-- Tiêu đề Modal -->
+      <div class="flex items-center justify-between border-b pb-3.5">
+        <div>
+          <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+            <span>✍️</span><span>Chi Tiết & Chấm Điểm Bài Tự Luận</span>
+          </h3>
+          <p class="text-xs text-gray-500 mt-0.5" x-show="essayModalData">
+            Thí sinh: <strong class="text-gray-800" x-text="essayModalData?.student_name"></strong> | 
+            Lớp: <span class="font-bold text-blue-700" x-text="essayModalData?.student_class"></span>
+            <span x-show="essayModalData?.student_stt" x-text="` (STT: ${essayModalData?.student_stt})`"></span> | 
+            Môn: <span class="font-semibold text-emerald-700" x-text="essayModalData?.subject || 'Tự luận'"></span>
+          </p>
+        </div>
+        <button type="button" @click="showEssayModal = false" class="text-gray-400 hover:text-gray-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-lg cursor-pointer">✕</button>
+      </div>
+
+      <!-- Trạng thái Loading -->
+      <div x-show="loadingEssayDetail" class="text-center py-12">
+        <div class="text-4xl animate-bounce mb-2">⏳</div>
+        <p class="text-xs text-gray-500 font-semibold">Đang tải chi tiết bài làm tự luận của học sinh...</p>
+      </div>
+
+      <!-- Thông báo thao tác -->
+      <div x-show="essayActionMsg" :class="essayActionOk ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'" class="p-3 rounded-xl border text-xs font-bold" x-text="essayActionMsg"></div>
+
+      <!-- Nội dung khi đã tải xong -->
+      <div x-show="!loadingEssayDetail && essayModalData" id="essay-modal-container" class="space-y-4 text-xs">
+        
+        <!-- Hàng tóm tắt điểm -->
+        <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-amber-50/80 border border-amber-200 rounded-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold"
+              :class="essayModalData?.graded_by === 'teacher' ? 'bg-blue-100 text-blue-800 border border-blue-300' : (essayModalData?.graded_by === 'ai' ? 'bg-purple-100 text-purple-800 border border-purple-300' : 'bg-gray-100 text-gray-600 border border-gray-300')">
+              <span x-text="essayModalData?.graded_by === 'teacher' ? '👨‍🏫 Giáo viên đã chấm' : (essayModalData?.graded_by === 'ai' ? '🤖 AI đã chấm' : '⏳ Chưa chấm')"></span>
+            </span>
+            <span class="text-gray-600 text-[11px]">Thang điểm tối đa: <strong x-text="`${essayModalData?.max_score ?? 1.0} điểm`"></strong></span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <span class="text-[10px] text-gray-500 block uppercase font-bold">Điểm Tự Luận</span>
+              <span class="text-lg font-black text-amber-700" x-text="`${essayModalData?.current_part4_score ?? 0} đ`"></span>
+            </div>
+            <div class="text-right pl-3 border-l border-amber-200">
+              <span class="text-[10px] text-gray-500 block uppercase font-bold">Tổng Điểm Bài Thi</span>
+              <span class="text-lg font-black text-blue-800" x-text="`${essayModalData?.total_score ?? 0} / 10 đ`"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Khung 1: Đề bài câu hỏi tự luận -->
+        <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200">
+          <div class="font-bold text-gray-800 mb-1.5 flex items-center gap-1.5">
+            <span>❓</span><span>Đề bài câu hỏi tự luận:</span>
+          </div>
+          <div class="text-gray-900 leading-relaxed font-medium bg-white p-3 rounded-xl border border-gray-100 whitespace-pre-wrap text-[13px]" x-text="essayModalData?.question_text"></div>
+          <template x-if="essayModalData?.question_image">
+            <div class="mt-2 text-center">
+              <img :src="essayModalData.question_image" class="max-h-60 rounded-xl border mx-auto shadow-sm" alt="Hình minh họa">
+            </div>
+          </template>
+        </div>
+
+        <!-- Khung 2: Bài làm của học sinh -->
+        <div class="bg-blue-50/50 p-3.5 rounded-2xl border border-blue-200">
+          <div class="font-bold text-blue-900 mb-1.5 flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><span>📝</span><span>Bài làm của học sinh:</span></span>
+            <span class="text-[11px] text-blue-600 font-semibold" x-text="`${(essayModalData?.student_answer || '').length} ký tự`"></span>
+          </div>
+          <div class="text-gray-900 leading-relaxed bg-white p-3.5 rounded-xl border border-blue-100 font-serif text-[13px] whitespace-pre-wrap min-h-[90px] shadow-2xs"
+            x-text="essayModalData?.student_answer ? essayModalData.student_answer : '(Học sinh để trống, không làm câu này)'"
+            :class="!essayModalData?.student_answer ? 'text-gray-400 italic' : ''">
+          </div>
+        </div>
+
+        <!-- Khung 3: Đáp án mẫu / Gợi ý giải (nếu có) -->
+        <div x-show="essayModalData?.sample_answer" class="bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-200">
+          <div class="font-bold text-emerald-900 mb-1.5 flex items-center gap-1.5">
+            <span>💡</span><span>Hướng dẫn giải / Đáp án mẫu chuẩn:</span>
+          </div>
+          <div class="text-emerald-950 leading-relaxed bg-white p-3 rounded-xl border border-emerald-100 whitespace-pre-wrap text-xs" x-text="essayModalData?.sample_answer"></div>
+        </div>
+
+        <!-- Khung 4: Đánh giá & Nhận xét của AI -->
+        <div x-show="essayModalData?.part4_result" class="bg-purple-50/50 p-3.5 rounded-2xl border border-purple-200 space-y-2.5">
+          <div class="flex items-center justify-between border-b border-purple-200/60 pb-2">
+            <span class="font-bold text-purple-950 flex items-center gap-1.5">
+              <span>🤖</span><span>Đánh giá từ AI sư phạm (Gemini):</span>
+            </span>
+            <span class="font-black text-purple-800 text-sm bg-purple-100 px-2.5 py-0.5 rounded-full"
+              x-text="`Điểm AI đề xuất: ${essayModalData?.part4_result?.score ?? 0} / ${essayModalData?.max_score ?? 1.0} đ (${essayModalData?.part4_result?.percentage ?? 0}%)`">
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+            <!-- Ưu điểm -->
+            <div x-show="essayModalData?.part4_result?.strengths" class="p-2.5 bg-white rounded-xl border border-emerald-200">
+              <span class="font-bold text-emerald-800 flex items-center gap-1 mb-1">
+                <span>✅</span><span>Ưu điểm bài làm:</span>
+              </span>
+              <p class="text-gray-700 leading-relaxed" x-text="essayModalData?.part4_result?.strengths"></p>
+            </div>
+            <!-- Điểm cần khắc phục -->
+            <div x-show="essayModalData?.part4_result?.weaknesses" class="p-2.5 bg-white rounded-xl border border-amber-200">
+              <span class="font-bold text-amber-800 flex items-center gap-1 mb-1">
+                <span>⚠️</span><span>Lưu ý / Điểm cần sửa:</span>
+              </span>
+              <p class="text-gray-700 leading-relaxed" x-text="essayModalData?.part4_result?.weaknesses"></p>
+            </div>
+          </div>
+
+          <!-- Lời khuyên & Gợi ý cải thiện -->
+          <div x-show="essayModalData?.part4_result?.suggestion" class="p-2.5 bg-white rounded-xl border border-blue-200 text-xs">
+            <span class="font-bold text-blue-800 flex items-center gap-1 mb-1">
+              <span>💡</span><span>Gợi ý sư phạm để tiến bộ:</span>
+            </span>
+            <p class="text-gray-700 leading-relaxed" x-text="essayModalData?.part4_result?.suggestion"></p>
+          </div>
+
+          <!-- Lời phê tổng thể -->
+          <div x-show="essayModalData?.part4_result?.overall_comment" class="p-2.5 bg-white rounded-xl border border-purple-200 text-xs">
+            <span class="font-bold text-purple-900 flex items-center gap-1 mb-1">
+              <span>💬</span><span>Nhận xét tổng quát:</span>
+            </span>
+            <p class="text-gray-800 font-medium leading-relaxed italic" x-text="essayModalData?.part4_result?.overall_comment"></p>
+          </div>
+
+          <!-- Chi tiết từng tiêu chí (nếu có) -->
+          <template x-if="essayModalData?.part4_result?.criteria_scores?.length > 0">
+            <div class="mt-2 pt-2 border-t border-purple-200">
+              <span class="font-bold text-purple-900 block mb-1 text-[11px]">Bảng điểm chi tiết từng tiêu chí:</span>
+              <div class="space-y-1">
+                <template x-for="c in essayModalData.part4_result.criteria_scores" :key="c.criterion">
+                  <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-purple-100 text-[11px]">
+                    <div class="flex-1 pr-2">
+                      <strong class="text-gray-800" x-text="c.criterion"></strong>
+                      <span x-show="c.comment" class="text-gray-500 ml-1" x-text="`— ${c.comment}`"></span>
+                    </div>
+                    <span class="font-bold text-purple-700 whitespace-nowrap" x-text="`${c.earned}/${c.max} đ`"></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Khung 5: Giáo viên Chấm / Điều chỉnh điểm (Quyền quyết định thuộc về Giáo viên) -->
+        <div class="bg-gradient-to-br from-indigo-50 to-blue-50 p-4 rounded-2xl border-2 border-indigo-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-indigo-950 text-sm flex items-center gap-1.5">
+              <span>👨‍🏫</span><span>Giáo viên chấm điểm & Phê duyệt:</span>
+            </span>
+            <span class="text-[11px] text-indigo-700 font-semibold bg-white px-2.5 py-0.5 rounded-full border border-indigo-200">
+              Tùy chỉnh linh hoạt 100%
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">
+                Điểm tự luận của giáo viên (0 đến <span x-text="essayModalData?.max_score ?? 1.0"></span> đ):
+              </label>
+              <input type="number" x-model.number="essayEditForm.score" step="0.05" min="0" :max="essayModalData?.max_score ?? 1.0"
+                class="w-full border-2 border-indigo-300 rounded-xl px-3 py-2 text-base font-black text-indigo-800 focus:outline-none focus:border-indigo-600 bg-white">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold text-gray-700 mb-1">
+                Lời phê của giáo viên (tùy chọn):
+              </label>
+              <input type="text" x-model="essayEditForm.comment" placeholder="Ví dụ: Lập luận tốt, cần chú ý chính tả..."
+                class="w-full border-2 border-indigo-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-indigo-600 bg-white">
+            </div>
+          </div>
+
+          <!-- Các nút thao tác -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-indigo-200">
+            <button type="button" @click="regradeEssayByAI()" :disabled="regradingEssay"
+              class="px-3.5 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 font-bold text-xs transition-colors flex items-center gap-1.5 border border-purple-300 cursor-pointer disabled:opacity-50">
+              <span x-show="!regradingEssay">🤖 Yêu cầu AI chấm lại</span>
+              <span x-show="regradingEssay" class="animate-spin">⏳</span>
+              <span x-show="regradingEssay">AI đang chấm...</span>
+            </button>
+
+            <button type="button" @click="saveTeacherEssayScore()" :disabled="savingEssayScore"
+              class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-95">
+              <span x-show="!savingEssayScore">💾 Lưu điểm giáo viên chấm</span>
+              <span x-show="savingEssayScore" class="animate-spin">⏳</span>
+              <span x-show="savingEssayScore">Đang lưu...</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Chân Modal -->
+      <div class="flex justify-end pt-3 border-t">
+        <button type="button" @click="showEssayModal = false" class="px-5 py-2 rounded-xl text-sm font-bold bg-gray-800 hover:bg-gray-900 text-white cursor-pointer transition-colors">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ======= SAO LƯU & KHÔI PHỤC CSDL (CHỐNG MẤT DỮ LIỆU RENDER) ======= -->
   <div class="bg-gradient-to-r from-emerald-900 to-teal-900 rounded-3xl p-6 text-white shadow-xl border border-emerald-700/50">
     <div class="flex flex-col md:flex-row items-center justify-between gap-5">
@@ -1765,6 +1973,14 @@ function adminApp() {
     filterDate: '',
     selectedTeacherFilter: '',
     excelSortBy: 'score_desc',
+    showEssayModal: false,
+    loadingEssayDetail: false,
+    savingEssayScore: false,
+    regradingEssay: false,
+    essayModalData: null,
+    essayEditForm: { score: 0, comment: '' },
+    essayActionMsg: '',
+    essayActionOk: true,
     availableClasses: [],
     adminExamFilterSubject: '',
     adminExamFilterGrade: '',
@@ -2471,6 +2687,97 @@ function adminApp() {
         }
       }
       this.availableClasses = Array.from(set).sort();
+    },
+
+    async openEssayModal(submissionId) {
+      this.showEssayModal = true;
+      this.loadingEssayDetail = true;
+      this.essayActionMsg = '';
+      this.essayModalData = null;
+      this.essayEditForm = { score: 0, comment: '' };
+      try {
+        const res = await fetch(`/api/admin/submissions/essay/detail/${submissionId}`);
+        if (res.ok) {
+          const data = await res.json();
+          this.essayModalData = data;
+          this.essayEditForm.score = data.part4_score ?? (data.part4_result?.score ?? 0);
+          this.essayEditForm.comment = data.part4_result?.teacher_comment ?? '';
+        } else {
+          const err = await res.json().catch(() => ({}));
+          this.essayActionMsg = err.detail || 'Không thể tải chi tiết bài tự luận!';
+          this.essayActionOk = false;
+        }
+      } catch (e) {
+        this.essayActionMsg = 'Lỗi kết nối khi tải bài tự luận: ' + e.message;
+        this.essayActionOk = false;
+      } finally {
+        this.loadingEssayDetail = false;
+      }
+    },
+
+    async saveTeacherEssayScore() {
+      if (!this.essayModalData) return;
+      this.savingEssayScore = true;
+      this.essayActionMsg = '';
+      try {
+        const payload = {
+          submission_id: this.essayModalData.submission_id,
+          score: Number(this.essayEditForm.score) || 0,
+          comment: (this.essayEditForm.comment || '').trim()
+        };
+        const res = await fetch('/api/admin/submissions/essay/update-score', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.essayActionMsg = `✅ ${data.message} (Điểm tổng mới: ${data.total_score} đ)`;
+          this.essayActionOk = true;
+          this.essayModalData.part4_score = data.part4_score;
+          this.essayModalData.total_score = data.total_score;
+          this.essayModalData.part4_result = data.part4_result;
+          await this.loadSubmissions(true);
+        } else {
+          this.essayActionMsg = `❌ Lỗi: ${data.detail || 'Không thể lưu điểm!'}`;
+          this.essayActionOk = false;
+        }
+      } catch (e) {
+        this.essayActionMsg = '❌ Lỗi kết nối khi lưu điểm: ' + e.message;
+        this.essayActionOk = false;
+      } finally {
+        this.savingEssayScore = false;
+      }
+    },
+
+    async regradeEssayByAI() {
+      if (!this.essayModalData) return;
+      if (!confirm('Bạn có chắc muốn AI chấm lại câu tự luận này dựa trên thang điểm và hướng dẫn chấm mới nhất?')) return;
+      this.regradingEssay = true;
+      this.essayActionMsg = '';
+      try {
+        const res = await fetch(`/api/admin/submissions/essay/regrade/${this.essayModalData.submission_id}`, {
+          method: 'POST'
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.essayActionMsg = `🤖 ${data.message} (Điểm AI: ${data.part4_score} đ, Điểm tổng: ${data.total_score} đ)`;
+          this.essayActionOk = true;
+          this.essayModalData.part4_score = data.part4_score;
+          this.essayModalData.total_score = data.total_score;
+          this.essayModalData.part4_result = data.part4_result;
+          this.essayEditForm.score = data.part4_score;
+          await this.loadSubmissions(true);
+        } else {
+          this.essayActionMsg = `❌ Lỗi khi AI chấm lại: ${data.detail || 'Không thành công'}`;
+          this.essayActionOk = false;
+        }
+      } catch (e) {
+        this.essayActionMsg = '❌ Lỗi kết nối: ' + e.message;
+        this.essayActionOk = false;
+      } finally {
+        this.regradingEssay = false;
+      }
     },
 
     async restoreBackup(event) {

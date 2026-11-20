@@ -387,14 +387,35 @@ async def _grade_essay_background(
         if not q:
             return
         
-        rubric = q.get("rubric", {"max_score": 1.0, "criteria": []})
-        sample_answer = rubric.get("sample_answer", "")
-        
+        rubric = q.get("rubric", {})
+        if not isinstance(rubric, dict):
+            rubric = {"max_score": 1.0, "criteria": []}
+
+        sample_answer = (
+            rubric.get("sample_answer")
+            or q.get("guide")
+            or q.get("solution")
+            or q.get("answer")
+            or ""
+        )
+
+        # Tính điểm tối đa câu hỏi
+        q_points = q.get("points")
+        if q_points is not None:
+            try:
+                rubric["max_score"] = float(q_points)
+            except Exception:
+                pass
+        elif not rubric.get("max_score"):
+            rubric["max_score"] = float(exam.get("scoring", {}).get("part4_total", 1.0))
+
         ai_result = await grade_essay(
-            question_text=q["text"],
+            question_text=q.get("text", ""),
             student_answer=student_answer,
             rubric=rubric,
-            sample_answer=sample_answer
+            sample_answer=sample_answer,
+            subject=exam.get("subject", "Toán học"),
+            grade=str(exam.get("grade", ""))
         )
         
         p4_score = ai_result.get("score", 0.0)
