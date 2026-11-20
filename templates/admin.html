@@ -1624,18 +1624,38 @@
           <p class="text-gray-600">Đăng ký & tạo khóa API hoàn toàn miễn phí tại: <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 underline font-semibold">aistudio.google.com</a></p>
         </div>
 
-        <!-- Nhập key trực tiếp qua giao diện web -->
+        <!-- Nạp trực tiếp file .env từ máy tính -->
+        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-3.5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+              <span>📁</span><span>Nạp trực tiếp từ file .env:</span>
+            </span>
+            <span class="text-[10px] text-emerald-700 bg-white px-2 py-0.5 rounded-full border border-emerald-200 font-semibold">Tự động trích xuất key</span>
+          </div>
+          <p class="text-[11px] text-emerald-800 leading-relaxed">Chọn file <code class="font-bold bg-white px-1 py-0.5 rounded border border-emerald-200">.env</code> trên máy tính, hệ thống sẽ tự động quét các dòng <code class="font-bold">GEMINI_API_KEYS</code> hoặc mã <code class="font-bold">AIzaSy...</code> và lưu vào CSDL Supabase.</p>
+          <div class="flex items-center gap-2 pt-1">
+            <input type="file" id="env-file-upload" accept=".env,text/plain" @change="uploadEnvFile($event)" class="hidden">
+            <button type="button" @click="document.getElementById('env-file-upload').click()" :disabled="importingEnv" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+              <span x-show="!importingEnv">📂 Chọn file .env từ máy tính</span>
+              <span x-show="importingEnv" class="animate-spin">⏳</span>
+              <span x-show="importingEnv">Đang nạp file...</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Nhập key đơn lẻ hoặc dán nội dung .env -->
         <div>
-          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Thêm nhanh API Key trực tiếp qua web:</label>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Hoặc dán API Key / Dán dòng .env vào đây:</label>
           <div class="flex gap-2">
             <input 
-              type="password" 
+              type="text" 
               x-model="newKey" 
-              placeholder="Dán mã API key AIzaSy..."
+              placeholder="Dán AIzaSy... hoặc GEMINI_API_KEYS=key1,key2..."
               class="flex-1 border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 font-mono"
+              @keydown.enter="addKey()"
             >
-            <button @click="addKey()" :disabled="!newKey.trim()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-40 transition-colors cursor-pointer">
-              ➕ Thêm key
+            <button @click="addKey()" :disabled="!newKey.trim() || importingEnv" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-40 transition-colors cursor-pointer whitespace-nowrap">
+              ➕ Nạp Key
             </button>
           </div>
         </div>
@@ -1646,7 +1666,7 @@
             <span class="text-xs font-bold text-gray-700 uppercase">Trạng thái các khóa API đang hoạt động:</span>
             <button @click="loadKeyStatus()" class="text-xs text-blue-600 hover:underline">🔄 Làm mới</button>
           </div>
-          <div class="space-y-2 max-h-40 overflow-y-auto pr-1">
+          <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
             <template x-if="keyStatus.keys?.length === 0 || !keyStatus.keys">
               <div class="text-center py-4 text-gray-400 bg-gray-50 rounded-xl border">
                 <p class="text-xs">Chưa có API key. Tính năng AI chấm tự luận sẽ hoạt động khi có ít nhất 1 key.</p>
@@ -1663,6 +1683,7 @@
                   <span x-show="key.status === 'active'" class="text-green-600 font-bold">● Đang hoạt động</span>
                   <span x-show="key.status === 'cooldown'" class="text-yellow-600 font-bold">⏳ Cooldown</span>
                   <span x-show="key.status === 'error'" class="text-red-600 font-bold">⚠️ Lỗi</span>
+                  <button type="button" @click="removeKey(key.label)" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-1.5 py-0.5 rounded text-xs transition-colors cursor-pointer font-bold border border-transparent hover:border-red-200" title="Xóa khóa này">🗑️</button>
                 </div>
               </div>
             </template>
@@ -2002,6 +2023,7 @@ function adminApp() {
     newKey: '',
     keyMsg: '',
     keyMsgOk: true,
+    importingEnv: false,
     loadingSample: false,
     uploading: false,
     uploadMsg: '',
@@ -3194,9 +3216,96 @@ function adminApp() {
       }
     },
 
+    async uploadEnvFile(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      this.importingEnv = true;
+      this.keyMsg = '';
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/admin/keys/import-env', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.keyMsg = data.message;
+          this.keyMsgOk = true;
+          await this.loadKeyStatus();
+        } else {
+          this.keyMsg = data.detail || 'Lỗi khi nạp file .env!';
+          this.keyMsgOk = false;
+        }
+      } catch (e) {
+        this.keyMsg = 'Lỗi kết nối khi tải file .env: ' + e.message;
+        this.keyMsgOk = false;
+      } finally {
+        this.importingEnv = false;
+        event.target.value = '';
+        setTimeout(() => { this.keyMsg = ''; }, 6000);
+      }
+    },
+
+    async removeKey(keyLabel) {
+      if (!confirm(`Bạn có chắc muốn xóa khóa ${keyLabel} khỏi hệ thống?`)) return;
+      try {
+        const suffix = (keyLabel || '').replace('...', '').trim();
+        const res = await fetch(`/api/admin/keys/remove?key_suffix=${encodeURIComponent(suffix)}`, {
+          method: 'DELETE'
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.keyMsg = 'Đã xóa key thành công!';
+          this.keyMsgOk = true;
+          await this.loadKeyStatus();
+        } else {
+          this.keyMsg = data.detail || 'Không thể xóa key!';
+          this.keyMsgOk = false;
+        }
+      } catch (e) {
+        this.keyMsg = 'Lỗi kết nối khi xóa key!';
+        this.keyMsgOk = false;
+      }
+      setTimeout(() => { this.keyMsg = ''; }, 4000);
+    },
+
     async addKey() {
       const key = this.newKey.trim();
       if (!key) return;
+
+      // Nếu người dùng dán cả dòng .env hoặc nhiều key
+      if (key.includes('=') || key.includes('\n') || key.includes(',')) {
+        this.importingEnv = true;
+        this.keyMsg = '';
+        const formData = new FormData();
+        formData.append('env_content', key);
+        try {
+          const res = await fetch('/api/admin/keys/import-env', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            this.keyMsg = data.message;
+            this.keyMsgOk = true;
+            this.newKey = '';
+            await this.loadKeyStatus();
+          } else {
+            this.keyMsg = data.detail || 'Lỗi khi nạp nội dung .env!';
+            this.keyMsgOk = false;
+          }
+        } catch (e) {
+          this.keyMsg = 'Lỗi kết nối: ' + e.message;
+          this.keyMsgOk = false;
+        } finally {
+          this.importingEnv = false;
+          setTimeout(() => { this.keyMsg = ''; }, 6000);
+        }
+        return;
+      }
+
+      // Ngược lại, thêm key đơn lẻ
       try {
         const r = await fetch('/api/admin/keys/add', {
           method: 'POST',
@@ -3217,7 +3326,7 @@ function adminApp() {
         this.keyMsg = 'Lỗi kết nối!';
         this.keyMsgOk = false;
       }
-      setTimeout(() => this.keyMsg = '', 4000);
+      setTimeout(() => this.keyMsg = '', 5000);
     },
 
     // ===== PHẦN CẤU HÌNH THANG ĐIỂM =====

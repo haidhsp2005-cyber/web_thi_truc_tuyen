@@ -2,7 +2,7 @@
 Admin Router - Quản lý API keys và xem kết quả học sinh
 """
 from typing import Optional, List, Dict
-from fastapi import APIRouter, HTTPException, Request, Response, Depends, Query
+from fastapi import APIRouter, HTTPException, Request, Response, Depends, Query, Form
 from fastapi.responses import HTMLResponse
 from ..database import (
     get_all_submissions, get_submission, get_config, set_config, load_exam,
@@ -418,6 +418,74 @@ async def add_api_key(req: APIKeyRequest):
         set_config("api_keys", existing)
     
     return {"success": True, "message": f"Đã thêm key thành công! Tổng: {len(existing)} key(s)."}
+
+
+@router.post("/keys/import-env")
+async def import_env_keys(file: Optional[UploadFile] = File(None), env_content: Optional[str] = Form(None)):
+    """Đọc file .env hoặc nội dung chuỗi .env, trích xuất tất cả API Key Gemini và lưu vào CSDL."""
+    import re as _re
+    content = ""
+    if file:
+        content_bytes = await file.read()
+        content = content_bytes.decode("utf-8", errors="ignore")
+    elif env_content:
+        content = env_content
+    
+    if not content or not content.strip():
+        raise HTTPException(status_code=400, detail="Vui lòng chọn file .env hoặc nhập nội dung .env!")
+    
+    found_keys = []
+    
+    # 1. Quét theo các biến chuẩn: GEMINI_API_KEYS, GEMINI_API_KEY, GOOGLE_API_KEY...
+    for line in content.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" in line:
+            k, v = line.split("=", 1)
+            k = k.strip().upper()
+            v = v.strip().strip("'\"")
+            if k in ("GEMINI_API_KEYS", "GEMINI_API_KEY", "GOOGLE_API_KEY", "GEMINI_KEYS", "API_KEYS"):
+                for item in v.split(","):
+                    clean = item.strip().strip("'\"")
+                    if clean and len(clean) >= 15 and clean not in ("key1_cua_ban", "key2_cua_ban", "key3_cua_ban") and clean not in found_keys:
+                        found_keys.append(clean)
+    
+    # 2. Quét regex tất cả các token dạng AIzaSy...
+    regex_matches = _re.findall(r'AIzaSy[A-Za-z0-9_-]{30,}', content)
+    for m in regex_matches:
+        if m not in found_keys:
+            found_keys.append(m)
+            
+    if not found_keys:
+        raise HTTPException(status_code=400, detail="Không tìm thấy API Key Gemini hợp lệ nào trong file .env! (Khóa thường bắt đầu bằng AIzaSy...)")
+    
+    # Nạp vào Key Manager và CSDL Supabase
+    try:
+        manager = get_key_manager()
+    except RuntimeError:
+        manager = init_key_manager(found_keys)
+        
+    existing = get_config("api_keys", [])
+    added_count = 0
+    for k in found_keys:
+        try:
+            manager.add_key(k)
+        except Exception:
+            pass
+        if k not in existing:
+            existing.append(k)
+            added_count += 1
+            
+    set_config("api_keys", existing)
+    
+    return {
+        "success": True,
+        "keys_found": len(found_keys),
+        "added_count": added_count,
+        "total_active": len(existing),
+        "message": f"Thành công! Đã tìm thấy {len(found_keys)} key từ file .env (thêm mới {added_count} key). Hiện có tổng cộng {len(existing)} key đang hoạt động."
+    }
 
 
 @router.delete("/keys/remove")
