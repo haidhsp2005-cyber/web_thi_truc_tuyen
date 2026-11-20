@@ -39,6 +39,16 @@ async def _call_gemini(prompt: str) -> Optional[str]:
     Hỗ trợ luân chuyển model tự động nếu model đang gọi bị lỗi hoặc giới hạn.
     """
     manager = get_key_manager()
+    if manager.total_key_count == 0 or manager.active_key_count == 0:
+        try:
+            from ..database import get_config
+            db_keys = get_config("api_keys", [])
+            if db_keys:
+                manager.remove_key("al_key")
+                for k in db_keys:
+                    manager.add_key(k)
+        except Exception:
+            pass
 
     for attempt in range(MAX_RETRIES):
         key = await manager.get_next_key()
@@ -291,16 +301,13 @@ async def check_ai_available() -> bool:
     """Kiểm tra xem có API key khả dụng không."""
     try:
         manager = get_key_manager()
+        if manager.total_key_count == 0 or manager.active_key_count == 0:
+            from ..database import get_config
+            db_keys = get_config("api_keys", [])
+            if db_keys:
+                manager.remove_key("al_key")
+                for k in db_keys:
+                    manager.add_key(k)
         return manager.active_key_count > 0
-    except RuntimeError:
-        return False
-
-
-
-async def check_ai_available() -> bool:
-    """Kiểm tra xem có API key khả dụng không."""
-    try:
-        manager = get_key_manager()
-        return manager.active_key_count > 0
-    except RuntimeError:
+    except Exception:
         return False

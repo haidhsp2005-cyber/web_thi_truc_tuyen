@@ -388,12 +388,27 @@ async def get_keys_status():
     """Lấy trạng thái tất cả API keys."""
     try:
         manager = get_key_manager()
+        # Đồng bộ từ CSDL Supabase
+        db_keys = get_config("api_keys", [])
+        if db_keys:
+            # Bỏ key placeholder nếu đã có key thật
+            manager.remove_key("al_key")
+            for k in db_keys:
+                manager.add_key(k)
         return {
             "keys": manager.get_status(),
             "active_count": manager.active_key_count,
             "total_count": manager.total_key_count
         }
     except RuntimeError:
+        db_keys = get_config("api_keys", [])
+        if db_keys:
+            manager = init_key_manager(db_keys)
+            return {
+                "keys": manager.get_status(),
+                "active_count": manager.active_key_count,
+                "total_count": manager.total_key_count
+            }
         return {"keys": [], "active_count": 0, "total_count": 0, "message": "Chưa có API key nào!"}
 
 

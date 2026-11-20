@@ -1604,26 +1604,18 @@
   </div>
 
   <!-- Modal Cấu hình API Key Gemini (.env / AI chấm bài) -->
-  <div x-show="showApiKeyModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div @click.outside="showApiKeyModal = false" class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border space-y-4">
+  <div x-show="showApiKeyModal" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+    <div @click.outside="showApiKeyModal = false" class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b pb-3">
         <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
           <span>🔑</span><span>Cấu Hình Gemini API Key (file .env)</span>
         </h3>
-        <button @click="showApiKeyModal = false" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+        <button type="button" @click="showApiKeyModal = false" class="text-gray-400 hover:text-gray-800 text-sm font-bold bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-xl transition-colors cursor-pointer flex items-center gap-1">
+          <span>✕</span><span>Thoát</span>
+        </button>
       </div>
 
       <div class="space-y-4 text-sm">
-        <!-- Hướng dẫn file .env -->
-        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-3.5 text-xs text-blue-900 space-y-2">
-          <p class="font-bold flex items-center gap-1.5"><span>ℹ️</span><span>Cách cài đặt qua file .env hoặc biến môi trường Render:</span></p>
-          <p>Mở file <code class="bg-white px-1.5 py-0.5 rounded border font-mono">.env</code> trên máy chủ hoặc vào mục <strong>Environment</strong> trên Render, cấu hình biến:</p>
-          <div class="bg-white p-2.5 rounded-xl font-mono text-[11px] text-gray-800 border select-all overflow-x-auto">
-            GEMINI_API_KEYS=key1,key2,key3
-          </div>
-          <p class="text-gray-600">Đăng ký & tạo khóa API hoàn toàn miễn phí tại: <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 underline font-semibold">aistudio.google.com</a></p>
-        </div>
-
         <!-- Nạp trực tiếp file .env từ máy tính -->
         <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-3.5 space-y-2">
           <div class="flex items-center justify-between">
@@ -1660,30 +1652,50 @@
           </div>
         </div>
 
-        <!-- Danh sách trạng thái API Key hiện có -->
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold text-gray-700 uppercase">Trạng thái các khóa API đang hoạt động:</span>
-            <button @click="loadKeyStatus()" class="text-xs text-blue-600 hover:underline">🔄 Làm mới</button>
+        <!-- Danh sách trạng thái API Key (Chỉ hiện key lỗi theo yêu cầu để gọn gàng) -->
+        <div class="space-y-2">
+          <!-- Hàng tóm tắt tổng quan -->
+          <div class="flex items-center justify-between p-2.5 bg-gray-50 border rounded-2xl text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block animate-pulse"></span>
+              <span class="font-bold text-gray-800" x-text="`Tổng: ${keyStatus.total_count || 0} keys (${keyStatus.active_count || 0} đang hoạt động tốt)`"></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" @click="onlyShowErrorKeys = !onlyShowErrorKeys" class="text-xs text-indigo-600 hover:underline font-bold cursor-pointer" x-text="onlyShowErrorKeys ? `👁️ Xem tất cả (${keyStatus.total_count || 0})` : '⚠️ Chỉ hiện key lỗi'"></button>
+              <button type="button" @click="loadKeyStatus()" class="text-xs text-blue-600 hover:underline cursor-pointer" title="Làm mới">🔄</button>
+            </div>
           </div>
-          <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
-            <template x-if="keyStatus.keys?.length === 0 || !keyStatus.keys">
-              <div class="text-center py-4 text-gray-400 bg-gray-50 rounded-xl border">
-                <p class="text-xs">Chưa có API key. Tính năng AI chấm tự luận sẽ hoạt động khi có ít nhất 1 key.</p>
+
+          <!-- Khung danh sách key có thanh cuộn nhỏ -->
+          <div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+            <!-- Khi không có key nào -->
+            <template x-if="!keyStatus.keys || keyStatus.keys.length === 0">
+              <div class="text-center py-3 text-gray-400 bg-gray-50 rounded-xl border text-xs">
+                Chưa có API key nào trong hệ thống.
               </div>
             </template>
-            <template x-for="(key, i) in keyStatus.keys || []" :key="i">
-              <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl border text-xs">
+
+            <!-- Khi đang bật chế độ chỉ hiện key lỗi và KHÔNG có key nào bị lỗi -->
+            <template x-if="onlyShowErrorKeys && (keyStatus.keys || []).filter(k => k.status === 'error' || k.fail_count > 0).length === 0 && (keyStatus.total_count || 0) > 0">
+              <div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-center text-xs text-emerald-800 font-bold flex items-center justify-center gap-1.5">
+                <span>✅</span>
+                <span>Tất cả <strong x-text="keyStatus.total_count"></strong> API Key đều đang hoạt động tốt, không có key nào bị lỗi!</span>
+              </div>
+            </template>
+
+            <!-- Danh sách từng key -->
+            <template x-for="(key, i) in (onlyShowErrorKeys ? (keyStatus.keys || []).filter(k => k.status === 'error' || k.fail_count > 0) : (keyStatus.keys || []))" :key="i">
+              <div class="flex items-center justify-between p-2 rounded-xl border text-xs" :class="key.status === 'error' ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'">
                 <div class="flex items-center gap-2">
                   <div class="w-2.5 h-2.5 rounded-full flex-shrink-0" :class="{'bg-green-500': key.status === 'active', 'bg-yellow-500': key.status === 'cooldown', 'bg-red-500': key.status === 'error'}"></div>
-                  <span class="font-mono font-bold text-gray-700" x-text="key.label"></span>
+                  <span class="font-mono font-bold text-gray-800" x-text="key.label"></span>
                 </div>
                 <div class="flex items-center gap-2 text-gray-500">
                   <span x-text="`✅ ${key.success_count} | ❌ ${key.fail_count}`"></span>
-                  <span x-show="key.status === 'active'" class="text-green-600 font-bold">● Đang hoạt động</span>
+                  <span x-show="key.status === 'active'" class="text-green-600 font-bold">● Tốt</span>
                   <span x-show="key.status === 'cooldown'" class="text-yellow-600 font-bold">⏳ Cooldown</span>
                   <span x-show="key.status === 'error'" class="text-red-600 font-bold">⚠️ Lỗi</span>
-                  <button type="button" @click="removeKey(key.label)" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-1.5 py-0.5 rounded text-xs transition-colors cursor-pointer font-bold border border-transparent hover:border-red-200" title="Xóa khóa này">🗑️</button>
+                  <button type="button" @click="removeKey(key.label)" class="text-red-500 hover:text-red-700 hover:bg-red-100 p-1 rounded-lg text-xs transition-colors cursor-pointer font-bold ml-1" title="Xóa khóa này">🗑️</button>
                 </div>
               </div>
             </template>
@@ -1693,8 +1705,12 @@
         <div x-show="keyMsg" :class="keyMsgOk ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'" class="p-2.5 rounded-xl border text-xs font-semibold" x-text="keyMsg"></div>
       </div>
 
-      <div class="flex justify-end pt-3 border-t">
-        <button @click="showApiKeyModal = false" class="px-5 py-2 rounded-xl text-sm font-bold bg-gray-800 hover:bg-gray-900 text-white cursor-pointer">Đóng</button>
+      <!-- Chân Modal luôn nhìn thấy nút Thoát rõ ràng -->
+      <div class="flex items-center justify-between pt-3 border-t">
+        <span class="text-xs text-gray-400">Bấm Thoát để quay lại trang Quản trị</span>
+        <button type="button" @click="showApiKeyModal = false" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-md transition-all active:scale-95">
+          ✕ Đóng & Thoát
+        </button>
       </div>
     </div>
   </div>
@@ -2024,6 +2040,7 @@ function adminApp() {
     keyMsg: '',
     keyMsgOk: true,
     importingEnv: false,
+    onlyShowErrorKeys: true,
     loadingSample: false,
     uploading: false,
     uploadMsg: '',
